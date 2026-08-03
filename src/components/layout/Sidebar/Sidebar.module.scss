@@ -1,3 +1,5 @@
+@use "../../../styles/mixins" as *;
+
 .sidebar {
   display: flex;
   width: 202px;
@@ -24,17 +26,20 @@
 .menuItem,
 .optionItem {
   display: flex;
+  width: 100%;
   align-items: center;
+  justify-content: flex-start;
   gap: 16px;
   padding: 12px;
+  border: 0;
   border-radius: 12px;
   color: var(--color-gray);
+  background-color: var(--color-white);
+  cursor: pointer;
 }
 
 .menuItem {
-  font-size: var(--body-m-size);
-  line-height: var(--body-m-line-height);
-  font-weight: var(--font-weight-bold);
+  @include typo-body-m-plus;
 }
 
 .menuIcon {
@@ -43,6 +48,7 @@
 }
 
 .active {
+  justify-content: center;
   color: var(--color-point);
   background-color: var(--color-primary);
 }
@@ -66,23 +72,21 @@
 }
 
 .goalTitle {
+  @include typography(14px, 20px, var(--font-weight-semibold));
+
   color: var(--color-text);
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: var(--font-weight-semibold);
 }
 
 .goalPercent {
+  @include typography(var(--body-s-size), 16px, var(--font-weight-bold));
+
   color: var(--color-point);
-  font-size: var(--body-s-size);
-  line-height: 16px;
-  font-weight: var(--font-weight-bold);
 }
 
 .goalImage {
   width: 32px;
   height: 32px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-border-gray);
   border-radius: 8px;
 }
 
@@ -102,9 +106,7 @@
 }
 
 .optionItem {
-  font-size: var(--body-m-size);
-  line-height: var(--body-m-line-height);
-  font-weight: var(--font-weight-regular);
+  @include typo-body-m;
 }
 
 .optionIcon {
@@ -112,25 +114,8 @@
   line-height: 1;
 }
 
-.menuItem {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 16px;
-  padding: 12px;
-  border: 0;
-  border-radius: 12px;
-  color: var(--color-gray);
-  background-color: var(--color-white);
-  font-size: var(--body-m-size);
-  line-height: var(--body-m-line-height);
-  font-weight: var(--font-weight-bold);
-  cursor: pointer;
-}
-
-.active {
-  justify-content: center;
-  color: var(--color-point);
-  background-color: var(--color-primary);
+@media (max-width: 1024px) {
+  .sidebar {
+    display: none;
+  }
 }

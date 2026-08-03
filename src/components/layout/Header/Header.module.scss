@@ -7,12 +7,13 @@
 
 .inner {
   display: flex;
+  width: 100%;
+  max-width: 1920px;
+  margin: 0 auto;
+  padding: 16px 32px;
   align-items: center;
   justify-content: space-between;
-  padding-top: 16px;
-  padding-bottom: 16px;
 }
-
 .logoArea {
   flex-shrink: 0;
   margin: 0;
@@ -25,7 +26,7 @@
 
 .logo {
   display: block;
-  width: 144px;
+  width: 150px;
   height: auto;
 }
 
@@ -43,12 +44,11 @@
 }
 
 .menuLink {
+  @include typo-body-m-plus;
+
   display: block;
   padding: 7px 14px;
   color: var(--color-light-gray);
-  font-size: var(--body-m-size);
-  line-height: var(--body-m-line-height);
-  font-weight: var(--font-weight-bold);
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
@@ -60,6 +60,8 @@
 }
 
 .userButton {
+  @include typo-body-m-plus;
+
   display: flex;
   flex-shrink: 0;
   align-items: center;
@@ -69,9 +71,6 @@
   border: 2px solid var(--color-point);
   border-radius: 10px;
   color: var(--color-point);
-  font-size: var(--body-m-size);
-  line-height: var(--body-m-line-height);
-  font-weight: var(--font-weight-bold);
   text-decoration: none;
   white-space: nowrap;
 }
@@ -84,57 +83,49 @@
 
 @media (max-width: 1024px) {
   .inner {
-    padding-top: 8px;
-    padding-bottom: 8px;
+    padding: 8px 16px;
   }
 
   .logo {
-    width: 89px;
+    width: 112px;
   }
 
   .menuList {
-    gap: 40px;
+    gap: 32px;
   }
 
   .menuLink {
-    padding: 0;
-    font-size: 12.8px;
-    line-height: 16.8px;
-    font-weight: var(--font-weight-regular);
+    padding: 4px 8px;
   }
 
   .userButton {
-    gap: 8px;
-    padding: 4px;
-    border-width: 1px;
-    border-radius: 4px;
-    font-size: 12.8px;
-    line-height: 16.8px;
-    font-weight: var(--font-weight-regular);
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 8px;
   }
 
   .userIcon {
-    font-size: 9.6px;
+    font-size: var(--icon-l-size);
   }
 }
 
-@media (max-width: 650px) {
+@media (max-width: 720px) {
   .navigation {
     display: none;
   }
 
+  .inner {
+    padding: 8px 16px;
+  }
+
   .logo {
-    width: 78px;
+    width: 90px;
   }
 
   .userButton {
-    gap: 4px;
-    padding: 8px;
-    border-width: 2px;
+    gap: 6px;
+    padding: 4px 8px;
     border-radius: 10px;
-    font-size: var(--body-xs-size);
-    line-height: var(--body-xs-line-height);
-    font-weight: var(--font-weight-regular);
   }
 
   .userIcon {
