@@ -48,21 +48,19 @@ select {
 
 .container {
   width: 100%;
+  max-width: var(--container-max-width);
   margin: 0 auto;
-  padding-left: var(--container-padding-desktop);
-  padding-right: var(--container-padding-desktop);
+  padding: 0 var(--container-padding-desktop);
 }
 
 @include tablet {
   .container {
-    padding-left: var(--container-padding-tablet);
-    padding-right: var(--container-padding-tablet);
+    padding: 0 var(--container-padding-tablet);
   }
 }
 
 @include mobile {
   .container {
-    padding-left: var(--container-padding-mobile);
-    padding-right: var(--container-padding-mobile);
+    padding: 0 var(--container-padding-mobile);
   }
 }
