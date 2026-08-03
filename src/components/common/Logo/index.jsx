@@ -9,6 +9,7 @@ export default function Logo({ className = "" }) {
       width={293}
       height={103}
       alt="오늘을 모아, 원하는 내일로"
+      loading="eager"
     />
   );
 }

@@ -1,7 +1,12 @@
 import Sidebar from "@/components/layout/Sidebar";
 
-export default function Home() {
-  return <Sidebar activeMenu="가계부" />;
+import BottomTab from "@/components/layout/BottomTab";
 
-  // return <main></main>;
+export default function Home() {
+  return (
+    <main>
+            <Sidebar />
+            <BottomTab />   {" "}
+    </main>
+  );
 }

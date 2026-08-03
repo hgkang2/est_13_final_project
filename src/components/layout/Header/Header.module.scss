@@ -4,13 +4,11 @@
   width: 100%;
   background-color: var(--color-white);
 }
-
 .inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 16px;
-  padding-bottom: 16px;
+  padding: 16px 0;
 }
 
 .logoArea {
@@ -82,8 +80,7 @@
 
 @media (max-width: 1024px) {
   .inner {
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding: 10px 0;
   }
 
   .logo {
@@ -95,16 +92,12 @@
   }
 
   .menuLink {
-    @include typo-body-m-plus;
     padding: 4px 8px;
   }
 
   .userButton {
-    @include typo-body-m-plus;
-
     gap: 6px;
     padding: 6px 10px;
-    border-width: 2px;
     border-radius: 8px;
   }
 
@@ -119,8 +112,7 @@
   }
 
   .inner {
-    padding-top: 8px;
-    padding-bottom: 8px;
+    padding: 8px 0;
   }
 
   .logo {
@@ -128,10 +120,8 @@
   }
 
   .userButton {
-    @include typo-body-m-plus;
     gap: 6px;
     padding: 4px 8px;
-    border-width: 2px;
     border-radius: 10px;
   }
 
