@@ -76,6 +76,20 @@
   line-height: 1;
 }
 
+.menuLink {
+  padding: 7px 14px;
+  color: var(--color-light-gray);
+  font-size: var(--body-m-size);
+  line-height: var(--body-m-line-height);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--color-point);
+  }
+}
+
 @media (max-width: 1024px) {
   .inner {
     padding-top: 8px;
