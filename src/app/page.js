@@ -1,7 +1,9 @@
+import Logo from "@/components/common/Logo";
+
 export default function Home() {
   return (
-    <div className="container">
-      <h1 className="heading-l-plus">Hello, MO:UM</h1>
-    </div>
+    <main>
+      <Logo />
+    </main>
   );
 }
