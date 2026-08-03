@@ -2,7 +2,7 @@ import Link from "next/link";
 import Logo from "@/components/common/Logo";
 import styles from "./Header.module.scss";
 
-// 페이지 구현 후 Link 연결
+// GNB 동작 및 경로 확정 후 Link 연결
 const menus = ["서비스 소개", "Q&A", "고객센터", "모아 AI", "모음 소식"];
 
 // const menus = [
