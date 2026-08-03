@@ -43,12 +43,11 @@
 }
 
 .menuLink {
+  @include typo-body-m-plus;
+
   display: block;
   padding: 7px 14px;
   color: var(--color-light-gray);
-  font-size: var(--body-m-size);
-  line-height: var(--body-m-line-height);
-  font-weight: var(--font-weight-bold);
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
@@ -60,6 +59,8 @@
 }
 
 .userButton {
+  @include typo-body-m-plus;
+
   display: flex;
   flex-shrink: 0;
   align-items: center;
@@ -69,9 +70,6 @@
   border: 2px solid var(--color-point);
   border-radius: 10px;
   color: var(--color-point);
-  font-size: var(--body-m-size);
-  line-height: var(--body-m-line-height);
-  font-weight: var(--font-weight-bold);
   text-decoration: none;
   white-space: nowrap;
 }
@@ -84,57 +82,57 @@
 
 @media (max-width: 1024px) {
   .inner {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .logo {
+    width: 112px;
+  }
+
+  .menuList {
+    gap: 32px;
+  }
+
+  .menuLink {
+    @include typo-body-m-plus;
+    padding: 4px 8px;
+  }
+
+  .userButton {
+    @include typo-body-m-plus;
+
+    gap: 6px;
+    padding: 6px 10px;
+    border-width: 2px;
+    border-radius: 8px;
+  }
+
+  .userIcon {
+    font-size: var(--icon-l-size);
+  }
+}
+
+@media (max-width: 717px) {
+  .navigation {
+    display: none;
+  }
+
+  .inner {
     padding-top: 8px;
     padding-bottom: 8px;
   }
 
   .logo {
-    width: 89px;
-  }
-
-  .menuList {
-    gap: 40px;
-  }
-
-  .menuLink {
-    padding: 0;
-    font-size: 12.8px;
-    line-height: 16.8px;
-    font-weight: var(--font-weight-regular);
+    width: 90px;
   }
 
   .userButton {
-    gap: 8px;
-    padding: 4px;
-    border-width: 1px;
-    border-radius: 4px;
-    font-size: 12.8px;
-    line-height: 16.8px;
-    font-weight: var(--font-weight-regular);
-  }
-
-  .userIcon {
-    font-size: 9.6px;
-  }
-}
-
-@media (max-width: 650px) {
-  .navigation {
-    display: none;
-  }
-
-  .logo {
-    width: 78px;
-  }
-
-  .userButton {
-    gap: 4px;
-    padding: 8px;
+    @include typo-body-m-plus;
+    gap: 6px;
+    padding: 6px 10px;
     border-width: 2px;
     border-radius: 10px;
-    font-size: var(--body-xs-size);
-    line-height: var(--body-xs-line-height);
-    font-weight: var(--font-weight-regular);
   }
 
   .userIcon {
