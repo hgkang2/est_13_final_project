@@ -3,6 +3,7 @@
 import { useState } from "react";
 import styles from "./Sidebar.module.scss";
 
+// 페이지 구현 후 공통 navigation 사용
 const menus = [
   { label: "홈", icon: "home" },
   { label: "가계부", icon: "description" },

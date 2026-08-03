@@ -4,13 +4,16 @@
   width: 100%;
   background-color: var(--color-white);
 }
+
 .inner {
   display: flex;
+  width: 100%;
+  max-width: 1920px;
+  margin: 0 auto;
+  padding: 16px 32px;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 0;
 }
-
 .logoArea {
   flex-shrink: 0;
   margin: 0;
@@ -23,7 +26,7 @@
 
 .logo {
   display: block;
-  width: 144px;
+  width: 150px;
   height: auto;
 }
 
@@ -80,7 +83,7 @@
 
 @media (max-width: 1024px) {
   .inner {
-    padding: 10px 0;
+    padding: 8px 16px;
   }
 
   .logo {
@@ -112,7 +115,7 @@
   }
 
   .inner {
-    padding: 8px 0;
+    padding: 8px 16px;
   }
 
   .logo {

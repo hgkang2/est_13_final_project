@@ -2,6 +2,7 @@ import Link from "next/link";
 import Logo from "@/components/common/Logo";
 import styles from "./Header.module.scss";
 
+// 페이지 구현 후 Link 연결
 const menus = ["서비스 소개", "Q&A", "고객센터", "모아 AI", "모음 소식"];
 
 // const menus = [
@@ -15,7 +16,7 @@ const menus = ["서비스 소개", "Q&A", "고객센터", "모아 AI", "모음 �
 export default function Header({ isLoggedIn = false, userName = "모아" }) {
   return (
     <header className={styles.header}>
-      <div className={`${styles.inner} container`}>
+      <div className={styles.inner}>
         <h1 className={styles.logoArea}>
           <Link href="/" aria-label="모음 홈으로 이동">
             <Logo className={styles.logo} />
