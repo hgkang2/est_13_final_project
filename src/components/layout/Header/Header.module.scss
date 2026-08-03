@@ -71,8 +71,17 @@
   border: 2px solid var(--color-point);
   border-radius: 10px;
   color: var(--color-point);
+  background-color: var(--color-white);
   text-decoration: none;
   white-space: nowrap;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+
+  &:hover {
+    color: var(--color-white);
+    background-color: var(--color-point);
+  }
 }
 
 .userIcon {

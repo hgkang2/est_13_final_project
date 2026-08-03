@@ -1,4 +1,3 @@
-import Link from "next/link";
 import styles from "./SubFooter.module.scss";
 
 export default function SubFooter() {
@@ -11,15 +10,11 @@ export default function SubFooter() {
           <nav aria-label="푸터 메뉴">
             <ul className={styles.menuList}>
               <li>
-                <Link href="/" className={styles.menuLink}>
-                  이용 약관
-                </Link>
+                <span className={styles.menuLink}>이용 약관</span>
               </li>
 
               <li>
-                <Link href="/" className={styles.menuLink}>
-                  개인정보처리방침
-                </Link>
+                <span className={styles.menuLink}>개인정보처리방침</span>
               </li>
             </ul>
           </nav>
