@@ -1,21 +1,21 @@
 {
   "name": "est_13_final_project",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/hgkang2/est_13_final_project.git"
+  "dependencies": {
+    "next": "16.2.12",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/hgkang2/est_13_final_project/issues"
-  },
-  "homepage": "https://github.com/hgkang2/est_13_final_project#readme"
+  "devDependencies": {
+    "eslint": "^9",
+    "eslint-config-next": "16.2.12",
+    "sass": "^1.102.0"
+  }
 }

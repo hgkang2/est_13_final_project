@@ -1,0 +1,198 @@
+/* ========================================
+   Breakpoints
+======================================== */
+
+$breakpoint-tablet: 768px;
+$breakpoint-mobile: 390px;
+
+/* ========================================
+   Global Design Tokens
+======================================== */
+
+:root {
+  /* Font Family */
+  --font-family-base: "Wanted Sans Variable", "Wanted Sans", sans-serif;
+  --font-family-icon: "Material Icons";
+
+  /* Font Weight */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ----------------------------------------
+     Heading
+  ---------------------------------------- */
+
+  --heading-l-size: 48px;
+  --heading-l-plus-line-height: 72px;
+  --heading-l-line-height: 72px;
+
+  --heading-m-size: 40px;
+  --heading-m-plus-line-height: 60px;
+  --heading-m-line-height: 52px;
+
+  --heading-s-size: 32px;
+  --heading-s-line-height: 42px;
+
+  --heading-xs-size: 18px;
+  --heading-xs-line-height: 22px;
+
+  /* ----------------------------------------
+     Body
+  ---------------------------------------- */
+
+  --body-l-size: 24px;
+  --body-l-line-height: 36px;
+
+  --body-xm-size: 20px;
+  --body-xm-line-height: 24px;
+
+  --body-m-size: 16px;
+  --body-m-line-height: 24px;
+
+  --body-m-minus-size: 14px;
+  --body-m-minus-line-height: 24px;
+
+  --body-s-size: 12px;
+  --body-s-line-height: 18px;
+
+  --body-xs-size: 8px;
+  --body-xs-line-height: 12px;
+
+  /* ----------------------------------------
+     Caption
+  ---------------------------------------- */
+
+  --caption-size: 14px;
+  --caption-line-height: 24px;
+
+  /* ----------------------------------------
+     Component Typography
+  ---------------------------------------- */
+
+  --card-head-size: 22px;
+  --card-head-line-height: 24px;
+
+  --card-label-size: 18px;
+  --card-label-line-height: 20px;
+
+  --table-content-size: 14px;
+  --table-content-line-height: 24px;
+
+  --table-header-size: 14px;
+  --table-price-size: 14px;
+
+  --payment-method-size: 14px;
+  --payment-method-line-height: 24px;
+
+  --table-category-nonpc-size: 11px;
+  --table-category-nonpc-line-height: 18px;
+
+  --journal-content-size: 14px;
+  --journal-content-line-height: 20px;
+
+  /* ----------------------------------------
+     Icon
+  ---------------------------------------- */
+
+  --icon-xl-size: 36px;
+  --icon-l-size: 24px;
+  --icon-m-size: 16px;
+
+  --more-icon-s-size: 14px;
+  --more-icon-s-line-height: 21px;
+
+  --status-icon-size: 48px;
+
+  /* ----------------------------------------
+     Base Colors
+  ---------------------------------------- */
+
+  --color-text: #06070e;
+
+  --color-point: #77b985;
+  --color-secondary: #fde291;
+  --color-primary: #edf7ed;
+
+  --color-white: #ffffff;
+  --color-dark-white: #f8f9f6;
+
+  --color-light-gray: #777777;
+  --color-gray: #6b7280;
+  --color-green-gray: #a6b0a2;
+
+  --color-sub-yellow: #ffd65c;
+
+  /* ----------------------------------------
+     Status Colors
+  ---------------------------------------- */
+
+  --color-warning-text: #92400e;
+  --color-warning-dot: #e8b931;
+  --color-warning-background: #fffbeb;
+
+  --color-success-text: #166534;
+  --color-success-dot: #22c55e;
+
+  --color-danger-text: #991b1b;
+  --color-danger-dot: #ef4444;
+  --color-danger-background: #fef2f2;
+
+  /* ----------------------------------------
+     UI Colors
+  ---------------------------------------- */
+
+  --color-saving-pig: #f87171;
+
+  --color-border-gray: #ececec;
+  --color-background-green: #f7fcf8;
+  --color-background-secondary: #fffae4;
+
+  --color-memo-background: #fcfcfc;
+  --color-selection-background: #f2faf3;
+
+  /* ----------------------------------------
+     Transaction Type
+  ---------------------------------------- */
+
+  --color-type-transfer: #6366f1;
+  --color-type-income: #16a34a;
+  --color-type-expense: #dc2626;
+
+  /* ----------------------------------------
+     Expense Categories
+  ---------------------------------------- */
+
+  --color-expense-cafe-snack: #795548;
+  --color-expense-food: #f97316;
+  --color-expense-transportation: #3b82f6;
+  --color-expense-shopping: #ec4899;
+  --color-expense-subscription: #4f46e5;
+  --color-expense-savings: #f59e0b;
+  --color-expense-medical: #e11d48;
+  --color-expense-household-goods: #7c9a3a;
+  --color-expense-hobby: #8b5cf6;
+  --color-expense-education: #0891b2;
+
+  /* ----------------------------------------
+     Income Categories
+  ---------------------------------------- */
+
+  --color-income-salary: #0ea5e9;
+  --color-income-other-income: #14b8a6;
+  --color-income-bonus: #a855f7;
+  --color-income-investment-income: #6366f1;
+  --color-income-allowance: #f472b6;
+
+  /* Common Other Category */
+  --color-category-other: #64748b;
+
+  /* ----------------------------------------
+     Container
+  ---------------------------------------- */
+
+  --container-padding-desktop: 32px;
+  --container-padding-tablet: 16px;
+  --container-padding-mobile: 16px;
+}
