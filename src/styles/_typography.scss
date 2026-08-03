@@ -1,0 +1,245 @@
+@use "./mixins" as *;
+
+/* ========================================
+   Heading
+======================================== */
+
+.heading-l-plus {
+  @include typography(
+    var(--heading-l-size),
+    var(--heading-l-plus-line-height),
+    var(--font-weight-bold)
+  );
+}
+
+.heading-l {
+  @include typography(
+    var(--heading-l-size),
+    var(--heading-l-line-height),
+    var(--font-weight-regular)
+  );
+}
+
+.heading-m-plus {
+  @include typography(
+    var(--heading-m-size),
+    var(--heading-m-plus-line-height),
+    var(--font-weight-bold)
+  );
+}
+
+.heading-m {
+  @include typography(
+    var(--heading-m-size),
+    var(--heading-m-line-height),
+    var(--font-weight-regular)
+  );
+}
+
+.heading-s-plus {
+  @include typography(
+    var(--heading-s-size),
+    var(--heading-s-line-height),
+    var(--font-weight-bold)
+  );
+}
+
+.heading-s {
+  @include typography(
+    var(--heading-s-size),
+    var(--heading-s-line-height),
+    var(--font-weight-regular)
+  );
+}
+
+.heading-xs {
+  @include typography(
+    var(--heading-xs-size),
+    var(--heading-xs-line-height),
+    var(--font-weight-bold)
+  );
+}
+
+/* ========================================
+   Body
+======================================== */
+
+.body-l-plus {
+  @include typography(
+    var(--body-l-size),
+    var(--body-l-line-height),
+    var(--font-weight-bold)
+  );
+}
+
+.body-l {
+  @include typography(
+    var(--body-l-size),
+    var(--body-l-line-height),
+    var(--font-weight-regular)
+  );
+}
+
+.body-xm {
+  @include typography(
+    var(--body-xm-size),
+    var(--body-xm-line-height),
+    var(--font-weight-bold)
+  );
+}
+
+.body-m-plus {
+  @include typography(
+    var(--body-m-size),
+    var(--body-m-line-height),
+    var(--font-weight-bold)
+  );
+}
+
+.body-m {
+  @include typography(
+    var(--body-m-size),
+    var(--body-m-line-height),
+    var(--font-weight-regular)
+  );
+}
+
+.body-m-minus {
+  @include typography(
+    var(--body-m-minus-size),
+    var(--body-m-minus-line-height),
+    var(--font-weight-regular)
+  );
+}
+
+.body-s-plus {
+  @include typography(
+    var(--body-s-size),
+    var(--body-s-line-height),
+    var(--font-weight-bold)
+  );
+}
+
+.body-s {
+  @include typography(
+    var(--body-s-size),
+    var(--body-s-line-height),
+    var(--font-weight-regular)
+  );
+}
+
+.body-xs {
+  @include typography(
+    var(--body-xs-size),
+    var(--body-xs-line-height),
+    var(--font-weight-regular)
+  );
+}
+
+/* ========================================
+   Caption
+======================================== */
+
+.caption-plus {
+  @include typography(
+    var(--caption-size),
+    var(--caption-line-height),
+    var(--font-weight-bold)
+  );
+}
+
+.caption {
+  @include typography(
+    var(--caption-size),
+    var(--caption-line-height),
+    var(--font-weight-regular)
+  );
+}
+
+/* ========================================
+   Component Typography
+======================================== */
+
+.card-head {
+  @include typography(
+    var(--card-head-size),
+    var(--card-head-line-height),
+    var(--font-weight-bold)
+  );
+}
+
+.card-label {
+  @include typography(
+    var(--card-label-size),
+    var(--card-label-line-height),
+    var(--font-weight-semibold)
+  );
+}
+
+.table-content {
+  @include typography(
+    var(--table-content-size),
+    var(--table-content-line-height),
+    var(--font-weight-medium)
+  );
+}
+
+.table-header {
+  font-size: var(--table-header-size);
+  line-height: normal;
+  font-weight: var(--font-weight-bold);
+}
+
+.table-price {
+  font-size: var(--table-price-size);
+  line-height: normal;
+  font-weight: var(--font-weight-bold);
+}
+
+.payment-method {
+  @include typography(
+    var(--payment-method-size),
+    var(--payment-method-line-height),
+    var(--font-weight-semibold)
+  );
+}
+
+.table-category-nonpc {
+  @include typography(
+    var(--table-category-nonpc-size),
+    var(--table-category-nonpc-line-height),
+    var(--font-weight-bold)
+  );
+}
+
+.journal-content {
+  @include typography(
+    var(--journal-content-size),
+    var(--journal-content-line-height),
+    var(--font-weight-regular)
+  );
+}
+
+/* ========================================
+   Material Icons
+======================================== */
+
+.icon-xl {
+  @include icon(var(--icon-xl-size));
+}
+
+.icon-l {
+  @include icon(var(--icon-l-size));
+}
+
+.icon-m {
+  @include icon(var(--icon-m-size));
+}
+
+.more-icon-s {
+  @include icon(var(--more-icon-s-size), var(--more-icon-s-line-height));
+}
+
+.status-icon {
+  @include icon(var(--status-icon-size));
+}
