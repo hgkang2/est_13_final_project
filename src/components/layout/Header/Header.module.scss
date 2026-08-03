@@ -1,0 +1,143 @@
+@use "../../../styles/mixins" as *;
+
+.header {
+  width: 100%;
+  background-color: var(--color-white);
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+.logoArea {
+  flex-shrink: 0;
+  margin: 0;
+  line-height: 0;
+}
+
+.logoArea a {
+  display: block;
+}
+
+.logo {
+  display: block;
+  width: 144px;
+  height: auto;
+}
+
+.navigation {
+  flex-shrink: 0;
+}
+
+.menuList {
+  display: flex;
+  align-items: center;
+  gap: 64px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menuLink {
+  display: block;
+  padding: 7px 14px;
+  color: var(--color-light-gray);
+  font-size: var(--body-m-size);
+  line-height: var(--body-m-line-height);
+  font-weight: var(--font-weight-bold);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.userButton {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 2px solid var(--color-point);
+  border-radius: 10px;
+  color: var(--color-point);
+  font-size: var(--body-m-size);
+  line-height: var(--body-m-line-height);
+  font-weight: var(--font-weight-bold);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.userIcon {
+  font-family: var(--font-family-icon);
+  font-size: 35px;
+  line-height: 1;
+}
+
+@media (max-width: 1024px) {
+  .inner {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .logo {
+    width: 89px;
+  }
+
+  .menuList {
+    gap: 40px;
+  }
+
+  .menuLink {
+    padding: 0;
+    font-size: 12.8px;
+    line-height: 16.8px;
+    font-weight: var(--font-weight-regular);
+  }
+
+  .userButton {
+    gap: 8px;
+    padding: 4px;
+    border-width: 1px;
+    border-radius: 4px;
+    font-size: 12.8px;
+    line-height: 16.8px;
+    font-weight: var(--font-weight-regular);
+  }
+
+  .userIcon {
+    font-size: 9.6px;
+  }
+}
+
+@media (max-width: 650px) {
+  .navigation {
+    display: none;
+  }
+
+  .logo {
+    width: 78px;
+  }
+
+  .userButton {
+    gap: 4px;
+    padding: 8px;
+    border-width: 2px;
+    border-radius: 10px;
+    font-size: 8px;
+    line-height: 12px;
+  }
+
+  .userIcon {
+    font-size: 16px;
+  }
+}
+
+@include mobile {
+  .inner {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}
