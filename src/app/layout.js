@@ -11,7 +11,7 @@ export default function RootLayout({ children }) {
     <html lang="ko">
       <body>
         <Header isLoggedIn={false} />
-        <main>{children}</main>
+        {children}
       </body>
     </html>
   );

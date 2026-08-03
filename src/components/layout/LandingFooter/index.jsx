@@ -1,39 +1,26 @@
-import Link from "next/link";
 import Logo from "@/components/common/Logo";
 import styles from "./LandingFooter.module.scss";
 
 const footerMenus = [
   {
     title: "서비스",
-    links: [
-      { label: "서비스 소개", href: "/service" },
-      { label: "기능", href: "/features" },
-      { label: "가격 안내", href: "/pricing" },
-    ],
+    links: ["서비스 소개", "기능", "가격 안내"],
   },
   {
     title: "고객지원",
-    links: [
-      { label: "자주 묻는 질문", href: "/faq" },
-      { label: "문의 하기", href: "/contact" },
-      { label: "이용 가이드", href: "/guide" },
-    ],
+    links: ["자주 묻는 질문", "문의 하기", "이용 가이드"],
   },
   {
     title: "프로젝트",
-    links: [
-      { label: "프로젝트 소개", href: "/project" },
-      { label: "이용 약관", href: "/terms" },
-      { label: "개인정보처리방침", href: "/privacy" },
-    ],
+    links: ["프로젝트 소개", "이용 약관", "개인정보처리방침"],
   },
 ];
 
 const socialLinks = [
-  { label: "공유하기", icon: "share", href: "#" },
-  { label: "공식 사이트", icon: "public", href: "#" },
-  { label: "이메일", icon: "mail", href: "#" },
-  { label: "GitHub", icon: "code", href: "#" },
+  { label: "공유하기", icon: "share" },
+  { label: "공식 사이트", icon: "public" },
+  { label: "이메일", icon: "mail" },
+  { label: "GitHub", icon: "code" },
 ];
 
 export default function LandingFooter() {
@@ -52,16 +39,10 @@ export default function LandingFooter() {
 
           <ul className={styles.socialList}>
             {socialLinks.map(link => (
-              <li key={link.label}>
-                <a
-                  className={styles.socialLink}
-                  href={link.href}
-                  aria-label={link.label}
-                >
-                  <span className="material-icons" aria-hidden="true">
-                    {link.icon}
-                  </span>
-                </a>
+              <li key={link.label} className={styles.socialLink}>
+                <span className="material-icons" aria-hidden="true">
+                  {link.icon}
+                </span>
               </li>
             ))}
           </ul>
@@ -74,10 +55,8 @@ export default function LandingFooter() {
 
               <ul className={styles.menuList}>
                 {menu.links.map(link => (
-                  <li key={link.label}>
-                    <Link className={styles.menuLink} href={link.href}>
-                      {link.label}
-                    </Link>
+                  <li key={link} className={styles.menuLink}>
+                    {link}
                   </li>
                 ))}
               </ul>

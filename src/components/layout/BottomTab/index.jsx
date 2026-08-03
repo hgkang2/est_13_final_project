@@ -3,23 +3,23 @@
 import { useState } from "react";
 import styles from "./BottomTab.module.scss";
 
-// 페이지 구현 후 공통 navigation 사용
+// 페이지 구현 후 공통 navigation 데이터로 분리 예정
 const menus = [
   { label: "홈", icon: "home" },
   { label: "가계부", icon: "description" },
-  { label: "분석", icon: "pie_chart" },
-  { label: "목표", icon: "task_alt" },
-  { label: "챌린지", icon: "emoji_events" },
+  { label: "분석", icon: "donut_large" },
+  { label: "목표", icon: "add_task" },
+  { label: "챌린지", icon: "military_tech" },
   { label: "프로필", icon: "person" },
 ];
 
-// 페이지 구현 후 Link 연결
+// 페이지 구현 후 Link 연결 및 공통 navigation 데이터 사용 예정
 // const menus = [
 //   { label: "홈", icon: "home", href: "/home" },
 //   { label: "가계부", icon: "description", href: "/transactions" },
-//   { label: "분석", icon: "pie_chart", href: "/analysis" },
-//   { label: "목표", icon: "task_alt", href: "/goals" },
-//   { label: "챌린지", icon: "emoji_events", href: "/challenge" },
+//   { label: "분석", icon: "donut_large", href: "/analysis" },
+//   { label: "목표", icon: "add_task", href: "/goals" },
+//   { label: "챌린지", icon: "military_tech", href: "/challenge" },
 //   { label: "프로필", icon: "person", href: "/profile" },
 // ];
 

@@ -30,14 +30,7 @@
 
 .menuLink {
   @include typo-body-m;
-
   color: var(--color-light-gray);
-  text-decoration: none;
-  transition: color 0.2s ease;
-
-  &:hover {
-    color: var(--color-point);
-  }
 }
 
 @media (max-width: 480px) {
