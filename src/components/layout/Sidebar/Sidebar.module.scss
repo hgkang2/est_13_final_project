@@ -1,0 +1,136 @@
+.sidebar {
+  display: flex;
+  width: 202px;
+  min-height: 986px;
+  padding: 24px;
+  flex-direction: column;
+  background-color: var(--color-white);
+}
+
+.navigation {
+  flex: 1;
+}
+
+.menuList,
+.optionList {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+}
+
+.menuItem,
+.optionItem {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  border-radius: 12px;
+  color: var(--color-gray);
+}
+
+.menuItem {
+  font-size: var(--body-m-size);
+  line-height: var(--body-m-line-height);
+  font-weight: var(--font-weight-bold);
+}
+
+.menuIcon {
+  font-size: var(--icon-l-size);
+  line-height: 1;
+}
+
+.active {
+  color: var(--color-point);
+  background-color: var(--color-primary);
+}
+
+.goalArea {
+  padding-bottom: 40px;
+}
+
+.goalCard {
+  display: flex;
+  padding: 20px;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 16px;
+}
+
+.goalTitle,
+.goalPercent {
+  margin: 0;
+}
+
+.goalTitle {
+  color: var(--color-text);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.goalPercent {
+  color: var(--color-point);
+  font-size: var(--body-s-size);
+  line-height: 16px;
+  font-weight: var(--font-weight-bold);
+}
+
+.goalImage {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.progress {
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 9999px;
+  background-color: #e5e7eb;
+}
+
+.progressBar {
+  width: 68%;
+  height: 100%;
+  border-radius: inherit;
+  background-color: var(--color-point);
+}
+
+.optionItem {
+  font-size: var(--body-m-size);
+  line-height: var(--body-m-line-height);
+  font-weight: var(--font-weight-regular);
+}
+
+.optionIcon {
+  font-size: var(--icon-l-size);
+  line-height: 1;
+}
+
+.menuItem {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  padding: 12px;
+  border: 0;
+  border-radius: 12px;
+  color: var(--color-gray);
+  background-color: var(--color-white);
+  font-size: var(--body-m-size);
+  line-height: var(--body-m-line-height);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+}
+
+.active {
+  justify-content: center;
+  color: var(--color-point);
+  background-color: var(--color-primary);
+}

@@ -51,6 +51,12 @@
   font-weight: var(--font-weight-bold);
   text-decoration: none;
   white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--color-point);
+  }
 }
 
 .userButton {
@@ -74,20 +80,6 @@
   font-family: var(--font-family-icon);
   font-size: 35px;
   line-height: 1;
-}
-
-.menuLink {
-  padding: 7px 14px;
-  color: var(--color-light-gray);
-  font-size: var(--body-m-size);
-  line-height: var(--body-m-line-height);
-  font-weight: var(--font-weight-bold);
-  cursor: pointer;
-  transition: color 0.2s ease;
-
-  &:hover {
-    color: var(--color-point);
-  }
 }
 
 @media (max-width: 1024px) {
@@ -140,18 +132,12 @@
     padding: 8px;
     border-width: 2px;
     border-radius: 10px;
-    font-size: 8px;
-    line-height: 12px;
+    font-size: var(--body-xs-size);
+    line-height: var(--body-xs-line-height);
+    font-weight: var(--font-weight-regular);
   }
 
   .userIcon {
-    font-size: 16px;
-  }
-}
-
-@include mobile {
-  .inner {
-    padding-top: 8px;
-    padding-bottom: 8px;
+    font-size: var(--icon-m-size);
   }
 }
