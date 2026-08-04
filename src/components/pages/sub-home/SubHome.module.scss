@@ -264,6 +264,113 @@
   color: var(--color-point);
 }
 
+@media (max-width: 1024px) {
+  .topRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .greeting,
+  .goalCard {
+    width: 100%;
+    flex: none;
+  }
+
+  .greeting {
+    padding: 16px;
+  }
+
+  .greetingTitle h1 {
+    @include typo-heading-s-plus;
+  }
+
+  .greeting > p {
+    @include typo-heading-xs;
+  }
+
+  .goalCard {
+    padding: 32px;
+  }
+
+  .goalCardInner {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .goalInfo {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .goalVisual {
+    width: 240px;
+    flex-shrink: 0;
+  }
+
+  .goalImageBox {
+    width: 240px;
+    height: 180px;
+  }
+}
+
+@include mobile {
+  .greeting {
+    padding: 16px;
+  }
+
+  .greetingTitle h1 {
+    @include typo-body-l-plus;
+  }
+
+  .greeting > p {
+    @include typo-body-m-plus;
+  }
+
+  .goalCard {
+    padding: 16px;
+  }
+
+  .goalCardInner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 24px;
+  }
+
+  .goalVisual {
+    order: 1;
+    width: 100%;
+  }
+
+  .goalInfo {
+    order: 2;
+    width: 100%;
+    flex: none;
+  }
+
+  .goalImageBox {
+    width: 204px;
+    height: 170px;
+    margin: 0 auto;
+  }
+
+  .goalImageBackground {
+    width: 160px;
+    height: 160px;
+  }
+
+  .goalImage {
+    width: 204px;
+    height: 170px;
+    transform: translateY(-10px);
+  }
+
+  .goalCaption {
+    margin-top: 8px;
+  }
+}
+
 /* 이번 달 소비 요약 */
 .summaryRow {
   display: flex;
