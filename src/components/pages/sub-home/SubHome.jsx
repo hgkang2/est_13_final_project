@@ -319,7 +319,128 @@ export default function SubHome() {
                   </ul>
                 </article>
               </div>
-              
+              <div className={styles.statusRow}>
+                <article
+                  className={styles.savingGoalCard}
+                  aria-labelledby="saving-goal-title"
+                >
+                  <div className={styles.cardInner}>
+                    <header className={styles.cardHeader}>
+                      <h2 id="saving-goal-title">저축 목표</h2>
+
+                      <button type="button" className={styles.cardMoreButton}>
+                        <span>목표 관리로 이동</span>
+                        <span className="material-icons" aria-hidden="true">
+                          arrow_forward
+                        </span>
+                      </button>
+                    </header>
+
+                    <div className={styles.savingGoalBody}>
+                      <div className={styles.goalTitleRow}>
+                        <h3>여름 여행 자금 모으기</h3>
+                        <span className={styles.dDayBadge}>D-7</span>
+                      </div>
+
+                      <div className={styles.goalAmountRow}>
+                        <strong>1,950,000원</strong>
+                        <span>/ 3,000,000원</span>
+                      </div>
+
+                      <div className={styles.goalProgressRow}>
+                        <div
+                          className={styles.goalProgressTrack}
+                          role="progressbar"
+                          aria-label="여름 여행 자금 목표 달성률"
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                          aria-valuenow="65"
+                        >
+                          <div className={styles.goalProgressFill} />
+                        </div>
+
+                        <span className={styles.goalProgressValue}>65%</span>
+                      </div>
+
+                      <p className={styles.goalSchedule}>
+                        현재 저축 속도로는 목표보다 <strong>13</strong>일 늦어질
+                        예정이에요.
+                      </p>
+                    </div>
+
+                    <div className={styles.goalNotice}>
+                      <span className="material-icons" aria-hidden="true">
+                        report
+                      </span>
+
+                      <p>하루 150,000원씩 저축하면 목표를 달성할 수 있어요.</p>
+                    </div>
+                  </div>
+                </article>
+
+                <article
+                  className={styles.challengeCard}
+                  aria-labelledby="challenge-title"
+                >
+                  <div className={styles.cardInner}>
+                    <header className={styles.cardHeader}>
+                      <h2 id="challenge-title">챌린지 현황</h2>
+
+                      <button type="button" className={styles.cardMoreButton}>
+                        <span>챌린지로 이동</span>
+                        <span className="material-icons" aria-hidden="true">
+                          arrow_forward
+                        </span>
+                      </button>
+                    </header>
+
+                    <div className={styles.challengeBody}>
+                      <div className={styles.challengeSummary}>
+                        <h3>7일 소비 챌린지</h3>
+                        <strong>6일째 진행 중!</strong>
+                      </div>
+
+                      <div className={styles.challengeCalendar}>
+                        <div className={styles.challengeWeekdays}>
+                          {["월", "화", "수", "목", "금", "토", "일"].map(
+                            day => (
+                              <span key={day}>{day}</span>
+                            ),
+                          )}
+                        </div>
+
+                        <div className={styles.challengeDays}>
+                          {[1, 2, 3, 4, 5, 6, 7].map(day => (
+                            <div key={day} className={styles.challengeDay}>
+                              <div
+                                className={`${styles.challengeIcon} ${
+                                  day === 6 ? styles.currentChallengeIcon : ""
+                                } ${day === 7 ? styles.emptyChallengeIcon : ""}`}
+                              >
+                                {day < 7 && (
+                                  <Image
+                                    src="/images/challenge/sprout.png"
+                                    alt=""
+                                    width={40}
+                                    height={40}
+                                    aria-hidden="true"
+                                  />
+                                )}
+                              </div>
+
+                              <span>{day}일차</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <p className={styles.challengeMessage}>
+                        하루만 더 성공하면 7일 달성!
+                      </p>
+                    </div>
+                  </div>
+                </article>
+              </div>
             </div>
           </div>
         </main>

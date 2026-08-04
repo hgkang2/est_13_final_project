@@ -305,7 +305,7 @@
   width: fit-content;
   margin: 0;
   padding: 4px 12px;
-  border-radius: 9999px;
+  border-radius: 999px;
   color: var(--color-point);
   background-color: var(--color-primary);
 }
@@ -412,6 +412,7 @@
   &:hover {
     color: var(--color-white);
     background-color: var(--color-point);
+    transition: color 0.2s ease;
   }
 }
 
@@ -528,7 +529,7 @@
   justify-content: center;
   gap: 16px;
   border: 1px solid var(--color-point);
-  border-radius: 9999px;
+  border-radius: 999px;
   color: var(--color-point);
   background-color: var(--color-white);
   cursor: pointer;
@@ -536,6 +537,7 @@
   &:hover {
     color: var(--color-white);
     background-color: var(--color-point);
+    transition: color 0.2s ease;
   }
 }
 
@@ -602,6 +604,10 @@
   color: var(--color-light-gray);
   background-color: transparent;
   cursor: pointer;
+
+  &:hover {
+    color: var(--color-point);
+  }
 }
 
 .moreButton :global(.material-icons) {
@@ -627,6 +633,12 @@
   min-width: 0;
   align-items: center;
   gap: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-primary);
+
+  &:first-child {
+    padding-top: 0;
+  }
 }
 
 .transactionItem img {
@@ -700,15 +712,313 @@
   color: var(--color-expense-savings);
 }
 
-.transactionItem {
+/* 저축 목표 + 챌린지 현황 */
+.statusRow {
   display: flex;
   width: 100%;
+  align-items: stretch;
+  gap: 24px;
+}
+
+.savingGoalCard,
+.challengeCard {
+  display: flex;
+  flex: 1;
   min-width: 0;
+  padding: 32px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 24px;
+  background-color: var(--color-white);
+}
+
+.cardInner {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+}
+
+.cardHeader {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cardHeader h2 {
+  @include typo-card-head;
+
+  margin: 0;
+  color: var(--color-text);
+}
+
+.cardMoreButton {
+  @include typo-body-m-minus;
+
+  display: inline-flex;
+  padding: 0;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  color: var(--color-light-gray);
+  background-color: transparent;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--color-point);
+  }
+}
+
+.cardMoreButton :global(.material-icons) {
+  @include more-icon-s;
+
+  color: inherit;
+}
+
+/* 저축 목표 */
+
+.savingGoalBody {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.goalTitleRow {
+  display: flex;
+  width: 100%;
   align-items: center;
   gap: 16px;
-  border-bottom: 1px solid var(--color-primary);
+}
 
-  &:first-child {
-    padding-top: 0;
+.goalTitleRow h3 {
+  @include typo-body-l-plus;
+
+  margin: 0;
+  color: var(--color-text);
+}
+
+.dDayBadge {
+  @include typo-body-s-plus;
+
+  display: inline-flex;
+  width: 61px;
+  padding: 4px 16px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: var(--color-white);
+  background-color: var(--color-saving-pig);
+}
+
+.goalAmountRow {
+  display: inline-flex;
+  padding: 2px 0;
+  align-items: center;
+  gap: 10px;
+}
+
+.goalAmountRow strong {
+  @include typo-heading-s-plus;
+
+  color: var(--color-point);
+}
+
+.goalAmountRow span {
+  @include typo-body-m-minus;
+
+  color: var(--color-light-gray);
+}
+
+.goalProgressRow {
+  display: flex;
+  width: 100%;
+  max-width: 280px;
+  align-items: center;
+  gap: 16px;
+}
+
+.goalProgressTrack {
+  position: relative;
+  height: 8px;
+  flex: 1;
+  overflow: hidden;
+  border-radius: 999px;
+  background-color: var(--color-primary);
+}
+
+.goalProgressFill {
+  width: 65%;
+  height: 100%;
+  border-radius: inherit;
+  background-color: var(--color-point);
+}
+
+.goalProgressValue {
+  @include typo-body-m;
+
+  color: var(--color-point);
+  white-space: nowrap;
+}
+
+.goalSchedule {
+  @include typo-body-s;
+
+  margin: 0;
+  color: var(--color-gray);
+}
+
+.goalSchedule strong {
+  @include typo-body-s-plus;
+
+  color: inherit;
+}
+
+.goalNotice {
+  display: inline-flex;
+  width: fit-content;
+  padding: 8px 16px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 999px;
+  background-color: var(--color-white);
+}
+
+.goalNotice :global(.material-icons) {
+  @include icon-m;
+
+  flex-shrink: 0;
+  color: var(--color-warning-dot);
+}
+
+.goalNotice p {
+  @include typo-body-m-semibold;
+
+  margin: 0;
+  padding-left: 8px;
+  color: var(--color-light-gray);
+}
+
+/* 챌린지 현황 */
+
+.challengeBody {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.challengeSummary {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.challengeSummary h3 {
+  @include typo-body-xm;
+
+  margin: 0;
+  color: var(--color-text);
+}
+
+.challengeSummary strong {
+  @include typo-body-m-plus;
+
+  color: var(--color-point);
+}
+
+.challengeCalendar {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 16px;
+}
+
+.challengeWeekdays,
+.challengeDays {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.challengeWeekdays {
+  height: 32px;
+  background-color: var(--color-background-green);
+}
+
+.challengeWeekdays span {
+  @include typo-caption-plus;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text);
+  border-right: 1px solid var(--color-border-gray);
+
+  &:last-child {
+    border-right: 0;
   }
+}
+
+.challengeDays {
+  height: 84px;
+  background-color: var(--color-white);
+}
+
+.challengeDay {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-right: 1px solid var(--color-border-gray);
+
+  &:last-child {
+    border-right: 0;
+  }
+}
+
+.challengeIcon {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background-color: var(--color-background-green);
+}
+
+.challengeIcon img {
+  display: block;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+.currentChallengeIcon {
+  border: 1px solid var(--color-point);
+  background-color: var(--color-primary);
+}
+
+.emptyChallengeIcon {
+  background-color: var(--color-dark-white);
+}
+
+.challengeDay > span {
+  @include typo-body-s;
+
+  color: var(--color-light-gray);
+}
+
+.challengeMessage {
+  @include typo-body-m-plus;
+
+  margin: 0;
+  color: var(--color-light-gray);
 }
