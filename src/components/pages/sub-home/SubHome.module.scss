@@ -110,7 +110,6 @@
 }
 
 /* 이번 달 목표 달성 카드 */
-
 .goalCard {
   display: flex;
   flex: 1;
@@ -142,6 +141,7 @@
 
   margin: 0;
   color: var(--color-text);
+  word-break: keep-all;
 }
 
 .goalPercent {
@@ -213,6 +213,7 @@
   align-items: center;
   gap: 6px;
   margin: 0;
+  white-space: nowrap;
 }
 
 .goalAmount strong,
@@ -240,6 +241,7 @@
   border-radius: 999px;
   color: var(--color-warning-text);
   background-color: var(--color-warning-background);
+  white-space: nowrap;
 }
 
 .warningDot {
@@ -314,14 +316,7 @@
 @media (max-width: 1024px) {
   .goalCard {
     width: 100%;
-    padding: 32px;
     flex: none;
-  }
-
-  .goalCardInner {
-    display: flex;
-    align-items: center;
-    gap: 32px;
   }
 
   .goalInfo {
@@ -333,10 +328,23 @@
     width: 240px;
     flex-shrink: 0;
   }
+}
 
-  .goalImageBox {
-    width: 240px;
-    height: 180px;
+@include tablet {
+  .goalCardInner {
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .goalVisual {
+    order: 1;
+  }
+
+  .goalInfo {
+    order: 2;
+    width: 100%;
+    flex: none;
   }
 }
 
@@ -345,47 +353,57 @@
     padding: 16px;
   }
 
-  .goalCardInner {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 24px;
-  }
-
   .goalVisual {
-    order: 1;
-    width: 100%;
-  }
-
-  .goalInfo {
-    order: 2;
-    width: 100%;
-    flex: none;
+    width: 240px;
+    padding-top: 42px;
+    gap: 0;
   }
 
   .goalImageBox {
-    width: 204px;
+    width: 220px;
     height: 170px;
-    margin: 0 auto;
   }
 
   .goalImageBackground {
-    width: 160px;
-    height: 160px;
+    top: 0;
+    left: 40px;
+    width: 140px;
+    height: 140px;
+    transform: none;
   }
 
   .goalImage {
+    position: absolute;
+    top: -42px;
+    left: 8px;
     width: 204px;
     height: 170px;
-    transform: translateY(-10px);
+    transform: none;
   }
 
-  .goalCaption {
-    margin-top: 8px;
+  .goalInfo {
+    gap: 8px;
+  }
+
+  .goalInfo h2 {
+    @include typo-heading-xs;
+  }
+
+  .goalPercent {
+    @include typo-body-l-plus;
+  }
+
+  .goalAmount strong,
+  .goalAmount span {
+    @include typo-body-m-plus;
+  }
+
+  .warningBadge {
+    padding: 4px 8px;
   }
 }
 
 /* 소비 요약 + AI */
-
 .summaryRow {
   display: flex;
   width: 100%;
@@ -401,7 +419,6 @@
 }
 
 /* 이번 달 소비 요약 */
-
 .spendingSummaryCard {
   display: flex;
   min-width: 0;
