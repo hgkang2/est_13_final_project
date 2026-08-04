@@ -109,6 +109,217 @@ export default function SubHome() {
                   </div>
                 </article>
               </div>
+              <div className={styles.summaryRow}>
+                <article
+                  className={styles.spendingSummaryCard}
+                  aria-labelledby="spending-summary-title"
+                >
+                  <div className={styles.spendingSummaryContent}>
+                    <p className={styles.summaryBadge}>좋은 흐름이에요!</p>
+
+                    <h2 id="spending-summary-title">이번 달 소비 요약</h2>
+
+                    <strong className={styles.spendingAmount}>620,000원</strong>
+
+                    <p className={styles.spendingDescription}>
+                      예산보다 12% 적게 사용했어요!
+                    </p>
+                  </div>
+
+                  <div className={styles.spendingChart}>
+                    <Image
+                      src="/images/common/spending-graph.png"
+                      alt="이번 달 소비 추이 그래프"
+                      width={252}
+                      height={160}
+                    />
+                  </div>
+                </article>
+
+                <article
+                  className={styles.aiCard}
+                  aria-labelledby="ai-card-title"
+                >
+                  <div className={styles.aiContent}>
+                    <div className={styles.aiText}>
+                      <h2 id="ai-card-title">MO:UM AI 한마디</h2>
+
+                      <p className={styles.aiMessage}>
+                        이번 주 카페 소비가 지난주보다 <strong>23%</strong>{" "}
+                        줄었어요!
+                      </p>
+
+                      <button type="button" className={styles.aiButton}>
+                        <span>AI 분석 자세히 보기</span>
+
+                        <span className="material-icons" aria-hidden="true">
+                          arrow_forward
+                        </span>
+                      </button>
+                    </div>
+
+                    <div className={styles.aiImage}>
+                      <Image
+                        src="/images/character/ai_moa.png"
+                        alt="AI 캐릭터"
+                        width={247}
+                        height={247}
+                      />
+                    </div>
+                  </div>
+                </article>
+              </div>
+              <div className={styles.missionRow}>
+                <article
+                  className={styles.missionCard}
+                  aria-labelledby="mission-card-title"
+                >
+                  <div className={styles.missionContent}>
+                    <div className={styles.missionText}>
+                      <header className={styles.missionHeader}>
+                        <Image
+                          src="/images/challenge/star.png"
+                          alt=""
+                          width={40}
+                          height={40}
+                          aria-hidden="true"
+                        />
+
+                        <h2 id="mission-card-title">오늘의 미션</h2>
+                      </header>
+
+                      <div className={styles.missionDescription}>
+                        <p className={styles.missionMessage}>
+                          편의점 지출 <strong>5,000원</strong> 이하로
+                          유지해보세요!
+                        </p>
+
+                        <p className={styles.missionSubText}>
+                          오늘 미션을 완료하고 새싹을 키워보세요. 🌱
+                        </p>
+                      </div>
+
+                      <button type="button" className={styles.missionButton}>
+                        <span>미션 자세히 보기</span>
+
+                        <span className="material-icons" aria-hidden="true">
+                          arrow_forward
+                        </span>
+                      </button>
+                    </div>
+
+                    <div className={styles.missionImage}>
+                      <Image
+                        src="/images/character/mission_moa.png"
+                        alt="오늘의 미션을 안내하는 모아 캐릭터"
+                        width={220}
+                        height={220}
+                      />
+                    </div>
+                  </div>
+                </article>
+                <article
+                  className={styles.recentCard}
+                  aria-labelledby="recent-card-title"
+                >
+                  <header className={styles.recentHeader}>
+                    <h2 id="recent-card-title">최근 소비 내역</h2>
+
+                    <button type="button" className={styles.moreButton}>
+                      <span>더보기</span>
+
+                      <span className="material-icons" aria-hidden="true">
+                        arrow_forward
+                      </span>
+                    </button>
+                  </header>
+
+                  <ul className={styles.transactionList}>
+                    <li className={styles.transactionItem}>
+                      <Image
+                        src="/images/category/cafe-snack.png"
+                        alt=""
+                        width={40}
+                        height={40}
+                        aria-hidden="true"
+                      />
+
+                      <div className={styles.transactionInfo}>
+                        <strong>스타벅스</strong>
+                        <span className={styles.cafeCategory}>카페/간식</span>
+                      </div>
+
+                      <div className={styles.transactionAmount}>
+                        <strong>-4,500원</strong>
+                        <span>오늘 09:24</span>
+                      </div>
+                    </li>
+
+                    <li className={styles.transactionItem}>
+                      <Image
+                        src="/images/category/salary.png"
+                        alt=""
+                        width={40}
+                        height={40}
+                        aria-hidden="true"
+                      />
+
+                      <div className={styles.transactionInfo}>
+                        <strong>급여</strong>
+                        <span className={styles.salaryCategory}>급여</span>
+                      </div>
+
+                      <div className={styles.transactionAmount}>
+                        <strong className={styles.incomeAmount}>
+                          +2,850,000원
+                        </strong>
+                        <span>7/25 09:00</span>
+                      </div>
+                    </li>
+
+                    <li className={styles.transactionItem}>
+                      <Image
+                        src="/images/category/food.png"
+                        alt=""
+                        width={40}
+                        height={40}
+                        aria-hidden="true"
+                      />
+
+                      <div className={styles.transactionInfo}>
+                        <strong>배달의 민족</strong>
+                        <span className={styles.foodCategory}>식비</span>
+                      </div>
+
+                      <div className={styles.transactionAmount}>
+                        <strong>-23,000원</strong>
+                        <span>7/24 22:05</span>
+                      </div>
+                    </li>
+
+                    <li className={styles.transactionItem}>
+                      <Image
+                        src="/images/category/savings.png"
+                        alt=""
+                        width={40}
+                        height={40}
+                        aria-hidden="true"
+                      />
+
+                      <div className={styles.transactionInfo}>
+                        <strong>적금 계좌로 이체</strong>
+                        <span className={styles.savingsCategory}>저축</span>
+                      </div>
+
+                      <div className={styles.transactionAmount}>
+                        <strong>-200,000원</strong>
+                        <span>7/24 14:00</span>
+                      </div>
+                    </li>
+                  </ul>
+                </article>
+              </div>
+              
             </div>
           </div>
         </main>

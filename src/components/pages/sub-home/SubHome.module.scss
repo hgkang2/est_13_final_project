@@ -38,11 +38,12 @@
 
 .greetingTitle {
   display: flex;
+  width: 100%;
   align-items: center;
 }
 
 .greetingTitle h1 {
-  @include typography(32px, 42px, var(--font-weight-bold));
+  @include typo-heading-s-plus;
 
   margin: 0;
   color: var(--color-text);
@@ -51,11 +52,12 @@
 .greetingTitle img {
   width: 40px;
   height: 40px;
+  flex-shrink: 0;
   object-fit: contain;
 }
 
 .greeting p {
-  @include typography(18px, 22px, var(--font-weight-bold));
+  @include typo-heading-xs;
 
   margin: 0;
   color: var(--color-light-gray);
@@ -90,14 +92,14 @@
 }
 
 .goalInfo h2 {
-  @include typography(22px, 24px, var(--font-weight-bold));
+  @include typo-card-head;
 
   margin: 0;
   color: var(--color-text);
 }
 
 .goalPercent {
-  @include typography(40px, 60px, var(--font-weight-bold));
+  @include typo-heading-m-plus;
 
   color: var(--color-point);
 }
@@ -142,7 +144,7 @@
 
 .currentLabel,
 .todayLabel {
-  @include typography(8px, 12px, var(--font-weight-regular));
+  @include typo-body-xs;
 
   position: absolute;
   white-space: nowrap;
@@ -169,7 +171,7 @@
 
 .goalAmount strong,
 .goalAmount span {
-  @include typography(16px, 24px, var(--font-weight-bold));
+  @include typo-body-m-plus;
 }
 
 .goalAmount strong {
@@ -181,6 +183,8 @@
 }
 
 .warningBadge {
+  @include typo-body-s-plus;
+
   display: flex;
   width: fit-content;
   margin: 0;
@@ -188,10 +192,8 @@
   align-items: center;
   gap: 8px;
   border-radius: 999px;
-  color: #92400e;
-  background-color: #fffbea;
-
-  @include typography(12px, 18px, var(--font-weight-bold));
+  color: var(--color-warning-text);
+  background-color: var(--color-warning-background);
 }
 
 .warningDot {
@@ -199,7 +201,7 @@
   height: 8px;
   flex-shrink: 0;
   border-radius: 50%;
-  background-color: #e8b931;
+  background-color: var(--color-warning-dot);
 }
 
 .goalVisual {
@@ -225,7 +227,7 @@
   width: 160px;
   height: 160px;
   border-radius: 50%;
-  background-color: #f7fcf8;
+  background-color: var(--color-background-green);
   transform: translateX(-50%);
 }
 
@@ -247,18 +249,466 @@
 }
 
 .goalCaption p {
-  @include typography(16px, 24px, var(--font-weight-bold));
+  @include typo-body-m-plus;
 
   margin: 0;
   color: var(--color-text);
 }
 
 .goalCaption span {
-  @include typography(12px, 18px, var(--font-weight-bold));
+  @include typo-body-s-plus;
 
   color: var(--color-light-gray);
 }
 
 .pointText {
   color: var(--color-point);
+}
+
+/* 이번 달 소비 요약 */
+.summaryRow {
+  display: flex;
+  width: 100%;
+  align-items: stretch;
+  gap: 24px;
+}
+
+.spendingSummaryCard,
+.aiCard {
+  flex: 1;
+  min-width: 0;
+  align-self: stretch;
+}
+
+.spendingSummaryCard {
+  display: flex;
+  padding: 32px;
+  align-items: center;
+  gap: 24px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 24px;
+  background-color: var(--color-white);
+}
+
+.spendingSummaryContent {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.summaryBadge {
+  @include typo-body-s-plus;
+
+  width: fit-content;
+  margin: 0;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  color: var(--color-point);
+  background-color: var(--color-primary);
+}
+
+.spendingSummaryContent h2 {
+  @include typo-card-head;
+
+  margin: 0;
+  color: var(--color-text);
+}
+
+.spendingAmount {
+  @include typo-heading-s-plus;
+
+  color: var(--color-point);
+}
+
+.spendingDescription {
+  @include typo-body-m;
+
+  margin: 0;
+  color: var(--color-light-gray);
+}
+
+.spendingChart {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+}
+
+.spendingChart img {
+  display: block;
+  width: 100%;
+  max-width: 252px;
+  height: 160px;
+  padding-top: 8px;
+  object-fit: contain;
+}
+
+/* MO:UM AI 한마디 */
+.aiCard {
+  display: flex;
+  flex-direction: column;
+  padding: 32px;
+  border: 1px solid var(--color-dark-white);
+  border-radius: 24px;
+  background: var(--color-background-green);
+}
+
+.aiContent {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  align-items: center;
+}
+
+.aiText {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.aiText h2 {
+  @include typo-card-head;
+
+  margin: 0;
+  color: var(--color-text);
+}
+
+.aiMessage {
+  @include typo-body-l-plus;
+
+  margin: 0;
+  color: var(--color-text);
+}
+
+.aiMessage strong {
+  color: var(--color-point);
+}
+
+.aiButton {
+  @include typo-caption-plus;
+
+  display: inline-flex;
+  width: fit-content;
+  padding: 8px 16px;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid var(--color-point);
+  border-radius: 999px;
+  color: var(--color-point);
+  background-color: transparent;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+
+  &:hover {
+    color: var(--color-white);
+    background-color: var(--color-point);
+  }
+}
+
+.aiButton :global(.material-icons) {
+  @include more-icon-s;
+
+  color: inherit;
+}
+
+.aiImage {
+  display: flex;
+  width: 220px;
+  height: 220px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.aiImage img {
+  display: block;
+  width: 247px;
+  height: 247px;
+  object-fit: contain;
+}
+
+/* 오늘의 미션 */
+.missionRow {
+  display: flex;
+  width: 100%;
+  gap: 24px;
+}
+
+.missionCard {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  padding: 32px;
+  overflow: hidden;
+  border-radius: 24px;
+  background-color: color-mix(
+    in srgb,
+    var(--color-background-secondary) 33%,
+    transparent
+  );
+}
+
+.missionContent {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.missionText {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.missionDescription {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.missionHeader {
+  display: flex;
+  align-items: center;
+}
+
+.missionHeader img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.missionHeader h2 {
+  @include typo-card-head;
+
+  margin: 0;
+  color: var(--color-text);
+}
+
+.missionMessage {
+  @include typo-body-l-plus;
+
+  margin: 0;
+  color: var(--color-text);
+}
+
+.missionMessage strong {
+  color: var(--color-point);
+}
+
+.missionSubText {
+  @include typo-body-m-plus;
+
+  margin: 0;
+  color: var(--color-light-gray);
+}
+
+.missionButton {
+  @include typo-caption-plus;
+
+  display: inline-flex;
+  width: fit-content;
+  padding: 8px 16px;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  border: 1px solid var(--color-point);
+  border-radius: 9999px;
+  color: var(--color-point);
+  background-color: var(--color-white);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--color-white);
+    background-color: var(--color-point);
+  }
+}
+
+.missionButton :global(.material-icons) {
+  @include more-icon-s;
+
+  color: inherit;
+}
+
+.missionImage {
+  display: flex;
+  width: 220px;
+  align-self: stretch;
+  flex-shrink: 0;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.missionImage img {
+  width: 280px;
+  height: 280px;
+  max-width: none;
+  object-fit: contain;
+  transform: translate(16px, 32px);
+}
+
+/* 최근 소비 내역 */
+
+.recentCard {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  padding: 32px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 24px;
+  background-color: var(--color-white);
+}
+
+.recentHeader {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.recentHeader h2 {
+  @include typo-card-head;
+
+  margin: 0;
+  color: var(--color-text);
+}
+
+.moreButton {
+  @include typo-body-m-minus;
+
+  display: inline-flex;
+  padding: 0;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  color: var(--color-light-gray);
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.moreButton :global(.material-icons) {
+  @include more-icon-s;
+
+  color: inherit;
+}
+
+.transactionList {
+  display: flex;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  list-style: none;
+}
+
+.transactionItem {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  gap: 16px;
+}
+
+.transactionItem img {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.transactionInfo {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.transactionInfo strong,
+.transactionAmount strong {
+  @include typo-body-m-plus;
+}
+
+.transactionInfo strong {
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--color-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.transactionInfo span {
+  @include typo-body-s-plus;
+}
+
+.transactionAmount {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.transactionAmount strong {
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+.transactionAmount span {
+  @include typo-body-m-minus;
+
+  color: var(--color-light-gray);
+  white-space: nowrap;
+}
+
+.transactionAmount strong.incomeAmount {
+  color: var(--color-type-income);
+}
+
+.cafeCategory {
+  color: var(--color-expense-cafe-snack);
+}
+
+.salaryCategory {
+  color: var(--color-income-salary);
+}
+
+.foodCategory {
+  color: var(--color-expense-food);
+}
+
+.savingsCategory {
+  color: var(--color-expense-savings);
+}
+
+.transactionItem {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid var(--color-primary);
+
+  &:first-child {
+    padding-top: 0;
+  }
 }
