@@ -614,6 +614,64 @@
   color: inherit;
 }
 
+@media (max-width: 1024px) {
+  .missionRow {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .recentCard {
+    order: 1;
+    width: 100%;
+  }
+
+  .missionCard {
+    order: 2;
+    width: 100%;
+  }
+
+  .missionContent {
+    flex-direction: row;
+  }
+
+  .missionImage {
+    width: 220px;
+    align-self: stretch;
+    align-items: flex-end;
+    justify-content: center;
+  }
+}
+
+@include mobile {
+  .missionCard {
+    width: 100%;
+    padding: 16px;
+  }
+
+  .missionContent {
+    width: 100%;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .missionText {
+    width: 100%;
+  }
+
+  .missionImage {
+    width: 100%;
+    align-self: stretch;
+    justify-content: flex-end;
+  }
+
+  .missionImage img {
+    width: min(220px, 100%);
+    height: auto;
+    margin-left: auto;
+    transform: none;
+  }
+}
+
 .transactionList {
   display: flex;
   width: 100%;
