@@ -521,10 +521,7 @@ export default function SubHome() {
                   <div className={styles.journalSlider}>
                     <Swiper
                       modules={[Navigation]}
-                      navigation={{
-                        prevEl: `.${styles.journalPrevButton}`,
-                        nextEl: `.${styles.journalNextButton}`,
-                      }}
+                      navigation
                       spaceBetween={16}
                       slidesPerView="auto"
                       breakpoints={{
@@ -558,9 +555,11 @@ export default function SubHome() {
                               />
                             </div>
 
-                            <p className={styles.journalContent}>
-                              {journal.content}
-                            </p>
+                            <div className={styles.journalContentBox}>
+                              <p className={styles.journalContent}>
+                                {journal.content}
+                              </p>
+                            </div>
                           </article>
                         </SwiperSlide>
                       ))}

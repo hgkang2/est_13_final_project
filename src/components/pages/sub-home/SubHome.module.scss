@@ -64,7 +64,6 @@
 }
 
 /* 이번 달 목표 달성 카드 */
-
 .goalCard {
   display: flex;
   flex: 1;
@@ -565,7 +564,6 @@
 }
 
 /* 최근 소비 내역 */
-
 .recentCard {
   display: flex;
   flex: 1;
@@ -777,7 +775,6 @@
 }
 
 /* 저축 목표 */
-
 .savingGoalBody {
   display: flex;
   width: 100%;
@@ -903,7 +900,6 @@
 }
 
 /* 챌린지 현황 */
-
 .challengeBody {
   display: flex;
   width: 100%;
@@ -1024,7 +1020,6 @@
 }
 
 /* 이번 주 소비 절약 그림일기 */
-
 .journalCard {
   display: flex;
   width: 100%;
@@ -1090,6 +1085,7 @@
 }
 
 .journalSlider :global(.swiper-slide) {
+  width: 132px;
   min-width: 0;
   height: auto;
 }
@@ -1115,12 +1111,14 @@
   @include typo-body-s;
 
   color: var(--color-green-gray);
+  text-align: left;
 }
 
 .journalMeta strong {
   @include typo-caption-plus;
 
   color: var(--color-point);
+  text-align: left;
 }
 
 .journalImage {
@@ -1142,49 +1140,59 @@
   opacity: 0.5;
 }
 
+.journalContentBox {
+  display: flex;
+  width: 100%;
+  height: 40px;
+  align-items: flex-start;
+  justify-content: center;
+}
+
 .journalContent {
   @include typo-journal-content;
   @include multi-ellipsis(2);
 
   width: 100%;
-  height: 40px;
-  margin: 0;
+  max-width: 116px;
+  margin: 0 auto;
   color: var(--color-light-gray);
   text-align: center;
+  text-wrap: balance;
+  word-break: keep-all;
 }
 
 /* Swiper navigation */
-
 .journalSlider :global(.swiper-button-prev),
 .journalSlider :global(.swiper-button-next) {
   display: none;
 }
 
-@include tablet {
-  .journalSlider {
-    position: relative;
+@media (max-width: 1024px) {
+  .journalSlider :global(.swiper) {
+    --swiper-navigation-size: 16px;
+    --swiper-navigation-color: var(--color-point);
+
+    padding: 0 40px;
   }
 
-  .journalSlider :global(.swiper) {
-    padding: 0 36px;
+  .journalSlider :global(.swiper-slide) {
+    width: 132px;
   }
 
   .journalSlider :global(.swiper-button-prev),
   .journalSlider :global(.swiper-button-next) {
     display: flex;
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     margin-top: 0;
-    border: 1px solid var(--color-border-gray);
-    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    border: 0;
     color: var(--color-point);
-    background-color: var(--color-white);
+    background-color: transparent;
+    top: 50%;
+    z-index: 10;
     transform: translateY(-50%);
-
-    &::after {
-      font-size: var(--icon-m-size);
-      font-weight: var(--font-weight-bold);
-    }
   }
 
   .journalSlider :global(.swiper-button-prev) {
@@ -1194,11 +1202,17 @@
   .journalSlider :global(.swiper-button-next) {
     right: 0;
   }
+
+  .journalSlider :global(.swiper-button-prev)::after,
+  .journalSlider :global(.swiper-button-next)::after {
+    font-size: var(--icon-m-size);
+    font-weight: var(--font-weight-bold);
+  }
 }
 
 @include mobile {
   .journalCard {
-    padding: 24px 16px;
+    padding: 16px;
   }
 
   .journalHeader {
@@ -1207,20 +1221,22 @@
   }
 
   .journalHeader h2 {
+    @include typo-heading-xs;
+
     min-width: 0;
   }
 
   .journalMoreButton {
+    @include typo-body-s;
+
     flex-shrink: 0;
   }
 
-  .journalSlider :global(.swiper) {
-    padding: 0 32px;
+  .journalMoreButton :global(.material-icons) {
+    @include more-icon-s;
   }
 
-  .journalSlider :global(.swiper-button-prev),
-  .journalSlider :global(.swiper-button-next) {
-    width: 28px;
-    height: 28px;
+  .journalSlider :global(.swiper) {
+    padding: 0 40px;
   }
 }
