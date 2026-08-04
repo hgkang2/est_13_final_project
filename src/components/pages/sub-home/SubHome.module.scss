@@ -437,6 +437,83 @@
   object-fit: contain;
 }
 
+@media (max-width: 1024px) {
+  .summaryRow {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .spendingSummaryCard,
+  .aiCard {
+    width: 100%;
+    flex: none;
+  }
+
+  /* 소비 요약 카드 내부 */
+  .spendingSummaryCard {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .spendingSummaryContent {
+    width: 100%;
+    flex: none;
+  }
+
+  .spendingChart {
+    width: 100%;
+    flex: none;
+  }
+
+  .spendingChart img {
+    width: 100%;
+    max-width: none;
+  }
+
+  /* AI 카드 내부 */
+  .aiContent {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .aiText {
+    width: 100%;
+    flex: none;
+  }
+
+  .aiImage {
+    align-self: flex-end;
+  }
+}
+
+@include mobile {
+  .spendingSummaryCard,
+  .aiCard {
+    padding: 16px;
+  }
+
+  .spendingSummaryContent {
+    gap: 8px;
+  }
+
+  .spendingSummaryContent h2,
+  .aiText h2 {
+    @include typo-heading-xs;
+  }
+
+  .spendingAmount {
+    @include typo-body-l-plus;
+  }
+
+  .spendingDescription {
+    @include typo-caption-plus;
+  }
+
+  .aiMessage {
+    @include typo-card-head;
+  }
+}
+
 /* 오늘의 미션 */
 .missionRow {
   display: flex;
