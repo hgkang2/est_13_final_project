@@ -1,0 +1,128 @@
+.serviceIntro {
+  width: 100%;
+  min-height: 520px;
+  background: var(--color-white);
+  margin-top: 200px;
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 520px;
+  padding: 80px 24px;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  color: var(--color-light-gray);
+  line-height: var(--heading-l-plus-line-height);
+}
+
+.highlightYellow {
+  display: inline-block;
+  color: var(--color-sub-yellow);
+  padding: 0 3px;
+
+  background-color: var(--color-light-gray);
+
+  border-radius: 2px;
+}
+
+.highlightGreen {
+  color: var(--color-point);
+}
+
+.slogan {
+  margin-top: 32px;
+  color: var(--color-green-gray);
+
+  span {
+    color: var(--color-point);
+  }
+}
+
+.scrollArrow {
+  position: relative;
+
+  width: 24px;
+  height: 28px;
+  margin-top: 88px;
+
+  animation: floatingArrow 1.6s ease-in-out infinite;
+}
+
+.scrollArrow span {
+  position: absolute;
+  left: 50%;
+
+  width: 11px;
+  height: 11px;
+
+  border-right: 3px solid var(--color-green-gray);
+  border-bottom: 3px solid var(--color-green-gray);
+
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.scrollArrow span:first-child {
+  top: 0;
+}
+
+.scrollArrow span:last-child {
+  top: 8px;
+}
+
+@keyframes floatingArrow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(10px);
+  }
+}
+
+@media (max-width: 768px) {
+  .serviceIntro,
+  .inner {
+    min-height: 460px;
+  }
+
+  .inner {
+    padding: 64px 32px;
+  }
+
+  .scrollArrow {
+    margin-top: 64px;
+  }
+}
+
+@media (max-width: 480px) {
+  .serviceIntro,
+  .inner {
+    min-height: 400px;
+  }
+
+  .inner {
+    padding: 56px 20px;
+  }
+
+  .title {
+    font-size: 24px;
+    line-height: 1.5;
+  }
+
+  .slogan {
+    margin-top: 24px;
+    font-size: 20px;
+  }
+
+  .scrollArrow {
+    margin-top: 48px;
+  }
+}
