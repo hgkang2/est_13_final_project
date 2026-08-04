@@ -24,6 +24,16 @@
   gap: 24px;
 }
 
+@media (max-width: 1024px) {
+  .topRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+}
+
+/* Welcome Card */
+
 .greeting {
   display: flex;
   flex: 1;
@@ -63,7 +73,38 @@
   color: var(--color-light-gray);
 }
 
+@media (max-width: 1024px) {
+  .greeting {
+    width: 100%;
+    padding: 16px;
+    flex: none;
+  }
+
+  .greetingTitle h1 {
+    @include typo-heading-s-plus;
+  }
+
+  .greeting > p {
+    @include typo-heading-xs;
+  }
+}
+
+@include mobile {
+  .greeting {
+    padding: 16px;
+  }
+
+  .greetingTitle h1 {
+    @include typo-body-l-plus;
+  }
+
+  .greeting > p {
+    @include typo-body-m-plus;
+  }
+}
+
 /* 이번 달 목표 달성 카드 */
+
 .goalCard {
   display: flex;
   flex: 1;
@@ -265,32 +306,10 @@
 }
 
 @media (max-width: 1024px) {
-  .topRow {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 16px;
-  }
-
-  .greeting,
   .goalCard {
     width: 100%;
-    flex: none;
-  }
-
-  .greeting {
-    padding: 16px;
-  }
-
-  .greetingTitle h1 {
-    @include typo-heading-s-plus;
-  }
-
-  .greeting > p {
-    @include typo-heading-xs;
-  }
-
-  .goalCard {
     padding: 32px;
+    flex: none;
   }
 
   .goalCardInner {
@@ -300,8 +319,8 @@
   }
 
   .goalInfo {
-    flex: 1;
     min-width: 0;
+    flex: 1;
   }
 
   .goalVisual {
@@ -316,18 +335,6 @@
 }
 
 @include mobile {
-  .greeting {
-    padding: 16px;
-  }
-
-  .greetingTitle h1 {
-    @include typo-body-l-plus;
-  }
-
-  .greeting > p {
-    @include typo-body-m-plus;
-  }
-
   .goalCard {
     padding: 16px;
   }
@@ -371,7 +378,8 @@
   }
 }
 
-/* 이번 달 소비 요약 */
+/* 소비 요약 + AI */
+
 .summaryRow {
   display: flex;
   width: 100%;
@@ -379,16 +387,21 @@
   gap: 24px;
 }
 
-.spendingSummaryCard,
-.aiCard {
-  flex: 1;
-  min-width: 0;
-  align-self: stretch;
+@media (max-width: 1024px) {
+  .summaryRow {
+    flex-direction: column;
+    gap: 16px;
+  }
 }
+
+/* 이번 달 소비 요약 */
 
 .spendingSummaryCard {
   display: flex;
+  min-width: 0;
   padding: 32px;
+  flex: 1;
+  align-self: stretch;
   align-items: center;
   gap: 24px;
   border: 1px solid var(--color-border-gray);
@@ -453,11 +466,61 @@
   object-fit: contain;
 }
 
+@media (max-width: 1024px) {
+  .spendingSummaryCard {
+    width: 100%;
+    flex: none;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .spendingSummaryContent {
+    width: 100%;
+    flex: none;
+  }
+
+  .spendingChart {
+    width: 100%;
+    flex: none;
+  }
+
+  .spendingChart img {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+@include mobile {
+  .spendingSummaryCard {
+    padding: 16px;
+  }
+
+  .spendingSummaryContent {
+    gap: 8px;
+  }
+
+  .spendingSummaryContent h2 {
+    @include typo-heading-xs;
+  }
+
+  .spendingAmount {
+    @include typo-body-l-plus;
+  }
+
+  .spendingDescription {
+    @include typo-caption-plus;
+  }
+}
+
 /* MO:UM AI 한마디 */
+
 .aiCard {
   display: flex;
-  flex-direction: column;
+  min-width: 0;
   padding: 32px;
+  flex: 1;
+  align-self: stretch;
+  flex-direction: column;
   border: 1px solid var(--color-dark-white);
   border-radius: 24px;
   background: var(--color-background-green);
@@ -465,8 +528,8 @@
 
 .aiContent {
   display: flex;
-  flex: 1;
   width: 100%;
+  flex: 1;
   align-items: center;
 }
 
@@ -545,39 +608,11 @@
 }
 
 @media (max-width: 1024px) {
-  .summaryRow {
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .spendingSummaryCard,
   .aiCard {
     width: 100%;
     flex: none;
   }
 
-  /* 소비 요약 카드 내부 */
-  .spendingSummaryCard {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .spendingSummaryContent {
-    width: 100%;
-    flex: none;
-  }
-
-  .spendingChart {
-    width: 100%;
-    flex: none;
-  }
-
-  .spendingChart img {
-    width: 100%;
-    max-width: none;
-  }
-
-  /* AI 카드 내부 */
   .aiContent {
     flex-direction: column;
     align-items: stretch;
@@ -594,26 +629,12 @@
 }
 
 @include mobile {
-  .spendingSummaryCard,
   .aiCard {
     padding: 16px;
   }
 
-  .spendingSummaryContent {
-    gap: 8px;
-  }
-
-  .spendingSummaryContent h2,
   .aiText h2 {
     @include typo-heading-xs;
-  }
-
-  .spendingAmount {
-    @include typo-body-l-plus;
-  }
-
-  .spendingDescription {
-    @include typo-caption-plus;
   }
 
   .aiMessage {
