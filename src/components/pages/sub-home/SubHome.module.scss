@@ -1019,6 +1019,40 @@
   color: var(--color-light-gray);
 }
 
+@media (max-width: 1024px) {
+  .statusRow {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .savingGoalCard,
+  .challengeCard {
+    width: 100%;
+  }
+}
+
+@include mobile {
+  .challengeCard {
+    padding: 16px;
+  }
+
+  .challengeCard .cardHeader h2 {
+    @include typo-heading-xs;
+  }
+
+  .challengeSummary h3 {
+    @include typo-card-label;
+  }
+
+  .challengeSummary strong {
+    @include typo-caption-plus;
+  }
+
+  .challengeMessage {
+    @include typo-caption-plus;
+  }
+}
+
 /* 이번 주 소비 절약 그림일기 */
 .journalCard {
   display: flex;
