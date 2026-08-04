@@ -33,9 +33,9 @@
 }
 
 /* Welcome Card */
-
 .greeting {
   display: flex;
+  width: 100%;
   flex: 1;
   padding: 32px;
   flex-direction: column;
@@ -55,8 +55,10 @@
 .greetingTitle h1 {
   @include typo-heading-s-plus;
 
+  min-width: 0;
   margin: 0;
   color: var(--color-text);
+  word-break: keep-all;
 }
 
 .greetingTitle img {
@@ -71,34 +73,38 @@
 
   margin: 0;
   color: var(--color-light-gray);
+  word-break: keep-all;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1280px) {
+  .topRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
   .greeting {
     width: 100%;
     padding: 16px;
     flex: none;
   }
 
-  .greetingTitle h1 {
-    @include typo-heading-s-plus;
-  }
-
-  .greeting > p {
-    @include typo-heading-xs;
+  .goalCard {
+    width: 100%;
+    flex: none;
   }
 }
 
 @include mobile {
   .greeting {
-    padding: 16px;
+    gap: 8px;
   }
 
   .greetingTitle h1 {
     @include typo-body-l-plus;
   }
 
-  .greeting > p {
+  .greeting p {
     @include typo-body-m-plus;
   }
 }
