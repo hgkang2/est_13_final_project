@@ -1,0 +1,165 @@
+.pageLayout {
+  display: flex;
+  width: 100%;
+  min-height: calc(100vh - 86px);
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  background-color: var(--color-dark-white);
+  padding: 32px 40px;
+}
+
+.pageHeader {
+  margin-bottom: 24px;
+
+  .title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #111;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: #666;
+    margin-top: 4px;
+  }
+}
+
+/* 2단 그리드 구조 설정 */
+.gridContainer {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 24px;
+}
+
+.leftColumn,
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* 공통 카드 스타일 */
+.card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+
+  .cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .moreText {
+      font-size: 12px;
+      color: #888;
+      cursor: pointer;
+    }
+  }
+}
+
+/* AI 추천 미션 내부 세부 스타일 */
+.aiBadge {
+  display: inline-block;
+  background-color: #fff9e6;
+  color: #f5a623;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.missionContent {
+  text-align: center;
+  padding: 20px 0;
+
+  .missionIcon {
+    font-size: 32px;
+    margin-bottom: 8px;
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  p {
+    font-size: 13px;
+    color: #666;
+  }
+}
+
+.actionBtn {
+  width: 100%;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 16px;
+}
+
+/* 미션 리스트 및 아이템 임시 그리드 */
+.missionGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+
+  .missionItem {
+    background: #f9f9f9;
+    padding: 16px 8px;
+    text-align: center;
+    border-radius: 8px;
+    font-size: 12px;
+    border: 1px solid #eee;
+  }
+}
+
+.historyList {
+  display: flex;
+  gap: 12px;
+
+  .historyItem {
+    background: #f9f9f9;
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid #eee;
+    flex: 1;
+    text-align: center;
+  }
+}
+
+/* 반응형 설정 (모바일/태블릿) */
+@media (max-width: 1024px) {
+  .pageLayout {
+    display: block;
+  }
+
+  .main {
+    padding: 20px 16px;
+  }
+
+  .gridContainer {
+    grid-template-columns: 1fr;
+  }
+
+  .missionGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
