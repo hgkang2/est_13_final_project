@@ -538,6 +538,28 @@
   }
 }
 
+@include mobile {
+  .spendingSummaryCard {
+    padding: 16px;
+  }
+
+  .spendingSummaryContent {
+    gap: 8px;
+  }
+
+  .spendingSummaryContent h2 {
+    @include typo-heading-xs;
+  }
+
+  .spendingAmount {
+    @include typo-body-l-plus;
+  }
+
+  .spendingDescription {
+    @include typo-caption-plus;
+  }
+}
+
 /* MO:UM AI 한마디 */
 .aiCard {
   display: flex;
