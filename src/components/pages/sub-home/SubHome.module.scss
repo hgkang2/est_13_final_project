@@ -403,7 +403,6 @@
   }
 }
 
-/* 소비 요약 + AI */
 .summaryRow {
   display: flex;
   width: 100%;
@@ -411,7 +410,7 @@
   gap: 24px;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1280px) {
   .summaryRow {
     flex-direction: column;
     gap: 16px;
@@ -450,6 +449,7 @@
   border-radius: 999px;
   color: var(--color-point);
   background-color: var(--color-primary);
+  white-space: nowrap;
 }
 
 .spendingSummaryContent h2 {
@@ -457,12 +457,14 @@
 
   margin: 0;
   color: var(--color-text);
+  word-break: keep-all;
 }
 
 .spendingAmount {
   @include typo-heading-s-plus;
 
   color: var(--color-point);
+  white-space: nowrap;
 }
 
 .spendingDescription {
@@ -470,6 +472,7 @@
 
   margin: 0;
   color: var(--color-light-gray);
+  word-break: keep-all;
 }
 
 .spendingChart {
@@ -489,36 +492,28 @@
   object-fit: contain;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1280px) {
   .spendingSummaryCard {
-    width: 100%;
-    flex: none;
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .spendingSummaryContent {
-    width: 100%;
-    flex: none;
-  }
-
-  .spendingChart {
     width: 100%;
     flex: none;
   }
 
   .spendingChart img {
-    width: 100%;
     max-width: none;
   }
 }
 
-@include mobile {
+@media (max-width: 480px) {
   .spendingSummaryCard {
     padding: 16px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 24px;
   }
 
   .spendingSummaryContent {
+    width: 100%;
+    flex: none;
     gap: 8px;
   }
 
@@ -533,10 +528,19 @@
   .spendingDescription {
     @include typo-caption-plus;
   }
+
+  .spendingChart {
+    width: 100%;
+    flex: none;
+  }
+
+  .spendingChart img {
+    width: 100%;
+    max-width: none;
+  }
 }
 
 /* MO:UM AI 한마디 */
-
 .aiCard {
   display: flex;
   min-width: 0;
@@ -546,12 +550,13 @@
   flex-direction: column;
   border: 1px solid var(--color-dark-white);
   border-radius: 24px;
-  background: var(--color-background-green);
+  background-color: var(--color-background-green);
 }
 
 .aiContent {
   display: flex;
   width: 100%;
+  min-width: 0;
   flex: 1;
   align-items: center;
 }
@@ -571,6 +576,7 @@
 
   margin: 0;
   color: var(--color-text);
+  word-break: keep-all;
 }
 
 .aiMessage {
@@ -578,6 +584,7 @@
 
   margin: 0;
   color: var(--color-text);
+  word-break: keep-all;
 }
 
 .aiMessage strong {
@@ -591,20 +598,18 @@
   width: fit-content;
   padding: 8px 16px;
   align-items: center;
+  justify-content: center;
   gap: 16px;
   border: 1px solid var(--color-point);
   border-radius: 999px;
   color: var(--color-point);
-  background-color: transparent;
+  background-color: var(--color-white);
   cursor: pointer;
-  transition:
-    color 0.2s ease,
-    background-color 0.2s ease;
+  white-space: nowrap;
 
   &:hover {
     color: var(--color-white);
     background-color: var(--color-point);
-    transition: color 0.2s ease;
   }
 }
 
@@ -627,12 +632,40 @@
   display: block;
   width: 247px;
   height: 247px;
+  max-width: none;
   object-fit: contain;
 }
 
-@media (max-width: 1024px) {
+@media (min-width: 769px) and (max-width: 1280px) {
+  .spendingSummaryCard,
+  .aiCard {
+    min-height: 284px;
+  }
+
   .aiCard {
     width: 100%;
+    flex: none;
+  }
+
+  .aiContent {
+    gap: 24px;
+  }
+
+  .aiText {
+    flex: 1;
+  }
+
+  .aiImage {
+    width: 220px;
+    height: 220px;
+  }
+}
+
+@media (max-width: 480px) {
+  .aiCard {
+    width: 100%;
+    min-height: 0;
+    padding: 16px;
     flex: none;
   }
 
@@ -644,16 +677,7 @@
   .aiText {
     width: 100%;
     flex: none;
-  }
-
-  .aiImage {
-    align-self: flex-end;
-  }
-}
-
-@include mobile {
-  .aiCard {
-    padding: 16px;
+    gap: 24px;
   }
 
   .aiText h2 {
@@ -662,6 +686,13 @@
 
   .aiMessage {
     @include typo-card-head;
+  }
+
+  .aiImage {
+    width: 220px;
+    height: 220px;
+    align-self: flex-end;
+    justify-content: flex-start;
   }
 }
 
