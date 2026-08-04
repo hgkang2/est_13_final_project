@@ -3,9 +3,12 @@
 .sidebar {
   display: flex;
   width: 202px;
-  min-height: 986px;
+  height: calc(100vh - 56px);
   padding: 24px;
+  flex-shrink: 0;
   flex-direction: column;
+  position: sticky;
+  top: 56px;
   background-color: var(--color-white);
 }
 
