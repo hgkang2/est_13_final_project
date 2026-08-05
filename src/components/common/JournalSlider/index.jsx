@@ -90,6 +90,7 @@ function JournalNavigation() {
 }
 
 export default function JournalSlider({
+  // 목업 데이터 (API 연동 시 props 데이터로 대체)
   journals = defaultJournals,
   spaceBetween = 16,
   showContent = true,
@@ -99,9 +100,10 @@ export default function JournalSlider({
       <Swiper
         spaceBetween={spaceBetween}
         slidesPerView="auto"
+        breakpointsBase="container"
         breakpoints={{
-          1025: {
-            spaceBetween,
+          1162: {
+            slidesPerView: 7,
             allowTouchMove: false,
           },
         }}
@@ -123,9 +125,12 @@ export default function JournalSlider({
               >
                 <Image
                   src={journal.image}
-                  alt={`${journal.date} 소비 절약 그림일기`}
+                  alt={
+                    journal.pending ? "" : `${journal.date} 소비 절약 그림일기`
+                  }
                   width={220}
                   height={220}
+                  aria-hidden={journal.pending}
                 />
               </div>
 
