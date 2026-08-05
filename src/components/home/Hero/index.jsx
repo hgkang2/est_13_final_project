@@ -118,6 +118,14 @@ export default function Hero() {
 
               <div className={styles.inner}>
                 <div className={styles.content}>
+                  <div className={styles.mascot}>
+                    <Image
+                      src="/images/home/mascot.png"
+                      alt="자세히 보기를 들고 있는 모아 캐릭터"
+                      width={150}
+                      height={189}
+                    />
+                  </div>
                   {index === 0 ? (
                     <h1 className={`heading-l-plus ${styles.title}`}>{slide.title}</h1>
                   ) : (
