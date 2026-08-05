@@ -385,24 +385,22 @@
 
   .goalImageBox {
     width: 220px;
-    height: 170px;
+    height: 165px;
   }
 
   .goalImageBackground {
-    top: 0;
-    left: 40px;
+    top: 10px;
+    left: 50%;
     width: 140px;
     height: 140px;
-    transform: none;
+    transform: translateX(-50%);
   }
 
   .goalImage {
-    position: absolute;
-    top: -42px;
-    left: 8px;
-    width: 204px;
-    height: 170px;
-    transform: none;
+    position: relative;
+    width: 220px;
+    height: 180px;
+    transform: translateY(-18px);
   }
 
   .goalInfo h2 {
@@ -686,10 +684,6 @@
   word-break: keep-all;
 }
 
-.emptyAiImage {
-  opacity: 0.5;
-}
-
 @media (min-width: 769px) and (max-width: 1280px) {
   .spendingSummaryCard,
   .aiCard {
@@ -884,12 +878,13 @@
   transform: translate(16px, 32px);
 }
 
-.emptyMissionImage {
-  opacity: 0.5;
+.missionImage img.emptyMissionCharacter {
+  width: 240px;
+  height: 240px;
+  transform: translate(8px, 8px);
 }
 
 /* 최근 소비 내역 */
-
 .recentCard {
   display: flex;
   min-width: 0;
@@ -1374,26 +1369,6 @@
   color: var(--color-light-gray);
 }
 
-.savingGoalEmpty {
-  display: flex;
-  width: 100%;
-  min-height: 248px;
-  flex: 1;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  border-radius: 8px;
-  background-color: var(--color-dark-white);
-  text-align: center;
-}
-
-.savingGoalEmptyIcon {
-  @include icon-m;
-
-  color: var(--color-point);
-}
-
 .emptySavingGoalBody {
   flex: 1;
   justify-content: center;
@@ -1608,8 +1583,9 @@
   filter: grayscale(1);
 }
 
-.emptyChallengeIcon {
-  background-color: var(--color-dark-white);
+.emptyChallengeIcon img {
+  filter: grayscale(1);
+  opacity: 0.4;
 }
 
 .challengeDay > span {
@@ -1623,53 +1599,6 @@
 
   margin: 0;
   color: var(--color-light-gray);
-}
-
-.challengeIcon {
-  display: flex;
-  width: 40px;
-  height: 40px;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  border-radius: 50%;
-  background-color: var(--color-background-green);
-}
-
-.challengeIcon img {
-  display: block;
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-}
-.challengeIcon {
-  display: flex;
-  width: 40px;
-  height: 40px;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  border-radius: 50%;
-  background-color: var(--color-background-green);
-}
-
-.challengeIcon img {
-  display: block;
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-}
-
-@media (max-width: 1024px) {
-  .statusRow {
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .savingGoalCard,
-  .challengeCard {
-    width: 100%;
-  }
 }
 
 @include mobile {
@@ -1779,4 +1708,121 @@
   .journalMoreButton :global(.material-icons) {
     @include more-icon-s;
   }
+}
+
+.goalCard,
+.spendingSummaryCard,
+.aiCard,
+.missionCard,
+.recentCard,
+.savingGoalCard,
+.challengeCard,
+.journalCard {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.goalCard:hover,
+.spendingSummaryCard:hover,
+.recentCard:hover,
+.savingGoalCard:hover,
+.challengeCard:hover,
+.journalCard:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgb(6 7 14 / 8%);
+}
+
+.aiButton :global(.material-icons),
+.missionButton :global(.material-icons),
+.moreButton :global(.material-icons),
+.cardMoreButton :global(.material-icons),
+.journalMoreButton :global(.material-icons) {
+  transition: transform 0.2s ease;
+}
+
+.aiButton:hover :global(.material-icons),
+.missionButton:hover :global(.material-icons),
+.moreButton:hover :global(.material-icons),
+.cardMoreButton:hover :global(.material-icons),
+.journalMoreButton:hover :global(.material-icons) {
+  transform: translateX(4px);
+}
+
+.aiCard:hover,
+.missionCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgb(6 7 14 / 8%);
+}
+
+.progressFill,
+.goalProgressFill {
+  transform-origin: left;
+  animation: progress-grow 0.8s ease-out both;
+}
+
+.greetingTitle img {
+  transition: transform 0.25s ease;
+}
+
+.greeting:hover .greetingTitle img {
+  transform: rotate(8deg) scale(1.05);
+}
+
+@keyframes progress-grow {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.currentChallengeIcon {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.missionHeader img {
+  transition: transform 0.25s ease;
+}
+
+.missionCard:hover .missionHeader img {
+  transform: rotate(12deg) scale(1.08);
+}
+
+.transactionItem {
+  border-radius: 8px;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    background-color: var(--color-background-green);
+    transform: translateX(4px);
+  }
+}
+
+.goalProgressValue {
+  transition: transform 0.2s ease;
+}
+
+.savingGoalCard:hover .goalProgressValue {
+  transform: scale(1.08);
+}
+
+.challengeIcon {
+  transition: 0.2s;
+}
+
+.challengeCard:hover .challengeIcon:not(.emptyChallengeIcon) {
+  transform: translateY(-3px);
+}
+
+.challengeCard:hover .currentChallengeIcon {
+  transform: translateY(-3px) scale(1.08);
 }

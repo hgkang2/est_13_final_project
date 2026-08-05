@@ -9,11 +9,11 @@ import JournalSlider from "@/components/common/JournalSlider";
 
 export default function SubHome() {
   const userName = "Moa";
-  const hasGoal = false;
-  const hasSpendingData = false;
-  const hasSavingGoal = false;
-  const hasChallenge = false;
-  const hasJournal = false;
+  const hasGoal = true;
+  const hasSpendingData = true;
+  const hasSavingGoal = true;
+  const hasChallenge = true;
+  const hasJournal = true;
 
   return (
     <>
@@ -224,14 +224,18 @@ export default function SubHome() {
                       </button>
                     </div>
 
-                    <div
-                      className={`${styles.aiImage} ${
-                        !hasSpendingData ? styles.emptyAiImage : ""
-                      }`}
-                    >
+                    <div className={styles.aiImage}>
                       <Image
-                        src="/images/character/ai_moa.png"
-                        alt="AI 캐릭터"
+                        src={
+                          hasSpendingData
+                            ? "/images/character/ai_moa.png"
+                            : "/images/character/ai_empty_moa.png"
+                        }
+                        alt={
+                          hasSpendingData
+                            ? "AI 캐릭터"
+                            : "첫 분석을 기다리는 AI 캐릭터"
+                        }
                         width={247}
                         height={247}
                       />
@@ -298,14 +302,21 @@ export default function SubHome() {
                       </button>
                     </div>
 
-                    <div
-                      className={`${styles.missionImage} ${
-                        !hasSpendingData ? styles.emptyMissionImage : ""
-                      }`}
-                    >
+                    <div className={styles.missionImage}>
                       <Image
-                        src="/images/character/mission_moa.png"
-                        alt="오늘의 미션을 안내하는 모아 캐릭터"
+                        className={
+                          !hasSpendingData ? styles.emptyMissionCharacter : ""
+                        }
+                        src={
+                          hasSpendingData
+                            ? "/images/character/mission_moa.png"
+                            : "/images/character/mission_empty_moa.png"
+                        }
+                        alt={
+                          hasSpendingData
+                            ? "오늘의 미션을 안내하는 모아 캐릭터"
+                            : "기록을 시작하도록 안내하는 모아 캐릭터"
+                        }
                         width={220}
                         height={220}
                       />
@@ -329,7 +340,89 @@ export default function SubHome() {
                   </header>
 
                   {hasSpendingData ? (
-                    <ul className={styles.transactionList}></ul>
+                    <ul className={styles.transactionList}>
+                      <li className={styles.transactionItem}>
+                        <Image
+                          src="/images/category/cafe-snack.png"
+                          alt=""
+                          width={40}
+                          height={40}
+                          aria-hidden="true"
+                        />
+
+                        <div className={styles.transactionInfo}>
+                          <strong>스타벅스</strong>
+                          <span className={styles.cafeCategory}>카페/간식</span>
+                        </div>
+
+                        <div className={styles.transactionAmount}>
+                          <strong>-4,500원</strong>
+                          <span>오늘 09:24</span>
+                        </div>
+                      </li>
+
+                      <li className={styles.transactionItem}>
+                        <Image
+                          src="/images/category/salary.png"
+                          alt=""
+                          width={40}
+                          height={40}
+                          aria-hidden="true"
+                        />
+
+                        <div className={styles.transactionInfo}>
+                          <strong>급여</strong>
+                          <span className={styles.salaryCategory}>급여</span>
+                        </div>
+
+                        <div className={styles.transactionAmount}>
+                          <strong className={styles.incomeAmount}>
+                            +2,850,000원
+                          </strong>
+                          <span>7/25 09:00</span>
+                        </div>
+                      </li>
+
+                      <li className={styles.transactionItem}>
+                        <Image
+                          src="/images/category/food.png"
+                          alt=""
+                          width={40}
+                          height={40}
+                          aria-hidden="true"
+                        />
+
+                        <div className={styles.transactionInfo}>
+                          <strong>배달의 민족</strong>
+                          <span className={styles.foodCategory}>식비</span>
+                        </div>
+
+                        <div className={styles.transactionAmount}>
+                          <strong>-23,000원</strong>
+                          <span>7/24 22:05</span>
+                        </div>
+                      </li>
+
+                      <li className={styles.transactionItem}>
+                        <Image
+                          src="/images/category/savings.png"
+                          alt=""
+                          width={40}
+                          height={40}
+                          aria-hidden="true"
+                        />
+
+                        <div className={styles.transactionInfo}>
+                          <strong>적금 계좌로 이체</strong>
+                          <span className={styles.savingsCategory}>저축</span>
+                        </div>
+
+                        <div className={styles.transactionAmount}>
+                          <strong>-200,000원</strong>
+                          <span>7/24 14:00</span>
+                        </div>
+                      </li>
+                    </ul>
                   ) : (
                     <div className={styles.recentEmpty}>
                       <span
