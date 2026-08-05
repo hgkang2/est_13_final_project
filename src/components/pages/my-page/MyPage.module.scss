@@ -1,0 +1,208 @@
+@use "../../../styles/mixins" as *;
+
+/* 전체 페이지 */
+
+.pageLayout {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.container {
+  width: 100%;
+  max-width: 1272px;
+  min-width: 0;
+  margin: 0 auto;
+  padding: var(--container-padding-desktop);
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 16px;
+
+  /* Grid 행이 남은 높이까지 늘어나는 것 방지 */
+  align-content: start;
+}
+/* 상단 프로필 카드 */
+
+.MyPage_Profile {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  padding: 32px;
+  border: 1px solid var(--color-point);
+  border-radius: 24px;
+  box-sizing: border-box;
+}
+
+/* 프로필 이미지와 인사말: 3칸 */
+
+.MyPage_Intro {
+  grid-column: span 3;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding: 32px 16px;
+  min-width: 0;
+}
+
+.Avatar {
+  width: 120px;
+  height: 120px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-background-secondary);
+  border-radius: 50%;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.Greeting {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  h1 {
+    color: var(--color-text);
+    white-space: nowrap;
+    @include typo-heading-s-plus;
+  }
+
+  p {
+    color: var(--color-light-gray);
+    @include typo-heading-xs;
+  }
+}
+
+/* 요약 정보: 3칸 */
+
+.MyPage_Summary {
+  grid-column: span 3;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+  padding: 32px 16px;
+  box-sizing: border-box;
+}
+
+.MyPage_summaryItem {
+  min-width: 0;
+  padding: 0 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+
+  &:nth-child(2) {
+    border-right: 1px solid var(--color-light-gray);
+    border-left: 1px solid var(--color-light-gray);
+  }
+
+  span {
+    color: var(--color-gray);
+    white-space: nowrap;
+
+    @include typo-body-m;
+  }
+
+  strong {
+    color: var(--color-point);
+
+    @include typo-heading-s;
+  }
+}
+
+/* 태블릿 및 모바일 */
+
+// @media (max-width: 1024px) {
+//   .container {
+//     grid-template-columns: 1fr;
+//     padding: 24px;
+//   }
+
+//   .MyPage_Profile {
+//     grid-column: 1;
+//     grid-template-columns: 1fr;
+//     gap: 8px;
+
+//     padding: 16px 0px;
+//   }
+
+//   .MyPage_Intro,
+//   .MyPage_Summary {
+//     grid-column: 1;
+//     padding: 8px 16px;
+//   }
+//   .MyPage_Intro {
+//     gap: 16px;
+//   }
+//   .MyPage_Summary {
+//     width: 100%;
+//   }
+
+//   .Greeting {
+//     p {
+//       @include typo-body-m-plus;
+//     }
+
+//     h1 {
+//       white-space: normal;
+//       @include typo-body-l-plus;
+//     }
+//   }
+// }
+
+// .MyPage_summaryItem {
+//   span {
+//     @include typo-body-s;
+//   }
+//   strong {
+//     @include typo-body-l;
+//   }
+// }
+
+// /* 작은 모바일 */
+
+// @media (max-width: 390px) {
+//   .container {
+//     padding: 16px;
+//   }
+
+//   .MyPage_Profile {
+//     gap: 20px;
+//     padding: 20px 16px;
+//     border-radius: 16px;
+//   }
+
+//   .MyPage_Intro {
+//     gap: 16px;
+//   }
+
+//   .Avatar {
+//     width: 72px;
+//     height: 72px;
+//   }
+
+//   .Greeting {
+//     gap: 8px;
+//   }
+
+//   .MyPage_Summary {
+//     padding: 8px 0;
+//   }
+
+//   .MyPage_summaryItem {
+//     padding: 0 6px;
+
+//     span {
+//       white-space: normal;
+//     }
+//   }
+// }
