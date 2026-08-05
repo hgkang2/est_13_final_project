@@ -10,6 +10,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ko">
       <body>
+        {/* 인증 연동 후 실제 로그인 상태로 교체 */}
         <Header isLoggedIn={false} />
         {children}
       </body>

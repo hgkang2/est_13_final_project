@@ -260,6 +260,13 @@
   );
 }
 
+@mixin typo-body-m-semibold {
+  @include typography(
+    var(--body-m-size),
+    var(--body-m-line-height),
+    var(--font-weight-semibold)
+  );
+}
 /* ========================================
    Icon Base
 ======================================== */
