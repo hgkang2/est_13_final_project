@@ -1,3 +1,5 @@
+@use "../../../styles/mixins" as *;
+
 /* ========================================
    Breakpoints (디자인 토큰 연동)
 ======================================== */
@@ -27,7 +29,7 @@ $breakpoint-mobile: 390px;
   }
 
   .subtitle {
-    font-size: var(--caption-size);
+    @include typo-caption;
     color: var(--color-light-gray);
     margin-top: 4px;
   }
@@ -47,28 +49,26 @@ $breakpoint-mobile: 390px;
   gap: 24px;
 }
 
-/* 공통 카드 스타일 (테두리 색상 #77b985 적용) */
+/* 공통 카드 스타일 */
 .card {
   background: var(--color-white);
   border-radius: 16px;
   padding: 24px;
-  border: 1px solid var(--color-point); /* --color-border-gray 에서 --color-point (#77b985)로 변경 */
+  border: 1px solid var(--color-point);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 
   .cardHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    @include flex-between;
     margin-bottom: 16px;
 
     h3 {
-      font-size: var(--card-head-size);
+      @include typo-card-head;
       font-weight: var(--font-weight-semibold);
       color: var(--color-text);
     }
 
     .moreText {
-      font-size: var(--body-s-size);
+      @include typo-body-s;
       color: var(--color-light-gray);
       cursor: pointer;
     }
@@ -80,7 +80,7 @@ $breakpoint-mobile: 390px;
   display: inline-block;
   background-color: var(--color-warning-background);
   color: var(--color-warning-text);
-  font-size: var(--table-category-nonpc-size);
+  @include typo-table-category-nonpc;
   font-weight: var(--font-weight-semibold);
   padding: 4px 8px;
   border-radius: 4px;
@@ -96,20 +96,17 @@ $breakpoint-mobile: 390px;
     height: 56px;
     background-color: var(--color-dark-white);
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    @include flex-center;
     margin: 0 auto 12px auto;
 
     span {
-      font-size: var(--icon-l-size);
+      @include icon-l;
       color: var(--color-text);
     }
   }
 
   h3 {
-    font-size: var(--card-label-size);
-    font-weight: var(--font-weight-bold);
+    @include typo-card-label;
     color: var(--color-text);
     margin-bottom: 6px;
   }
@@ -123,9 +120,7 @@ $breakpoint-mobile: 390px;
 
 /* 목표 달성 텍스트 행 스타일 */
 .missionGoalRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  @include flex-between;
   font-size: 13px;
   margin: 16px 0;
   padding: 0 4px;
@@ -155,7 +150,6 @@ $breakpoint-mobile: 390px;
     color 0.2s,
     border-color 0.2s;
 
-  // 마우스를 올렸을 때
   &:hover {
     background-color: #77b985;
     color: var(--color-white);
@@ -165,9 +159,7 @@ $breakpoint-mobile: 390px;
 
 /* 7월 챌린지 진행 현황 요일별 스타일 추가 */
 .statusBox {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  @include flex-between;
   margin-top: 20px;
 
   .dayItem {
@@ -184,9 +176,8 @@ $breakpoint-mobile: 390px;
     }
 
     .dayLabel {
-      font-size: var(--body-s-size);
+      @include typo-body-s;
       color: var(--color-light-gray);
-      font-weight: var(--font-weight-medium);
     }
   }
 }
@@ -214,15 +205,13 @@ $breakpoint-mobile: 390px;
       height: 48px;
       background-color: var(--color-dark-white);
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: var(--icon-l-size);
+      @include icon-l;
+      @include flex-center;
       margin-bottom: 12px;
     }
 
     .missionCardTitle {
-      font-size: var(--body-m-minus-size);
+      @include typo-body-m-minus;
       font-weight: var(--font-weight-semibold);
       color: var(--color-text);
       margin-bottom: 16px;
@@ -235,7 +224,7 @@ $breakpoint-mobile: 390px;
       border: 1px solid var(--color-border-gray);
       padding: 8px 0;
       border-radius: 8px;
-      font-size: var(--body-s-size);
+      @include typo-body-s;
       font-weight: var(--font-weight-medium);
       cursor: pointer;
       transition: background-color 0.2s;
@@ -249,8 +238,8 @@ $breakpoint-mobile: 390px;
   }
 }
 
-/* 반응형 설정 */
-@media (max-width: #{$breakpoint-tablet}) {
+/* 반응형 설정 (믹스인 적용) */
+@include tablet {
   .pageLayout {
     display: block;
   }
@@ -290,13 +279,13 @@ $breakpoint-mobile: 390px;
     text-align: center;
 
     .historyDate {
-      font-size: var(--table-category-nonpc-size);
+      @include typo-table-category-nonpc;
       color: var(--color-light-gray);
       margin-bottom: 4px;
     }
 
     .historyAmount {
-      font-size: var(--body-m-minus-size);
+      @include typo-body-m-minus;
       font-weight: var(--font-weight-bold);
       color: var(--color-type-income);
       margin-bottom: 12px;
@@ -308,9 +297,7 @@ $breakpoint-mobile: 390px;
       background-color: var(--color-dark-white);
       border-radius: 12px;
       margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      @include flex-center;
       overflow: hidden;
 
       .characterPlaceholder {
@@ -321,7 +308,7 @@ $breakpoint-mobile: 390px;
     }
 
     .historyMessage {
-      font-size: var(--table-category-nonpc-size);
+      @include typo-table-category-nonpc;
       color: var(--color-gray);
       line-height: 1.3;
     }
