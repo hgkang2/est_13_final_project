@@ -98,6 +98,7 @@
 @include mobile {
   .greeting {
     gap: 8px;
+    padding-top: 0;
   }
 
   .greetingTitle h1 {
@@ -1541,8 +1542,10 @@
 .journalHeader h2 {
   @include typo-card-head;
 
+  min-width: 0;
   margin: 0;
   color: var(--color-text);
+  word-break: keep-all;
 }
 
 .journalMoreButton {
@@ -1550,12 +1553,14 @@
 
   display: inline-flex;
   padding: 0;
+  flex-shrink: 0;
   align-items: center;
   gap: 8px;
   border: 0;
   color: var(--color-light-gray);
   background-color: transparent;
   cursor: pointer;
+  white-space: nowrap;
 
   &:hover {
     color: var(--color-point);
@@ -1566,141 +1571,6 @@
   @include icon-m;
 
   color: inherit;
-}
-
-.journalSlider {
-  width: 100%;
-  min-width: 0;
-}
-
-.journalSlider :global(.swiper) {
-  width: 100%;
-}
-
-.journalSlider :global(.swiper-slide) {
-  width: 132px;
-  min-width: 0;
-  height: auto;
-}
-
-.journalItem {
-  display: flex;
-  width: 100%;
-  min-width: 0;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-}
-
-.journalMeta {
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-}
-
-.journalMeta time {
-  @include typo-body-s;
-
-  color: var(--color-green-gray);
-  text-align: left;
-}
-
-.journalMeta strong {
-  @include typo-caption-plus;
-
-  color: var(--color-point);
-  text-align: left;
-}
-
-.journalImage {
-  width: 100%;
-  aspect-ratio: 150 / 146;
-  overflow: hidden;
-  border-radius: 16px;
-  background-color: var(--color-dark-white);
-}
-
-.journalImage img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.pendingJournalImage {
-  opacity: 0.5;
-}
-
-.journalContentBox {
-  display: flex;
-  width: 100%;
-  height: 40px;
-  align-items: flex-start;
-  justify-content: center;
-}
-
-.journalContent {
-  @include typo-journal-content;
-  @include multi-ellipsis(2);
-
-  width: 100%;
-  max-width: 116px;
-  margin: 0 auto;
-  color: var(--color-light-gray);
-  text-align: center;
-  text-wrap: balance;
-  word-break: keep-all;
-}
-
-/* Swiper navigation */
-.journalSlider :global(.swiper-button-prev),
-.journalSlider :global(.swiper-button-next) {
-  display: none;
-}
-
-@media (max-width: 1024px) {
-  .journalSlider :global(.swiper) {
-    --swiper-navigation-size: 16px;
-    --swiper-navigation-color: var(--color-point);
-
-    padding: 0 40px;
-  }
-
-  .journalSlider :global(.swiper-slide) {
-    width: 132px;
-  }
-
-  .journalSlider :global(.swiper-button-prev),
-  .journalSlider :global(.swiper-button-next) {
-    display: flex;
-    width: 40px;
-    height: 40px;
-    margin-top: 0;
-    align-items: center;
-    justify-content: center;
-    border: 0;
-    color: var(--color-point);
-    background-color: transparent;
-    top: 50%;
-    z-index: 10;
-    transform: translateY(-50%);
-  }
-
-  .journalSlider :global(.swiper-button-prev) {
-    left: 0;
-  }
-
-  .journalSlider :global(.swiper-button-next) {
-    right: 0;
-  }
-
-  .journalSlider :global(.swiper-button-prev)::after,
-  .journalSlider :global(.swiper-button-next)::after {
-    font-size: var(--icon-m-size);
-    font-weight: var(--font-weight-bold);
-  }
 }
 
 @include mobile {
@@ -1727,9 +1597,5 @@
 
   .journalMoreButton :global(.material-icons) {
     @include more-icon-s;
-  }
-
-  .journalSlider :global(.swiper) {
-    padding: 0 40px;
   }
 }
