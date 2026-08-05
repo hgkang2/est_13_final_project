@@ -24,14 +24,6 @@
   gap: 24px;
 }
 
-@media (max-width: 1024px) {
-  .topRow {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 16px;
-  }
-}
-
 /* Welcome Card */
 .greeting {
   display: flex;
@@ -66,6 +58,7 @@
   height: 40px;
   flex-shrink: 0;
   object-fit: contain;
+  transition: transform 0.25s ease;
 }
 
 .greeting p {
@@ -321,23 +314,6 @@
 .emptyGoalInfo {
   width: 100%;
   flex: 1;
-}
-
-@media (max-width: 1024px) {
-  .goalCard {
-    width: 100%;
-    flex: none;
-  }
-
-  .goalInfo {
-    min-width: 0;
-    flex: 1;
-  }
-
-  .goalVisual {
-    width: 240px;
-    flex-shrink: 0;
-  }
 }
 
 @media (max-width: 560px) {
@@ -623,11 +599,12 @@
 
   color: var(--color-point);
 }
-.aiButton {
+.outlineButton {
   @include typo-caption-plus;
 
   display: inline-flex;
   width: fit-content;
+  min-height: 40px;
   padding: 8px 16px;
   align-items: center;
   justify-content: center;
@@ -645,7 +622,7 @@
   }
 }
 
-.aiButton :global(.material-icons) {
+.outlineButton :global(.material-icons) {
   @include more-icon-s;
 
   color: inherit;
@@ -793,6 +770,7 @@
   height: 40px;
   flex-shrink: 0;
   object-fit: contain;
+  transition: transform 0.25s ease;
 }
 
 .missionHeader h2 {
@@ -830,35 +808,6 @@
   color: var(--color-light-gray);
   word-break: keep-all;
   text-wrap: balance;
-}
-
-.missionButton {
-  @include typo-caption-plus;
-
-  display: inline-flex;
-  width: fit-content;
-  min-height: 40px;
-  padding: 8px 16px;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  border: 1px solid var(--color-point);
-  border-radius: 999px;
-  color: var(--color-point);
-  background-color: var(--color-white);
-  cursor: pointer;
-  white-space: nowrap;
-
-  &:hover {
-    color: var(--color-white);
-    background-color: var(--color-point);
-  }
-}
-
-.missionButton :global(.material-icons) {
-  @include more-icon-s;
-
-  color: inherit;
 }
 
 .missionImage {
@@ -998,9 +947,18 @@
   align-items: center;
   gap: 16px;
   border-bottom: 1px solid var(--color-primary);
+  border-radius: 8px;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
 
   &:first-child {
     padding-top: 0;
+  }
+
+  &:hover {
+    background-color: var(--color-background-green);
+    transform: translateX(4px);
   }
 }
 
@@ -1221,29 +1179,6 @@
   color: var(--color-text);
 }
 
-.cardMoreButton {
-  @include typo-body-m-minus;
-
-  display: inline-flex;
-  padding: 0;
-  align-items: center;
-  gap: 8px;
-  border: 0;
-  color: var(--color-light-gray);
-  background-color: transparent;
-  cursor: pointer;
-
-  &:hover {
-    color: var(--color-point);
-  }
-}
-
-.cardMoreButton :global(.material-icons) {
-  @include more-icon-s;
-
-  color: inherit;
-}
-
 /* 저축 목표 */
 .savingGoalBody {
   display: flex;
@@ -1328,6 +1263,7 @@
 
   color: var(--color-point);
   white-space: nowrap;
+  transition: transform 0.2s ease;
 }
 
 .goalSchedule {
@@ -1408,7 +1344,7 @@
   color: var(--color-light-gray);
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1280px) {
   .statusRow {
     flex-direction: column;
     gap: 16px;
@@ -1560,6 +1496,7 @@
   overflow: hidden;
   border-radius: 50%;
   background-color: var(--color-background-green);
+  transition: transform 0.2s ease;
 }
 
 .challengeIcon img {
@@ -1578,14 +1515,10 @@
   background-color: var(--color-dark-white);
 }
 
-.inactiveChallengeIcon img {
-  opacity: 0.4;
-  filter: grayscale(1);
-}
-
+.inactiveChallengeIcon img,
 .emptyChallengeIcon img {
-  filter: grayscale(1);
   opacity: 0.4;
+  filter: grayscale(1);
 }
 
 .challengeDay > span {
@@ -1658,31 +1591,6 @@
   word-break: keep-all;
 }
 
-.journalMoreButton {
-  @include typo-body-m-minus;
-
-  display: inline-flex;
-  padding: 0;
-  flex-shrink: 0;
-  align-items: center;
-  gap: 8px;
-  border: 0;
-  color: var(--color-light-gray);
-  background-color: transparent;
-  cursor: pointer;
-  white-space: nowrap;
-
-  &:hover {
-    color: var(--color-point);
-  }
-}
-
-.journalMoreButton :global(.material-icons) {
-  @include icon-m;
-
-  color: inherit;
-}
-
 @include mobile {
   .journalCard {
     padding: 16px;
@@ -1699,13 +1607,13 @@
     min-width: 0;
   }
 
-  .journalMoreButton {
+  .journalCard .moreButton {
     @include typo-body-s;
 
     flex-shrink: 0;
   }
 
-  .journalMoreButton :global(.material-icons) {
+  .journalCard .moreButton :global(.material-icons) {
     @include more-icon-s;
   }
 }
@@ -1726,45 +1634,39 @@
 
 .goalCard:hover,
 .spendingSummaryCard:hover,
+.aiCard:hover,
+.missionCard:hover,
+.recentCard:hover,
+.savingGoalCard:hover,
+.challengeCard:hover,
+.journalCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgb(6 7 14 / 8%);
+}
+
+.goalCard:hover,
+.spendingSummaryCard:hover,
 .recentCard:hover,
 .savingGoalCard:hover,
 .challengeCard:hover,
 .journalCard:hover {
   border-color: var(--color-primary);
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgb(6 7 14 / 8%);
 }
 
-.aiButton :global(.material-icons),
-.missionButton :global(.material-icons),
-.moreButton :global(.material-icons),
-.cardMoreButton :global(.material-icons),
-.journalMoreButton :global(.material-icons) {
+.outlineButton :global(.material-icons),
+.moreButton :global(.material-icons) {
   transition: transform 0.2s ease;
 }
 
-.aiButton:hover :global(.material-icons),
-.missionButton:hover :global(.material-icons),
-.moreButton:hover :global(.material-icons),
-.cardMoreButton:hover :global(.material-icons),
-.journalMoreButton:hover :global(.material-icons) {
+.outlineButton:hover :global(.material-icons),
+.moreButton:hover :global(.material-icons) {
   transform: translateX(4px);
-}
-
-.aiCard:hover,
-.missionCard:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgb(6 7 14 / 8%);
 }
 
 .progressFill,
 .goalProgressFill {
   transform-origin: left;
   animation: progress-grow 0.8s ease-out both;
-}
-
-.greetingTitle img {
-  transition: transform 0.25s ease;
 }
 
 .greeting:hover .greetingTitle img {
@@ -1781,42 +1683,12 @@
   }
 }
 
-.currentChallengeIcon {
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.missionHeader img {
-  transition: transform 0.25s ease;
-}
-
 .missionCard:hover .missionHeader img {
   transform: rotate(12deg) scale(1.08);
 }
 
-.transactionItem {
-  border-radius: 8px;
-  transition:
-    background-color 0.2s ease,
-    transform 0.2s ease;
-
-  &:hover {
-    background-color: var(--color-background-green);
-    transform: translateX(4px);
-  }
-}
-
-.goalProgressValue {
-  transition: transform 0.2s ease;
-}
-
 .savingGoalCard:hover .goalProgressValue {
   transform: scale(1.08);
-}
-
-.challengeIcon {
-  transition: 0.2s;
 }
 
 .challengeCard:hover .challengeIcon:not(.emptyChallengeIcon) {

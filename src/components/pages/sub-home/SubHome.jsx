@@ -211,7 +211,7 @@ export default function SubHome() {
                           </p>
                         </div>
                       )}
-                      <button type="button" className={styles.aiButton}>
+                      <button type="button" className={styles.outlineButton}>
                         <span>
                           {hasSpendingData
                             ? "AI 분석 자세히 보기"
@@ -289,7 +289,7 @@ export default function SubHome() {
                         )}
                       </div>
 
-                      <button type="button" className={styles.missionButton}>
+                      <button type="button" className={styles.outlineButton}>
                         <span>
                           {hasSpendingData
                             ? "미션 자세히 보기"
@@ -449,7 +449,7 @@ export default function SubHome() {
                     <header className={styles.cardHeader}>
                       <h2 id="saving-goal-title">저축 목표</h2>
 
-                      <button type="button" className={styles.cardMoreButton}>
+                      <button type="button" className={styles.moreButton}>
                         <span>목표 관리로 이동</span>
 
                         <span className="material-icons" aria-hidden="true">
@@ -557,7 +557,7 @@ export default function SubHome() {
                     <header className={styles.cardHeader}>
                       <h2 id="challenge-title">챌린지 현황</h2>
 
-                      <button type="button" className={styles.cardMoreButton}>
+                      <button type="button" className={styles.moreButton}>
                         <span>챌린지로 이동</span>
 
                         <span className="material-icons" aria-hidden="true">
@@ -627,7 +627,7 @@ export default function SubHome() {
                   <header className={styles.journalHeader}>
                     <h2 id="journal-card-title">이번 주 소비 절약 그림일기</h2>
 
-                    <button type="button" className={styles.journalMoreButton}>
+                    <button type="button" className={styles.moreButton}>
                       <span>그림일기로 이동</span>
 
                       <span className="material-icons" aria-hidden="true">
