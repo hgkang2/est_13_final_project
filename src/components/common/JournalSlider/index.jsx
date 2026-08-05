@@ -91,8 +91,10 @@ function JournalNavigation() {
 
 export default function JournalSlider({
   journals = defaultJournals,
+  desktopSlidesPerView = 7,
   spaceBetween = 16,
   showContent = true,
+  isEmpty = false,
 }) {
   return (
     <div className={styles.journalSlider}>
@@ -113,25 +115,32 @@ export default function JournalSlider({
             <article className={styles.journalItem}>
               <div className={styles.journalMeta}>
                 <time>{journal.date}</time>
-                <strong>{journal.amount}</strong>
+                <strong>{isEmpty ? "--원" : journal.amount}</strong>
               </div>
 
               <div
                 className={`${styles.journalImage} ${
-                  journal.pending ? styles.pendingJournalImage : ""
+                  isEmpty || journal.pending ? styles.pendingJournalImage : ""
                 }`}
               >
                 <Image
-                  src={journal.image}
-                  alt={`${journal.date} 소비 절약 그림일기`}
+                  src={
+                    isEmpty
+                      ? "/images/journal/journal-empty.png"
+                      : journal.image
+                  }
+                  alt={isEmpty ? "" : `${journal.date} 소비 절약 그림일기`}
                   width={220}
                   height={220}
+                  aria-hidden={isEmpty}
                 />
               </div>
 
               {showContent && journal.content && (
                 <div className={styles.journalContentBox}>
-                  <p className={styles.journalContent}>{journal.content}</p>
+                  <p className={styles.journalContent}>
+                    {isEmpty ? "오늘도 실천이 기대돼요!" : journal.content}
+                  </p>
                 </div>
               )}
             </article>

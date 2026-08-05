@@ -9,6 +9,11 @@ import JournalSlider from "@/components/common/JournalSlider";
 
 export default function SubHome() {
   const userName = "Moa";
+  const hasGoal = false;
+  const hasSpendingData = false;
+  const hasSavingGoal = false;
+  const hasChallenge = false;
+  const hasJournal = false;
 
   return (
     <>
@@ -42,11 +47,21 @@ export default function SubHome() {
                   className={styles.goalCard}
                   aria-labelledby="goal-card-title"
                 >
-                  <div className={styles.goalCardInner}>
-                    <div className={styles.goalInfo}>
+                  <div
+                    className={`${styles.goalCardInner} ${
+                      !hasGoal ? styles.emptyGoalCardInner : ""
+                    }`}
+                  >
+                    <div
+                      className={`${styles.goalInfo} ${
+                        !hasGoal ? styles.emptyGoalInfo : ""
+                      }`}
+                    >
                       <h2 id="goal-card-title">이번 달 목표 달성률</h2>
 
-                      <strong className={styles.goalPercent}>62%</strong>
+                      <strong className={styles.goalPercent}>
+                        {hasGoal ? "62%" : "0%"}
+                      </strong>
 
                       <div className={styles.progressArea}>
                         <div
@@ -55,62 +70,77 @@ export default function SubHome() {
                           aria-label="이번 달 목표 달성률"
                           aria-valuemin="0"
                           aria-valuemax="100"
-                          aria-valuenow="62"
+                          aria-valuenow={hasGoal ? 62 : 0}
                         >
-                          <div className={styles.progressFill} />
-                          <span
-                            className={styles.todayMarker}
-                            aria-hidden="true"
-                          />
+                          {hasGoal && (
+                            <>
+                              <div className={styles.progressFill} />
+
+                              <span
+                                className={styles.todayMarker}
+                                aria-hidden="true"
+                              />
+                            </>
+                          )}
                         </div>
 
-                        <div className={styles.progressLabels}>
-                          <span className={styles.currentLabel}>62% 달성</span>
-                          <span className={styles.todayLabel}>
-                            오늘 기준 90%
-                          </span>
-                        </div>
+                        {hasGoal && (
+                          <div className={styles.progressLabels}>
+                            <span className={styles.currentLabel}>
+                              62% 달성
+                            </span>
+
+                            <span className={styles.todayLabel}>
+                              오늘 기준 90%
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       <p className={styles.goalAmount}>
-                        <strong>1,860,000원</strong>
-                        <span>/ 3,000,000원</span>
+                        <strong>{hasGoal ? "1,860,000원" : "0원"}</strong>
+                        <span>{hasGoal ? "/ 3,000,000원" : "/ 0원"}</span>
                       </p>
 
-                      <p className={styles.warningBadge}>
-                        <span
-                          className={styles.warningDot}
-                          aria-hidden="true"
-                        />
-                        계획보다 살짝 느린 속도예요
-                      </p>
+                      {hasGoal && (
+                        <p className={styles.warningBadge}>
+                          <span
+                            className={styles.warningDot}
+                            aria-hidden="true"
+                          />
+                          계획보다 살짝 느린 속도예요
+                        </p>
+                      )}
                     </div>
 
-                    <figure className={styles.goalVisual}>
-                      <div className={styles.goalImageBox}>
-                        <span
-                          className={styles.goalImageBackground}
-                          aria-hidden="true"
-                        />
+                    {hasGoal && (
+                      <figure className={styles.goalVisual}>
+                        <div className={styles.goalImageBox}>
+                          <span
+                            className={styles.goalImageBackground}
+                            aria-hidden="true"
+                          />
 
-                        <Image
-                          className={styles.goalImage}
-                          src="/images/character/macbook.png"
-                          alt="새싹 장식이 달린 맥북"
-                          width={240}
-                          height={200}
-                        />
-                      </div>
+                          <Image
+                            className={styles.goalImage}
+                            src="/images/character/macbook.png"
+                            alt="새싹 장식이 달린 맥북"
+                            width={240}
+                            height={200}
+                          />
+                        </div>
 
-                      <figcaption className={styles.goalCaption}>
-                        <p>
-                          맥북까지{" "}
-                          <strong className={styles.pointText}>62%</strong>{" "}
-                          왔어요!
-                        </p>
-                        <span>목표까지 38% 남았어요</span>
-                      </figcaption>
-                    </figure>
+                        <figcaption className={styles.goalCaption}>
+                          <p>
+                            맥북까지{" "}
+                            <strong className={styles.pointText}>62%</strong>{" "}
+                            왔어요!
+                          </p>
+
+                          <span>목표까지 38% 남았어요</span>
+                        </figcaption>
+                      </figure>
+                    )}
                   </div>
                 </article>
               </div>
@@ -120,21 +150,35 @@ export default function SubHome() {
                   aria-labelledby="spending-summary-title"
                 >
                   <div className={styles.spendingSummaryContent}>
-                    <p className={styles.summaryBadge}>좋은 흐름이에요!</p>
+                    {hasSpendingData && (
+                      <p className={styles.summaryBadge}>좋은 흐름이에요!</p>
+                    )}
 
                     <h2 id="spending-summary-title">이번 달 소비 요약</h2>
 
-                    <strong className={styles.spendingAmount}>620,000원</strong>
+                    <strong className={styles.spendingAmount}>
+                      {hasSpendingData ? "620,000원" : "0원"}
+                    </strong>
 
                     <p className={styles.spendingDescription}>
-                      예산보다 12% 적게 사용했어요!
+                      {hasSpendingData
+                        ? "예산보다 12% 적게 사용했어요!"
+                        : "소비를 기록하면 이번 달 소비 추이를 보여드릴게요."}
                     </p>
                   </div>
 
-                  <div className={styles.spendingChart}>
+                  <div
+                    className={`${styles.spendingChart} ${
+                      !hasSpendingData ? styles.emptySpendingChart : ""
+                    }`}
+                  >
                     <Image
                       src="/images/common/spending-graph.png"
-                      alt="이번 달 소비 추이 그래프"
+                      alt={
+                        hasSpendingData
+                          ? "이번 달 소비 추이 그래프"
+                          : "소비 기록 전 빈 소비 추이 그래프"
+                      }
                       width={252}
                       height={160}
                     />
@@ -149,13 +193,30 @@ export default function SubHome() {
                     <div className={styles.aiText}>
                       <h2 id="ai-card-title">MO:UM AI 한마디</h2>
 
-                      <p className={styles.aiMessage}>
-                        이번 주 카페 소비가 지난주보다 <strong>23%</strong>{" "}
-                        줄었어요!
-                      </p>
+                      {hasSpendingData ? (
+                        <p className={styles.aiMessage}>
+                          이번 주 카페 소비가 지난주보다 <strong>23%</strong>{" "}
+                          줄었어요!
+                        </p>
+                      ) : (
+                        <div className={styles.aiEmptyMessage}>
+                          <p
+                            className={`${styles.aiMessage} ${styles.aiEmptyTitle}`}
+                          >
+                            AI가 첫 분석을 기다리고 있어요.
+                          </p>
 
+                          <p className={styles.aiEmptyDescription}>
+                            첫 소비를 기록하면 AI가 소비 습관을 분석해드릴게요.
+                          </p>
+                        </div>
+                      )}
                       <button type="button" className={styles.aiButton}>
-                        <span>AI 분석 자세히 보기</span>
+                        <span>
+                          {hasSpendingData
+                            ? "AI 분석 자세히 보기"
+                            : "소비 기록하기"}
+                        </span>
 
                         <span className="material-icons" aria-hidden="true">
                           arrow_forward
@@ -163,7 +224,11 @@ export default function SubHome() {
                       </button>
                     </div>
 
-                    <div className={styles.aiImage}>
+                    <div
+                      className={`${styles.aiImage} ${
+                        !hasSpendingData ? styles.emptyAiImage : ""
+                      }`}
+                    >
                       <Image
                         src="/images/character/ai_moa.png"
                         alt="AI 캐릭터"
@@ -194,18 +259,38 @@ export default function SubHome() {
                       </header>
 
                       <div className={styles.missionDescription}>
-                        <p className={styles.missionMessage}>
-                          편의점 지출 <strong>5,000원</strong> 이하로
-                          유지해보세요!
-                        </p>
+                        {hasSpendingData ? (
+                          <>
+                            <p className={styles.missionMessage}>
+                              편의점 지출 <strong>5,000원</strong> 이하로
+                              유지해보세요!
+                            </p>
 
-                        <p className={styles.missionSubText}>
-                          오늘 미션을 완료하고 새싹을 키워보세요. 🌱
-                        </p>
+                            <p className={styles.missionSubText}>
+                              오늘 미션을 완료하고 새싹을 키워보세요. 🌱
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <p
+                              className={`${styles.missionMessage} ${styles.emptyMissionTitle}`}
+                            >
+                              오늘의 소비 데이터를 기다리고 있어요.
+                            </p>
+
+                            <p className={styles.missionSubText}>
+                              기록을 시작하면 오늘의 절약 미션을 추천해드릴게요!
+                            </p>
+                          </>
+                        )}
                       </div>
 
                       <button type="button" className={styles.missionButton}>
-                        <span>미션 자세히 보기</span>
+                        <span>
+                          {hasSpendingData
+                            ? "미션 자세히 보기"
+                            : "소비 기록하기"}
+                        </span>
 
                         <span className="material-icons" aria-hidden="true">
                           arrow_forward
@@ -213,7 +298,11 @@ export default function SubHome() {
                       </button>
                     </div>
 
-                    <div className={styles.missionImage}>
+                    <div
+                      className={`${styles.missionImage} ${
+                        !hasSpendingData ? styles.emptyMissionImage : ""
+                      }`}
+                    >
                       <Image
                         src="/images/character/mission_moa.png"
                         alt="오늘의 미션을 안내하는 모아 캐릭터"
@@ -239,89 +328,23 @@ export default function SubHome() {
                     </button>
                   </header>
 
-                  <ul className={styles.transactionList}>
-                    <li className={styles.transactionItem}>
-                      <Image
-                        src="/images/category/cafe-snack.png"
-                        alt=""
-                        width={40}
-                        height={40}
+                  {hasSpendingData ? (
+                    <ul className={styles.transactionList}></ul>
+                  ) : (
+                    <div className={styles.recentEmpty}>
+                      <span
+                        className={`material-icons ${styles.recentEmptyIcon}`}
                         aria-hidden="true"
-                      />
+                      >
+                        format_list_bulleted_add
+                      </span>
 
-                      <div className={styles.transactionInfo}>
-                        <strong>스타벅스</strong>
-                        <span className={styles.cafeCategory}>카페/간식</span>
+                      <div className={styles.recentEmptyText}>
+                        <p>기록된 소비가 없어요.</p>
+                        <span>첫 소비를 입력해보세요.</span>
                       </div>
-
-                      <div className={styles.transactionAmount}>
-                        <strong>-4,500원</strong>
-                        <span>오늘 09:24</span>
-                      </div>
-                    </li>
-
-                    <li className={styles.transactionItem}>
-                      <Image
-                        src="/images/category/salary.png"
-                        alt=""
-                        width={40}
-                        height={40}
-                        aria-hidden="true"
-                      />
-
-                      <div className={styles.transactionInfo}>
-                        <strong>급여</strong>
-                        <span className={styles.salaryCategory}>급여</span>
-                      </div>
-
-                      <div className={styles.transactionAmount}>
-                        <strong className={styles.incomeAmount}>
-                          +2,850,000원
-                        </strong>
-                        <span>7/25 09:00</span>
-                      </div>
-                    </li>
-
-                    <li className={styles.transactionItem}>
-                      <Image
-                        src="/images/category/food.png"
-                        alt=""
-                        width={40}
-                        height={40}
-                        aria-hidden="true"
-                      />
-
-                      <div className={styles.transactionInfo}>
-                        <strong>배달의 민족</strong>
-                        <span className={styles.foodCategory}>식비</span>
-                      </div>
-
-                      <div className={styles.transactionAmount}>
-                        <strong>-23,000원</strong>
-                        <span>7/24 22:05</span>
-                      </div>
-                    </li>
-
-                    <li className={styles.transactionItem}>
-                      <Image
-                        src="/images/category/savings.png"
-                        alt=""
-                        width={40}
-                        height={40}
-                        aria-hidden="true"
-                      />
-
-                      <div className={styles.transactionInfo}>
-                        <strong>적금 계좌로 이체</strong>
-                        <span className={styles.savingsCategory}>저축</span>
-                      </div>
-
-                      <div className={styles.transactionAmount}>
-                        <strong>-200,000원</strong>
-                        <span>7/24 14:00</span>
-                      </div>
-                    </li>
-                  </ul>
+                    </div>
+                  )}
                 </article>
               </div>
               <div className={styles.statusRow}>
@@ -335,51 +358,101 @@ export default function SubHome() {
 
                       <button type="button" className={styles.cardMoreButton}>
                         <span>목표 관리로 이동</span>
+
                         <span className="material-icons" aria-hidden="true">
                           arrow_forward
                         </span>
                       </button>
                     </header>
 
-                    <div className={styles.savingGoalBody}>
-                      <div className={styles.goalTitleRow}>
-                        <h3>여름 여행 자금 모으기</h3>
-                        <span className={styles.dDayBadge}>D-7</span>
-                      </div>
+                    {hasSavingGoal ? (
+                      <>
+                        <div className={styles.savingGoalBody}>
+                          <div className={styles.goalTitleRow}>
+                            <h3>여름 여행 자금 모으기</h3>
+                            <span className={styles.dDayBadge}>D-7</span>
+                          </div>
 
-                      <div className={styles.goalAmountRow}>
-                        <strong>1,950,000원</strong>
-                        <span>/ 3,000,000원</span>
-                      </div>
+                          <div className={styles.goalAmountRow}>
+                            <strong>1,950,000원</strong>
+                            <span>/ 3,000,000원</span>
+                          </div>
 
-                      <div className={styles.goalProgressRow}>
-                        <div
-                          className={styles.goalProgressTrack}
-                          role="progressbar"
-                          aria-label="여름 여행 자금 목표 달성률"
-                          aria-valuemin="0"
-                          aria-valuemax="100"
-                          aria-valuenow="65"
-                        >
-                          <div className={styles.goalProgressFill} />
+                          <div className={styles.goalProgressRow}>
+                            <div
+                              className={styles.goalProgressTrack}
+                              role="progressbar"
+                              aria-label="여름 여행 자금 목표 달성률"
+                              aria-valuemin="0"
+                              aria-valuemax="100"
+                              aria-valuenow="65"
+                            >
+                              <div className={styles.goalProgressFill} />
+                            </div>
+
+                            <span className={styles.goalProgressValue}>
+                              65%
+                            </span>
+                          </div>
+
+                          <p className={styles.goalSchedule}>
+                            현재 저축 속도로는 목표보다 <strong>13</strong>일
+                            늦어질 예정이에요.
+                          </p>
                         </div>
 
-                        <span className={styles.goalProgressValue}>65%</span>
-                      </div>
+                        <div className={styles.goalNotice}>
+                          <span className="material-icons" aria-hidden="true">
+                            report
+                          </span>
 
-                      <p className={styles.goalSchedule}>
-                        현재 저축 속도로는 목표보다 <strong>13</strong>일 늦어질
-                        예정이에요.
-                      </p>
-                    </div>
+                          <p>
+                            하루 150,000원씩 저축하면 목표를 달성할 수 있어요.
+                          </p>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div
+                          className={`${styles.savingGoalBody} ${styles.emptySavingGoalBody}`}
+                        >
+                          <div className={styles.savingGoalEmptyText}>
+                            <p>아직 설정한 저축 목표가 없어요.</p>
+                            <span>목표를 설정하면 달성률을 보여드릴게요.</span>
+                          </div>
 
-                    <div className={styles.goalNotice}>
-                      <span className="material-icons" aria-hidden="true">
-                        report
-                      </span>
+                          <div className={styles.goalProgressRow}>
+                            <div
+                              className={styles.goalProgressTrack}
+                              role="progressbar"
+                              aria-label="저축 목표 달성률"
+                              aria-valuemin="0"
+                              aria-valuemax="100"
+                              aria-valuenow="0"
+                            />
 
-                      <p>하루 150,000원씩 저축하면 목표를 달성할 수 있어요.</p>
-                    </div>
+                            <span
+                              className={`${styles.goalProgressValue} ${styles.emptyGoalProgressValue}`}
+                            >
+                              0%
+                            </span>
+                          </div>
+                        </div>
+
+                        <div
+                          className={`${styles.goalNotice} ${styles.emptyGoalNotice}`}
+                        >
+                          <span className="material-icons" aria-hidden="true">
+                            report
+                          </span>
+
+                          <p>
+                            목표를 만들면 목표 달성률과 예상 달성일을 확인할 수
+                            있어요.
+                          </p>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </article>
 
@@ -393,6 +466,7 @@ export default function SubHome() {
 
                       <button type="button" className={styles.cardMoreButton}>
                         <span>챌린지로 이동</span>
+
                         <span className="material-icons" aria-hidden="true">
                           arrow_forward
                         </span>
@@ -402,7 +476,8 @@ export default function SubHome() {
                     <div className={styles.challengeBody}>
                       <div className={styles.challengeSummary}>
                         <h3>7일 소비 챌린지</h3>
-                        <strong>6일째 진행 중!</strong>
+
+                        {hasChallenge && <strong>6일째 진행 중!</strong>}
                       </div>
 
                       <div className={styles.challengeCalendar}>
@@ -415,14 +490,17 @@ export default function SubHome() {
                         </div>
 
                         <div className={styles.challengeDays}>
-                          {[1, 2, 3, 4, 5, 6, 7].map(day => (
-                            <div key={day} className={styles.challengeDay}>
-                              <div
-                                className={`${styles.challengeIcon} ${
-                                  day === 6 ? styles.currentChallengeIcon : ""
-                                } ${day === 7 ? styles.emptyChallengeIcon : ""}`}
-                              >
-                                {day < 7 && (
+                          {[1, 2, 3, 4, 5, 6, 7].map(day => {
+                            const isCompleted = hasChallenge && day < 7;
+                            const isCurrent = hasChallenge && day === 6;
+
+                            return (
+                              <div key={day} className={styles.challengeDay}>
+                                <div
+                                  className={`${styles.challengeIcon} ${
+                                    isCurrent ? styles.currentChallengeIcon : ""
+                                  } ${!isCompleted ? styles.inactiveChallengeIcon : ""}`}
+                                >
                                   <Image
                                     src="/images/challenge/sprout.png"
                                     alt=""
@@ -430,17 +508,19 @@ export default function SubHome() {
                                     height={40}
                                     aria-hidden="true"
                                   />
-                                )}
-                              </div>
+                                </div>
 
-                              <span>{day}일차</span>
-                            </div>
-                          ))}
+                                <span>{day}일차</span>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
 
                       <p className={styles.challengeMessage}>
-                        하루만 더 성공하면 7일 달성!
+                        {hasChallenge
+                          ? "하루만 더 성공하면 7일 달성!"
+                          : "챌린지를 시작하면 매일 새싹 스탬프가 채워져요."}
                       </p>
                     </div>
                   </div>
@@ -463,7 +543,7 @@ export default function SubHome() {
                     </button>
                   </header>
 
-                  <JournalSlider />
+                  <JournalSlider isEmpty={!hasJournal} />
                 </div>
               </article>
             </div>

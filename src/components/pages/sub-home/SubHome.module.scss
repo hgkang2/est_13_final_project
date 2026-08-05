@@ -314,6 +314,15 @@
   color: var(--color-point);
 }
 
+.emptyGoalCardInner {
+  justify-content: flex-start;
+}
+
+.emptyGoalInfo {
+  width: 100%;
+  flex: 1;
+}
+
 @media (max-width: 1024px) {
   .goalCard {
     width: 100%;
@@ -502,6 +511,10 @@
   object-fit: contain;
 }
 
+.emptySpendingChart {
+  opacity: 0.35;
+}
+
 @media (max-width: 768px) {
   .spendingSummaryCard {
     padding: 32px;
@@ -655,6 +668,26 @@
   height: 247px;
   max-width: none;
   object-fit: contain;
+}
+
+.aiEmptyMessage {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.aiEmptyDescription {
+  @include typo-body-m-plus;
+
+  margin: 0;
+  color: var(--color-light-gray);
+  word-break: keep-all;
+}
+
+.emptyAiImage {
+  opacity: 0.5;
 }
 
 @media (min-width: 769px) and (max-width: 1280px) {
@@ -851,6 +884,10 @@
   transform: translate(16px, 32px);
 }
 
+.emptyMissionImage {
+  opacity: 0.5;
+}
+
 /* 최근 소비 내역 */
 
 .recentCard {
@@ -905,6 +942,46 @@
   @include more-icon-s;
 
   color: inherit;
+}
+
+.recentEmpty {
+  display: flex;
+  width: 100%;
+  min-height: 232px;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  border-radius: 8px;
+  background-color: var(--color-dark-white);
+  text-align: center;
+}
+
+.recentEmptyIcon {
+  @include icon-m;
+
+  color: var(--color-point);
+}
+
+.recentEmptyText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.recentEmptyText p {
+  @include typo-body-m;
+
+  margin: 0;
+  color: var(--color-text);
+}
+
+.recentEmptyText span {
+  @include typo-body-s;
+
+  color: var(--color-light-gray);
 }
 
 .transactionList {
@@ -1297,6 +1374,65 @@
   color: var(--color-light-gray);
 }
 
+.savingGoalEmpty {
+  display: flex;
+  width: 100%;
+  min-height: 248px;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  border-radius: 8px;
+  background-color: var(--color-dark-white);
+  text-align: center;
+}
+
+.savingGoalEmptyIcon {
+  @include icon-m;
+
+  color: var(--color-point);
+}
+
+.emptySavingGoalBody {
+  flex: 1;
+  justify-content: center;
+  gap: 16px;
+}
+
+.savingGoalEmptyText {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.savingGoalEmptyText p {
+  @include typo-body-l-plus;
+
+  margin: 0;
+  color: var(--color-text);
+}
+
+.savingGoalEmptyText span {
+  @include typo-body-m;
+
+  color: var(--color-light-gray);
+}
+
+.emptyGoalProgressValue {
+  color: var(--color-light-gray);
+}
+
+.emptyGoalNotice :global(.material-icons) {
+  color: var(--color-light-gray);
+}
+
+.emptyGoalNotice p {
+  color: var(--color-light-gray);
+}
+
 @media (max-width: 1024px) {
   .statusRow {
     flex-direction: column;
@@ -1457,9 +1593,19 @@
   height: 28px;
   object-fit: contain;
 }
+
 .currentChallengeIcon {
   border: 1px solid var(--color-point);
   background-color: var(--color-primary);
+}
+
+.inactiveChallengeIcon {
+  background-color: var(--color-dark-white);
+}
+
+.inactiveChallengeIcon img {
+  opacity: 0.4;
+  filter: grayscale(1);
 }
 
 .emptyChallengeIcon {
@@ -1477,6 +1623,41 @@
 
   margin: 0;
   color: var(--color-light-gray);
+}
+
+.challengeIcon {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background-color: var(--color-background-green);
+}
+
+.challengeIcon img {
+  display: block;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+.challengeIcon {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background-color: var(--color-background-green);
+}
+
+.challengeIcon img {
+  display: block;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
 }
 
 @media (max-width: 1024px) {
