@@ -90,10 +90,10 @@ function JournalNavigation() {
 }
 
 export default function JournalSlider({
+  // 목업 데이터 (API 연동 시 props 데이터로 대체)
   journals = defaultJournals,
   spaceBetween = 16,
   showContent = true,
-  isEmpty = false,
 }) {
   return (
     <div className={styles.journalSlider}>
@@ -115,32 +115,28 @@ export default function JournalSlider({
             <article className={styles.journalItem}>
               <div className={styles.journalMeta}>
                 <time>{journal.date}</time>
-                <strong>{isEmpty ? "--원" : journal.amount}</strong>
+                <strong>{journal.amount}</strong>
               </div>
 
               <div
                 className={`${styles.journalImage} ${
-                  isEmpty || journal.pending ? styles.pendingJournalImage : ""
+                  journal.pending ? styles.pendingJournalImage : ""
                 }`}
               >
                 <Image
-                  src={
-                    isEmpty
-                      ? "/images/journal/journal-empty.png"
-                      : journal.image
+                  src={journal.image}
+                  alt={
+                    journal.pending ? "" : `${journal.date} 소비 절약 그림일기`
                   }
-                  alt={isEmpty ? "" : `${journal.date} 소비 절약 그림일기`}
                   width={220}
                   height={220}
-                  aria-hidden={isEmpty}
+                  aria-hidden={journal.pending}
                 />
               </div>
 
               {showContent && journal.content && (
                 <div className={styles.journalContentBox}>
-                  <p className={styles.journalContent}>
-                    {/* {isEmpty ? "오늘도 실천이 기대돼요!" : journal.content} */}
-                  </p>
+                  <p className={styles.journalContent}>{journal.content}</p>
                 </div>
               )}
             </article>

@@ -316,6 +316,28 @@
   flex: 1;
 }
 
+.emptyGoalDescription {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.emptyGoalDescription p {
+  @include typo-heading-xs;
+
+  margin: 0;
+  color: var(--color-text);
+}
+
+.emptyGoalDescription span {
+  @include typo-body-m;
+
+  color: var(--color-light-gray);
+  word-break: keep-all;
+}
+
 @media (max-width: 560px) {
   .goalCardInner {
     flex-direction: column;
@@ -331,6 +353,23 @@
     order: 2;
     width: 100%;
     flex: none;
+  }
+
+  .goalPercent {
+    @include typo-body-l-plus;
+  }
+
+  .goalAmount strong,
+  .goalAmount span {
+    @include typo-caption-plus;
+  }
+
+  .emptyGoalDescription p {
+    @include typo-body-m-plus;
+  }
+
+  .emptyGoalDescription span {
+    @include typo-caption-plus;
   }
 }
 
@@ -379,10 +418,6 @@
     transform: translateY(-18px);
   }
 
-  .goalInfo h2 {
-    @include typo-heading-xs;
-  }
-
   .goalPercent {
     @include typo-body-l-plus;
   }
@@ -393,6 +428,14 @@
   }
   .warningBadge {
     padding: 4px 8px;
+  }
+
+  .emptyGoalDescription p {
+    @include typo-body-m-plus;
+  }
+
+  .emptyGoalDescription span {
+    @include typo-caption-plus;
   }
 }
 
@@ -444,6 +487,12 @@
   color: var(--color-point);
   background-color: var(--color-primary);
   white-space: nowrap;
+}
+
+.emptySummaryBadge {
+  color: var(--color-light-gray);
+  background-color: var(--color-dark-white);
+  border: 1px solid var(--color-border-gray);
 }
 
 .spendingSummaryContent h2 {
@@ -523,6 +572,14 @@
     width: 100%;
     height: auto;
   }
+
+  .spendingAmount {
+    @include typo-body-l-plus;
+  }
+
+  .spendingDescription {
+    @include typo-caption-plus;
+  }
 }
 
 @include mobile {
@@ -532,10 +589,6 @@
 
   .spendingSummaryContent {
     gap: 8px;
-  }
-
-  .spendingSummaryContent h2 {
-    @include typo-heading-xs;
   }
 
   .spendingAmount {
@@ -704,14 +757,14 @@
     align-self: flex-end;
     justify-content: flex-start;
   }
+
+  .aiMessage {
+    @include typo-card-head;
+  }
 }
 @include mobile {
   .aiCard {
     padding: 16px;
-  }
-
-  .aiText h2 {
-    @include typo-heading-xs;
   }
 
   .aiMessage {
@@ -1102,17 +1155,27 @@
     object-fit: contain;
     transform: translateY(30px);
   }
+
+  .transactionInfo strong,
+  .transactionAmount strong {
+    @include typo-body-m-minus;
+
+    font-weight: var(--font-weight-bold);
+  }
+
+  .missionMessage {
+    @include typo-card-head;
+  }
+
+  .missionSubText {
+    @include typo-caption-plus;
+  }
 }
 
 @include mobile {
   .recentCard,
   .missionCard {
     padding: 16px;
-  }
-
-  .recentHeader h2,
-  .missionHeader h2 {
-    @include typo-heading-xs;
   }
 
   .transactionInfo strong,
@@ -1313,7 +1376,7 @@
 }
 
 .savingGoalEmptyText p {
-  @include typo-body-l-plus;
+  @include typo-heading-xs;
 
   margin: 0;
   color: var(--color-text);
@@ -1337,6 +1400,34 @@
   color: var(--color-light-gray);
 }
 
+.emptySavingGoalBody {
+  gap: 12px;
+}
+
+.savingGoalBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.savingGoalBadges span {
+  @include typo-caption-plus;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+  color: var(--color-point);
+  background-color: var(--color-white);
+  white-space: nowrap;
+}
+
+.savingGoalBadges span:last-child {
+  color: var(--color-green-gray);
+}
+
 @media (max-width: 1280px) {
   .statusRow {
     flex-direction: column;
@@ -1356,10 +1447,6 @@
 @media (max-width: 480px) {
   .savingGoalCard {
     padding: 16px;
-  }
-
-  .savingGoalCard .cardHeader h2 {
-    @include typo-heading-xs;
   }
 
   .goalTitleRow h3 {
@@ -1385,8 +1472,16 @@
     padding-left: 0;
     white-space: nowrap;
   }
+
+  .savingGoalEmptyText p {
+    @include typo-body-m-plus;
+  }
+
+  .savingGoalEmptyText span {
+    @include typo-caption-plus;
+  }
 }
-@media (max-width: 344px) {
+@media (max-width: 375px) {
   .goalNotice {
     width: 100%;
   }
@@ -1527,23 +1622,16 @@
   color: var(--color-light-gray);
 }
 
-@include mobile {
+@media (max-width: 560px) {
   .challengeCard {
     padding: 16px;
-  }
-
-  .challengeCard .cardHeader h2 {
-    @include typo-heading-xs;
   }
 
   .challengeSummary h3 {
     @include typo-card-label;
   }
 
-  .challengeSummary strong {
-    @include typo-caption-plus;
-  }
-
+  .challengeSummary strong,
   .challengeMessage {
     @include typo-caption-plus;
   }
@@ -1584,19 +1672,169 @@
   word-break: keep-all;
 }
 
-.journalTitleGroup {
+.journalEmpty {
   display: flex;
-  min-width: 0;
+  width: 100%;
+  min-height: 220px;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+}
+
+.journalEmptyText {
+  display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 8px;
 }
 
-.journalEmptyMessage {
-  @include typo-body-m-plus;
+.journalEmptyText p {
+  @include typo-heading-xs;
 
   margin: 0;
+  color: var(--color-text);
+  word-break: keep-all;
+}
+
+.journalEmptyDescription {
+  @include typo-caption-plus;
+
   color: var(--color-light-gray);
   word-break: keep-all;
+}
+
+.journalEmptyButton {
+  @include typo-body-m-minus;
+
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 4px;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  color: var(--color-light-gray);
+  background-color: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--color-point);
+  }
+}
+
+.journalEmptyButton :global(.material-icons) {
+  @include more-icon-s;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.journalEmptyButton:hover :global(.material-icons) {
+  transform: translateX(4px);
+}
+
+.journalPreviewDeck {
+  position: relative;
+  width: 188px;
+  height: 190px;
+  flex-shrink: 0;
+}
+
+.journalPreviewCard {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  display: flex;
+  width: 132px;
+  padding: 8px;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 14px;
+  background-color: var(--color-white);
+  box-shadow: 0 6px 16px rgb(6 7 14 / 6%);
+}
+
+.journalPreviewCardBack {
+  z-index: 0;
+  opacity: 0.46;
+  filter: grayscale(1);
+  transform: translateX(-22%) translateY(4px) rotate(4deg);
+}
+
+.journalPreviewCardFront {
+  z-index: 1;
+  transform: translateX(-78%) rotate(-2deg);
+}
+
+.journalPreviewMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.journalPreviewMeta time {
+  @include typo-body-s;
+
+  color: var(--color-green-gray);
+}
+
+.journalPreviewMeta strong {
+  @include typo-caption-plus;
+
+  color: var(--color-point);
+}
+
+.journalPreviewImage {
+  width: 100%;
+  aspect-ratio: 150 / 146;
+  overflow: hidden;
+  border-radius: 10px;
+  background-color: var(--color-dark-white);
+}
+
+.journalPreviewImage img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.journalPreviewImageEmpty {
+  opacity: 0.55;
+}
+
+.journalPreviewContent {
+  @include typo-body-s;
+  @include multi-ellipsis(2);
+
+  min-height: 32px;
+  margin: 0;
+  color: var(--color-light-gray);
+  text-align: center;
+  word-break: keep-all;
+}
+
+@media (max-width: 768px) {
+  // .journalHeader h2 {
+  //   @include typo-heading-xs;
+  // }
+
+  .journalEmptyText p {
+    @include typo-body-m-plus;
+  }
+
+  .journalEmptyText span {
+    @include typo-body-s;
+  }
 }
 
 @include mobile {
@@ -1605,18 +1843,12 @@
   }
 
   .journalHeader {
-    align-items: flex-start;
+    align-items: center;
     gap: 16px;
   }
 
-  .journalHeader h2 {
-    @include typo-heading-xs;
-
-    min-width: 0;
-  }
-
   .journalCard .moreButton {
-    @include typo-body-s;
+    @include typo-caption;
 
     flex-shrink: 0;
   }
@@ -1625,12 +1857,80 @@
     @include more-icon-s;
   }
 
-  .journalTitleGroup {
-    gap: 4px;
+  .journalEmpty {
+    min-height: auto;
+    padding: 16px 0;
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
   }
 
-  .journalEmptyMessage {
+  .journalEmptyText {
+    align-items: center;
+  }
+
+  .journalEmptyText p {
+    @include typo-body-m-plus;
+  }
+
+  .journalEmptyText span {
     @include typo-caption-plus;
+  }
+
+  .journalPreviewDeck {
+    width: 170px;
+    height: 216px;
+  }
+
+  .journalPreviewCard {
+    width: 118px;
+    padding: 6px;
+    gap: 6px;
+    border-radius: 14px;
+  }
+
+  .journalPreviewCardBack {
+    opacity: 0.38;
+    transform: translateX(-24%) translateY(4px) rotate(4deg);
+  }
+
+  .journalPreviewCardFront {
+    transform: translateX(-76%) rotate(-2deg);
+  }
+
+  .journalPreviewMeta {
+    gap: 0;
+  }
+
+  .journalPreviewMeta time {
+    @include typo-body-s;
+  }
+
+  .journalPreviewMeta strong {
+    @include typo-body-s-plus;
+  }
+
+  .journalPreviewImage {
+    border-radius: 10px;
+  }
+
+  .journalPreviewContent {
+    @include typo-body-s;
+
+    min-height: 36px;
+  }
+}
+
+@media (max-width: 560px) {
+  .goalInfo h2,
+  .spendingSummaryContent h2,
+  .aiText h2,
+  .missionHeader h2,
+  .recentHeader h2,
+  .savingGoalCard .cardHeader h2,
+  .challengeCard .cardHeader h2,
+  .journalHeader h2 {
+    @include typo-heading-xs;
   }
 }
 

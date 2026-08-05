@@ -8,6 +8,7 @@ import styles from "./SubHome.module.scss";
 import JournalSlider from "@/components/common/JournalSlider";
 
 export default function SubHome() {
+  // UI 개발용 상태값
   const userName = "Moa";
   const hasGoal = false;
   const hasSpendingData = false;
@@ -60,7 +61,7 @@ export default function SubHome() {
                       <h2 id="goal-card-title">이번 달 목표 달성률</h2>
 
                       <strong className={styles.goalPercent}>
-                        {hasGoal ? "62%" : "0%"}
+                        {hasGoal ? "62%" : "--%"}
                       </strong>
 
                       <div className={styles.progressArea}>
@@ -98,9 +99,18 @@ export default function SubHome() {
                       </div>
 
                       <p className={styles.goalAmount}>
-                        <strong>{hasGoal ? "1,860,000원" : "0원"}</strong>
-                        <span>{hasGoal ? "/ 3,000,000원" : "/ 0원"}</span>
+                        <strong>{hasGoal ? "1,860,000원" : "--원"}</strong>
+                        <span>{hasGoal ? "/ 3,000,000원" : "/ --원"}</span>
                       </p>
+
+                      {!hasGoal && (
+                        <div className={styles.emptyGoalDescription}>
+                          <p>목표 달성률을 기다리고 있어요.</p>
+                          <span>
+                            목표를 설정하면 달성률을 확인할 수 있어요.
+                          </span>
+                        </div>
+                      )}
 
                       {hasGoal && (
                         <p className={styles.warningBadge}>
@@ -150,14 +160,20 @@ export default function SubHome() {
                   aria-labelledby="spending-summary-title"
                 >
                   <div className={styles.spendingSummaryContent}>
-                    {hasSpendingData && (
-                      <p className={styles.summaryBadge}>좋은 흐름이에요!</p>
-                    )}
+                    <p
+                      className={`${styles.summaryBadge} ${
+                        !hasSpendingData ? styles.emptySummaryBadge : ""
+                      }`}
+                    >
+                      {hasSpendingData
+                        ? "좋은 흐름이에요!"
+                        : "첫 소비 기록을 기다리고 있어요."}
+                    </p>
 
                     <h2 id="spending-summary-title">이번 달 소비 요약</h2>
 
                     <strong className={styles.spendingAmount}>
-                      {hasSpendingData ? "620,000원" : "0원"}
+                      {hasSpendingData ? "620,000원" : "--원"}
                     </strong>
 
                     <p className={styles.spendingDescription}>
@@ -518,6 +534,16 @@ export default function SubHome() {
                             <span>목표를 설정하면 달성률을 보여드릴게요.</span>
                           </div>
 
+                          <div
+                            className={styles.savingGoalBadges}
+                            aria-label="저축 목표 예시"
+                          >
+                            <span>여행</span>
+                            <span>비상금</span>
+                            <span>자유 목표</span>
+                            <span>&middot; &middot; &middot;</span>
+                          </div>
+
                           <div className={styles.goalProgressRow}>
                             <div
                               className={styles.goalProgressTrack}
@@ -633,24 +659,93 @@ export default function SubHome() {
                       <h2 id="journal-card-title">
                         이번 주 소비 절약 그림일기
                       </h2>
-
-                      {!hasJournal && (
-                        <p className={styles.journalEmptyMessage}>
-                          오늘의 한 장을 기다리고 있어요.
-                        </p>
-                      )}
                     </div>
 
-                    <button type="button" className={styles.moreButton}>
-                      <span>그림일기로 이동</span>
+                    {hasJournal && (
+                      <button type="button" className={styles.moreButton}>
+                        <span>그림일기로 이동</span>
 
-                      <span className="material-icons" aria-hidden="true">
-                        arrow_forward
-                      </span>
-                    </button>
+                        <span className="material-icons" aria-hidden="true">
+                          arrow_forward
+                        </span>
+                      </button>
+                    )}
                   </header>
 
-                  <JournalSlider isEmpty={!hasJournal} />
+                  {hasJournal ? (
+                    <JournalSlider />
+                  ) : (
+                    <div className={styles.journalEmpty}>
+                      <div
+                        className={styles.journalPreviewDeck}
+                        aria-hidden="true"
+                      >
+                        <article
+                          className={`${styles.journalPreviewCard} ${styles.journalPreviewCardBack}`}
+                        >
+                          <div className={styles.journalPreviewMeta}>
+                            <time>8/01 (토)</time>
+                            <strong>-17,000원</strong>
+                          </div>
+
+                          <div className={styles.journalPreviewImage}>
+                            <Image
+                              src="/images/journal/journal-06.png"
+                              alt=""
+                              width={140}
+                              height={136}
+                            />
+                          </div>
+
+                          <p className={styles.journalPreviewContent}>
+                            무료 취미 활동으로 즐거운 하루!
+                          </p>
+                        </article>
+
+                        <article
+                          className={`${styles.journalPreviewCard} ${styles.journalPreviewCardFront}`}
+                        >
+                          <div className={styles.journalPreviewMeta}>
+                            <time>8/02 (일)</time>
+                            <strong>--원</strong>
+                          </div>
+
+                          <div
+                            className={`${styles.journalPreviewImage} ${styles.journalPreviewImageEmpty}`}
+                          >
+                            <Image
+                              src="/images/journal/journal-empty.png"
+                              alt=""
+                              width={140}
+                              height={136}
+                            />
+                          </div>
+
+                          <p className={styles.journalPreviewContent}>
+                            오늘도 실천이 기대돼요!
+                          </p>
+                        </article>
+                      </div>
+                      <div className={styles.journalEmptyText}>
+                        <p>이번 주 그림일기를 기다리고 있어요!</p>
+
+                        <span className={styles.journalEmptyDescription}>
+                          오늘의 소비를 기록하면 첫 그림일기가 완성돼요.
+                        </span>
+
+                        <button
+                          type="button"
+                          className={styles.journalEmptyButton}
+                        >
+                          <span>그림일기 보러가기</span>
+
+                          <span className="material-icons" aria-hidden="true">
+                            arrow_forward
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </article>
             </div>
