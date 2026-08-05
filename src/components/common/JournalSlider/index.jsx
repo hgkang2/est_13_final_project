@@ -139,7 +139,7 @@ export default function JournalSlider({
               {showContent && journal.content && (
                 <div className={styles.journalContentBox}>
                   <p className={styles.journalContent}>
-                    {isEmpty ? "오늘도 실천이 기대돼요!" : journal.content}
+                    {/* {isEmpty ? "오늘도 실천이 기대돼요!" : journal.content} */}
                   </p>
                 </div>
               )}

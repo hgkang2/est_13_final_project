@@ -9,11 +9,11 @@ import JournalSlider from "@/components/common/JournalSlider";
 
 export default function SubHome() {
   const userName = "Moa";
-  const hasGoal = true;
-  const hasSpendingData = true;
-  const hasSavingGoal = true;
-  const hasChallenge = true;
-  const hasJournal = true;
+  const hasGoal = false;
+  const hasSpendingData = false;
+  const hasSavingGoal = false;
+  const hasChallenge = false;
+  const hasJournal = false;
 
   return (
     <>
@@ -331,7 +331,9 @@ export default function SubHome() {
                     <h2 id="recent-card-title">최근 소비 내역</h2>
 
                     <button type="button" className={styles.moreButton}>
-                      <span>더보기</span>
+                      <span>
+                        {hasSpendingData ? "더보기" : "소비 기록하기"}
+                      </span>
 
                       <span className="material-icons" aria-hidden="true">
                         arrow_forward
@@ -339,70 +341,75 @@ export default function SubHome() {
                     </button>
                   </header>
 
-                  {hasSpendingData ? (
-                    <ul className={styles.transactionList}>
-                      <li className={styles.transactionItem}>
-                        <Image
-                          src="/images/category/cafe-snack.png"
-                          alt=""
-                          width={40}
-                          height={40}
-                          aria-hidden="true"
-                        />
+                  <ul
+                    className={`${styles.transactionList} ${
+                      !hasSpendingData ? styles.previewTransactionList : ""
+                    }`}
+                    aria-hidden={!hasSpendingData}
+                  >
+                    <li className={styles.transactionItem}>
+                      <Image
+                        src="/images/category/cafe-snack.png"
+                        alt=""
+                        width={40}
+                        height={40}
+                        aria-hidden="true"
+                      />
 
-                        <div className={styles.transactionInfo}>
-                          <strong>스타벅스</strong>
-                          <span className={styles.cafeCategory}>카페/간식</span>
-                        </div>
+                      <div className={styles.transactionInfo}>
+                        <strong>스타벅스</strong>
+                        <span className={styles.cafeCategory}>카페/간식</span>
+                      </div>
 
-                        <div className={styles.transactionAmount}>
-                          <strong>-4,500원</strong>
-                          <span>오늘 09:24</span>
-                        </div>
-                      </li>
+                      <div className={styles.transactionAmount}>
+                        <strong>-4,500원</strong>
+                        <span>오늘 09:24</span>
+                      </div>
+                    </li>
 
-                      <li className={styles.transactionItem}>
-                        <Image
-                          src="/images/category/salary.png"
-                          alt=""
-                          width={40}
-                          height={40}
-                          aria-hidden="true"
-                        />
+                    <li className={styles.transactionItem}>
+                      <Image
+                        src="/images/category/salary.png"
+                        alt=""
+                        width={40}
+                        height={40}
+                        aria-hidden="true"
+                      />
 
-                        <div className={styles.transactionInfo}>
-                          <strong>급여</strong>
-                          <span className={styles.salaryCategory}>급여</span>
-                        </div>
+                      <div className={styles.transactionInfo}>
+                        <strong>급여</strong>
+                        <span className={styles.salaryCategory}>급여</span>
+                      </div>
 
-                        <div className={styles.transactionAmount}>
-                          <strong className={styles.incomeAmount}>
-                            +2,850,000원
-                          </strong>
-                          <span>7/25 09:00</span>
-                        </div>
-                      </li>
+                      <div className={styles.transactionAmount}>
+                        <strong className={styles.incomeAmount}>
+                          +2,850,000원
+                        </strong>
+                        <span>7/25 09:00</span>
+                      </div>
+                    </li>
 
-                      <li className={styles.transactionItem}>
-                        <Image
-                          src="/images/category/food.png"
-                          alt=""
-                          width={40}
-                          height={40}
-                          aria-hidden="true"
-                        />
+                    <li className={styles.transactionItem}>
+                      <Image
+                        src="/images/category/food.png"
+                        alt=""
+                        width={40}
+                        height={40}
+                        aria-hidden="true"
+                      />
 
-                        <div className={styles.transactionInfo}>
-                          <strong>배달의 민족</strong>
-                          <span className={styles.foodCategory}>식비</span>
-                        </div>
+                      <div className={styles.transactionInfo}>
+                        <strong>배달의 민족</strong>
+                        <span className={styles.foodCategory}>식비</span>
+                      </div>
 
-                        <div className={styles.transactionAmount}>
-                          <strong>-23,000원</strong>
-                          <span>7/24 22:05</span>
-                        </div>
-                      </li>
+                      <div className={styles.transactionAmount}>
+                        <strong>-23,000원</strong>
+                        <span>7/24 22:05</span>
+                      </div>
+                    </li>
 
+                    {hasSpendingData && (
                       <li className={styles.transactionItem}>
                         <Image
                           src="/images/category/savings.png"
@@ -422,19 +429,16 @@ export default function SubHome() {
                           <span>7/24 14:00</span>
                         </div>
                       </li>
-                    </ul>
-                  ) : (
-                    <div className={styles.recentEmpty}>
-                      <span
-                        className={`material-icons ${styles.recentEmptyIcon}`}
-                        aria-hidden="true"
-                      >
-                        format_list_bulleted_add
-                      </span>
+                    )}
+                  </ul>
 
+                  {!hasSpendingData && (
+                    <div className={styles.recentEmptyGuide}>
                       <div className={styles.recentEmptyText}>
-                        <p>기록된 소비가 없어요.</p>
-                        <span>첫 소비를 입력해보세요.</span>
+                        <p>첫 소비를 기다리고 있어요!</p>
+                        <span>
+                          기록을 시작하면 최근 소비 내역이 표시됩니다.
+                        </span>
                       </div>
                     </div>
                   )}
@@ -625,7 +629,17 @@ export default function SubHome() {
               >
                 <div className={styles.journalInner}>
                   <header className={styles.journalHeader}>
-                    <h2 id="journal-card-title">이번 주 소비 절약 그림일기</h2>
+                    <div className={styles.journalTitleGroup}>
+                      <h2 id="journal-card-title">
+                        이번 주 소비 절약 그림일기
+                      </h2>
+
+                      {!hasJournal && (
+                        <p className={styles.journalEmptyMessage}>
+                          오늘의 한 장을 기다리고 있어요.
+                        </p>
+                      )}
+                    </div>
 
                     <button type="button" className={styles.moreButton}>
                       <span>그림일기로 이동</span>

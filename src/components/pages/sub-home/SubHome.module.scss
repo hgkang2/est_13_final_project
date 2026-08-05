@@ -888,42 +888,35 @@
   color: inherit;
 }
 
-.recentEmpty {
-  display: flex;
-  width: 100%;
-  min-height: 232px;
-  flex: 1;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  border-radius: 8px;
-  background-color: var(--color-dark-white);
-  text-align: center;
+.previewTransactionList {
+  opacity: 0.35;
+  filter: grayscale(1);
+  pointer-events: none;
+  user-select: none;
 }
 
-.recentEmptyIcon {
-  @include icon-m;
-
-  color: var(--color-point);
+.recentEmptyGuide {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
 }
 
 .recentEmptyText {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 4px;
 }
 
 .recentEmptyText p {
-  @include typo-body-m;
+  @include typo-body-m-plus;
 
   margin: 0;
   color: var(--color-text);
 }
 
 .recentEmptyText span {
-  @include typo-body-s;
+  @include typo-caption-plus;
 
   color: var(--color-light-gray);
 }
@@ -1591,6 +1584,21 @@
   word-break: keep-all;
 }
 
+.journalTitleGroup {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.journalEmptyMessage {
+  @include typo-body-m-plus;
+
+  margin: 0;
+  color: var(--color-light-gray);
+  word-break: keep-all;
+}
+
 @include mobile {
   .journalCard {
     padding: 16px;
@@ -1615,6 +1623,14 @@
 
   .journalCard .moreButton :global(.material-icons) {
     @include more-icon-s;
+  }
+
+  .journalTitleGroup {
+    gap: 4px;
+  }
+
+  .journalEmptyMessage {
+    @include typo-caption-plus;
   }
 }
 
