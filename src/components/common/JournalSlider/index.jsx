@@ -91,7 +91,6 @@ function JournalNavigation() {
 
 export default function JournalSlider({
   journals = defaultJournals,
-  desktopSlidesPerView = 7,
   spaceBetween = 16,
   showContent = true,
   isEmpty = false,
@@ -101,9 +100,10 @@ export default function JournalSlider({
       <Swiper
         spaceBetween={spaceBetween}
         slidesPerView="auto"
+        breakpointsBase="container"
         breakpoints={{
-          1025: {
-            spaceBetween,
+          1162: {
+            slidesPerView: 7,
             allowTouchMove: false,
           },
         }}
