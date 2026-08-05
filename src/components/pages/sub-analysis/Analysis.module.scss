@@ -1,127 +1,265 @@
+@use "../../../styles/mixins" as *;
+
+$breakpoint-tablet: 768px;
+$breakpoint-mobile: 390px;
+
 .pageLayout {
   display: flex;
-  background-color: #f8fafc;
-  min-height: 100vh;
+  width: 100%;
+  min-height: calc(100vh - 86px);
+  background-color: var(--color-dark-white);
 }
 
-.main {
+.container {
   flex: 1;
-  padding: 40px;
+  min-width: 0;
+  background-color: var(--color-white);
+  padding: 32px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .pageHeader {
-  margin-bottom: 24px;
   .title {
     font-size: 24px;
-    font-weight: 700;
-    color: #1e293b;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
   }
+
   .subtitle {
-    font-size: 14px;
-    color: #64748b;
+    @include typo-caption;
+    color: var(--color-light-gray);
     margin-top: 4px;
   }
 }
 
+/* 공통 카드 디자인 */
 .card {
-  background: #ffffff;
+  background: var(--color-white);
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  margin-bottom: 24px;
-}
+  border: 1px solid var(--color-border-gray);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 
-.aiBadge {
-  background-color: #e0f2fe;
-  color: #0284c7;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-}
+  .cardHeader {
+    @include flex-between;
+    margin-bottom: 16px;
 
-.statsGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
-
-  .statCard {
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    .statLabel {
-      font-size: 13px;
-      color: #64748b;
-    }
-    .statValue {
-      font-size: 20px;
-      font-weight: 700;
-      color: #0f172a;
-      margin: 8px 0 4px;
-    }
-    .statSub {
-      font-size: 11px;
-      color: #94a3b8;
+    h3 {
+      @include typo-card-head;
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
     }
   }
 }
 
-.gridContainer {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  margin-bottom: 24px;
-}
+/* AI 분석 리포트 */
+.aiReportCard {
+  border-color: var(--color-point);
 
-.rankingList {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: 16px;
-
-  .rankingRow {
+  .aiTitleGroup {
     display: flex;
     align-items: center;
-    gap: 16px;
-    .rankBadge {
-      width: 24px;
-      height: 24px;
-      background: #e2e8f0;
-      border-radius: 50%;
+    gap: 8px;
+
+    .aiDate {
+      @include typo-caption;
+      color: var(--color-light-gray);
+    }
+  }
+
+  .actionBtnInline {
+    background-color: var(--color-point);
+    color: var(--color-white);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+  }
+
+  .aiReportBody {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 32px;
+    align-items: center;
+
+    .characterArea {
+      .characterBox {
+        width: 100%;
+        aspect-ratio: 1;
+        background-color: transparent;
+        @include flex-center;
+        overflow: hidden;
+
+        .characterPlaceholder {
+          width: 100%;
+          height: 100%;
+          background: url("/path-to-character.png") center/contain no-repeat;
+        }
+      }
+    }
+
+    .insightContentArea {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: bold;
+      flex-direction: column;
+      gap: 20px;
+
+      .insightTop {
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--color-border-gray);
+
+        .insightHeader {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          margin-bottom: 8px;
+          @include icon(var(--icon-m-size));
+          color: var(--color-point);
+
+          h4 {
+            @include typo-body-m-semibold;
+            color: var(--color-text);
+          }
+        }
+
+        p {
+          @include typo-body-s;
+          color: var(--color-gray);
+          line-height: 1.5;
+
+          .highlightRed {
+            color: #ff5252;
+            font-weight: var(--font-weight-semibold);
+          }
+          .highlightYellow {
+            color: #fbc02d;
+            font-weight: var(--font-weight-semibold);
+          }
+        }
+      }
+
+      .insightBottomGrid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+
+        .insightSubItem {
+          position: relative;
+
+          &:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            right: -8px;
+            top: 10%;
+            height: 80%;
+            width: 1px;
+            background-color: var(--color-border-gray);
+          }
+
+          .insightHeader {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+            @include icon(var(--icon-m-size));
+            color: var(--color-point);
+
+            h4 {
+              @include typo-body-m-semibold;
+              color: var(--color-text);
+            }
+          }
+
+          p {
+            @include typo-body-s;
+            color: var(--color-gray);
+            line-height: 1.4;
+
+            .highlightGreen {
+              color: var(--color-point);
+              font-weight: var(--font-weight-semibold);
+            }
+          }
+        }
+      }
     }
-    .rankingName {
-      width: 60px;
-      font-weight: 500;
+  }
+}
+
+/* 4개 요약 그리드 */
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+
+  .summaryLabel {
+    @include typo-body-s;
+    color: var(--color-gray);
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .summaryValueGroup {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-bottom: 4px;
+
+    .summaryAmount {
+      font-size: 22px;
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text);
     }
-    .progressBarWrapper {
-      flex: 1;
-      height: 8px;
-      background: #f1f5f9;
-      border-radius: 4px;
-      overflow: hidden;
+
+    .unit {
+      @include typo-body-m;
+      color: var(--color-text);
     }
-    .progressBar {
-      height: 100%;
-      background: #22c55e;
-      border-radius: 4px;
-    }
-    .rankingPercent {
-      width: 40px;
-      text-align: right;
-      font-weight: 600;
-    }
-    .rankingAmount {
-      width: 120px;
-      text-align: right;
-      color: #64748b;
-      font-size: 13px;
+  }
+
+  .summarySubText {
+    @include typo-caption;
+    color: var(--color-light-gray);
+  }
+}
+
+/* 2단 그리드 */
+.gridContainer {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+}
+
+/* 반응형 모바일 대응 */
+@include tablet {
+  .pageLayout {
+    display: block;
+  }
+
+  .container {
+    padding: 20px 16px;
+  }
+
+  .aiReportCard .aiReportBody {
+    grid-template-columns: 1fr;
+  }
+
+  .summaryGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .gridContainer {
+    grid-template-columns: 1fr;
+  }
+
+  .aiReportCard .insightContentArea .insightBottomGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+
+    .insightSubItem:not(:last-child)::after {
+      display: none;
     }
   }
 }
