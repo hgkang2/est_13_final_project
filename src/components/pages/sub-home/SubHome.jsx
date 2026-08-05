@@ -8,6 +8,8 @@ import styles from "./SubHome.module.scss";
 import JournalSlider from "@/components/common/JournalSlider";
 
 export default function SubHome() {
+  const userName = "Moa";
+
   return (
     <>
       <div className={styles.page}>
@@ -22,7 +24,7 @@ export default function SubHome() {
                   aria-labelledby="greeting-title"
                 >
                   <div className={styles.greetingTitle}>
-                    <h1 id="greeting-title">안녕하세요, Moa님!</h1>
+                    <h1 id="greeting-title">안녕하세요, {userName}님!</h1>
 
                     <Image
                       src="/images/challenge/sprout.png"
