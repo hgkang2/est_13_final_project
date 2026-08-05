@@ -16,6 +16,11 @@
   flex-direction: column;
   gap: 32px;
 }
+@media (max-width: 1280px) {
+  .content {
+    gap: 16px;
+  }
+}
 
 .topRow {
   display: flex;
@@ -1824,9 +1829,6 @@
 }
 
 @media (max-width: 768px) {
-  // .journalHeader h2 {
-  //   @include typo-heading-xs;
-  // }
 
   .journalEmptyText p {
     @include typo-body-m-plus;
