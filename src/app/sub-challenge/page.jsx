@@ -1,4 +1,4 @@
-import Challenge from "@/pages/sub-challenge/Challenge";
+import Challenge from "@/components/pages/sub-challenge/Challenge";
 
 export default function SubChallengePage() {
   return <Challenge />;
