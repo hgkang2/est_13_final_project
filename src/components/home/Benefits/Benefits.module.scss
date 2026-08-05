@@ -1,0 +1,147 @@
+.benefits {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 307px;
+  grid-template-areas:
+    "divider divider"
+    "list image";
+  align-items: center;
+  column-gap: 177px;
+  row-gap: 64px;
+
+  width: 100%;
+  max-width: 1272px;
+  margin: 0 auto;
+  padding: 120px 72px;
+}
+
+.divider {
+  grid-area: divider;
+
+  width: 100%;
+  height: 1px;
+
+  background-color: var(--color-green-gray);
+  opacity: 0.4;
+}
+
+.list {
+  grid-area: list;
+
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  min-width: 0;
+}
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+
+  width: 100%;
+  padding: 0;
+
+  border: 0;
+  background: transparent;
+
+  color: var(--color-green-gray);
+  text-align: left;
+  font-weight: 400;
+  cursor: pointer;
+
+  transition:
+    color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.item:hover {
+  color: var(--color-gray);
+}
+
+.arrow {
+  flex: 0 0 auto;
+
+  margin-top: 3px;
+
+  color: var(--color-point);
+
+  opacity: 0;
+  transform: translateX(-6px);
+
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+.active {
+  color: var(--color-gray);
+}
+
+.active .arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.imageArea {
+  grid-area: image;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 307px;
+  min-height: 311px;
+}
+
+.imageArea img {
+  display: block;
+  height: auto;
+
+  animation: imageFade 0.35s ease;
+}
+
+@keyframes imageFade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .benefits {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "divider"
+      "list"
+      "image";
+
+    row-gap: 40px;
+    padding: 80px 32px;
+  }
+
+  .imageArea {
+    width: 100%;
+  }
+
+  .item {
+    line-height: 1.6;
+  }
+}
+
+@media (max-width: 480px) {
+  .benefits {
+    padding: 64px 20px;
+  }
+
+  .list {
+    gap: 20px;
+  }
+
+  .imageArea img {
+    width: 240px;
+  }
+}
