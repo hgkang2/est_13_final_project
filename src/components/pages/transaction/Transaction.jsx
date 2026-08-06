@@ -107,6 +107,11 @@ const initialTransactionForm = {
   content: "",
   memo: "",
   attachment: null,
+
+  withdrawAccount: "",
+  depositAccount: "",
+  isRecurring: false,
+  recurringDay: "29",
 };
 
 function formatAmount(amount) {
@@ -124,6 +129,7 @@ export default function Transaction() {
   const [transactionForm, setTransactionForm] = useState(
     initialTransactionForm,
   );
+  const isTransfer = transactionForm.type === "transfer";
 
   const visibleTransactions =
     activeFilter === "all"
@@ -166,9 +172,36 @@ export default function Transaction() {
   const handleTransactionFormChange = event => {
     const { name, value, files } = event.target;
 
+    setTransactionForm(prevForm => {
+      const nextForm = {
+        ...prevForm,
+        [name]: files ? (files[0] ?? null) : value,
+      };
+
+      if (name === "type" && value !== "transfer") {
+        return {
+          ...nextForm,
+          withdrawAccount: "",
+          depositAccount: "",
+          isRecurring: false,
+        };
+      }
+
+      if (name === "type" && value === "transfer") {
+        return {
+          ...nextForm,
+          paymentMethod: "",
+        };
+      }
+
+      return nextForm;
+    });
+  };
+
+  const handleToggleRecurring = () => {
     setTransactionForm(prevForm => ({
       ...prevForm,
-      [name]: files ? (files[0] ?? null) : value,
+      isRecurring: !prevForm.isRecurring,
     }));
   };
 
@@ -706,81 +739,271 @@ export default function Transaction() {
                             </span>
                           </label>
 
-                          <div className={styles.formFieldRow}>
-                            <label className={styles.formField}>
-                              <span className={styles.formLabel}>카테고리</span>
+                          {isTransfer ? (
+                            <>
+                              <div className={styles.formFieldRow}>
+                                <label className={styles.formField}>
+                                  <span className={styles.formLabel}>출금</span>
 
-                              <span className={styles.selectBox}>
-                                <select
-                                  name="category"
-                                  value={transactionForm.category}
-                                  onChange={handleTransactionFormChange}
-                                >
-                                  <option value="">카테고리 선택</option>
-                                  <option value="salary">월급</option>
-                                  <option value="otherIncome">부수입</option>
-                                  <option value="food">식비</option>
-                                  <option value="cafeSnack">카페/간식</option>
-                                  <option value="transportation">교통</option>
-                                  <option value="shopping">쇼핑</option>
-                                  <option value="subscription">구독</option>
-                                  <option value="savings">저축</option>
-                                  <option value="other">기타</option>
-                                </select>
+                                  <span className={styles.selectBox}>
+                                    <select
+                                      name="withdrawAccount"
+                                      value={transactionForm.withdrawAccount}
+                                      onChange={handleTransactionFormChange}
+                                    >
+                                      <option value="">출금 계좌 선택</option>
+                                      <option value="mainAccount">
+                                        주거래 계좌
+                                      </option>
+                                      <option value="salaryAccount">
+                                        급여 계좌
+                                      </option>
+                                      <option value="savingAccount">
+                                        저축 계좌
+                                      </option>
+                                      <option value="cash">현금</option>
+                                    </select>
+
+                                    <span
+                                      className="material-icons"
+                                      aria-hidden="true"
+                                    >
+                                      keyboard_arrow_down
+                                    </span>
+                                  </span>
+                                </label>
+
+                                <label className={styles.formField}>
+                                  <span className={styles.formLabel}>입금</span>
+
+                                  <span className={styles.selectBox}>
+                                    <select
+                                      name="depositAccount"
+                                      value={transactionForm.depositAccount}
+                                      onChange={handleTransactionFormChange}
+                                    >
+                                      <option value="">입금 계좌 선택</option>
+                                      <option value="mainAccount">
+                                        주거래 계좌
+                                      </option>
+                                      <option value="salaryAccount">
+                                        급여 계좌
+                                      </option>
+                                      <option value="savingAccount">
+                                        저축 계좌
+                                      </option>
+                                      <option value="cash">현금</option>
+                                    </select>
+
+                                    <span
+                                      className="material-icons"
+                                      aria-hidden="true"
+                                    >
+                                      keyboard_arrow_down
+                                    </span>
+                                  </span>
+                                </label>
+                              </div>
+
+                              <div className={styles.formFieldRow}>
+                                <label className={styles.formField}>
+                                  <span className={styles.formLabelRow}>
+                                    <span className={styles.formLabel}>
+                                      카테고리
+                                    </span>
+
+                                    <span className={styles.recurringControl}>
+                                      <span>반복</span>
+
+                                      <button
+                                        type="button"
+                                        role="switch"
+                                        aria-checked={
+                                          transactionForm.isRecurring
+                                        }
+                                        className={`${styles.recurringSwitch} ${
+                                          transactionForm.isRecurring
+                                            ? styles.recurringSwitchActive
+                                            : ""
+                                        }`}
+                                        onClick={handleToggleRecurring}
+                                      >
+                                        <span
+                                          className={
+                                            styles.recurringSwitchHandle
+                                          }
+                                        />
+                                      </button>
+                                    </span>
+                                  </span>
+
+                                  <span className={styles.selectBox}>
+                                    <select
+                                      name="category"
+                                      value={transactionForm.category}
+                                      onChange={handleTransactionFormChange}
+                                    >
+                                      <option value="">카테고리 선택</option>
+                                      <option value="savings">저축</option>
+                                      <option value="accountTransfer">
+                                        계좌이체
+                                      </option>
+                                      <option value="cardPayment">
+                                        카드대금
+                                      </option>
+                                      <option value="investment">투자</option>
+                                      <option value="other">기타</option>
+                                    </select>
+
+                                    <span
+                                      className="material-icons"
+                                      aria-hidden="true"
+                                    >
+                                      keyboard_arrow_down
+                                    </span>
+                                  </span>
+                                </label>
+
+                                {transactionForm.isRecurring ? (
+                                  <label className={styles.formField}>
+                                    <span className={styles.formLabel}>
+                                      반복일
+                                    </span>
+
+                                    <span className={styles.recurringDateBox}>
+                                      <select
+                                        name="recurringDay"
+                                        value={transactionForm.recurringDay}
+                                        onChange={handleTransactionFormChange}
+                                      >
+                                        {Array.from(
+                                          { length: 31 },
+                                          (_, index) => {
+                                            const day = String(index + 1);
+
+                                            return (
+                                              <option value={day} key={day}>
+                                                매월 {day}일
+                                              </option>
+                                            );
+                                          },
+                                        )}
+                                      </select>
+
+                                      <span
+                                        className="material-icons"
+                                        aria-hidden="true"
+                                      >
+                                        calendar_month
+                                      </span>
+                                    </span>
+                                  </label>
+                                ) : (
+                                  <label className={styles.formField}>
+                                    <span className={styles.formLabel}>
+                                      날짜
+                                    </span>
+
+                                    <span className={styles.dateInputBox}>
+                                      <input
+                                        type="date"
+                                        name="date"
+                                        value={transactionForm.date}
+                                        onChange={handleTransactionFormChange}
+                                      />
+                                    </span>
+                                  </label>
+                                )}
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className={styles.formFieldRow}>
+                                <label className={styles.formField}>
+                                  <span className={styles.formLabel}>
+                                    카테고리
+                                  </span>
+
+                                  <span className={styles.selectBox}>
+                                    <select
+                                      name="category"
+                                      value={transactionForm.category}
+                                      onChange={handleTransactionFormChange}
+                                    >
+                                      <option value="">카테고리 선택</option>
+                                      <option value="salary">월급</option>
+                                      <option value="otherIncome">
+                                        부수입
+                                      </option>
+                                      <option value="food">식비</option>
+                                      <option value="cafeSnack">
+                                        카페/간식
+                                      </option>
+                                      <option value="transportation">
+                                        교통
+                                      </option>
+                                      <option value="shopping">쇼핑</option>
+                                      <option value="subscription">구독</option>
+                                      <option value="other">기타</option>
+                                    </select>
+
+                                    <span
+                                      className="material-icons"
+                                      aria-hidden="true"
+                                    >
+                                      keyboard_arrow_down
+                                    </span>
+                                  </span>
+                                </label>
+
+                                <label className={styles.formField}>
+                                  <span className={styles.formLabel}>날짜</span>
+
+                                  <span className={styles.dateInputBox}>
+                                    <input
+                                      type="date"
+                                      name="date"
+                                      value={transactionForm.date}
+                                      onChange={handleTransactionFormChange}
+                                    />
+                                  </span>
+                                </label>
+                              </div>
+
+                              <label className={styles.formField}>
+                                <span className={styles.formLabel}>
+                                  결제수단
+                                </span>
 
                                 <span
-                                  className="material-icons"
-                                  aria-hidden="true"
+                                  className={`${styles.selectBox} ${styles.paymentSelectBox}`}
                                 >
-                                  keyboard_arrow_down
+                                  <select
+                                    name="paymentMethod"
+                                    value={transactionForm.paymentMethod}
+                                    onChange={handleTransactionFormChange}
+                                  >
+                                    <option value="">결제수단 선택</option>
+                                    <option value="creditCard">신용카드</option>
+                                    <option value="checkCard">체크카드</option>
+                                    <option value="accountTransfer">
+                                      계좌이체
+                                    </option>
+                                    <option value="cash">현금</option>
+                                    <option value="kakaoPay">카카오페이</option>
+                                    <option value="other">기타</option>
+                                  </select>
+
+                                  <span
+                                    className="material-icons"
+                                    aria-hidden="true"
+                                  >
+                                    keyboard_arrow_down
+                                  </span>
                                 </span>
-                              </span>
-                            </label>
-
-                            <label className={styles.formField}>
-                              <span className={styles.formLabel}>날짜</span>
-
-                              <span className={styles.dateInputBox}>
-                                <input
-                                  type="date"
-                                  name="date"
-                                  value={transactionForm.date}
-                                  onChange={handleTransactionFormChange}
-                                />
-                              </span>
-                            </label>
-                          </div>
-
-                          <label className={styles.formField}>
-                            <span className={styles.formLabel}>결제수단</span>
-
-                            <span
-                              className={`${styles.selectBox} ${styles.paymentSelectBox}`}
-                            >
-                              <select
-                                name="paymentMethod"
-                                value={transactionForm.paymentMethod}
-                                onChange={handleTransactionFormChange}
-                              >
-                                <option value="">결제수단 선택</option>
-                                <option value="creditCard">신용카드</option>
-                                <option value="checkCard">체크카드</option>
-                                <option value="accountTransfer">
-                                  계좌이체
-                                </option>
-                                <option value="cash">현금</option>
-                                <option value="kakaoPay">카카오페이</option>
-                                <option value="other">기타</option>
-                              </select>
-
-                              <span
-                                className="material-icons"
-                                aria-hidden="true"
-                              >
-                                keyboard_arrow_down
-                              </span>
-                            </span>
-                          </label>
+                              </label>
+                            </>
+                          )}
 
                           <label className={styles.formField}>
                             <span className={styles.formLabel}>내용</span>
