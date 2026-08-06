@@ -35,7 +35,8 @@ export default function Header({ isLoggedIn = false, userName = "모아" }) {
 
         <Link
           className={styles.userButton}
-          href={isLoggedIn ? "/mypage" : "/login"}
+          href={isLoggedIn ? "/my-page" : "/sub-home"}
+          // href={isLoggedIn ? "/my-page" : "/login"}
         >
           <span
             className={`material-icons ${styles.userIcon}`}
