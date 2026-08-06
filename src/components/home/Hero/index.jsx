@@ -111,7 +111,6 @@ export default function Hero() {
                 alt={slide.imageAlt}
                 fill
                 sizes="100vw"
-                quality={100}
                 className={styles.backgroundImage}
                 priority={index === 0}
               />
