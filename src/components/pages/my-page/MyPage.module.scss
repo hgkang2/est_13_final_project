@@ -9,35 +9,37 @@
 }
 
 .container {
-  width: 100%;
-  max-width: 1272px;
-  min-width: 0;
-  margin: 0 auto;
-  padding: var(--container-padding-desktop);
-  box-sizing: border-box;
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-rows: auto auto auto auto;
   gap: 16px;
+
+  width: 100%;
+  max-width: 1208px;
+  margin: 0 auto;
 
   /* Grid 행이 남은 높이까지 늘어나는 것 방지 */
   align-content: start;
 }
+
 /* 상단 프로필 카드 */
 
 .MyPage_Profile {
   grid-column: 1 / -1;
+  grid-row: 1;
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
   padding: 32px;
   border: 1px solid var(--color-point);
   border-radius: 24px;
   box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
 }
 
 /* 프로필 이미지와 인사말: 3칸 */
 
 .MyPage_Intro {
-  grid-column: span 3;
+  grid-column: 1 / span 3;
   display: flex;
   align-items: center;
   gap: 32px;
@@ -83,7 +85,7 @@
 /* 요약 정보: 3칸 */
 
 .MyPage_Summary {
-  grid-column: span 3;
+  grid-column: 4 / span 3;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: center;
@@ -108,7 +110,7 @@
   span {
     color: var(--color-gray);
     white-space: nowrap;
-
+    width: 100%;
     @include typo-body-m;
   }
 
@@ -116,6 +118,179 @@
     color: var(--color-point);
 
     @include typo-heading-s;
+  }
+}
+
+/* 성장 카드 */
+.MyPage_Growth {
+  grid-column: 1 / span 4;
+  grid-row: 2;
+  gap: 24px;
+  padding: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 24px;
+  background-color: var(--color-background-green);
+}
+.Growth_Info {
+  gap: 16px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  p {
+    color: var(--color-gray);
+    @include typo-body-l-plus;
+  }
+  h2 {
+    @include typo-body-l-plus;
+  }
+  strong {
+    color: var(--color-point);
+  }
+}
+
+.Title_Group {
+  gap: 8px;
+}
+.Progress_Group {
+  gap: 8px;
+}
+
+.Progress_Value {
+  color: var(--color-point);
+  @include typo-heading-s-plus;
+}
+
+.Progress_Bar {
+  width: 100%;
+  height: 12px;
+
+  background-color: var(--color-white);
+  border-radius: 999px;
+}
+
+.Progress_Fill {
+  width: 65%;
+  height: 100%;
+  background-color: var(--color-point);
+  border-radius: inherit;
+}
+
+/* 계정 관리*/
+.MyPage_Account {
+  grid-column: 5 / span 2;
+  grid-row: 2 / span 2;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  border: solid 1px var(--color-border-gray);
+  border-radius: 24px;
+  @include typo-card-head;
+}
+
+.Account_Item {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  border-bottom: 0.5px solid var(--color-border-gray);
+  white-space: nowrap;
+
+  @include typo-body-m;
+
+  dd {
+    @include typo-body-m;
+    width: 100%;
+    text-align: center;
+  }
+
+  dt {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+}
+
+.Account_Label {
+  @include typo-body-m;
+}
+.Account_Icon {
+  @include icon-m;
+}
+
+.Edit_Button {
+  @include typo-body-m;
+  width: 100%;
+  background-color: var(--color-point);
+  border-radius: 12px;
+  padding: 12px;
+  color: var(--color-white);
+}
+
+/* 통계 카드 */
+.MyPage_Stats {
+  grid-column: 1 / span 4;
+  grid-row: 3;
+}
+
+.Savings_Grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.Savings_Card {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  justify-content: center;
+  align-items: center;
+  border: solid 1px var(--color-border-gray);
+  border-radius: 24px;
+}
+
+.Stat_Content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+
+  span {
+    @include typo-body-m-plus;
+  }
+
+  strong {
+    @include typo-heading-s;
+  }
+}
+
+/* 동기부여 문구 */
+.MyPage_Message {
+  grid-column: 1 / span 6;
+  grid-row: 4;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: solid 1px var(--color-border-gray);
+  border-radius: 24px;
+  background-image: linear-gradient(
+    90deg,
+    var(--color-warning-background) 0%,
+    #e2f2ff 100%
+  );
+
+  p {
+    @include typo-heading-s;
+    text-align: center;
+  }
+
+  strong {
+    color: var(--color-success-dot);
   }
 }
 
