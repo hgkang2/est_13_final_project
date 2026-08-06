@@ -225,7 +225,6 @@ export default function Analysis() {
             </div>
             <button type="button" className={styles.moreBtn}>
               더보기{" "}
-              <span className="material-symbols-rounded">expand_more</span>
             </button>
           </section>
         </main>
