@@ -107,7 +107,7 @@ export default function MyPage() {
             <img
               src="/images/mypage/moa-cheering.webp"
               alt="성장 캐릭터"
-              className={styles.Character_Image}
+              className={styles.Growth_Image}
             />
           </section>
 
