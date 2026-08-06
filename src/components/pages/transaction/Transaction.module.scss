@@ -1,0 +1,30 @@
+@use "../../../styles/mixins" as *;
+
+.page {
+  display: flex;
+  width: 100%;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+}
+
+.content {
+  display: flex;
+  padding: 32px 0;
+  flex-direction: column;
+  gap: 32px;
+}
+
+@media (max-width: 1280px) {
+  .content {
+    gap: 16px;
+  }
+}
+
+@include mobile {
+  .content {
+    padding: 16px 0;
+  }
+}
