@@ -98,6 +98,17 @@ const transactionFilters = [
   { id: "transfer", label: "이체" },
 ];
 
+const initialTransactionForm = {
+  type: "income",
+  amount: "",
+  category: "",
+  date: "2026-07-29",
+  paymentMethod: "",
+  content: "",
+  memo: "",
+  attachment: null,
+};
+
 function formatAmount(amount) {
   const sign = amount > 0 ? "+" : "-";
   return `${sign}${Math.abs(amount).toLocaleString("ko-KR")}`;
@@ -107,6 +118,12 @@ export default function Transaction() {
   const [activeFilter, setActiveFilter] = useState("all");
   const [isEntryOpen, setIsEntryOpen] = useState(true);
   const [selectedIds, setSelectedIds] = useState([]);
+  const [entryTab, setEntryTab] = useState("manual");
+  const [entryMode, setEntryMode] = useState("single");
+
+  const [transactionForm, setTransactionForm] = useState(
+    initialTransactionForm,
+  );
 
   const visibleTransactions =
     activeFilter === "all"
@@ -144,6 +161,25 @@ export default function Transaction() {
         ...visibleTransactions.map(transaction => transaction.id),
       ]),
     ]);
+  };
+
+  const handleTransactionFormChange = event => {
+    const { name, value, files } = event.target;
+
+    setTransactionForm(prevForm => ({
+      ...prevForm,
+      [name]: files ? (files[0] ?? null) : value,
+    }));
+  };
+
+  const handleTransactionSubmit = event => {
+    event.preventDefault();
+
+    console.log("소비 기록 입력값", transactionForm);
+  };
+
+  const handleContinueEntry = () => {
+    setTransactionForm(initialTransactionForm);
   };
 
   return (
@@ -426,40 +462,426 @@ export default function Transaction() {
                       );
                     })}
                   </ul>
+
+                  <div className={styles.loadMoreArea}>
+                    <button type="button" className={styles.loadMoreButton}>
+                      <span>더 많은 내역 보기</span>
+
+                      <span className="material-icons" aria-hidden="true">
+                        keyboard_arrow_down
+                      </span>
+                    </button>
+                  </div>
                 </div>
               </section>
             </div>
 
             {isEntryOpen ? (
+              // <aside className={styles.entryPanel} aria-label="소비 기록 입력">
+              //   <div className={styles.entryPanelHeader}>
+              //     <div>
+              //       <p className={styles.entryEyebrow}>소비 기록 입력</p>
+              //       <h2 className={styles.entryTitle}>새 거래 추가</h2>
+              //     </div>
+
+              //     <div className={styles.entryHeaderActions}>
+              //       <button type="button" aria-label="입력 기록 확인">
+              //         <span className="material-icons" aria-hidden="true">
+              //           history
+              //         </span>
+              //       </button>
+
+              //       <button
+              //         type="button"
+              //         onClick={() => setIsEntryOpen(false)}
+              //         aria-label="소비 기록 입력창 닫기"
+              //       >
+              //         <span className="material-icons" aria-hidden="true">
+              //           close
+              //         </span>
+              //       </button>
+              //     </div>
+              //   </div>
+
+              //   <div className={styles.entryPlaceholder}>
+              //     입력 폼은 다음 단계에서 여기에 추가
+              //   </div>
+              // </aside>
               <aside className={styles.entryPanel} aria-label="소비 기록 입력">
                 <div className={styles.entryPanelHeader}>
-                  <div>
-                    <p className={styles.entryEyebrow}>소비 기록 입력</p>
-                    <h2 className={styles.entryTitle}>새 거래 추가</h2>
-                  </div>
+                  <button
+                    type="button"
+                    className={styles.entryHeaderButton}
+                    onClick={() => setIsEntryOpen(false)}
+                    aria-label="소비 기록 입력창 닫기"
+                  >
+                    <span className="material-icons" aria-hidden="true">
+                      close
+                    </span>
+                  </button>
 
-                  <div className={styles.entryHeaderActions}>
-                    <button type="button" aria-label="입력 기록 확인">
-                      <span className="material-icons" aria-hidden="true">
-                        history
-                      </span>
-                    </button>
+                  <h2 className={styles.entryPanelTitle}>소비 기록 입력</h2>
 
-                    <button
-                      type="button"
-                      onClick={() => setIsEntryOpen(false)}
-                      aria-label="소비 기록 입력창 닫기"
-                    >
-                      <span className="material-icons" aria-hidden="true">
-                        close
-                      </span>
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    className={styles.entryHeaderButton}
+                    aria-label="최근 입력 기록 보기"
+                  >
+                    <span className="material-icons" aria-hidden="true">
+                      history
+                    </span>
+                  </button>
                 </div>
 
-                <div className={styles.entryPlaceholder}>
-                  입력 폼은 다음 단계에서 여기에 추가
+                <div className={styles.entryTabs} role="tablist">
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={entryTab === "manual"}
+                    className={`${styles.entryTab} ${
+                      entryTab === "manual" ? styles.activeEntryTab : ""
+                    }`}
+                    onClick={() => setEntryTab("manual")}
+                  >
+                    직접입력
+                  </button>
+
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={entryTab === "ai"}
+                    className={`${styles.entryTab} ${
+                      entryTab === "ai" ? styles.activeEntryTab : ""
+                    }`}
+                    onClick={() => setEntryTab("ai")}
+                  >
+                    AI 자동 인식
+                  </button>
                 </div>
+
+                {entryTab === "manual" ? (
+                  <form
+                    className={styles.entryForm}
+                    onSubmit={handleTransactionSubmit}
+                  >
+                    <section className={styles.entryModeSection}>
+                      <h3 className={styles.formSectionTitle}>
+                        입력 방식 선택
+                      </h3>
+
+                      <div className={styles.entryModeOptions}>
+                        <button
+                          type="button"
+                          className={`${styles.entryModeButton} ${
+                            entryMode === "single" ? styles.activeEntryMode : ""
+                          }`}
+                          onClick={() => setEntryMode("single")}
+                        >
+                          <strong>단건 입력</strong>
+                          <span>거래를 하나씩 입력</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          className={`${styles.entryModeButton} ${
+                            entryMode === "multiple"
+                              ? styles.activeEntryMode
+                              : ""
+                          }`}
+                          onClick={() => setEntryMode("multiple")}
+                        >
+                          <strong>다건 입력</strong>
+                          <span>여러 거래를 한 번에 입력</span>
+                        </button>
+                      </div>
+                    </section>
+
+                    {entryMode === "single" ? (
+                      <>
+                        <div className={styles.formFields}>
+                          <fieldset className={styles.formField}>
+                            <legend className={styles.formLabel}>
+                              거래구분
+                            </legend>
+
+                            <div className={styles.transactionTypeOptions}>
+                              <label
+                                className={`${styles.transactionTypeButton} ${
+                                  styles.incomeTypeButton
+                                } ${
+                                  transactionForm.type === "income"
+                                    ? styles.activeTypeButton
+                                    : ""
+                                }`}
+                              >
+                                <input
+                                  type="radio"
+                                  name="type"
+                                  value="income"
+                                  checked={transactionForm.type === "income"}
+                                  onChange={handleTransactionFormChange}
+                                />
+
+                                <span
+                                  className="material-icons"
+                                  aria-hidden="true"
+                                >
+                                  arrow_upward
+                                </span>
+
+                                <span>수입</span>
+                              </label>
+
+                              <label
+                                className={`${styles.transactionTypeButton} ${
+                                  styles.expenseTypeButton
+                                } ${
+                                  transactionForm.type === "expense"
+                                    ? styles.activeTypeButton
+                                    : ""
+                                }`}
+                              >
+                                <input
+                                  type="radio"
+                                  name="type"
+                                  value="expense"
+                                  checked={transactionForm.type === "expense"}
+                                  onChange={handleTransactionFormChange}
+                                />
+
+                                <span
+                                  className="material-icons"
+                                  aria-hidden="true"
+                                >
+                                  arrow_downward
+                                </span>
+
+                                <span>지출</span>
+                              </label>
+
+                              <label
+                                className={`${styles.transactionTypeButton} ${
+                                  styles.transferTypeButton
+                                } ${
+                                  transactionForm.type === "transfer"
+                                    ? styles.activeTypeButton
+                                    : ""
+                                }`}
+                              >
+                                <input
+                                  type="radio"
+                                  name="type"
+                                  value="transfer"
+                                  checked={transactionForm.type === "transfer"}
+                                  onChange={handleTransactionFormChange}
+                                />
+
+                                <span
+                                  className="material-icons"
+                                  aria-hidden="true"
+                                >
+                                  sync_alt
+                                </span>
+
+                                <span>이체</span>
+                              </label>
+                            </div>
+                          </fieldset>
+
+                          <label className={styles.formField}>
+                            <span className={styles.formLabel}>금액</span>
+
+                            <span className={styles.amountInputBox}>
+                              <input
+                                type="number"
+                                name="amount"
+                                min="0"
+                                inputMode="numeric"
+                                value={transactionForm.amount}
+                                onChange={handleTransactionFormChange}
+                                placeholder="금액을 입력하세요"
+                              />
+
+                              <strong>원</strong>
+                            </span>
+                          </label>
+
+                          <div className={styles.formFieldRow}>
+                            <label className={styles.formField}>
+                              <span className={styles.formLabel}>카테고리</span>
+
+                              <span className={styles.selectBox}>
+                                <select
+                                  name="category"
+                                  value={transactionForm.category}
+                                  onChange={handleTransactionFormChange}
+                                >
+                                  <option value="">카테고리 선택</option>
+                                  <option value="salary">월급</option>
+                                  <option value="otherIncome">부수입</option>
+                                  <option value="food">식비</option>
+                                  <option value="cafeSnack">카페/간식</option>
+                                  <option value="transportation">교통</option>
+                                  <option value="shopping">쇼핑</option>
+                                  <option value="subscription">구독</option>
+                                  <option value="savings">저축</option>
+                                  <option value="other">기타</option>
+                                </select>
+
+                                <span
+                                  className="material-icons"
+                                  aria-hidden="true"
+                                >
+                                  keyboard_arrow_down
+                                </span>
+                              </span>
+                            </label>
+
+                            <label className={styles.formField}>
+                              <span className={styles.formLabel}>날짜</span>
+
+                              <span className={styles.dateInputBox}>
+                                <input
+                                  type="date"
+                                  name="date"
+                                  value={transactionForm.date}
+                                  onChange={handleTransactionFormChange}
+                                />
+                              </span>
+                            </label>
+                          </div>
+
+                          <label className={styles.formField}>
+                            <span className={styles.formLabel}>결제수단</span>
+
+                            <span
+                              className={`${styles.selectBox} ${styles.paymentSelectBox}`}
+                            >
+                              <select
+                                name="paymentMethod"
+                                value={transactionForm.paymentMethod}
+                                onChange={handleTransactionFormChange}
+                              >
+                                <option value="">결제수단 선택</option>
+                                <option value="creditCard">신용카드</option>
+                                <option value="checkCard">체크카드</option>
+                                <option value="accountTransfer">
+                                  계좌이체
+                                </option>
+                                <option value="cash">현금</option>
+                                <option value="kakaoPay">카카오페이</option>
+                                <option value="other">기타</option>
+                              </select>
+
+                              <span
+                                className="material-icons"
+                                aria-hidden="true"
+                              >
+                                keyboard_arrow_down
+                              </span>
+                            </span>
+                          </label>
+
+                          <label className={styles.formField}>
+                            <span className={styles.formLabel}>내용</span>
+
+                            <input
+                              type="text"
+                              name="content"
+                              value={transactionForm.content}
+                              onChange={handleTransactionFormChange}
+                              className={styles.textInput}
+                              placeholder="내용을 입력하세요 (선택)"
+                              maxLength={50}
+                            />
+
+                            <span className={styles.characterCount}>
+                              {transactionForm.content.length}/50
+                            </span>
+                          </label>
+
+                          <label className={styles.formField}>
+                            <span className={styles.formLabel}>메모</span>
+
+                            <input
+                              type="text"
+                              name="memo"
+                              value={transactionForm.memo}
+                              onChange={handleTransactionFormChange}
+                              className={styles.textInput}
+                              placeholder="메모를 입력하세요 (선택)"
+                              maxLength={50}
+                            />
+
+                            <span className={styles.characterCount}>
+                              {transactionForm.memo.length}/50
+                            </span>
+                          </label>
+                        </div>
+
+                        <section className={styles.attachmentSection}>
+                          <div className={styles.attachmentDescription}>
+                            <h3>거래 자료 첨부</h3>
+
+                            <p>
+                              영수증, 거래내역 등을 거래 기록과 함께 보관하세요.
+                            </p>
+                          </div>
+
+                          <label className={styles.attachmentBox}>
+                            <input
+                              type="file"
+                              name="attachment"
+                              accept="image/*"
+                              onChange={handleTransactionFormChange}
+                            />
+
+                            <span
+                              className={`material-icons ${styles.attachmentIcon}`}
+                              aria-hidden="true"
+                            >
+                              add_photo_alternate
+                            </span>
+
+                            <span className={styles.attachmentText}>
+                              <strong>
+                                {transactionForm.attachment
+                                  ? transactionForm.attachment.name
+                                  : "이미지 등록"}
+                              </strong>
+
+                              <small>
+                                이 영역을 클릭하거나 이미지를 드래그 하세요.
+                              </small>
+                            </span>
+                          </label>
+                        </section>
+                      </>
+                    ) : (
+                      <div className={styles.multipleEntryPlaceholder}>
+                        다건 입력 UI는 다음 단계에서 추가
+                      </div>
+                    )}
+
+                    <div className={styles.formActions}>
+                      <button type="submit" className={styles.saveButton}>
+                        저장하기
+                      </button>
+
+                      <button
+                        type="button"
+                        className={styles.continueButton}
+                        onClick={handleContinueEntry}
+                      >
+                        계속 입력
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <div className={styles.aiEntryPlaceholder}>
+                    AI 자동 인식 UI는 이후 단계에서 추가
+                  </div>
+                )}
               </aside>
             ) : (
               <button
