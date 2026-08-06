@@ -36,7 +36,11 @@ export default function Analysis() {
               {/* 캐릭터 영역 */}
               <div className={styles.characterArea}>
                 <div className={styles.characterBox}>
-                  <div className={styles.characterPlaceholder} />
+                  <img
+                    src="/images/character/moa analysis.png"
+                    alt="AI 소비 분석 결과를 설명하는 모아 캐릭터"
+                    className={styles.characterImage}
+                  />
                 </div>
               </div>
 

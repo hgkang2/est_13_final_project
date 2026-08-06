@@ -93,6 +93,13 @@ $breakpoint-mobile: 390px;
         @include flex-center;
         overflow: hidden;
 
+        /* 추가된 부분: 이미지 크기가 박스를 넘지 않도록 제한 */
+        .characterImage {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+
         .characterPlaceholder {
           width: 100%;
           height: 100%;
