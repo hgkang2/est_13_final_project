@@ -114,6 +114,17 @@ const initialTransactionForm = {
   recurringDay: "29",
 };
 
+const createMultipleTransactionRow = id => ({
+  id,
+  date: "",
+  type: "",
+  category: "",
+  content: "",
+  amount: "",
+  paymentMethod: "",
+  memo: "",
+});
+
 function formatAmount(amount) {
   const sign = amount > 0 ? "+" : "-";
   return `${sign}${Math.abs(amount).toLocaleString("ko-KR")}`;
@@ -129,7 +140,46 @@ export default function Transaction() {
   const [transactionForm, setTransactionForm] = useState(
     initialTransactionForm,
   );
+
+  const [multipleRows, setMultipleRows] = useState([
+    {
+      id: 1,
+      date: "2026-07-29",
+      type: "expense",
+      category: "cafeSnack",
+      content: "스타벅스 아메리카노",
+      amount: "4500",
+      paymentMethod: "creditCard",
+      memo: "점심 후 커피",
+    },
+    createMultipleTransactionRow(2),
+    createMultipleTransactionRow(3),
+  ]);
+
   const isTransfer = transactionForm.type === "transfer";
+
+  const multipleRowStatus = multipleRows.reduce(
+    (status, row) => {
+      const hasRequiredFields =
+        row.date && row.type && row.category && row.amount && row.paymentMethod;
+
+      const hasAnyValue = Object.entries(row).some(
+        ([key, value]) => key !== "id" && value,
+      );
+
+      if (hasRequiredFields) {
+        status.available += 1;
+      } else if (hasAnyValue) {
+        status.error += 1;
+      }
+
+      return status;
+    },
+    {
+      available: 0,
+      error: 0,
+    },
+  );
 
   const visibleTransactions =
     activeFilter === "all"
@@ -213,6 +263,44 @@ export default function Transaction() {
 
   const handleContinueEntry = () => {
     setTransactionForm(initialTransactionForm);
+  };
+
+  const handleMultipleRowChange = (id, event) => {
+    const { name, value } = event.target;
+
+    setMultipleRows(prevRows =>
+      prevRows.map(row =>
+        row.id === id
+          ? {
+              ...row,
+              [name]: value,
+            }
+          : row,
+      ),
+    );
+  };
+
+  const handleAddMultipleRow = () => {
+    setMultipleRows(prevRows => {
+      const nextId =
+        prevRows.length === 0
+          ? 1
+          : Math.max(...prevRows.map(row => row.id)) + 1;
+
+      return [...prevRows, createMultipleTransactionRow(nextId)];
+    });
+  };
+
+  const handleRemoveMultipleRow = id => {
+    setMultipleRows(prevRows => prevRows.filter(row => row.id !== id));
+  };
+
+  const handleCancelMultipleEntry = () => {
+    setEntryMode("single");
+  };
+
+  const handleMultipleSubmit = () => {
+    console.log("다건 입력값", multipleRows);
   };
 
   return (
@@ -540,20 +628,41 @@ export default function Transaction() {
               //     입력 폼은 다음 단계에서 여기에 추가
               //   </div>
               // </aside>
-              <aside className={styles.entryPanel} aria-label="소비 기록 입력">
+              <aside
+                className={`${styles.entryPanel} ${
+                  entryMode === "multiple" ? styles.multipleEntryPanel : ""
+                }`}
+                aria-label="소비 기록 입력"
+              >
                 <div className={styles.entryPanelHeader}>
-                  <button
-                    type="button"
-                    className={styles.entryHeaderButton}
-                    onClick={() => setIsEntryOpen(false)}
-                    aria-label="소비 기록 입력창 닫기"
-                  >
-                    <span className="material-icons" aria-hidden="true">
-                      close
-                    </span>
-                  </button>
+                  {entryMode === "multiple" ? (
+                    <button
+                      type="button"
+                      className={styles.multipleBackButton}
+                      onClick={() => setEntryMode("single")}
+                    >
+                      <span className="material-icons" aria-hidden="true">
+                        arrow_back
+                      </span>
 
-                  <h2 className={styles.entryPanelTitle}>소비 기록 입력</h2>
+                      <span>소비 기록으로 돌아가기</span>
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        className={styles.entryHeaderButton}
+                        onClick={() => setIsEntryOpen(false)}
+                        aria-label="소비 기록 입력창 닫기"
+                      >
+                        <span className="material-icons" aria-hidden="true">
+                          close
+                        </span>
+                      </button>
+
+                      <h2 className={styles.entryPanelTitle}>소비 기록 입력</h2>
+                    </>
+                  )}
 
                   <button
                     type="button"
@@ -566,7 +675,12 @@ export default function Transaction() {
                   </button>
                 </div>
 
-                <div className={styles.entryTabs} role="tablist">
+                <div
+                  className={`${styles.entryTabs} ${
+                    entryMode === "multiple" ? styles.multipleEntryTabs : ""
+                  }`}
+                  role="tablist"
+                >
                   <button
                     type="button"
                     role="tab"
@@ -597,38 +711,79 @@ export default function Transaction() {
                     className={styles.entryForm}
                     onSubmit={handleTransactionSubmit}
                   >
-                    <section className={styles.entryModeSection}>
-                      <h3 className={styles.formSectionTitle}>
-                        입력 방식 선택
-                      </h3>
+                    <section
+                      className={`${styles.entryModeSection} ${
+                        entryMode === "multiple"
+                          ? styles.multipleEntryModeSection
+                          : ""
+                      }`}
+                    >
+                      <div className={styles.entryModeContent}>
+                        <h3 className={styles.formSectionTitle}>
+                          입력 방식 선택
+                        </h3>
 
-                      <div className={styles.entryModeOptions}>
-                        <button
-                          type="button"
-                          className={`${styles.entryModeButton} ${
-                            entryMode === "single" ? styles.activeEntryMode : ""
-                          }`}
-                          onClick={() => setEntryMode("single")}
-                        >
-                          <strong>단건 입력</strong>
-                          <span>거래를 하나씩 입력</span>
-                        </button>
+                        <div className={styles.entryModeOptions}>
+                          <button
+                            type="button"
+                            className={`${styles.entryModeButton} ${
+                              entryMode === "single"
+                                ? styles.activeEntryMode
+                                : ""
+                            }`}
+                            onClick={() => setEntryMode("single")}
+                          >
+                            <strong>단건 입력</strong>
+                            <span>거래를 하나씩 입력</span>
+                          </button>
 
-                        <button
-                          type="button"
-                          className={`${styles.entryModeButton} ${
-                            entryMode === "multiple"
-                              ? styles.activeEntryMode
-                              : ""
-                          }`}
-                          onClick={() => setEntryMode("multiple")}
-                        >
-                          <strong>다건 입력</strong>
-                          <span>여러 거래를 한 번에 입력</span>
-                        </button>
+                          <button
+                            type="button"
+                            className={`${styles.entryModeButton} ${
+                              entryMode === "multiple"
+                                ? styles.activeEntryMode
+                                : ""
+                            }`}
+                            onClick={() => setEntryMode("multiple")}
+                          >
+                            <strong>다건 입력</strong>
+                            <span>여러 거래를 한 번에 입력</span>
+                          </button>
+                        </div>
                       </div>
-                    </section>
 
+                      {entryMode === "multiple" && (
+                        <section
+                          className={styles.multipleStatus}
+                          aria-label="다건 입력 작성 상태"
+                        >
+                          <div className={styles.multipleStatusItem}>
+                            <span>작성 중</span>
+                            <strong className={styles.writingCount}>
+                              {multipleRows.length}건
+                            </strong>
+                          </div>
+
+                          <div className={styles.statusDivider} />
+
+                          <div className={styles.multipleStatusItem}>
+                            <span>오류</span>
+                            <strong className={styles.errorCount}>
+                              {multipleRowStatus.error}건
+                            </strong>
+                          </div>
+
+                          <div className={styles.statusDivider} />
+
+                          <div className={styles.multipleStatusItem}>
+                            <span>저장 가능</span>
+                            <strong className={styles.availableCount}>
+                              {multipleRowStatus.available}건
+                            </strong>
+                          </div>
+                        </section>
+                      )}
+                    </section>
                     {entryMode === "single" ? (
                       <>
                         <div className={styles.formFields}>
@@ -1081,24 +1236,257 @@ export default function Transaction() {
                         </section>
                       </>
                     ) : (
-                      <div className={styles.multipleEntryPlaceholder}>
-                        다건 입력 UI는 다음 단계에서 추가
+                      <div className={styles.multipleEntryContent}>
+                        <section className={styles.multipleTable}>
+                          <div className={styles.multipleTableHeader}>
+                            <div className={styles.multipleNumberHeader} />
+                            <div>날짜</div>
+                            <div>구분</div>
+                            <div>카테고리</div>
+                            <div>내용</div>
+                            <div>금액</div>
+                            <div>결제수단</div>
+                            <div>메모</div>
+
+                            <div className={styles.multipleHelp}>
+                              <span
+                                className="material-icons"
+                                aria-hidden="true"
+                              >
+                                help_outline
+                              </span>
+                            </div>
+                          </div>
+
+                          <ol className={styles.multipleRowList}>
+                            {multipleRows.map((row, index) => (
+                              <li className={styles.multipleRow} key={row.id}>
+                                <strong className={styles.multipleRowNumber}>
+                                  {index + 1}
+                                </strong>
+
+                                <input
+                                  type="date"
+                                  name="date"
+                                  value={row.date}
+                                  onChange={event =>
+                                    handleMultipleRowChange(row.id, event)
+                                  }
+                                  className={styles.multipleDateInput}
+                                  aria-label={`${index + 1}번 거래 날짜`}
+                                />
+
+                                <span className={styles.multipleSelect}>
+                                  <select
+                                    name="type"
+                                    value={row.type}
+                                    onChange={event =>
+                                      handleMultipleRowChange(row.id, event)
+                                    }
+                                    aria-label={`${index + 1}번 거래 구분`}
+                                  >
+                                    <option value="">선택</option>
+                                    <option value="income">수입</option>
+                                    <option value="expense">지출</option>
+                                    <option value="transfer">이체</option>
+                                  </select>
+
+                                  <span
+                                    className="material-icons"
+                                    aria-hidden="true"
+                                  >
+                                    keyboard_arrow_down
+                                  </span>
+                                </span>
+
+                                <span className={styles.multipleSelect}>
+                                  <select
+                                    name="category"
+                                    value={row.category}
+                                    onChange={event =>
+                                      handleMultipleRowChange(row.id, event)
+                                    }
+                                    aria-label={`${index + 1}번 거래 카테고리`}
+                                  >
+                                    <option value="">카테고리 선택</option>
+                                    <option value="salary">월급</option>
+                                    <option value="otherIncome">부수입</option>
+                                    <option value="food">식비</option>
+                                    <option value="cafeSnack">카페/간식</option>
+                                    <option value="transportation">교통</option>
+                                    <option value="shopping">쇼핑</option>
+                                    <option value="subscription">구독</option>
+                                    <option value="savings">저축</option>
+                                    <option value="other">기타</option>
+                                  </select>
+
+                                  <span
+                                    className="material-icons"
+                                    aria-hidden="true"
+                                  >
+                                    keyboard_arrow_down
+                                  </span>
+                                </span>
+
+                                <input
+                                  type="text"
+                                  name="content"
+                                  value={row.content}
+                                  onChange={event =>
+                                    handleMultipleRowChange(row.id, event)
+                                  }
+                                  className={styles.multipleTextInput}
+                                  placeholder="내용을 입력하세요 (선택)"
+                                  maxLength={50}
+                                  aria-label={`${index + 1}번 거래 내용`}
+                                />
+
+                                <span className={styles.multipleAmountInput}>
+                                  <input
+                                    type="number"
+                                    name="amount"
+                                    min="0"
+                                    inputMode="numeric"
+                                    value={row.amount}
+                                    onChange={event =>
+                                      handleMultipleRowChange(row.id, event)
+                                    }
+                                    placeholder="금액 입력"
+                                    aria-label={`${index + 1}번 거래 금액`}
+                                  />
+
+                                  <strong>원</strong>
+                                </span>
+
+                                <span className={styles.multipleSelect}>
+                                  <select
+                                    name="paymentMethod"
+                                    value={row.paymentMethod}
+                                    onChange={event =>
+                                      handleMultipleRowChange(row.id, event)
+                                    }
+                                    aria-label={`${index + 1}번 거래 결제수단`}
+                                  >
+                                    <option value="">결제수단 선택</option>
+                                    <option value="creditCard">신용카드</option>
+                                    <option value="checkCard">체크카드</option>
+                                    <option value="accountTransfer">
+                                      계좌이체
+                                    </option>
+                                    <option value="cash">현금</option>
+                                    <option value="kakaoPay">카카오페이</option>
+                                    <option value="other">기타</option>
+                                  </select>
+
+                                  <span
+                                    className="material-icons"
+                                    aria-hidden="true"
+                                  >
+                                    keyboard_arrow_down
+                                  </span>
+                                </span>
+
+                                <input
+                                  type="text"
+                                  name="memo"
+                                  value={row.memo}
+                                  onChange={event =>
+                                    handleMultipleRowChange(row.id, event)
+                                  }
+                                  className={styles.multipleTextInput}
+                                  placeholder="메모를 입력하세요 (선택)"
+                                  maxLength={50}
+                                  aria-label={`${index + 1}번 거래 메모`}
+                                />
+
+                                <button
+                                  type="button"
+                                  className={styles.removeMultipleRowButton}
+                                  onClick={() =>
+                                    handleRemoveMultipleRow(row.id)
+                                  }
+                                  aria-label={`${index + 1}번 거래 행 삭제`}
+                                >
+                                  <span
+                                    className="material-icons"
+                                    aria-hidden="true"
+                                  >
+                                    clear
+                                  </span>
+                                </button>
+                              </li>
+                            ))}
+                          </ol>
+                        </section>
+
+                        <div className={styles.multipleActions}>
+                          <div className={styles.multipleLeftActions}>
+                            <button
+                              type="button"
+                              className={styles.addMultipleRowButton}
+                              onClick={handleAddMultipleRow}
+                            >
+                              <span
+                                className="material-icons"
+                                aria-hidden="true"
+                              >
+                                add
+                              </span>
+
+                              <span>행 추가</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              className={styles.excelDownloadButton}
+                            >
+                              <span
+                                className="material-icons"
+                                aria-hidden="true"
+                              >
+                                file_download
+                              </span>
+
+                              <span>엑셀 파일로 다운로드</span>
+                            </button>
+                          </div>
+
+                          <div className={styles.multipleRightActions}>
+                            <button
+                              type="button"
+                              className={styles.cancelMultipleButton}
+                              onClick={handleCancelMultipleEntry}
+                            >
+                              취소
+                            </button>
+
+                            <button
+                              type="button"
+                              className={styles.saveMultipleButton}
+                              onClick={handleMultipleSubmit}
+                            >
+                              {multipleRows.length}건 저장하기
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     )}
 
-                    <div className={styles.formActions}>
-                      <button type="submit" className={styles.saveButton}>
-                        저장하기
-                      </button>
+                    {entryMode === "single" && (
+                      <div className={styles.formActions}>
+                        <button type="submit" className={styles.saveButton}>
+                          저장하기
+                        </button>
 
-                      <button
-                        type="button"
-                        className={styles.continueButton}
-                        onClick={handleContinueEntry}
-                      >
-                        계속 입력
-                      </button>
-                    </div>
+                        <button
+                          type="button"
+                          className={styles.continueButton}
+                          onClick={handleContinueEntry}
+                        >
+                          계속 입력
+                        </button>
+                      </div>
+                    )}
                   </form>
                 ) : (
                   <div className={styles.aiEntryPlaceholder}>
