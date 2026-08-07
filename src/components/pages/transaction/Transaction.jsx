@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import BottomTab from "@/components/layout/BottomTab";
 import SubFooter from "@/components/layout/SubFooter";
@@ -161,6 +161,15 @@ const recentTransactions = [
   },
 ];
 
+const paymentMethodMap = {
+  신용카드: "creditCard",
+  체크카드: "checkCard",
+  계좌이체: "accountTransfer",
+  현금: "cash",
+  카카오페이: "kakaoPay",
+  기타: "other",
+};
+
 const transactionFilters = [
   { id: "all", label: "전체" },
   { id: "income", label: "수입" },
@@ -257,22 +266,63 @@ export default function Transaction() {
 
   const [isRecentOpen, setIsRecentOpen] = useState(false);
   const [copiedRecentId, setCopiedRecentId] = useState(null);
+  const [toastMessage, setToastMessage] = useState("");
 
-  //테스트용. 모달 생성 후 제거
-  const handleRecentCopy = transaction => {
-    setCopiedRecentId(transaction.id);
+  const [copyTarget, setCopyTarget] = useState(null);
+  const [isCopyModalOpen, setIsCopyModalOpen] = useState(false);
 
-    console.log("복사할 최근 거래", transaction);
-  };
+  useEffect(() => {
+    if (!toastMessage) return;
+
+    const timer = setTimeout(() => {
+      setToastMessage("");
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [toastMessage]);
+
+  // const handleRecentCopy = transaction => {
+  //   setCopiedRecentId(transaction.id);
+  //   setToastMessage("거래 정보를 입력창에 복사했어요.");
+
+  //   console.log("복사할 최근 거래", transaction);
+  // };
 
   const handleViewAllRecent = () => {
     console.log("최근 입력 전체 보기");
   };
 
-  //   const handleRecentCopy = transaction => {
-  //   setSelectedRecentTransaction(transaction);
-  //   setIsCopyDateModalOpen(true);
-  // };
+  const handleRecentCopy = transaction => {
+    setCopyTarget(transaction);
+    setIsCopyModalOpen(true);
+  };
+
+  const handleConfirmRecentCopy = dateType => {
+    if (!copyTarget) return;
+
+    const today = new Date().toISOString().split("T")[0];
+
+    setTransactionForm(prevForm => ({
+      ...prevForm,
+      type: copyTarget.type,
+      amount: Math.abs(copyTarget.amount).toString(),
+      category: copyTarget.categoryType,
+      date: dateType === "today" ? today : copyTarget.date.replaceAll(".", "-"),
+      paymentMethod: paymentMethodMap[copyTarget.paymentMethod] ?? "",
+      content: copyTarget.content,
+      memo: "",
+    }));
+
+    setEntryTab("manual");
+    setEntryMode("single");
+    setIsRecentOpen(false);
+    setCopiedRecentId(copyTarget.id);
+
+    setIsCopyModalOpen(false);
+    setCopyTarget(null);
+
+    setToastMessage("거래 정보를 입력창에 복사했어요.");
+  };
 
   const isTransfer = transactionForm.type === "transfer";
 
@@ -2065,12 +2115,91 @@ export default function Transaction() {
                 </span>
               </button>
             )}
+
+            {isCopyModalOpen && (
+              <div
+                className={styles.copyModalBackdrop}
+                onClick={() => setIsCopyModalOpen(false)}
+              >
+                <div
+                  className={styles.copyModal}
+                  role="dialog"
+                  aria-modal="true"
+                  aria-labelledby="copy-modal-title"
+                  onClick={event => event.stopPropagation()}
+                >
+                  <div className={styles.copyModalHeader}>
+                    <strong id="copy-modal-title">날짜 선택</strong>
+
+                    <button
+                      type="button"
+                      className={styles.copyModalClose}
+                      onClick={() => setIsCopyModalOpen(false)}
+                      aria-label="닫기"
+                    >
+                      <span className="material-icons" aria-hidden="true">
+                        close
+                      </span>
+                    </button>
+                  </div>
+
+                  <p className={styles.copyModalDescription}>
+                    거래를 어떤 날짜로 복사할까요?
+                  </p>
+
+                  <div className={styles.copyModalOptions}>
+                    <button
+                      type="button"
+                      className={styles.copyDateOption}
+                      onClick={() => handleConfirmRecentCopy("today")}
+                    >
+                      <div>
+                        <strong>오늘 날짜로 복사</strong>
+                        <span>오늘의 거래로 새롭게 기록해요.</span>
+                      </div>
+
+                      <span className="material-icons" aria-hidden="true">
+                        chevron_right
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className={styles.copyDateOption}
+                      onClick={() => handleConfirmRecentCopy("original")}
+                    >
+                      <div>
+                        <strong>기존 작성일로 복사</strong>
+                        <span>{copyTarget?.date} 날짜를 그대로 사용해요.</span>
+                      </div>
+
+                      <span className="material-icons" aria-hidden="true">
+                        chevron_right
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </main>
       </div>
 
       <SubFooter />
       <BottomTab />
+
+      {toastMessage && (
+        <div className={styles.toast} role="status" aria-live="polite">
+          <span
+            className={`material-icons ${styles.toastIcon}`}
+            aria-hidden="true"
+          >
+            check_circle
+          </span>
+
+          <span>{toastMessage}</span>
+        </div>
+      )}
     </>
   );
 }
