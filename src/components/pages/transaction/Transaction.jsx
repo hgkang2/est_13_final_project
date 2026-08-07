@@ -114,6 +114,27 @@ const initialTransactionForm = {
   recurringDay: "29",
 };
 
+const initialAiTransactionForm = {
+  type: "",
+  amount: "",
+  category: "",
+  date: "",
+  paymentMethod: "",
+  content: "",
+  memo: "",
+  receipt: null,
+};
+
+const mockAiResult = {
+  type: "expense",
+  amount: "4500",
+  category: "cafeSnack",
+  date: "2026-07-29",
+  paymentMethod: "creditCard",
+  content: "스타벅스 아메리카노",
+  memo: "점심 후 커피",
+};
+
 const createMultipleTransactionRow = id => ({
   id,
   date: "",
@@ -155,6 +176,14 @@ export default function Transaction() {
     createMultipleTransactionRow(2),
     createMultipleTransactionRow(3),
   ]);
+
+  const [aiStatus, setAiStatus] = useState("idle");
+
+  const [aiTransactionForm, setAiTransactionForm] = useState(
+    initialAiTransactionForm,
+  );
+
+  const [aiPreview, setAiPreview] = useState("");
 
   const isTransfer = transactionForm.type === "transfer";
 
@@ -301,6 +330,54 @@ export default function Transaction() {
 
   const handleMultipleSubmit = () => {
     console.log("다건 입력값", multipleRows);
+  };
+
+  const handleAiFormChange = event => {
+    const { name, value } = event.target;
+
+    setAiTransactionForm(prevForm => ({
+      ...prevForm,
+      [name]: value,
+    }));
+  };
+
+  const handleAiReceiptChange = event => {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    setAiTransactionForm(prevForm => ({
+      ...prevForm,
+      receipt: file,
+    }));
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setAiPreview(reader.result);
+    };
+
+    reader.readAsDataURL(file);
+
+    setAiStatus("analyzing");
+
+    setTimeout(() => {
+      setAiTransactionForm(prevForm => ({
+        ...prevForm,
+        ...mockAiResult,
+        receipt: file,
+      }));
+
+      setAiStatus("success");
+    }, 1800);
+  };
+
+  const handleAiTransactionSubmit = event => {
+    event.preventDefault();
+
+    if (aiStatus !== "success") return;
+
+    console.log("AI 자동 인식 입력값", aiTransactionForm);
   };
 
   return (
@@ -1489,9 +1566,351 @@ export default function Transaction() {
                     )}
                   </form>
                 ) : (
-                  <div className={styles.aiEntryPlaceholder}>
-                    AI 자동 인식 UI는 이후 단계에서 추가
-                  </div>
+                  <form
+                    className={styles.aiEntryForm}
+                    onSubmit={handleAiTransactionSubmit}
+                  >
+                    <section className={styles.aiRecognitionSection}>
+                      <div className={styles.aiRecognitionHeading}>
+                        <h3>AI 스마트 인식</h3>
+
+                        <p>
+                          이미지를 먼저 업로드해주세요.
+                          <br />
+                          AI가 거래 정보를 자동으로 입력합니다.
+                        </p>
+                      </div>
+
+                      {aiStatus === "idle" && (
+                        <label className={styles.aiUploadBox}>
+                          <input
+                            type="file"
+                            accept="image/jpeg, image/png"
+                            onChange={handleAiReceiptChange}
+                          />
+
+                          <span
+                            className={`material-icons ${styles.aiUploadIcon}`}
+                            aria-hidden="true"
+                          >
+                            add_photo_alternate
+                          </span>
+
+                          <div className={styles.aiUploadText}>
+                            <strong>
+                              영수증 이미지를 드래그하거나 클릭하여 업로드
+                            </strong>
+
+                            <span>JPG, PNG · 최대 2MB</span>
+                          </div>
+                        </label>
+                      )}
+
+                      {aiStatus === "analyzing" && (
+                        <div
+                          className={styles.aiRecognitionBox}
+                          role="status"
+                          aria-live="polite"
+                        >
+                          <div
+                            className={styles.aiSpinner}
+                            aria-hidden="true"
+                          />
+
+                          <div className={styles.aiRecognitionMessage}>
+                            <strong>거래 정보를 분석하고 있습니다.</strong>
+                            <span>잠시만 기다려 주세요</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {aiStatus === "success" && (
+                        <div className={styles.aiRecognitionBox}>
+                          <span
+                            className={`material-icons ${styles.aiSuccessIcon}`}
+                            aria-hidden="true"
+                          >
+                            check_circle
+                          </span>
+
+                          <div className={styles.aiRecognitionMessage}>
+                            <strong>AI가 거래 정보를 입력했습니다.</strong>
+                            <span>내용을 확인 후 저장해주세요</span>
+                          </div>
+
+                          {aiPreview && (
+                            <img
+                              src={aiPreview}
+                              alt="업로드한 영수증 미리보기"
+                              className={styles.aiReceiptPreview}
+                            />
+                          )}
+                        </div>
+                      )}
+                    </section>
+
+                    <div className={styles.aiFormFields}>
+                      <fieldset className={styles.formField}>
+                        <legend className={styles.aiFormLabel}>거래구분</legend>
+
+                        <div className={styles.transactionTypeOptions}>
+                          <label
+                            className={`${styles.transactionTypeButton} ${
+                              aiStatus === "success"
+                                ? styles.incomeTypeButton
+                                : styles.aiDisabledTypeButton
+                            } ${
+                              aiTransactionForm.type === "income"
+                                ? styles.activeTypeButton
+                                : ""
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name="type"
+                              value="income"
+                              checked={aiTransactionForm.type === "income"}
+                              onChange={handleAiFormChange}
+                              disabled={aiStatus !== "success"}
+                            />
+
+                            <span className="material-icons" aria-hidden="true">
+                              arrow_upward
+                            </span>
+
+                            <span>수입</span>
+                          </label>
+
+                          <label
+                            className={`${styles.transactionTypeButton} ${
+                              aiStatus === "success"
+                                ? styles.expenseTypeButton
+                                : styles.aiDisabledTypeButton
+                            } ${
+                              aiTransactionForm.type === "expense"
+                                ? styles.activeTypeButton
+                                : ""
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name="type"
+                              value="expense"
+                              checked={aiTransactionForm.type === "expense"}
+                              onChange={handleAiFormChange}
+                              disabled={aiStatus !== "success"}
+                            />
+
+                            <span className="material-icons" aria-hidden="true">
+                              arrow_downward
+                            </span>
+
+                            <span>지출</span>
+                          </label>
+
+                          <label
+                            className={`${styles.transactionTypeButton} ${
+                              aiStatus === "success"
+                                ? styles.transferTypeButton
+                                : styles.aiDisabledTypeButton
+                            } ${
+                              aiTransactionForm.type === "transfer"
+                                ? styles.activeTypeButton
+                                : ""
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name="type"
+                              value="transfer"
+                              checked={aiTransactionForm.type === "transfer"}
+                              onChange={handleAiFormChange}
+                              disabled={aiStatus !== "success"}
+                            />
+
+                            <span className="material-icons" aria-hidden="true">
+                              sync_alt
+                            </span>
+
+                            <span>이체</span>
+                          </label>
+                        </div>
+                      </fieldset>
+
+                      <label className={styles.formField}>
+                        <span className={styles.aiFormLabel}>금액</span>
+
+                        <span className={styles.amountInputBox}>
+                          <input
+                            type="number"
+                            name="amount"
+                            value={aiTransactionForm.amount}
+                            onChange={handleAiFormChange}
+                            disabled={aiStatus !== "success"}
+                            placeholder={
+                              aiStatus === "analyzing"
+                                ? "분석 중입니다..."
+                                : "금액을 입력하세요"
+                            }
+                          />
+
+                          <strong>원</strong>
+                        </span>
+                      </label>
+
+                      <div className={styles.formFieldRow}>
+                        <label className={styles.formField}>
+                          <span className={styles.aiFormLabel}>카테고리</span>
+
+                          <span className={styles.selectBox}>
+                            <select
+                              name="category"
+                              value={aiTransactionForm.category}
+                              onChange={handleAiFormChange}
+                              disabled={aiStatus !== "success"}
+                            >
+                              <option value="">
+                                {aiStatus === "analyzing"
+                                  ? "분석 중입니다..."
+                                  : "카테고리 선택"}
+                              </option>
+
+                              <option value="salary">월급</option>
+                              <option value="otherIncome">부수입</option>
+                              <option value="food">식비</option>
+                              <option value="cafeSnack">카페/간식</option>
+                              <option value="transportation">교통</option>
+                              <option value="shopping">쇼핑</option>
+                              <option value="subscription">구독</option>
+                              <option value="savings">저축</option>
+                              <option value="other">기타</option>
+                            </select>
+
+                            <span className="material-icons" aria-hidden="true">
+                              keyboard_arrow_down
+                            </span>
+                          </span>
+                        </label>
+
+                        <label className={styles.formField}>
+                          <span className={styles.aiFormLabel}>날짜</span>
+
+                          <span className={styles.dateInputBox}>
+                            {aiStatus === "analyzing" ? (
+                              <>
+                                <span className={styles.aiAnalyzingText}>
+                                  분석 중입니다...
+                                </span>
+
+                                <span
+                                  className="material-icons"
+                                  aria-hidden="true"
+                                >
+                                  calendar_month
+                                </span>
+                              </>
+                            ) : (
+                              <input
+                                type="date"
+                                name="date"
+                                value={aiTransactionForm.date}
+                                onChange={handleAiFormChange}
+                                disabled={aiStatus !== "success"}
+                              />
+                            )}
+                          </span>
+                        </label>
+                      </div>
+
+                      <label className={styles.formField}>
+                        <span className={styles.aiFormLabel}>결제수단</span>
+
+                        <span
+                          className={`${styles.selectBox} ${styles.aiPaymentSelectBox}`}
+                        >
+                          <select
+                            name="paymentMethod"
+                            value={aiTransactionForm.paymentMethod}
+                            onChange={handleAiFormChange}
+                            disabled={aiStatus !== "success"}
+                          >
+                            <option value="">
+                              {aiStatus === "analyzing"
+                                ? "분석 중입니다..."
+                                : "결제수단 선택"}
+                            </option>
+
+                            <option value="creditCard">신용카드</option>
+                            <option value="checkCard">체크카드</option>
+                            <option value="accountTransfer">계좌이체</option>
+                            <option value="cash">현금</option>
+                            <option value="kakaoPay">카카오페이</option>
+                            <option value="other">기타</option>
+                          </select>
+
+                          <span className="material-icons" aria-hidden="true">
+                            keyboard_arrow_down
+                          </span>
+                        </span>
+                      </label>
+
+                      <label className={styles.formField}>
+                        <span className={styles.aiFormLabel}>내용</span>
+
+                        <input
+                          type="text"
+                          name="content"
+                          value={aiTransactionForm.content}
+                          onChange={handleAiFormChange}
+                          disabled={aiStatus !== "success"}
+                          className={styles.textInput}
+                          placeholder={
+                            aiStatus === "analyzing"
+                              ? "분석 중입니다..."
+                              : "내용을 입력하세요 (선택)"
+                          }
+                          maxLength={50}
+                        />
+
+                        <span className={styles.characterCount}>
+                          {aiTransactionForm.content.length}/50
+                        </span>
+                      </label>
+
+                      <label className={styles.formField}>
+                        <span className={styles.aiFormLabel}>메모</span>
+
+                        <input
+                          type="text"
+                          name="memo"
+                          value={aiTransactionForm.memo}
+                          onChange={handleAiFormChange}
+                          disabled={aiStatus !== "success"}
+                          className={styles.textInput}
+                          placeholder={
+                            aiStatus === "analyzing"
+                              ? "분석 중입니다..."
+                              : "메모를 입력하세요 (선택)"
+                          }
+                          maxLength={50}
+                        />
+
+                        <span className={styles.characterCount}>
+                          {aiTransactionForm.memo.length}/50
+                        </span>
+                      </label>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className={`${styles.aiSaveButton} ${
+                        aiStatus === "success" ? styles.aiSaveButtonActive : ""
+                      }`}
+                      disabled={aiStatus !== "success"}
+                    >
+                      저장하기
+                    </button>
+                  </form>
                 )}
               </aside>
             ) : (
