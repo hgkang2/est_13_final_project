@@ -27,7 +27,6 @@
 .MyPage_Profile {
   grid-column: 1 / -1;
   grid-row: 1;
-  display: grid;
   padding: 32px;
   border: 1px solid var(--color-point);
   border-radius: 24px;
@@ -285,8 +284,13 @@
   );
 
   p {
+    flex: 1;
+    min-width: 0;
+    white-space: normal;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
     @include typo-heading-s;
-    text-align: center;
+    text-align: left;
   }
 
   strong {
@@ -294,90 +298,290 @@
   }
 }
 
-/* 태블릿 및 모바일 */
+/* 태블릿 */
 
-// @media (max-width: 1024px) {
-//   .container {
-//     grid-template-columns: 1fr;
-//     padding: 24px;
-//   }
+@media (max-width: 1024px) {
+  .container {
+    padding: var(--container-padding-tablet);
+    padding-bottom: 90px;
+    display: flex;
+    flex-direction: column;
+  }
 
-//   .MyPage_Profile {
-//     grid-column: 1;
-//     grid-template-columns: 1fr;
-//     gap: 8px;
+  .MyPage_Profile {
+    gap: 8px;
+    padding: 16px 0;
+    flex-direction: column;
+  }
+  .Avatar {
+    width: 60px;
+    height: 60px;
+  }
 
-//     padding: 16px 0px;
-//   }
+  .Greeting {
+    display: flex;
+    gap: 4px;
+  }
 
-//   .MyPage_Intro,
-//   .MyPage_Summary {
-//     grid-column: 1;
-//     padding: 8px 16px;
-//   }
-//   .MyPage_Intro {
-//     gap: 16px;
-//   }
-//   .MyPage_Summary {
-//     width: 100%;
-//   }
+  .MyPage_Intro {
+    display: flex;
+    gap: 16px;
+    padding: 8px 16px;
 
-//   .Greeting {
-//     p {
-//       @include typo-body-m-plus;
-//     }
+    h1 {
+      white-space: normal;
+      @include typo-body-l-plus;
+    }
+    p {
+      @include typo-body-m-plus;
+    }
+  }
 
-//     h1 {
-//       white-space: normal;
-//       @include typo-body-l-plus;
-//     }
-//   }
-// }
+  .MyPage_Summary {
+    width: 100%;
+    padding: 8px 16px;
 
-// .MyPage_summaryItem {
-//   span {
-//     @include typo-body-s;
-//   }
-//   strong {
-//     @include typo-body-l;
-//   }
-// }
+    span {
+      @include typo-body-s;
+      width: auto;
+    }
 
-// /* 작은 모바일 */
+    strong {
+      @include typo-body-l;
+    }
+  }
 
-// @media (max-width: 390px) {
-//   .container {
-//     padding: 16px;
-//   }
+  .MyPage_summaryItem {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    gap: 8px;
+    padding: 0px 4px;
+  }
 
-//   .MyPage_Profile {
-//     gap: 20px;
-//     padding: 20px 16px;
-//     border-radius: 16px;
-//   }
+  .MyPage_Account {
+    display: flex;
+    gap: 16px;
+    padding: 16px 16px;
 
-//   .MyPage_Intro {
-//     gap: 16px;
-//   }
+    h2 {
+      @include typo-body-m;
+    }
+  }
 
-//   .Avatar {
-//     width: 72px;
-//     height: 72px;
-//   }
+  .Account_Label {
+    @include typo-body-s;
+  }
+  .Account_Item {
+    dd {
+      @include typo-body-s;
+    }
+  }
 
-//   .Greeting {
-//     gap: 8px;
-//   }
+  .Edit_Button {
+    width: 336px;
+    max-width: 100%;
+    align-self: center;
+    padding: 12px 0;
+    @include typo-caption;
+  }
 
-//   .MyPage_Summary {
-//     padding: 8px 0;
-//   }
+  .MyPage_Growth {
+    padding: 16px;
+  }
 
-//   .MyPage_summaryItem {
-//     padding: 0 6px;
+  .Growth_Info {
+    display: flex;
+    gap: 8px;
+    h2 {
+      @include typo-body-l-plus;
+    }
 
-//     span {
-//       white-space: normal;
-//     }
-//   }
-// }
+    p {
+      @include typo-body-m;
+    }
+  }
+
+  .Progress_Value {
+    @include typo-body-l-plus;
+  }
+
+  .Growth_Image {
+    width: 100px;
+    height: 100px;
+  }
+
+  .Savings_Grid {
+    gap: 8px;
+    span {
+      @include typo-body-s-plus;
+    }
+    strong {
+      @include typo-body-l;
+    }
+  }
+
+  .Savings_Image {
+    width: 80px;
+    height: 80px;
+  }
+
+  .MyPage_Message {
+    p {
+      @include typo-body-m;
+    }
+  }
+  .Character_Image {
+    height: 134px;
+  }
+}
+/* 모바일 */
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 var(--container-padding-mobile) 90px;
+  }
+
+  .MyPage_Profile {
+    gap: 8px;
+    padding: 8px;
+  }
+  .Greeting {
+    h1 {
+      @include typo-body-m-plus;
+    }
+    p {
+      @include typo-body-s-plus;
+    }
+  }
+  .MyPage_Intro {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    h1 {
+      white-space: normal;
+      @include typo-body-m-plus;
+    }
+    p {
+      @include typo-body-s-plus;
+    }
+  }
+
+  .MyPage_Summary {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+
+    span {
+      @include typo-body-s;
+      white-space: nowrap;
+    }
+
+    strong {
+      @include typo-body-m;
+      white-space: nowrap;
+    }
+  }
+
+  .MyPage_summaryItem {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-width: 0;
+    padding: 0 4px;
+    text-align: center;
+  }
+
+  .MyPage_Account {
+    h2 {
+      @include typo-heading-xs;
+      text-align: center;
+    }
+  }
+
+  .Edit_Button {
+    padding: 4px 16px;
+    width: auto;
+  }
+
+  .MyPage_Growth {
+    gap: 16px;
+    padding: 16px;
+  }
+  .Growth_Info {
+    gap: 8px;
+  }
+  .Title_Group {
+    gap: 8px;
+    h2 {
+      @include typo-body-m-plus;
+    }
+    p {
+      @include typo-body-s;
+    }
+  }
+
+  .Progress_Group {
+    gap: 4px;
+  }
+  .Progress_Value {
+    @include typo-body-s-plus;
+  }
+  .Growth_Image {
+    width: 70px;
+    height: 70px;
+  }
+  .Savings_Grid {
+    gap: 12px;
+  }
+
+  .Savings_Card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+
+    width: 100%;
+  }
+
+  .Stat_Content {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: center;
+
+    width: fit-content;
+    text-align: center;
+
+    span {
+      @include typo-body-s;
+    }
+
+    strong {
+      @include typo-body-m;
+    }
+  }
+  .MyPage_Message {
+    padding: 16px;
+    p {
+      @include typo-body-s;
+    }
+  }
+  .Character_Image {
+    height: 33px;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .Savings_Grid {
+    grid-template-columns: 1fr;
+  }
+}
