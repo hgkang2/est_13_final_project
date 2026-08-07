@@ -8,12 +8,14 @@ import styles from "./SubHome.module.scss";
 import JournalSlider from "@/components/common/JournalSlider";
 import GreetingSection from "./components/GreetingSection";
 import GoalCard from "./components/GoalCard";
+import SpendingSummaryCard from "./components/SpendingSummaryCard";
+import AiCard from "./components/AiCard";
 
 export default function SubHome() {
   // UI 개발용 상태값
   const userName = "Moa";
-  const hasGoal = true;
-  const hasSpendingData = false;
+  const hasGoal = false;
+  const hasSpendingData = true;
   const hasSavingGoal = false;
   const hasChallenge = false;
   const hasJournal = false;
@@ -32,109 +34,8 @@ export default function SubHome() {
               </div>
 
               <div className={styles.summaryRow}>
-                <article
-                  className={styles.spendingSummaryCard}
-                  aria-labelledby="spending-summary-title"
-                >
-                  <div className={styles.spendingSummaryContent}>
-                    <p
-                      className={`${styles.summaryBadge} ${
-                        !hasSpendingData ? styles.emptySummaryBadge : ""
-                      }`}
-                    >
-                      {hasSpendingData
-                        ? "좋은 흐름이에요!"
-                        : "첫 소비 기록을 기다리고 있어요."}
-                    </p>
-
-                    <h2 id="spending-summary-title">이번 달 소비 요약</h2>
-
-                    <strong className={styles.spendingAmount}>
-                      {hasSpendingData ? "620,000원" : "--원"}
-                    </strong>
-
-                    <p className={styles.spendingDescription}>
-                      {hasSpendingData
-                        ? "예산보다 12% 적게 사용했어요!"
-                        : "소비를 기록하면 이번 달 소비 추이를 보여드릴게요."}
-                    </p>
-                  </div>
-
-                  <div
-                    className={`${styles.spendingChart} ${
-                      !hasSpendingData ? styles.emptySpendingChart : ""
-                    }`}
-                  >
-                    <Image
-                      src="/images/common/spending-graph.png"
-                      alt={
-                        hasSpendingData
-                          ? "이번 달 소비 추이 그래프"
-                          : "소비 기록 전 빈 소비 추이 그래프"
-                      }
-                      width={252}
-                      height={160}
-                    />
-                  </div>
-                </article>
-
-                <article
-                  className={styles.aiCard}
-                  aria-labelledby="ai-card-title"
-                >
-                  <div className={styles.aiContent}>
-                    <div className={styles.aiText}>
-                      <h2 id="ai-card-title">MO:UM AI 한마디</h2>
-
-                      {hasSpendingData ? (
-                        <p className={styles.aiMessage}>
-                          이번 주 카페 소비가 지난주보다 <strong>23%</strong>{" "}
-                          줄었어요!
-                        </p>
-                      ) : (
-                        <div className={styles.aiEmptyMessage}>
-                          <p
-                            className={`${styles.aiMessage} ${styles.aiEmptyTitle}`}
-                          >
-                            AI가 첫 분석을 기다리고 있어요.
-                          </p>
-
-                          <p className={styles.aiEmptyDescription}>
-                            첫 소비를 기록하면 AI가 소비 습관을 분석해드릴게요.
-                          </p>
-                        </div>
-                      )}
-                      <button type="button" className={styles.outlineButton}>
-                        <span>
-                          {hasSpendingData
-                            ? "AI 분석 자세히 보기"
-                            : "소비 기록하기"}
-                        </span>
-
-                        <span className="material-icons" aria-hidden="true">
-                          arrow_forward
-                        </span>
-                      </button>
-                    </div>
-
-                    <div className={styles.aiImage}>
-                      <Image
-                        src={
-                          hasSpendingData
-                            ? "/images/character/ai_moa.png"
-                            : "/images/character/ai_empty_moa.png"
-                        }
-                        alt={
-                          hasSpendingData
-                            ? "AI 캐릭터"
-                            : "첫 분석을 기다리는 AI 캐릭터"
-                        }
-                        width={247}
-                        height={247}
-                      />
-                    </div>
-                  </div>
-                </article>
+                <SpendingSummaryCard hasSpendingData={hasSpendingData} />
+                <AiCard hasSpendingData={hasSpendingData} />
               </div>
               <div className={styles.missionRow}>
                 <article
