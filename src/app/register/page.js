@@ -1,7 +1,44 @@
+"use client";
+
 import "../auth.css";
 import Link from "next/link";
+import { createClient } from "../../lib/supabase/client";
+import { useState } from "react";
 
 export default function RegisterPage() {
+   
+    const handleRegister = async (e) => {
+        e.preventDefault();
+
+        const supabase = createClient();
+        const formData = new FormData(e.currentTarget);
+
+        const name = formData.get("name");
+        const email = formData.get("email");
+        const password = formData.get("password");
+        const passwordConfirm = formData.get("passwordConfirm");
+
+        if (password !== passwordConfirm) {
+            alert("비밀번호가 일치하지 않습니다.");
+            return;
+        }
+        const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                data: {
+                    name,
+                },
+            },
+        });
+        if (error) {
+            alert(error.message);
+            return;
+        }
+        console.log(data);
+        alert("회원가입이 완료되었습니다.");
+    };
+
     return (
         <main className="page">
         <section className="container">
@@ -26,7 +63,7 @@ export default function RegisterPage() {
         href="/passwordConfirm">비밀번호 찾기</Link>
         </nav>
 
-        <form className="form">
+        <form className="form" onSubmit={handleRegister}>
         <div className="input">
         <label htmlFor="name">이름</label>
         <input

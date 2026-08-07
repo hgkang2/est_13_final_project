@@ -190,17 +190,17 @@
 .sns-buttons {
     width: 100%;
     display: flex;
-    justify-content: space-between;
     gap: 24px;
 }
 .sns-button {
     flex: 1;
+    min-width: 0;
     height: 50px;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    gap: 20px;
-    padding: 10px 24px;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px 8px;
     border: 1px solid var(--color-gray);
     border-radius: 12px;
     background-color: var(--color-gray);
@@ -209,6 +209,7 @@
     font-weight: 500;
     cursor: pointer;
     white-space: nowrap;
+    overflow: hidden;
     text-decoration: none;
 }
 .sns-button img {
