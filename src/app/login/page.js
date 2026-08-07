@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
-import "../auth.css";
+import "../../styles/_auth.scss";
 import Link from "next/link";
 
 export default function LoginPage() {

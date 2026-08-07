@@ -1,0 +1,587 @@
+@use "../../../styles/mixins" as *;
+
+/* 전체 페이지 */
+
+.pageLayout {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-rows: auto auto auto auto;
+  gap: 16px;
+
+  width: 100%;
+  max-width: 1208px;
+  margin: 0 auto;
+
+  /* Grid 행이 남은 높이까지 늘어나는 것 방지 */
+  align-content: start;
+}
+
+/* 상단 프로필 카드 */
+
+.MyPage_Profile {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  padding: 32px;
+  border: 1px solid var(--color-point);
+  border-radius: 24px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* 프로필 이미지와 인사말: 3칸 */
+
+.MyPage_Intro {
+  grid-column: 1 / span 3;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding: 32px 16px;
+  min-width: 0;
+}
+
+.Avatar {
+  width: 120px;
+  height: 120px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-background-secondary);
+  border-radius: 50%;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.Greeting {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  h1 {
+    color: var(--color-text);
+    white-space: nowrap;
+    @include typo-heading-s-plus;
+  }
+
+  p {
+    color: var(--color-light-gray);
+    @include typo-heading-xs;
+  }
+}
+
+/* 요약 정보: 3칸 */
+
+.MyPage_Summary {
+  grid-column: 4 / span 3;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+  padding: 32px 16px;
+  box-sizing: border-box;
+}
+
+.MyPage_summaryItem {
+  min-width: 0;
+  padding: 0 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+
+  &:nth-child(2) {
+    border-right: 1px solid var(--color-light-gray);
+    border-left: 1px solid var(--color-light-gray);
+  }
+
+  span {
+    color: var(--color-gray);
+    white-space: nowrap;
+    width: 100%;
+    @include typo-body-m;
+  }
+
+  strong {
+    color: var(--color-point);
+
+    @include typo-heading-s;
+  }
+}
+
+/* 성장 카드 */
+.MyPage_Growth {
+  grid-column: 1 / span 4;
+  grid-row: 2;
+  gap: 24px;
+  padding: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 24px;
+  background-color: var(--color-background-green);
+}
+.Growth_Info {
+  gap: 16px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  p {
+    color: var(--color-gray);
+    @include typo-body-l-plus;
+  }
+  h2 {
+    @include typo-body-l-plus;
+  }
+  strong {
+    color: var(--color-point);
+  }
+}
+
+.Title_Group {
+  gap: 8px;
+}
+.Progress_Group {
+  gap: 8px;
+}
+
+.Progress_Value {
+  color: var(--color-point);
+  @include typo-heading-s-plus;
+}
+
+.Progress_Bar {
+  width: 100%;
+  height: 12px;
+
+  background-color: var(--color-white);
+  border-radius: 999px;
+}
+
+.Progress_Fill {
+  width: 65%;
+  height: 100%;
+  background-color: var(--color-point);
+  border-radius: inherit;
+}
+
+/* 계정 관리*/
+.MyPage_Account {
+  grid-column: 5 / span 2;
+  grid-row: 2 / span 2;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  border: solid 1px var(--color-border-gray);
+  border-radius: 24px;
+  @include typo-card-head;
+}
+
+.Account_Item {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  border-bottom: 0.5px solid var(--color-border-gray);
+  white-space: nowrap;
+
+  @include typo-body-m;
+
+  dd {
+    @include typo-body-m;
+    width: 100%;
+    text-align: center;
+  }
+
+  dt {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+}
+
+.Account_Label {
+  @include typo-body-m;
+}
+.Account_Icon {
+  @include icon-m;
+}
+
+.Edit_Button {
+  @include typo-body-m;
+  width: 100%;
+  background-color: var(--color-point);
+  border-radius: 12px;
+  padding: 12px;
+  color: var(--color-white);
+}
+
+/* 통계 카드 */
+.MyPage_Stats {
+  grid-column: 1 / span 4;
+  grid-row: 3;
+}
+
+.Savings_Grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.Savings_Card {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  justify-content: center;
+  align-items: center;
+  border: solid 1px var(--color-border-gray);
+  border-radius: 24px;
+}
+
+.Stat_Content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+
+  span {
+    @include typo-body-m-plus;
+  }
+
+  strong {
+    @include typo-heading-s;
+  }
+}
+
+/* 동기부여 문구 */
+.MyPage_Message {
+  grid-column: 1 / span 6;
+  grid-row: 4;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: solid 1px var(--color-border-gray);
+  border-radius: 24px;
+  background-image: linear-gradient(
+    90deg,
+    var(--color-warning-background) 0%,
+    #e2f2ff 100%
+  );
+
+  p {
+    flex: 1;
+    min-width: 0;
+    white-space: normal;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+    @include typo-heading-s;
+    text-align: left;
+  }
+
+  strong {
+    color: var(--color-success-dot);
+  }
+}
+
+/* 태블릿 */
+
+@media (max-width: 1024px) {
+  .container {
+    padding: var(--container-padding-tablet);
+    padding-bottom: 90px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .MyPage_Profile {
+    gap: 8px;
+    padding: 16px 0;
+    flex-direction: column;
+  }
+  .Avatar {
+    width: 60px;
+    height: 60px;
+  }
+
+  .Greeting {
+    display: flex;
+    gap: 4px;
+  }
+
+  .MyPage_Intro {
+    display: flex;
+    gap: 16px;
+    padding: 8px 16px;
+
+    h1 {
+      white-space: normal;
+      @include typo-body-l-plus;
+    }
+    p {
+      @include typo-body-m-plus;
+    }
+  }
+
+  .MyPage_Summary {
+    width: 100%;
+    padding: 8px 16px;
+
+    span {
+      @include typo-body-s;
+      width: auto;
+    }
+
+    strong {
+      @include typo-body-l;
+    }
+  }
+
+  .MyPage_summaryItem {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    gap: 8px;
+    padding: 0px 4px;
+  }
+
+  .MyPage_Account {
+    display: flex;
+    gap: 16px;
+    padding: 16px 16px;
+
+    h2 {
+      @include typo-body-m;
+    }
+  }
+
+  .Account_Label {
+    @include typo-body-s;
+  }
+  .Account_Item {
+    dd {
+      @include typo-body-s;
+    }
+  }
+
+  .Edit_Button {
+    width: 336px;
+    max-width: 100%;
+    align-self: center;
+    padding: 12px 0;
+    @include typo-caption;
+  }
+
+  .MyPage_Growth {
+    padding: 16px;
+  }
+
+  .Growth_Info {
+    display: flex;
+    gap: 8px;
+    h2 {
+      @include typo-body-l-plus;
+    }
+
+    p {
+      @include typo-body-m;
+    }
+  }
+
+  .Progress_Value {
+    @include typo-body-l-plus;
+  }
+
+  .Growth_Image {
+    width: 100px;
+    height: 100px;
+  }
+
+  .Savings_Grid {
+    gap: 8px;
+    span {
+      @include typo-body-s-plus;
+    }
+    strong {
+      @include typo-body-l;
+    }
+  }
+
+  .Savings_Image {
+    width: 80px;
+    height: 80px;
+  }
+
+  .MyPage_Message {
+    p {
+      @include typo-body-m;
+    }
+  }
+  .Character_Image {
+    height: 134px;
+  }
+}
+/* 모바일 */
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 var(--container-padding-mobile) 90px;
+  }
+
+  .MyPage_Profile {
+    gap: 8px;
+    padding: 8px;
+  }
+  .Greeting {
+    h1 {
+      @include typo-body-m-plus;
+    }
+    p {
+      @include typo-body-s-plus;
+    }
+  }
+  .MyPage_Intro {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    h1 {
+      white-space: normal;
+      @include typo-body-m-plus;
+    }
+    p {
+      @include typo-body-s-plus;
+    }
+  }
+
+  .MyPage_Summary {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+
+    span {
+      @include typo-body-s;
+      white-space: nowrap;
+    }
+
+    strong {
+      @include typo-body-m;
+      white-space: nowrap;
+    }
+  }
+
+  .MyPage_summaryItem {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-width: 0;
+    padding: 0 4px;
+    text-align: center;
+  }
+
+  .MyPage_Account {
+    h2 {
+      @include typo-heading-xs;
+      text-align: center;
+    }
+  }
+
+  .Edit_Button {
+    padding: 4px 16px;
+    width: auto;
+  }
+
+  .MyPage_Growth {
+    gap: 16px;
+    padding: 16px;
+  }
+  .Growth_Info {
+    gap: 8px;
+  }
+  .Title_Group {
+    gap: 8px;
+    h2 {
+      @include typo-body-m-plus;
+    }
+    p {
+      @include typo-body-s;
+    }
+  }
+
+  .Progress_Group {
+    gap: 4px;
+  }
+  .Progress_Value {
+    @include typo-body-s-plus;
+  }
+  .Growth_Image {
+    width: 70px;
+    height: 70px;
+  }
+  .Savings_Grid {
+    gap: 12px;
+  }
+
+  .Savings_Card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+
+    width: 100%;
+  }
+
+  .Stat_Content {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: center;
+
+    width: fit-content;
+    text-align: center;
+
+    span {
+      @include typo-body-s;
+    }
+
+    strong {
+      @include typo-body-m;
+    }
+  }
+  .MyPage_Message {
+    padding: 16px;
+    p {
+      @include typo-body-s;
+    }
+  }
+  .Character_Image {
+    height: 33px;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .Savings_Grid {
+    grid-template-columns: 1fr;
+  }
+}

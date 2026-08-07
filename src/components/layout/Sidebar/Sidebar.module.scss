@@ -1,0 +1,124 @@
+@use "../../../styles/mixins" as *;
+
+.sidebar {
+  display: flex;
+  width: 202px;
+  height: calc(100vh - 56px);
+  padding: 24px;
+  flex-shrink: 0;
+  flex-direction: column;
+  position: sticky;
+  top: 56px;
+  background-color: var(--color-white);
+}
+
+.navigation {
+  flex: 1;
+}
+
+.menuList,
+.optionList {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+}
+
+.menuItem,
+.optionItem {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  padding: 12px;
+  border: 0;
+  border-radius: 12px;
+  color: var(--color-gray);
+  background-color: var(--color-white);
+  cursor: pointer;
+}
+
+.menuItem {
+  @include typo-body-m-plus;
+}
+
+.menuIcon {
+  font-size: var(--icon-l-size);
+  line-height: 1;
+}
+
+.active {
+  justify-content: center;
+  color: var(--color-point);
+  background-color: var(--color-primary);
+}
+
+.goalArea {
+  padding-bottom: 40px;
+}
+
+.goalCard {
+  display: flex;
+  padding: 20px;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 16px;
+}
+
+.goalTitle,
+.goalPercent {
+  margin: 0;
+}
+
+.goalTitle {
+  @include typography(14px, 20px, var(--font-weight-semibold));
+
+  color: var(--color-text);
+}
+
+.goalPercent {
+  @include typography(var(--body-s-size), 16px, var(--font-weight-bold));
+
+  color: var(--color-point);
+}
+
+.goalImage {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+}
+
+.progress {
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 9999px;
+  background-color: #e5e7eb;
+}
+
+.progressBar {
+  width: 68%;
+  height: 100%;
+  border-radius: inherit;
+  background-color: var(--color-point);
+}
+
+.optionItem {
+  @include typo-body-m;
+}
+
+.optionIcon {
+  font-size: var(--icon-l-size);
+  line-height: 1;
+}
+
+@media (max-width: 1024px) {
+  .sidebar {
+    display: none;
+  }
+}

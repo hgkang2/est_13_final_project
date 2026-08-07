@@ -1,4 +1,10 @@
-
+:root {
+    --color-green: #77B985;
+    --color-white: #ffffff;
+    --color-gray: rgba(217, 217, 217, 0.55);
+    --color-black: #000000;
+    --color-text-gray: rgba(119, 119, 119, 0.55);
+}
 /*Desktop*/
 * {
     box-sizing: border-box;
@@ -6,10 +12,10 @@
 
 .page {
     min-height: 100vh;
-    padding: 40px;
+    padding: 10px 40px 40px;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     box-sizing: border-box;
     
 }
@@ -20,6 +26,7 @@
     max-width: 100%;
     min-height: calc(100vh - 80px);
     margin: 0 auto;
+
     overflow: hidden;
     background: #fff;
     border-radius: 24px;
@@ -31,14 +38,15 @@
     flex-direction: column;
     justify-content: center;
     flex-shrink: 0;
-    padding: 0px 170px;
+    padding: 0px 120px;
     box-sizing: border-box;
 }
 .image-section {
    width: 50%;
    min-height: 100vh;
    flex-shrink: 0;
-   margin-left: auto;
+   overflow: hidden;
+   position: relative;
 }
 .image-section img {
     display: block;
@@ -219,131 +227,7 @@
 }
 
 
-/*Media 1100*/
-@media (max-width: 1100px) {
-    .page {
-    min-height: 100vh;
-    padding: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-sizing: border-box;
-    
-}
-    .container {
-    display: flex;
-    width: 100%;
-    max-width: 100%;
-    min-height: calc(100vh - 80px);
-    margin: 0 auto;
-    overflow: hidden;
-    background: #fff;
-    border-radius: 24px;
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
-    }
-    .form-section {
-        width: 50%;
-        display: flex;
-        flex-direction: columns;
-        justify-content: center;
-        padding: 24px 70px;
-        box-sizing: border-box;
-    }
-    .image-section {
-        width: 50%;
-        min-height: auto;
-        height: auto;
-        align-self: stretch;
-        overflow: hidden;
-        flex-shrink: 0;
-        margin-left: auto;
-    }
-    .image-section img {
-        width: 100%;
-        height: 100%;
-        min-height: 100%;
-        display: block;
-        object-fit: cover;
-        object-position: center;
-    }
-    .intro h1 {
-        font-size: 30px;
-    }
-    .intro p {
-        font-size: 16px;
-    }
-    
-    .tabs {
-        height: 52px;
-        padding: 5px;
-        border-radius: 12px;
-    }
-    .tabs .tab {
-        min-width: 0;
-        padding: 0 4px;
-        font-size: 16px;
-        white-space: nowrap;;
-    }
-    .input label{
-        margin-bottom: 8px;
-        font-size: 14px;
-    }
-    .input input {
-       height: 52px;
-       padding: 0 13px;
-       border-radius: 12px;
-       font-size: 18px;
-    }
-    .input input::placeholder {
-       font-size: 14px;
-    }
-    .button {
-        height: 52px;
-        margin-top: 6px;
-        border-radius: 12px;
-        font-size: 16px;
-    }
-    .termItem {
-  display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 10px;
-    color: #000000;
-    cursor: pointer;
-}
-.termItem input [type="checkbox"] {
-   
-    width: 14px;
-    height: 14px;
-   
-}
-.termItem span {
-    line-height: 1.4;
-}
-    .sns {
-        margin-top: 26px;
-    }
-    .sns-title {
-        gap: 12px;
-        margin-bottom: 20px;
-    }
-    .sns-title p {
-        font-size: 14px;
-    }
-    .sns-button {
-        min-width: 0;
-        height: 45px;
-        padding: 0 10px;
-        gap: 8px;
-        border-radius: 10px;
-        font-size: 13px;
-        white-space: nowrap;
-    }
-    .sns-button img {
-        width: 30px;
-        height: 30px;
-    }
-}
+
 
 
 /*Tablet*/
@@ -378,7 +262,7 @@
         justify-content: flex-start;
         box-sizing: border-box;
         text-align: left;
-        align-self: stretch;
+        
     }
     
     .form-section form {

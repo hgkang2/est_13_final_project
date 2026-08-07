@@ -1,0 +1,66 @@
+@use "./mixins" as *;
+
+@import url("https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.1/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css");
+
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons+Outlined");
+
+/* ========================================
+   Global Base Style
+======================================== */
+
+/*
+  프로젝트 전역 기본 스타일
+
+  - html
+  - body
+  - container
+  - form 요소 기본 스타일
+*/
+
+/* ========================================
+   Base
+======================================== */
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font-family-base);
+  color: var(--color-text);
+  background-color: var(--color-white);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+/* ========================================
+   Container
+======================================== */
+
+.container {
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--container-padding-desktop);
+}
+
+@include tablet {
+  .container {
+    padding: 0 var(--container-padding-tablet);
+  }
+}
+
+@include mobile {
+  .container {
+    padding: 0 var(--container-padding-mobile);
+  }
+}

@@ -1,0 +1,159 @@
+@use "./mixins" as *;
+
+/* ========================================
+   Typography System
+======================================== */
+
+/*
+  공통 타이포그래피 클래스
+
+  예)
+  .heading-l-plus
+  .body-m
+  .caption
+  .table-content
+*/
+
+/* ========================================
+   Heading
+======================================== */
+
+.heading-l-plus {
+  @include typo-heading-l-plus;
+}
+
+.heading-l {
+  @include typo-heading-l;
+}
+
+.heading-m-plus {
+  @include typo-heading-m-plus;
+}
+
+.heading-m {
+  @include typo-heading-m;
+}
+
+.heading-s-plus {
+  @include typo-heading-s-plus;
+}
+
+.heading-s {
+  @include typo-heading-s;
+}
+
+.heading-xs {
+  @include typo-heading-xs;
+}
+
+/* ========================================
+   Body
+======================================== */
+
+.body-l-plus {
+  @include typo-body-l-plus;
+}
+
+.body-l {
+  @include typo-body-l;
+}
+
+.body-xm {
+  @include typo-body-xm;
+}
+
+.body-m-plus {
+  @include typo-body-m-plus;
+}
+
+.body-m {
+  @include typo-body-m;
+}
+
+.body-m-minus {
+  @include typo-body-m-minus;
+}
+
+.body-s-plus {
+  @include typo-body-s-plus;
+}
+
+.body-s {
+  @include typo-body-s;
+}
+
+.body-xs {
+  @include typo-body-xs;
+}
+
+/* ========================================
+   Caption
+======================================== */
+
+.caption-plus {
+  @include typo-caption-plus;
+}
+
+.caption {
+  @include typo-caption;
+}
+
+/* ========================================
+   Component Typography
+======================================== */
+
+.card-head {
+  @include typo-card-head;
+}
+
+.card-label {
+  @include typo-card-label;
+}
+
+.table-content {
+  @include typo-table-content;
+}
+
+.table-header {
+  @include typo-table-header;
+}
+
+.table-price {
+  @include typo-table-price;
+}
+
+.payment-method {
+  @include typo-payment-method;
+}
+
+.table-category-nonpc {
+  @include typo-table-category-nonpc;
+}
+
+.journal-content {
+  @include typo-journal-content;
+}
+
+/* ========================================
+   Material Icons
+======================================== */
+
+.icon-xl {
+  @include icon-xl;
+}
+
+.icon-l {
+  @include icon-l;
+}
+
+.icon-m {
+  @include icon-m;
+}
+
+.more-icon-s {
+  @include more-icon-s;
+}
+
+.status-icon {
+  @include status-icon;
+}

@@ -1,0 +1,67 @@
+@use "../../../styles/mixins" as *;
+
+.bottomTab {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  display: none;
+  width: 100%;
+  background-color: var(--color-white);
+}
+
+.menuList {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0;
+  padding: 8px 56px;
+  list-style: none;
+}
+
+.menuList li {
+  flex-shrink: 0;
+}
+
+.menuItem {
+  display: flex;
+  min-width: 53px;
+  min-height: 53px;
+  padding: 8px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 0;
+  border-radius: 12px;
+  color: var(--color-gray);
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.menuIcon {
+  font-size: var(--icon-l-size);
+  line-height: 1;
+}
+
+.menuLabel {
+  @include typo-body-s;
+}
+
+.active {
+  color: var(--color-point);
+  background-color: var(--color-primary);
+}
+
+@media (max-width: 1024px) {
+  .bottomTab {
+    display: block;
+  }
+}
+
+@media (max-width: 480px) {
+  .menuList {
+    padding: 0 16px;
+  }
+}

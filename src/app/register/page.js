@@ -1,6 +1,5 @@
 "use client";
 
-import "../auth.css";
 import Link from "next/link";
 import { createClient } from "../../lib/supabase/client";
 import { useState } from "react";

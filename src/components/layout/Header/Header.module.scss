@@ -1,0 +1,143 @@
+@use "../../../styles/mixins" as *;
+
+.header {
+  width: 100%;
+  background-color: var(--color-white);
+}
+
+.inner {
+  display: flex;
+  width: 100%;
+  max-width: 1920px;
+  margin: 0 auto;
+  padding: 16px 32px;
+  align-items: center;
+  justify-content: space-between;
+}
+.logoArea {
+  flex-shrink: 0;
+  margin: 0;
+  line-height: 0;
+}
+
+.logoArea a {
+  display: block;
+}
+
+.logo {
+  display: block;
+  width: 150px;
+  height: auto;
+}
+
+.navigation {
+  flex-shrink: 0;
+}
+
+.menuList {
+  display: flex;
+  align-items: center;
+  gap: 64px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menuLink {
+  @include typo-body-m-plus;
+
+  display: block;
+  padding: 7px 14px;
+  color: var(--color-light-gray);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--color-point);
+  }
+}
+
+.userButton {
+  @include typo-body-m-plus;
+
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 2px solid var(--color-point);
+  border-radius: 10px;
+  color: var(--color-point);
+  background-color: var(--color-white);
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+
+  &:hover {
+    color: var(--color-white);
+    background-color: var(--color-point);
+  }
+}
+
+.userIcon {
+  font-family: var(--font-family-icon);
+  font-size: 35px;
+  line-height: 1;
+}
+
+@media (max-width: 1024px) {
+  .inner {
+    padding: 8px 16px;
+  }
+
+  .logo {
+    width: 112px;
+  }
+
+  .menuList {
+    gap: 32px;
+  }
+
+  .menuLink {
+    padding: 4px 8px;
+  }
+
+  .userButton {
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 8px;
+  }
+
+  .userIcon {
+    font-size: var(--icon-l-size);
+  }
+}
+
+@media (max-width: 720px) {
+  .navigation {
+    display: none;
+  }
+
+  .inner {
+    padding: 8px 16px;
+  }
+
+  .logo {
+    width: 90px;
+  }
+
+  .userButton {
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 10px;
+  }
+
+  .userIcon {
+    font-size: var(--icon-m-size);
+  }
+}

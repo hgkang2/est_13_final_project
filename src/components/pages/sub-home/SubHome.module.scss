@@ -1,0 +1,2018 @@
+@use "../../../styles/mixins" as *;
+
+.page {
+  display: flex;
+  width: 100%;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+}
+
+.content {
+  display: flex;
+  padding: 32px 0;
+  flex-direction: column;
+  gap: 32px;
+}
+@media (max-width: 1280px) {
+  .content {
+    gap: 16px;
+  }
+}
+
+.topRow {
+  display: flex;
+  width: 100%;
+  align-items: stretch;
+  gap: 24px;
+}
+
+/* Welcome Card */
+.greeting {
+  display: flex;
+  width: 100%;
+  flex: 1;
+  padding: 32px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 16px;
+  overflow: hidden;
+  background-color: var(--color-white);
+}
+
+.greetingTitle {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
+.greetingTitle h1 {
+  @include typo-heading-s-plus;
+
+  min-width: 0;
+  margin: 0;
+  color: var(--color-text);
+  word-break: keep-all;
+}
+
+.greetingTitle img {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  object-fit: contain;
+  transition: transform 0.25s ease;
+}
+
+.greeting p {
+  @include typo-heading-xs;
+
+  margin: 0;
+  color: var(--color-light-gray);
+  word-break: keep-all;
+}
+
+@media (max-width: 1280px) {
+  .topRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .greeting {
+    width: 100%;
+    padding: 16px;
+    flex: none;
+  }
+
+  .goalCard {
+    width: 100%;
+    flex: none;
+  }
+}
+
+@include mobile {
+  .greeting {
+    gap: 8px;
+    padding-top: 0;
+  }
+
+  .greetingTitle h1 {
+    @include typo-body-l-plus;
+  }
+
+  .greeting p {
+    @include typo-body-m-plus;
+  }
+}
+
+/* 이번 달 목표 달성 카드 */
+.goalCard {
+  display: flex;
+  flex: 1;
+  padding: 32px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 24px;
+  background-color: var(--color-white);
+}
+
+.goalCardInner {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+}
+
+.goalInfo {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.goalInfo h2 {
+  @include typo-card-head;
+
+  margin: 0;
+  color: var(--color-text);
+  word-break: keep-all;
+}
+
+.goalPercent {
+  @include typo-heading-m-plus;
+
+  color: var(--color-point);
+}
+
+.progressArea {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.progressTrack {
+  position: relative;
+  width: 100%;
+  height: 12px;
+  border-radius: 999px;
+  background-color: var(--color-primary);
+}
+
+.progressFill {
+  width: 62%;
+  height: 100%;
+  border-radius: inherit;
+  background-color: var(--color-point);
+}
+
+.todayMarker {
+  position: absolute;
+  top: -3px;
+  left: 90%;
+  width: 2px;
+  height: 18px;
+  background-color: var(--color-secondary);
+  transform: translateX(-50%);
+}
+
+.progressLabels {
+  position: relative;
+  width: 100%;
+  min-height: 12px;
+}
+
+.currentLabel,
+.todayLabel {
+  @include typo-body-xs;
+
+  position: absolute;
+  white-space: nowrap;
+}
+
+.currentLabel {
+  left: 62%;
+  color: var(--color-point);
+  transform: translateX(-50%);
+}
+
+.todayLabel {
+  left: 90%;
+  color: var(--color-light-gray);
+  transform: translateX(-50%);
+}
+
+.goalAmount {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.goalAmount strong,
+.goalAmount span {
+  @include typo-body-m-plus;
+}
+
+.goalAmount strong {
+  color: var(--color-text);
+}
+
+.goalAmount span {
+  color: var(--color-light-gray);
+}
+
+.warningBadge {
+  @include typo-body-s-plus;
+
+  display: flex;
+  width: fit-content;
+  margin: 0;
+  padding: 8px;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  color: var(--color-warning-text);
+  background-color: var(--color-warning-background);
+  white-space: nowrap;
+}
+
+.warningDot {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background-color: var(--color-warning-dot);
+}
+
+.goalVisual {
+  display: flex;
+  width: 240px;
+  flex-shrink: 0;
+  margin: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.goalImageBox {
+  position: relative;
+  width: 240px;
+  height: 180px;
+}
+
+.goalImageBackground {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background-color: var(--color-background-green);
+  transform: translateX(-50%);
+}
+
+.goalImage {
+  position: relative;
+  z-index: 1;
+  width: 240px;
+  height: 200px;
+  object-fit: contain;
+  transform: translateY(-18px);
+}
+
+.goalCaption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.goalCaption p {
+  @include typo-body-m-plus;
+
+  margin: 0;
+  color: var(--color-text);
+}
+
+.goalCaption span {
+  @include typo-body-s-plus;
+
+  color: var(--color-light-gray);
+}
+
+.pointText {
+  color: var(--color-point);
+}
+
+.emptyGoalCardInner {
+  justify-content: flex-start;
+}
+
+.emptyGoalInfo {
+  width: 100%;
+  flex: 1;
+}
+
+.emptyGoalDescription {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.emptyGoalDescription p {
+  @include typo-heading-xs;
+
+  margin: 0;
+  color: var(--color-text);
+}
+
+.emptyGoalDescription span {
+  @include typo-body-m;
+
+  color: var(--color-light-gray);
+  word-break: keep-all;
+}
+
+@media (max-width: 560px) {
+  .goalCardInner {
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .goalVisual {
+    order: 1;
+  }
+
+  .goalInfo {
+    order: 2;
+    width: 100%;
+    flex: none;
+  }
+
+  .goalPercent {
+    @include typo-body-l-plus;
+  }
+
+  .goalAmount strong,
+  .goalAmount span {
+    @include typo-caption-plus;
+  }
+
+  .emptyGoalDescription p {
+    @include typo-body-m-plus;
+  }
+
+  .emptyGoalDescription span {
+    @include typo-caption-plus;
+  }
+}
+
+@include mobile {
+  .goalCard {
+    padding: 16px;
+  }
+
+  .goalCardInner {
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .goalVisual {
+    order: 1;
+    width: 240px;
+    padding-top: 42px;
+    gap: 0;
+  }
+
+  .goalInfo {
+    order: 2;
+    width: 100%;
+    flex: none;
+    gap: 8px;
+  }
+
+  .goalImageBox {
+    width: 220px;
+    height: 165px;
+  }
+
+  .goalImageBackground {
+    top: 10px;
+    left: 50%;
+    width: 140px;
+    height: 140px;
+    transform: translateX(-50%);
+  }
+
+  .goalImage {
+    position: relative;
+    width: 220px;
+    height: 180px;
+    transform: translateY(-18px);
+  }
+
+  .goalPercent {
+    @include typo-body-l-plus;
+  }
+
+  .goalAmount strong,
+  .goalAmount span {
+    @include typo-caption-plus;
+  }
+  .warningBadge {
+    padding: 4px 8px;
+  }
+
+  .emptyGoalDescription p {
+    @include typo-body-m-plus;
+  }
+
+  .emptyGoalDescription span {
+    @include typo-caption-plus;
+  }
+}
+
+.summaryRow {
+  display: flex;
+  width: 100%;
+  align-items: stretch;
+  gap: 24px;
+}
+
+@media (max-width: 1280px) {
+  .summaryRow {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+/* 이번 달 소비 요약 */
+.spendingSummaryCard {
+  display: flex;
+  min-width: 0;
+  padding: 32px;
+  flex: 1;
+  align-self: stretch;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 24px;
+  background-color: var(--color-white);
+}
+
+.spendingSummaryContent {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.summaryBadge {
+  @include typo-body-s-plus;
+
+  width: fit-content;
+  margin: 0;
+  padding: 4px 12px;
+  border-radius: 999px;
+  color: var(--color-point);
+  background-color: var(--color-primary);
+  white-space: nowrap;
+}
+
+.emptySummaryBadge {
+  color: var(--color-light-gray);
+  background-color: var(--color-dark-white);
+  border: 1px solid var(--color-border-gray);
+}
+
+.spendingSummaryContent h2 {
+  @include typo-card-head;
+
+  margin: 0;
+  color: var(--color-text);
+  word-break: keep-all;
+}
+
+.spendingAmount {
+  @include typo-heading-s-plus;
+
+  color: var(--color-point);
+  white-space: nowrap;
+}
+
+.spendingDescription {
+  @include typo-body-m;
+
+  margin: 0;
+  color: var(--color-light-gray);
+  word-break: keep-all;
+}
+
+.spendingChart {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-self: stretch;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.spendingChart img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.emptySpendingChart {
+  opacity: 0.35;
+}
+
+@media (max-width: 768px) {
+  .spendingSummaryCard {
+    padding: 32px;
+    gap: 24px;
+  }
+
+  .spendingChart img {
+    width: 100%;
+    height: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .spendingSummaryCard {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 24px;
+  }
+
+  .spendingSummaryContent {
+    width: 100%;
+    flex: none;
+  }
+
+  .spendingChart {
+    width: 100%;
+    flex: none;
+    justify-content: center;
+  }
+
+  .spendingChart img {
+    width: 100%;
+    height: auto;
+  }
+
+  .spendingAmount {
+    @include typo-body-l-plus;
+  }
+
+  .spendingDescription {
+    @include typo-caption-plus;
+  }
+}
+
+@include mobile {
+  .spendingSummaryCard {
+    padding: 16px;
+  }
+
+  .spendingSummaryContent {
+    gap: 8px;
+  }
+
+  .spendingAmount {
+    @include typo-body-l-plus;
+  }
+
+  .spendingDescription {
+    @include typo-caption-plus;
+  }
+}
+
+/* MO:UM AI 한마디 */
+.aiCard {
+  display: flex;
+  min-width: 0;
+  padding: 32px;
+  flex: 1;
+  align-self: stretch;
+  flex-direction: column;
+  border: 1px solid var(--color-dark-white);
+  border-radius: 24px;
+  background-color: var(--color-background-green);
+}
+
+.aiContent {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+}
+
+.aiText {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.aiText h2 {
+  @include typo-card-head;
+
+  margin: 0;
+  color: var(--color-text);
+  word-break: keep-all;
+}
+
+.aiMessage {
+  @include typo-body-l-plus;
+
+  margin: 0;
+  color: var(--color-text);
+  word-break: keep-all;
+}
+
+.aiMessage strong {
+  @include typo-body-l-plus;
+
+  color: var(--color-point);
+}
+.outlineButton {
+  @include typo-caption-plus;
+
+  display: inline-flex;
+  width: fit-content;
+  min-height: 40px;
+  padding: 8px 16px;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  border: 1px solid var(--color-point);
+  border-radius: 999px;
+  color: var(--color-point);
+  background-color: var(--color-white);
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--color-white);
+    background-color: var(--color-point);
+  }
+}
+
+.outlineButton :global(.material-icons) {
+  @include more-icon-s;
+
+  color: inherit;
+}
+
+.aiImage {
+  display: flex;
+  width: 220px;
+  height: 220px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.aiImage img {
+  display: block;
+  width: 247px;
+  height: 247px;
+  max-width: none;
+  object-fit: contain;
+}
+
+.aiEmptyMessage {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.aiEmptyDescription {
+  @include typo-body-m-plus;
+
+  margin: 0;
+  color: var(--color-light-gray);
+  word-break: keep-all;
+}
+
+@media (min-width: 769px) and (max-width: 1280px) {
+  .spendingSummaryCard,
+  .aiCard {
+    min-height: 284px;
+  }
+
+  .aiCard {
+    width: 100%;
+    flex: none;
+  }
+
+  .aiContent {
+    gap: 24px;
+  }
+
+  .aiText {
+    flex: 1;
+  }
+
+  .aiImage {
+    width: 220px;
+    height: 220px;
+  }
+}
+
+@media (max-width: 560px) {
+  .aiContent {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 24px;
+  }
+
+  .aiText {
+    width: 100%;
+    flex: none;
+  }
+
+  .aiImage {
+    width: 220px;
+    height: 220px;
+    align-self: flex-end;
+    justify-content: flex-start;
+  }
+
+  .aiMessage {
+    @include typo-card-head;
+  }
+}
+@include mobile {
+  .aiCard {
+    padding: 16px;
+  }
+
+  .aiMessage {
+    @include typo-card-head;
+  }
+}
+
+.missionRow {
+  display: flex;
+  width: 100%;
+  align-items: stretch;
+  gap: 24px;
+}
+
+/* 오늘의 미션 */
+.missionCard {
+  display: flex;
+  min-width: 0;
+  padding: 32px;
+  flex: 1;
+  align-self: stretch;
+  overflow: hidden;
+  border-radius: 24px;
+  background-color: color-mix(
+    in srgb,
+    var(--color-background-secondary) 33%,
+    transparent
+  );
+}
+
+.missionContent {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.missionText {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.missionHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.missionHeader img {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  object-fit: contain;
+  transition: transform 0.25s ease;
+}
+
+.missionHeader h2 {
+  @include typo-card-head;
+
+  margin: 0;
+  color: var(--color-text);
+  word-break: keep-all;
+}
+
+.missionDescription {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.missionMessage {
+  @include typo-body-l-plus;
+
+  margin: 0;
+  color: var(--color-text);
+  word-break: keep-all;
+}
+
+.missionMessage strong {
+  @include typo-body-l-plus;
+  color: var(--color-point);
+}
+.missionSubText {
+  @include typo-body-m-plus;
+
+  margin: 0;
+  color: var(--color-light-gray);
+  word-break: keep-all;
+  text-wrap: balance;
+}
+
+.missionImage {
+  display: flex;
+  width: 220px;
+  align-self: stretch;
+  flex-shrink: 0;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.missionImage img {
+  width: 280px;
+  height: 280px;
+  max-width: none;
+  object-fit: contain;
+  transform: translate(16px, 32px);
+}
+
+.missionImage img.emptyMissionCharacter {
+  width: 240px;
+  height: 240px;
+  transform: translate(8px, 8px);
+}
+
+/* 최근 소비 내역 */
+.recentCard {
+  display: flex;
+  min-width: 0;
+  padding: 32px;
+  flex: 1;
+  align-self: stretch;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 24px;
+  background-color: var(--color-white);
+}
+
+.recentHeader {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.recentHeader h2 {
+  @include typo-card-head;
+
+  margin: 0;
+  color: var(--color-text);
+  word-break: keep-all;
+}
+
+.moreButton {
+  @include typo-body-m-minus;
+
+  display: inline-flex;
+  padding: 0;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  color: var(--color-light-gray);
+  background-color: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--color-point);
+  }
+}
+
+.moreButton :global(.material-icons) {
+  @include more-icon-s;
+
+  color: inherit;
+}
+
+.previewTransactionList {
+  opacity: 0.35;
+  filter: grayscale(1);
+  pointer-events: none;
+  user-select: none;
+}
+
+.recentEmptyGuide {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+}
+
+.recentEmptyText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.recentEmptyText p {
+  @include typo-body-m-plus;
+
+  margin: 0;
+  color: var(--color-text);
+}
+
+.recentEmptyText span {
+  @include typo-caption-plus;
+
+  color: var(--color-light-gray);
+}
+
+.transactionList {
+  display: flex;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  list-style: none;
+}
+
+.transactionItem {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  padding: 8px 0;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid var(--color-primary);
+  border-radius: 8px;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+
+  &:first-child {
+    padding-top: 0;
+  }
+
+  &:hover {
+    background-color: var(--color-background-green);
+    transform: translateX(4px);
+  }
+}
+
+.transactionItem img {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.transactionInfo {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.transactionInfo strong,
+.transactionAmount strong {
+  @include typo-body-m-plus;
+}
+
+.transactionInfo strong {
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--color-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.transactionInfo span {
+  @include typo-body-s-plus;
+}
+
+.transactionAmount {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.transactionAmount strong {
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+.transactionAmount span {
+  @include typo-body-m-minus;
+
+  color: var(--color-light-gray);
+  white-space: nowrap;
+}
+
+.transactionAmount strong.incomeAmount {
+  color: var(--color-type-income);
+}
+
+.cafeCategory {
+  color: var(--color-expense-cafe-snack);
+}
+
+.salaryCategory {
+  color: var(--color-income-salary);
+}
+
+.foodCategory {
+  color: var(--color-expense-food);
+}
+
+.savingsCategory {
+  color: var(--color-expense-savings);
+}
+
+@media (max-width: 1280px) {
+  .missionRow {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .recentCard {
+    order: 1;
+    width: 100%;
+    height: auto;
+    flex: none;
+    align-self: auto;
+  }
+
+  .missionCard {
+    order: 2;
+    width: 100%;
+    height: auto;
+    flex: none;
+    align-self: auto;
+  }
+
+  .missionContent {
+    align-items: flex-start;
+    gap: 24px;
+  }
+
+  .missionText {
+    justify-content: flex-start;
+  }
+
+  .missionImage {
+    width: 220px;
+    align-self: stretch;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .missionImage img {
+    width: 280px;
+    height: 280px;
+    max-width: none;
+    object-fit: contain;
+    transform: translateY(30px);
+  }
+}
+
+@media (max-width: 560px) {
+  .missionContent {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 24px;
+  }
+
+  .missionText {
+    width: 100%;
+    flex: none;
+    align-items: flex-start;
+    gap: 24px;
+  }
+
+  .missionImage {
+    width: 220px;
+    height: 220px;
+    align-self: flex-end;
+    flex: none;
+    overflow: hidden;
+  }
+
+  .missionImage img {
+    width: 280px;
+    height: 280px;
+    max-width: none;
+    object-fit: contain;
+    transform: translateY(30px);
+  }
+
+  .transactionInfo strong,
+  .transactionAmount strong {
+    @include typo-body-m-minus;
+
+    font-weight: var(--font-weight-bold);
+  }
+
+  .missionMessage {
+    @include typo-card-head;
+  }
+
+  .missionSubText {
+    @include typo-caption-plus;
+  }
+}
+
+@include mobile {
+  .recentCard,
+  .missionCard {
+    padding: 16px;
+  }
+
+  .transactionInfo strong,
+  .transactionAmount strong {
+    @include typo-body-m-minus;
+
+    font-weight: var(--font-weight-bold);
+  }
+
+  .missionMessage {
+    @include typo-card-head;
+  }
+
+  .missionSubText {
+    @include typo-caption-plus;
+  }
+}
+
+/* 저축 목표 + 챌린지 현황 */
+.statusRow {
+  display: flex;
+  width: 100%;
+  align-items: stretch;
+  gap: 24px;
+}
+
+.savingGoalCard,
+.challengeCard {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  padding: 32px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 24px;
+  background-color: var(--color-white);
+}
+
+.cardInner {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+}
+
+.cardHeader {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cardHeader h2 {
+  @include typo-card-head;
+
+  margin: 0;
+  color: var(--color-text);
+}
+
+/* 저축 목표 */
+.savingGoalBody {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.goalTitleRow {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 16px;
+}
+
+.goalTitleRow h3 {
+  @include typo-body-l-plus;
+
+  margin: 0;
+  color: var(--color-text);
+}
+
+.dDayBadge {
+  @include typo-body-s-plus;
+
+  display: inline-flex;
+  width: 61px;
+  padding: 4px 16px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: var(--color-white);
+  background-color: var(--color-saving-pig);
+}
+
+.goalAmountRow {
+  display: inline-flex;
+  padding: 2px 0;
+  align-items: center;
+  gap: 10px;
+}
+
+.goalAmountRow strong {
+  @include typo-heading-s-plus;
+
+  color: var(--color-point);
+}
+
+.goalAmountRow span {
+  @include typo-body-m-minus;
+
+  color: var(--color-light-gray);
+}
+
+.goalProgressRow {
+  display: flex;
+  width: 100%;
+  max-width: 280px;
+  align-items: center;
+  gap: 16px;
+}
+
+.goalProgressTrack {
+  position: relative;
+  height: 8px;
+  flex: 1;
+  overflow: hidden;
+  border-radius: 999px;
+  background-color: var(--color-primary);
+}
+
+.goalProgressFill {
+  width: 65%;
+  height: 100%;
+  border-radius: inherit;
+  background-color: var(--color-point);
+}
+
+.goalProgressValue {
+  @include typo-body-m;
+
+  color: var(--color-point);
+  white-space: nowrap;
+  transition: transform 0.2s ease;
+}
+
+.goalSchedule {
+  @include typo-body-s;
+
+  margin: 0;
+  color: var(--color-gray);
+}
+
+.goalSchedule strong {
+  @include typo-body-s-plus;
+
+  color: inherit;
+}
+
+.goalNotice {
+  display: inline-flex;
+  width: fit-content;
+  padding: 8px 16px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 999px;
+  background-color: var(--color-white);
+}
+
+.goalNotice :global(.material-icons) {
+  @include icon-m;
+
+  flex-shrink: 0;
+  color: var(--color-warning-dot);
+}
+
+.goalNotice p {
+  @include typo-body-m-semibold;
+
+  margin: 0;
+  padding-left: 8px;
+  color: var(--color-light-gray);
+}
+
+.emptySavingGoalBody {
+  flex: 1;
+  justify-content: center;
+  gap: 16px;
+}
+
+.savingGoalEmptyText {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.savingGoalEmptyText p {
+  @include typo-heading-xs;
+
+  margin: 0;
+  color: var(--color-text);
+}
+
+.savingGoalEmptyText span {
+  @include typo-body-m;
+
+  color: var(--color-light-gray);
+}
+
+.emptyGoalProgressValue {
+  color: var(--color-light-gray);
+}
+
+.emptyGoalNotice :global(.material-icons) {
+  color: var(--color-light-gray);
+}
+
+.emptyGoalNotice p {
+  color: var(--color-light-gray);
+}
+
+.emptySavingGoalBody {
+  gap: 12px;
+}
+
+.savingGoalBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.savingGoalBadges span {
+  @include typo-caption-plus;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+  color: var(--color-point);
+  background-color: var(--color-white);
+  white-space: nowrap;
+}
+
+.savingGoalBadges span:last-child {
+  color: var(--color-green-gray);
+}
+
+@media (max-width: 1280px) {
+  .statusRow {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .savingGoalCard,
+  .challengeCard {
+    width: 100%;
+  }
+
+  .cardInner {
+    gap: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .savingGoalCard {
+    padding: 16px;
+  }
+
+  .goalTitleRow h3 {
+    @include typo-card-head;
+  }
+
+  .goalAmountRow strong {
+    @include typo-body-l-plus;
+  }
+
+  .goalNotice {
+    width: fit-content;
+    max-width: 100%;
+    padding: 8px 12px;
+    gap: 6px;
+  }
+
+  .goalNotice p {
+    @include typo-body-s-plus;
+
+    flex-shrink: 0;
+    margin: 0;
+    padding-left: 0;
+    white-space: nowrap;
+  }
+
+  .savingGoalEmptyText p {
+    @include typo-body-m-plus;
+  }
+
+  .savingGoalEmptyText span {
+    @include typo-caption-plus;
+  }
+}
+@media (max-width: 375px) {
+  .goalNotice {
+    width: 100%;
+  }
+
+  .goalNotice p {
+    min-width: 0;
+    flex-shrink: 1;
+    white-space: normal;
+    word-break: keep-all;
+  }
+}
+
+/* 챌린지 현황 */
+.challengeBody {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.challengeSummary {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.challengeSummary h3 {
+  @include typo-body-xm;
+
+  margin: 0;
+  color: var(--color-text);
+}
+
+.challengeSummary strong {
+  @include typo-body-m-plus;
+
+  color: var(--color-point);
+}
+
+.challengeCalendar {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 16px;
+}
+
+.challengeWeekdays,
+.challengeDays {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.challengeWeekdays {
+  height: 32px;
+  background-color: var(--color-background-green);
+}
+
+.challengeWeekdays span {
+  @include typo-caption-plus;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text);
+  border-right: 1px solid var(--color-border-gray);
+
+  &:last-child {
+    border-right: 0;
+  }
+}
+
+.challengeDays {
+  height: 84px;
+  background-color: var(--color-white);
+}
+
+.challengeDay {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-right: 1px solid var(--color-border-gray);
+
+  &:last-child {
+    border-right: 0;
+  }
+}
+
+.challengeIcon {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background-color: var(--color-background-green);
+  transition: transform 0.2s ease;
+}
+
+.challengeIcon img {
+  display: block;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.currentChallengeIcon {
+  border: 1px solid var(--color-point);
+  background-color: var(--color-primary);
+}
+
+.inactiveChallengeIcon {
+  background-color: var(--color-dark-white);
+}
+
+.inactiveChallengeIcon img,
+.emptyChallengeIcon img {
+  opacity: 0.4;
+  filter: grayscale(1);
+}
+
+.challengeDay > span {
+  @include typo-body-s;
+
+  color: var(--color-light-gray);
+}
+
+.challengeMessage {
+  @include typo-body-m-plus;
+
+  margin: 0;
+  color: var(--color-light-gray);
+}
+
+@media (max-width: 560px) {
+  .challengeCard {
+    padding: 16px;
+  }
+
+  .challengeSummary h3 {
+    @include typo-card-label;
+  }
+
+  .challengeSummary strong,
+  .challengeMessage {
+    @include typo-caption-plus;
+  }
+}
+
+/* 이번 주 소비 절약 그림일기 */
+.journalCard {
+  display: flex;
+  width: 100%;
+  padding: 32px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 24px;
+  background-color: var(--color-white);
+}
+
+.journalInner {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.journalHeader {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.journalHeader h2 {
+  @include typo-card-head;
+
+  min-width: 0;
+  margin: 0;
+  color: var(--color-text);
+  word-break: keep-all;
+}
+
+.journalEmpty {
+  display: flex;
+  width: 100%;
+  min-height: 220px;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+}
+
+.journalEmptyText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.journalEmptyText p {
+  @include typo-heading-xs;
+
+  margin: 0;
+  color: var(--color-text);
+  word-break: keep-all;
+}
+
+.journalEmptyDescription {
+  @include typo-caption-plus;
+
+  color: var(--color-light-gray);
+  word-break: keep-all;
+}
+
+.journalEmptyButton {
+  @include typo-body-m-minus;
+
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 4px;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  color: var(--color-light-gray);
+  background-color: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--color-point);
+  }
+}
+
+.journalEmptyButton :global(.material-icons) {
+  @include more-icon-s;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.journalEmptyButton:hover :global(.material-icons) {
+  transform: translateX(4px);
+}
+
+.journalPreviewDeck {
+  position: relative;
+  width: 188px;
+  height: 190px;
+  flex-shrink: 0;
+}
+
+.journalPreviewCard {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  display: flex;
+  width: 132px;
+  padding: 8px;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 14px;
+  background-color: var(--color-white);
+  box-shadow: 0 6px 16px rgb(6 7 14 / 6%);
+}
+
+.journalPreviewCardBack {
+  z-index: 0;
+  opacity: 0.46;
+  filter: grayscale(1);
+  transform: translateX(-22%) translateY(4px) rotate(4deg);
+}
+
+.journalPreviewCardFront {
+  z-index: 1;
+  transform: translateX(-78%) rotate(-2deg);
+}
+
+.journalPreviewMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.journalPreviewMeta time {
+  @include typo-body-s;
+
+  color: var(--color-green-gray);
+}
+
+.journalPreviewMeta strong {
+  @include typo-caption-plus;
+
+  color: var(--color-point);
+}
+
+.journalPreviewImage {
+  width: 100%;
+  aspect-ratio: 150 / 146;
+  overflow: hidden;
+  border-radius: 10px;
+  background-color: var(--color-dark-white);
+}
+
+.journalPreviewImage img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.journalPreviewImageEmpty {
+  opacity: 0.55;
+}
+
+.journalPreviewContent {
+  @include typo-body-s;
+  @include multi-ellipsis(2);
+
+  min-height: 32px;
+  margin: 0;
+  color: var(--color-light-gray);
+  text-align: center;
+  word-break: keep-all;
+}
+
+@media (max-width: 768px) {
+
+  .journalEmptyText p {
+    @include typo-body-m-plus;
+  }
+
+  .journalEmptyText span {
+    @include typo-body-s;
+  }
+}
+
+@include mobile {
+  .journalCard {
+    padding: 16px;
+  }
+
+  .journalHeader {
+    align-items: center;
+    gap: 16px;
+  }
+
+  .journalCard .moreButton {
+    @include typo-caption;
+
+    flex-shrink: 0;
+  }
+
+  .journalCard .moreButton :global(.material-icons) {
+    @include more-icon-s;
+  }
+
+  .journalEmpty {
+    min-height: auto;
+    padding: 16px 0;
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+
+  .journalEmptyText {
+    align-items: center;
+  }
+
+  .journalEmptyText p {
+    @include typo-body-m-plus;
+  }
+
+  .journalEmptyText span {
+    @include typo-caption-plus;
+  }
+
+  .journalPreviewDeck {
+    width: 170px;
+    height: 216px;
+  }
+
+  .journalPreviewCard {
+    width: 118px;
+    padding: 6px;
+    gap: 6px;
+    border-radius: 14px;
+  }
+
+  .journalPreviewCardBack {
+    opacity: 0.38;
+    transform: translateX(-24%) translateY(4px) rotate(4deg);
+  }
+
+  .journalPreviewCardFront {
+    transform: translateX(-76%) rotate(-2deg);
+  }
+
+  .journalPreviewMeta {
+    gap: 0;
+  }
+
+  .journalPreviewMeta time {
+    @include typo-body-s;
+  }
+
+  .journalPreviewMeta strong {
+    @include typo-body-s-plus;
+  }
+
+  .journalPreviewImage {
+    border-radius: 10px;
+  }
+
+  .journalPreviewContent {
+    @include typo-body-s;
+
+    min-height: 36px;
+  }
+}
+
+@media (max-width: 560px) {
+  .goalInfo h2,
+  .spendingSummaryContent h2,
+  .aiText h2,
+  .missionHeader h2,
+  .recentHeader h2,
+  .savingGoalCard .cardHeader h2,
+  .challengeCard .cardHeader h2,
+  .journalHeader h2 {
+    @include typo-heading-xs;
+  }
+}
+
+.goalCard,
+.spendingSummaryCard,
+.aiCard,
+.missionCard,
+.recentCard,
+.savingGoalCard,
+.challengeCard,
+.journalCard {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.goalCard:hover,
+.spendingSummaryCard:hover,
+.aiCard:hover,
+.missionCard:hover,
+.recentCard:hover,
+.savingGoalCard:hover,
+.challengeCard:hover,
+.journalCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgb(6 7 14 / 8%);
+}
+
+.goalCard:hover,
+.spendingSummaryCard:hover,
+.recentCard:hover,
+.savingGoalCard:hover,
+.challengeCard:hover,
+.journalCard:hover {
+  border-color: var(--color-primary);
+}
+
+.outlineButton :global(.material-icons),
+.moreButton :global(.material-icons) {
+  transition: transform 0.2s ease;
+}
+
+.outlineButton:hover :global(.material-icons),
+.moreButton:hover :global(.material-icons) {
+  transform: translateX(4px);
+}
+
+.progressFill,
+.goalProgressFill {
+  transform-origin: left;
+  animation: progress-grow 0.8s ease-out both;
+}
+
+.greeting:hover .greetingTitle img {
+  transform: rotate(8deg) scale(1.05);
+}
+
+@keyframes progress-grow {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.missionCard:hover .missionHeader img {
+  transform: rotate(12deg) scale(1.08);
+}
+
+.savingGoalCard:hover .goalProgressValue {
+  transform: scale(1.08);
+}
+
+.challengeCard:hover .challengeIcon:not(.emptyChallengeIcon) {
+  transform: translateY(-3px);
+}
+
+.challengeCard:hover .currentChallengeIcon {
+  transform: translateY(-3px) scale(1.08);
+}

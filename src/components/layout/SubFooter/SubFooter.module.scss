@@ -1,0 +1,42 @@
+@use "../../../styles/mixins" as *;
+
+.footer {
+  width: 100%;
+  padding: 16px 0;
+  background: var(--color-white);
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.copyright {
+  @include typo-caption;
+
+  margin: 0;
+  color: var(--color-light-gray);
+}
+
+.menuList {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menuLink {
+  @include typo-body-m;
+  color: var(--color-light-gray);
+}
+
+@media (max-width: 480px) {
+  .inner {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 24px;
+  }
+}
