@@ -43,89 +43,139 @@ export default function MyPage() {
             </div>
           </section>
 
-          {/* 프로필 관리, 성장 그래프, 저축 카드 */}
-          <div className={styles.MyPage_Content}>
-            {/* 프로필 관리 */}
-            <section className={styles.Account_Section}>
-              <h2>계정 관리</h2>
+          {/* 프로필 관리 */}
+          <section className={styles.MyPage_Account}>
+            <h2>계정 관리</h2>
 
-              <dl className={styles.Account_List}>
-                <div className={styles.Account_Item}>
-                  <dt>닉네임</dt>
-                  <dd>모아</dd>
-                </div>
+            {/* <dl className={styles.Account_List}> */}
 
-                <div className={styles.Account_Item}>
-                  <dt>이메일</dt>
-                  <dd>example@google.com</dd>
-                </div>
+            <div className={styles.Account_Item}>
+              <dt>
+                <span className={styles.Account_Icon}>person</span>
+                <span className={styles.Account_Label}>닉네임</span>
+              </dt>
+              <dd>모아</dd>
+            </div>
 
-                <div className={styles.Account_Item}>
-                  <dt>가입 날짜</dt>
-                  <dd>2026.04.07</dd>
-                </div>
+            <div className={styles.Account_Item}>
+              <dt>
+                <span className={styles.Account_Icon}>alternate_email</span>
+                <span className={styles.Account_Label}>이메일</span>
+              </dt>
+              <dd>ESTFE13MO:UM@google.com</dd>
+            </div>
 
-                <div className={styles.Account_Item}>
-                  <dt>알림 설정</dt>
-                  <dd>켜짐</dd>
-                </div>
-              </dl>
+            <div className={styles.Account_Item}>
+              <dt>
+                <span className={styles.Account_Icon}>calendar_today</span>
+                <span className={styles.Account_Label}>가입 날짜</span>
+              </dt>
+              <dd>2026.04.07</dd>
+            </div>
 
-              <button type="button" className={styles.Edit_Button}>
-                정보 수정
-              </button>
-            </section>
+            <div className={styles.Account_Item}>
+              <dt>
+                <span className={styles.Account_Icon}>notifications</span>
+                <span className={styles.Account_Label}>알림 설정</span>
+              </dt>
+              <dd>켜짐</dd>
+            </div>
+            {/* </dl> */}
 
-            {/* 성장 그래프 */}
-            <section className={styles.Growth_Section}>
-              <h2>이번 달 나의 성장</h2>
+            <button type="button" className={styles.Edit_Button}>
+              정보 수정
+            </button>
+          </section>
 
-              <p>
-                지난달보다 <strong>12%</strong> 더 성장했어요!
-              </p>
-
-              <strong className={styles.Progress_Value}>65%</strong>
-
-              <div className={styles.Progress_Bar}>
-                <div className={styles.Progress_Fill}></div>
+          {/* 성장 그래프 */}
+          <section className={styles.MyPage_Growth}>
+            <div className={styles.Growth_Info}>
+              <div className={styles.Title_Group}>
+                <h2>이번 달 나의 성장</h2>
+                <p>
+                  지난달보다 <strong>12%p</strong> 더 성장했어요!
+                </p>
               </div>
-            </section>
 
-            {/* 저축 및 목표 카드 */}
-            <section className={styles.Savings_Section}>
-              <h2 className={styles.SrOnly}>저축 및 목표 현황</h2>
+              <div className={styles.Progress_Group}>
+                <strong className={styles.Progress_Value}>65%</strong>
+                <div className={styles.Progress_Bar}>
+                  <div className={styles.Progress_Fill}></div>
+                </div>
+              </div>
+            </div>
+            <img
+              src="/images/mypage/moa-cheering.webp"
+              alt="성장 캐릭터"
+              className={styles.Growth_Image}
+            />
+          </section>
 
-              <div className={styles.Savings_Grid}>
-                <article className={styles.Savings_Card}>
-                  <span>이번 달 저축액</span>
+          {/* 저축 및 목표 카드 */}
+          <section className={styles.MyPage_Stats}>
+            <div className={styles.Savings_Grid}>
+              <article className={styles.Savings_Card}>
+                <div className={styles.Stat_Content}>
+                  <span>이번 달 총 지출</span>
                   <strong>1,905,000원</strong>
-                </article>
+                </div>
+                <img
+                  src="/images/mypage/finance.webp"
+                  alt="지출 아이콘"
+                  className={styles.Savings_Image}
+                />
+              </article>
 
-                <article className={styles.Savings_Card}>
+              <article className={styles.Savings_Card}>
+                <div className={styles.Stat_Content}>
                   <span>AI 분석 횟수</span>
                   <strong>12번</strong>
-                </article>
+                </div>
+                <img
+                  src="/images/mypage/analytics.webp"
+                  alt="AI 분석아이콘"
+                  className={styles.Savings_Image}
+                />
+              </article>
 
-                <article className={styles.Savings_Card}>
+              <article className={styles.Savings_Card}>
+                <div className={styles.Stat_Content}>
                   <span>평균 목표 달성률</span>
                   <strong>80%</strong>
-                </article>
+                </div>
+                <img
+                  src="/images/mypage/goal-target.webp"
+                  alt="목표 아이콘"
+                  className={styles.Savings_Image}
+                />
+              </article>
 
-                <article className={styles.Savings_Card}>
-                  <span>이번 달 목표 랭킹</span>
+              <article className={styles.Savings_Card}>
+                <div className={styles.Stat_Content}>
+                  <span>이번 달 절약 랭킹</span>
                   <strong>45위</strong>
-                </article>
-              </div>
-            </section>
-          </div>
+                </div>
+                <img
+                  src="/images/mypage/achievement.webp"
+                  alt="랭킹 아이콘"
+                  className={styles.Savings_Image}
+                />
+              </article>
+            </div>
+          </section>
 
           {/* 하단 문구 */}
-          <section className={styles.Quote_Section}>
+          <section className={styles.MyPage_Message}>
             <p>
-              천천히 가도 괜찮아요.
+              "천천히 가도 괜찮아요.
               <br />
-              멈추지 않는다면 목표에 가까워지고 있으니까요.
+              <strong>멈추지 않는다면</strong> 목표에 가까워지고 있으니까요."
             </p>
+            <img
+              src="/images/mypage/moa-character-banner.webp"
+              alt="성장 캐릭터"
+              className={styles.Character_Image}
+            />
           </section>
         </main>
       </div>
