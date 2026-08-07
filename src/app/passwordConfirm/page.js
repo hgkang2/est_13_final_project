@@ -1,7 +1,52 @@
-
+"use client";
 import Link from "next/link";
+import { createClient } from "../../utils/supabase/client";
+import { useRouter } from "next/navigation";
 
 export default function PasswordConfirmPage() {
+    const router = useRouter();
+    const supabase = createClient();
+
+    const handlePasswordReset = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const email = formData.get("email");
+
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${window.location.origin}/reset-password`
+        });
+        if(error) {
+            alert(error.message);
+            console.error(error);
+            return;
+        }
+        alert("비밀번호 재설정 메일을 발송했습니다.이메일을 확인해주세요.");
+    };
+
+
+    const handleGoogleLogin = async() => {
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: "google",
+            options: {
+                redirectTo: `${window.location.origin}/mypage`,
+            },
+        });
+        if (error) {
+            console.error(error.message);
+        }
+    };
+     const handleKakaoLogin = async() => {
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: "kakao",
+            options: {
+                redirectTo: `${window.location.origin}/mypage`,
+            },
+        });
+        if (error) {
+            console.error(error.message);
+        }
+    };
+
     return (
         <main className="page">
         <section className="container">
@@ -26,7 +71,8 @@ export default function PasswordConfirmPage() {
         href="/passwordConfirm">비밀번호 찾기</Link>
         </nav>
 
-        <form className="form">
+        <form className="form" 
+        onSubmit={handlePasswordReset}>
         
         <div className="input">
         <label htmlFor="email">이메일</label>
@@ -46,27 +92,26 @@ export default function PasswordConfirmPage() {
                 <span />
             </div>
             <div className="sns-buttons">
-            <a className="sns-button"
-                href="https://accounts.google.com/signup"
-                target="_blank"
-                rel="noopener noreferrer">
-                
+                <button
+                  type="button"
+                  className="sns-button"
+                  onClick={handleGoogleLogin}>
                     <img src="/Google.png"
                     alt="구글 로고" />
                     <span>
                      구글로 로그인
                      </span>
-                   </a>
-                <a className="sns-button"
-                 href="https://accounts.kakao.com/weblogin/create_account"
-                 target="_blank"
-                 rel="noopener noreferrer">
+                     </button>
+                <button 
+                  type="button"
+                  className="sns-button"
+                  onClick={handleKakaoLogin}>
                     <img src="/Kakao.png"
                     alt="카카오 로고" />
                     <span>
                      카카오로 로그인
-                     </span>
-                  </a>
+                  </span>
+                 </button>
                 </div>
            </div>
         </div>

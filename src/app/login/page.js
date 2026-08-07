@@ -1,22 +1,53 @@
-import { createClient } from "@/lib/supabase/client";
-import "../../styles/_auth.scss";
+"use client";
+import { createClient } from "../../utils/supabase/client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-     /*const supabase = createClient();
+
+    const router = useRouter();
+    const supabase = createClient();
+
+     const handleLogin = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const email = formData.get("email");
+        const password = formData.get("password");
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+        if (error) {
+            //alert("이메일 또는 비밀번호가 올바르지 않습니다.");
+            alert(error.message);
+            console.error(error);
+            return;
+        }
+        router.push("/");
+     };
+
      const handleGoogleLogin = async() => {
         const { error } = await supabase.auth.signInWithOAuth({
             provider: "google",
             options: {
-                redirectTo: `${window.location.origin}/mypage`,
+                redirectTo: `${window.location.origin}/`,
             },
         });
         if (error) {
             console.error(error.message);
         }
-            
-     };*/
-
+    };
+     const handleKakaoLogin = async() => {
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: "kakao",
+            options: {
+                redirectTo: `${window.location.origin}/`,
+            },
+        });
+        if (error) {
+            console.error(error.message);
+        }
+    };
 
     return (
         <main className="page">
@@ -42,14 +73,16 @@ export default function LoginPage() {
         href="/passwordConfirm">비밀번호 찾기</Link>
         </nav>
 
-        <form className="form">
+        <form className="form" 
+        onSubmit={handleLogin}>
+
         <div className="input">
-        <label htmlFor="userId">아이디</label>
+        <label htmlFor="email">이메일</label>
         <input
-        id="userId"
-        name="userId"
-        type="text"
-        placeholder="아이디를 입력하세요" />
+        id="email"
+        name="email"
+        type="email"
+        placeholder="이메일을 입력하세요" />
         </div>
         <div className="input">
             <label htmlFor="password">비밀번호</label>
@@ -68,26 +101,27 @@ export default function LoginPage() {
                 <span />
             </div>
             <div className="sns-buttons">
-                <a className="sns-button"
-                href="https://accounts.google.com/"
-                target="_blank"
-                rel="noopener noreferrer">
+                <button
+                  type="button"
+                  className="sns-button"
+                  onClick={handleGoogleLogin}>
                     <img src="/Google.png"
                     alt="구글 로고" />
                     <span>
                      구글로 로그인
                      </span>
-                     </a>
-                <a className="sns-button"
-                href="https://accounts.kakao.com/login/"
-                target="_blank"
-                rel="noopener noreferrer">
+                     </button>
+                     
+                <button 
+                  type="button"
+                  className="sns-button"
+                  onClick={handleKakaoLogin}>
                     <img src="/Kakao.png"
                     alt="카카오 로고" />
                     <span>
                      카카오로 로그인
                      </span>
-                     </a>
+                </button>
             </div>
         </div>
         </div>

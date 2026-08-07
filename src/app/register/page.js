@@ -1,10 +1,33 @@
 "use client";
 
 import Link from "next/link";
-import { createClient } from "../../lib/supabase/client";
+import { createClient } from "../../utils/supabase/client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
+    const router = useRouter();
+    const [agreements, setAgreements] = useState ({
+        terms: false,
+        privacy: false,
+        marketing: false,
+    });
+    const allChecked = Object.values(agreements).every(Boolean);
+    const handleAllChange = (e) => {
+        const checked = e.target.checked;
+        setAgreements({
+            terms: checked,
+            privacy: checked,
+            marketing: checked,
+        });
+    };
+    const handleAgreementChange = (e) => {
+        const { name, checked } = e.target;
+        setAgreements((prev) => ({
+            ...prev,
+            [name]: checked,
+        }));
+    };
    
     const handleRegister = async (e) => {
         e.preventDefault();
@@ -21,21 +44,51 @@ export default function RegisterPage() {
             alert("비밀번호가 일치하지 않습니다.");
             return;
         }
+        if (!agreements.terms || !agreements.privacy) {
+            alert("필수 약관에 동의해주세요.");
+            return;
+        }
         const { data, error } = await supabase.auth.signUp({
             email,
             password,
             options: {
                 data: {
                     name,
+                    terms_agreed: agreements.terms,
+                    privacy_agreed: agreements.privacy,
+                    marketing_agreed: agreements.marketing,
                 },
             },
         });
         if (error) {
             alert(error.message);
+            console.error(error);
             return;
         }
-        console.log(data);
-        alert("회원가입이 완료되었습니다.");
+        alert("회원가입이 완료되었습니다.입력하신 이메일로 인증 메일을 발송했습니다.이메일 인증 후 로그인해주세요.");
+         router.push("/login");
+    };
+    const handleGoogleLogin = async() => {
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: "google",
+            options: {
+                redirectTo: `${window.location.origin}/`,
+            },
+        });
+        if (error) {
+            console.error(error.message);
+        }
+    };
+     const handleKakaoLogin = async() => {
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: "kakao",
+            options: {
+                redirectTo: `${window.location.origin}/`,
+            },
+        });
+        if (error) {
+            console.error(error.message);
+        }
     };
 
     return (
@@ -99,19 +152,37 @@ export default function RegisterPage() {
 
         <div className="terms">
             <label className="termItem">
-                <input type="checkbox" name="terms" required />
+                <input 
+                type="checkbox" 
+                checked={allChecked} 
+                onChange={handleAllChange} />
                 <span>[필수] 전체 약관에 동의합니다</span>
             </label>
             <label className="termItem">
-                <input type="checkbox" name="terms" required />
+                <input 
+                type="checkbox" 
+                name="terms" 
+                checked={agreements.terms}
+                onChange={handleAgreementChange}
+                required />
                 <span>[필수] 이용약관에 동의합니다</span>
             </label>
             <label className="termItem">
-                <input type="checkbox" name="privacy" required />
+                <input 
+                type="checkbox" 
+                name="privacy"
+                checked={agreements.privacy}
+                onChange={handleAgreementChange} 
+                required />
                 <span>[필수] 개인정보 처리방침에 동의합니다</span>
             </label>
             <label className="termItem">
-                <input type="checkbox" name="marketing" />
+                <input 
+                type="checkbox" 
+                name="marketing" 
+                checked={agreements.marketing}
+                onChange={handleAgreementChange}
+                />
                 <span>[선택] 마케팅 정보 수신에 동의합니다</span>
             </label>
         </div> 
@@ -125,27 +196,26 @@ export default function RegisterPage() {
                 <span />
             </div>
             <div className="sns-buttons">
-            <a className="sns-button"
-                href="https://accounts.google.com/signup"
-                target="_blank"
-                rel="noopener noreferrer">
-                
+                 <button
+                  type="button"
+                  className="sns-button"
+                  onClick={handleGoogleLogin}>
                     <img src="/Google.png"
                     alt="구글 로고" />
                     <span>
                      구글로 로그인
                      </span>
-                   </a>
-                <a className="sns-button"
-                 href="https://accounts.kakao.com/weblogin/create_account"
-                 target="_blank"
-                 rel="noopener noreferrer">
+                    </button>
+                  <button 
+                  type="button"
+                  className="sns-button"
+                  onClick={handleKakaoLogin}>
                     <img src="/Kakao.png"
                     alt="카카오 로고" />
                     <span>
                      카카오로 로그인
-                     </span>
-                  </a>
+                  </span>
+                </button>
                 </div>
            </div>
         </div>

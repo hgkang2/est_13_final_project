@@ -12,7 +12,7 @@
 
 .page {
     min-height: 100vh;
-    padding: 10px 40px 40px;
+    padding: 40px 40px 40px;
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -21,11 +21,11 @@
 }
 .container {
     display: flex;
-    align-items: stretch;
     width: 100%;
-    max-width: 100%;
-    min-height: calc(100vh - 80px);
+    max-width: 1840px;
     margin: 0 auto;
+    padding: 0;
+
 
     overflow: hidden;
     background: #fff;
@@ -38,8 +38,9 @@
     flex-direction: column;
     justify-content: center;
     flex-shrink: 0;
-    padding: 0px 120px;
+    padding: 0 150px;
     box-sizing: border-box;
+    
 }
 .image-section {
    width: 50%;
@@ -56,11 +57,14 @@
 }
 .intro h1 {
     font-size: 38px;
+    font-weight: 600;
     line-height: 1.25;
+    margin-bottom: 40px;
 }
 .intro p {
     font-size: 22px;
     line-height: 1.5;
+    margin-bottom: 40px;
 }
 .button {
     width: 100%;
@@ -225,7 +229,50 @@
     height: 35px;
     object-fit: contain;
 }
+.reset-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(6px);
+}
+.reset-modal {
+  width: 420px;
+  padding: 40px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+}
+
+.reset-modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.reset-modal input {
+  width: 100%;
+  height: 56px;
+  padding: 0 16px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+}
+
+.reset-modal button {
+  width: 100%;
+  height: 56px;
+  border: 0;
+  border-radius: 12px;
+  background: #77b985;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
 
 
 

@@ -19,6 +19,7 @@ export const metadata = {
     <body>
        {/* 인증 연동 후 실제 로그인 상태로 교체 */}
         <HeaderWrapper />
+        {children}
       </body>
     </html>
    );
