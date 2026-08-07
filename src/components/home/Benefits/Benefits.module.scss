@@ -3,10 +3,11 @@
   grid-template-columns: minmax(0, 1fr) 307px;
   grid-template-areas:
     "divider divider"
-    "list image";
+    "content image";
+
   align-items: center;
-  column-gap: 177px;
-  row-gap: 64px;
+  column-gap: 146px;
+  row-gap: 146px;
 
   width: 100%;
   max-width: 1272px;
@@ -24,14 +25,33 @@
   opacity: 0.4;
 }
 
-.list {
-  grid-area: list;
+.content {
+  grid-area: content;
 
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  min-width: 0;
+}
+
+.textArea {
+  padding-left: 30px;
+  h2 {
+    color: var(--color-point);
+    font-size: clamp((var(--body-xm-size)), 3vw, var(--heading-s-size));
+  }
+}
+
+.list {
   display: flex;
   flex-direction: column;
   gap: 18px;
 
+  width: 100%;
+  max-width: 100%;
   min-width: 0;
+  font-size: clamp((var(--body-m-minus-size)), 3vw, var(--body-xm-size));
 }
 
 .item {
@@ -50,6 +70,8 @@
   font-weight: 400;
   cursor: pointer;
 
+  white-space: nowrap;
+
   transition:
     color 0.25s ease,
     transform 0.25s ease;
@@ -62,8 +84,6 @@
 .arrow {
   flex: 0 0 auto;
 
-  margin-top: 3px;
-
   color: var(--color-point);
 
   opacity: 0;
@@ -73,6 +93,7 @@
     opacity 0.25s ease,
     transform 0.25s ease;
 }
+
 .active {
   color: var(--color-gray);
 }
@@ -80,6 +101,8 @@
 .active .arrow {
   opacity: 1;
   transform: translateX(0);
+
+  animation: blinkArrow 1.2s ease-in-out infinite;
 }
 
 .imageArea {
@@ -88,12 +111,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 307px;
-  min-height: 311px;
 }
 
 .imageArea img {
   display: block;
+  width: 307px;
   height: auto;
 
   animation: imageFade 0.35s ease;
@@ -111,34 +133,155 @@
   }
 }
 
+@keyframes blinkArrow {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  50% {
+    opacity: 0.4;
+    transform: translateX(3px);
+  }
+}
+
+@media (max-width: 1400px) {
+  .item {
+    width: 100%;
+    white-space: normal;
+  }
+
+  .list {
+    width: 100%;
+  }
+}
+
+@media (max-width: 1024px) {
+  .benefits {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "divider"
+      "content"
+      "image";
+
+    row-gap: 40px;
+
+    padding: 80px 48px;
+  }
+
+  .content {
+    align-items: center;
+
+    width: 100%;
+
+    text-align: center;
+  }
+
+  .textArea {
+    width: 100%;
+
+    h2 {
+      text-align: center;
+    }
+  }
+
+  .list {
+    width: 100%;
+    max-width: 700px;
+
+    align-items: center;
+  }
+
+  .item {
+    justify-content: center;
+
+    text-align: center;
+    white-space: normal;
+  }
+
+  .imageArea {
+    width: 100%;
+  }
+}
+
+// 태블릿 반응형
+
 @media (max-width: 768px) {
   .benefits {
     grid-template-columns: 1fr;
     grid-template-areas:
       "divider"
-      "list"
+      "content"
       "image";
 
     row-gap: 40px;
     padding: 80px 32px;
   }
 
-  .imageArea {
+  .content {
+    align-items: center;
+    gap: 28px;
+
     width: 100%;
+    text-align: center;
+  }
+
+  .textArea {
+    width: 100%;
+
+    h2 {
+      text-align: center;
+    }
+  }
+
+  .list {
+    align-items: center;
+
+    width: 100%;
+    max-width: 600px;
+    gap: 20px;
   }
 
   .item {
+    justify-content: center;
+
+    width: 100%;
+    text-align: center;
     line-height: 1.6;
   }
+
+  .imageArea {
+    width: 100%;
+    min-height: auto;
+  }
 }
+
+// 모바일 반응형
 
 @media (max-width: 480px) {
   .benefits {
     padding: 64px 20px;
   }
 
+  .content {
+    gap: 24px;
+  }
+
+  .textArea {
+    width: 100%;
+
+    h2 {
+      text-align: center;
+    }
+  }
+
   .list {
-    gap: 20px;
+    gap: 18px;
+  }
+
+  .item {
+    font-size: 14px;
   }
 
   .imageArea img {
