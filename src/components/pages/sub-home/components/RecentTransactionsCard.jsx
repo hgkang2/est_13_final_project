@@ -1,5 +1,6 @@
-import Image from "next/image";
 import styles from "../SubHome.module.scss";
+import TransactionItem from "./TransactionItem";
+import MoreButton from "./MoreButton";
 
 export default function RecentTransactionsCard({ hasSpendingData }) {
   return (
@@ -7,13 +8,7 @@ export default function RecentTransactionsCard({ hasSpendingData }) {
       <header className={styles.recentHeader}>
         <h2 id="recent-card-title">최근 소비 내역</h2>
 
-        <button type="button" className={styles.moreButton}>
-          <span>{hasSpendingData ? "더보기" : "소비 기록하기"}</span>
-
-          <span className="material-icons" aria-hidden="true">
-            arrow_forward
-          </span>
-        </button>
+        <MoreButton>{hasSpendingData ? "더보기" : "소비 기록하기"}</MoreButton>
       </header>
 
       <ul
@@ -22,86 +17,43 @@ export default function RecentTransactionsCard({ hasSpendingData }) {
         }`}
         aria-hidden={!hasSpendingData}
       >
-        <li className={styles.transactionItem}>
-          <Image
-            src="/images/category/cafe-snack.png"
-            alt=""
-            width={40}
-            height={40}
-            aria-hidden="true"
-          />
+        <TransactionItem
+          imageSrc="/images/category/cafe-snack.png"
+          title="스타벅스"
+          category="카페/간식"
+          categoryType="cafe"
+          amount="-4,500원"
+          date="오늘 09:24"
+        />
 
-          <div className={styles.transactionInfo}>
-            <strong>스타벅스</strong>
-            <span className={styles.cafeCategory}>카페/간식</span>
-          </div>
+        <TransactionItem
+          imageSrc="/images/category/salary.png"
+          title="급여"
+          category="급여"
+          categoryType="salary"
+          amount="+2,850,000원"
+          date="7/25 09:00"
+          isIncome
+        />
 
-          <div className={styles.transactionAmount}>
-            <strong>-4,500원</strong>
-            <span>오늘 09:24</span>
-          </div>
-        </li>
-
-        <li className={styles.transactionItem}>
-          <Image
-            src="/images/category/salary.png"
-            alt=""
-            width={40}
-            height={40}
-            aria-hidden="true"
-          />
-
-          <div className={styles.transactionInfo}>
-            <strong>급여</strong>
-            <span className={styles.salaryCategory}>급여</span>
-          </div>
-
-          <div className={styles.transactionAmount}>
-            <strong className={styles.incomeAmount}>+2,850,000원</strong>
-            <span>7/25 09:00</span>
-          </div>
-        </li>
-
-        <li className={styles.transactionItem}>
-          <Image
-            src="/images/category/food.png"
-            alt=""
-            width={40}
-            height={40}
-            aria-hidden="true"
-          />
-
-          <div className={styles.transactionInfo}>
-            <strong>배달의 민족</strong>
-            <span className={styles.foodCategory}>식비</span>
-          </div>
-
-          <div className={styles.transactionAmount}>
-            <strong>-23,000원</strong>
-            <span>7/24 22:05</span>
-          </div>
-        </li>
+        <TransactionItem
+          imageSrc="/images/category/food.png"
+          title="배달의 민족"
+          category="식비"
+          categoryType="food"
+          amount="-23,000원"
+          date="7/24 22:05"
+        />
 
         {hasSpendingData && (
-          <li className={styles.transactionItem}>
-            <Image
-              src="/images/category/savings.png"
-              alt=""
-              width={40}
-              height={40}
-              aria-hidden="true"
-            />
-
-            <div className={styles.transactionInfo}>
-              <strong>적금 계좌로 이체</strong>
-              <span className={styles.savingsCategory}>저축</span>
-            </div>
-
-            <div className={styles.transactionAmount}>
-              <strong>-200,000원</strong>
-              <span>7/24 14:00</span>
-            </div>
-          </li>
+          <TransactionItem
+            imageSrc="/images/category/savings.png"
+            title="적금 계좌로 이체"
+            category="저축"
+            categoryType="savings"
+            amount="-200,000원"
+            date="7/24 14:00"
+          />
         )}
       </ul>
 

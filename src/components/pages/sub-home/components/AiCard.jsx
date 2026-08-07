@@ -1,5 +1,6 @@
 import Image from "next/image";
 import styles from "../SubHome.module.scss";
+import OutlineButton from "./OutlineButton";
 
 export default function AiCard({ hasSpendingData }) {
   return (
@@ -23,15 +24,9 @@ export default function AiCard({ hasSpendingData }) {
               </p>
             </div>
           )}
-          <button type="button" className={styles.outlineButton}>
-            <span>
-              {hasSpendingData ? "AI 분석 자세히 보기" : "소비 기록하기"}
-            </span>
-
-            <span className="material-icons" aria-hidden="true">
-              arrow_forward
-            </span>
-          </button>
+          <OutlineButton>
+            {hasSpendingData ? "AI 분석 자세히 보기" : "소비 기록하기"}
+          </OutlineButton>
         </div>
 
         <div className={styles.aiImage}>

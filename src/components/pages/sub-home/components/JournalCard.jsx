@@ -1,6 +1,7 @@
 import Image from "next/image";
 import JournalSlider from "@/components/common/JournalSlider";
 import styles from "../SubHome.module.scss";
+import MoreButton from "./MoreButton";
 
 export default function JournalCard({ hasJournal }) {
   return (
@@ -14,15 +15,7 @@ export default function JournalCard({ hasJournal }) {
             <h2 id="journal-card-title">이번 주 소비 절약 그림일기</h2>
           </div>
 
-          {hasJournal && (
-            <button type="button" className={styles.moreButton}>
-              <span>그림일기로 이동</span>
-
-              <span className="material-icons" aria-hidden="true">
-                arrow_forward
-              </span>
-            </button>
-          )}
+          {hasJournal && <MoreButton>그림일기로 이동</MoreButton>}
         </header>
 
         {hasJournal ? (

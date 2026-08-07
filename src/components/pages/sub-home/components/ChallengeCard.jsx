@@ -1,5 +1,6 @@
 import Image from "next/image";
 import styles from "../SubHome.module.scss";
+import MoreButton from "./MoreButton";
 
 export default function ChallengeCard({ hasChallenge }) {
   return (
@@ -8,13 +9,7 @@ export default function ChallengeCard({ hasChallenge }) {
         <header className={styles.cardHeader}>
           <h2 id="challenge-title">챌린지 현황</h2>
 
-          <button type="button" className={styles.moreButton}>
-            <span>챌린지로 이동</span>
-
-            <span className="material-icons" aria-hidden="true">
-              arrow_forward
-            </span>
-          </button>
+          <MoreButton>챌린지로 이동</MoreButton>
         </header>
 
         <div className={styles.challengeBody}>

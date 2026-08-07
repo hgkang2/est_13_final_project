@@ -1,4 +1,5 @@
 import styles from "../SubHome.module.scss";
+import MoreButton from "./MoreButton";
 
 export default function SavingGoalCard({ hasSavingGoal }) {
   return (
@@ -10,13 +11,7 @@ export default function SavingGoalCard({ hasSavingGoal }) {
         <header className={styles.cardHeader}>
           <h2 id="saving-goal-title">저축 목표</h2>
 
-          <button type="button" className={styles.moreButton}>
-            <span>목표 관리로 이동</span>
-
-            <span className="material-icons" aria-hidden="true">
-              arrow_forward
-            </span>
-          </button>
+          <MoreButton>목표 관리로 이동</MoreButton>
         </header>
 
         {hasSavingGoal ? (

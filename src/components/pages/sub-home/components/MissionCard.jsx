@@ -1,5 +1,6 @@
 import Image from "next/image";
 import styles from "../SubHome.module.scss";
+import OutlineButton from "./OutlineButton";
 
 export default function MissionCard({ hasSpendingData }) {
   return (
@@ -20,7 +21,6 @@ export default function MissionCard({ hasSpendingData }) {
 
             <h2 id="mission-card-title">오늘의 미션</h2>
           </header>
-
           <div className={styles.missionDescription}>
             {hasSpendingData ? (
               <>
@@ -46,16 +46,9 @@ export default function MissionCard({ hasSpendingData }) {
               </>
             )}
           </div>
-
-          <button type="button" className={styles.outlineButton}>
-            <span>
-              {hasSpendingData ? "미션 자세히 보기" : "소비 기록하기"}
-            </span>
-
-            <span className="material-icons" aria-hidden="true">
-              arrow_forward
-            </span>
-          </button>
+          <OutlineButton>
+            {hasSpendingData ? "미션 자세히 보기" : "소비 기록하기"}
+          </OutlineButton>{" "}
         </div>
 
         <div className={styles.missionImage}>
