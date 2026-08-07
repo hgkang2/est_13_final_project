@@ -11,6 +11,8 @@ export default function Home() {
       <Hero />
       <ServiceIntro />
       <Story />
+      <Benefits />
+      <Review />
     </main>
   );
 }

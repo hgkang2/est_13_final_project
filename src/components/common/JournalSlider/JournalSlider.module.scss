@@ -19,7 +19,7 @@
 }
 
 .journalSlider :global(.swiper-slide) {
-  width: 132px;
+  width: 150px;
   min-width: 0;
   height: auto;
 }
@@ -100,7 +100,6 @@
 .sliderButton {
   @include flex-center;
 
-  display: none;
   position: absolute;
   top: 50%;
   z-index: 20;
@@ -111,8 +110,16 @@
   color: var(--color-point);
   background-color: transparent;
   cursor: pointer;
-  pointer-events: auto;
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
   transform: translateY(-50%);
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease,
+    color 0.2s ease;
 }
 
 .sliderButton :global(.material-icons) {
@@ -130,6 +137,23 @@
   right: 0;
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .journalSlider:hover .sliderButton,
+  .journalSlider:focus-within .sliderButton {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .sliderButton {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+}
+
 @media (max-width: 1024px) {
   .journalSlider :global(.swiper) {
     padding: 0 40px;
@@ -137,10 +161,6 @@
 
   .journalSlider :global(.swiper-slide) {
     width: 132px;
-  }
-
-  .sliderButton {
-    display: flex;
   }
 }
 
@@ -161,13 +181,5 @@
     width: 100px;
     height: 100px;
     aspect-ratio: auto;
-  }
-
-  .prevButton {
-    left: 0px;
-  }
-
-  .nextButton {
-    right: 0px;
   }
 }

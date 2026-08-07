@@ -1,6 +1,6 @@
 .story {
   width: 100%;
-  padding: 160px 0;
+  padding: 160px 0 0 0;
 }
 
 .inner {
@@ -13,7 +13,7 @@
 .storyList {
   display: flex;
   flex-direction: column;
-  gap: 120px;
+  gap: 200px;
 }
 
 .storyItem {
