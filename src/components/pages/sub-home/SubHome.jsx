@@ -10,12 +10,14 @@ import GreetingSection from "./components/GreetingSection";
 import GoalCard from "./components/GoalCard";
 import SpendingSummaryCard from "./components/SpendingSummaryCard";
 import AiCard from "./components/AiCard";
+import MissionCard from "./components/MissionCard";
+import RecentTransactionsCard from "./components/RecentTransactionsCard";
 
 export default function SubHome() {
   // UI 개발용 상태값
   const userName = "Moa";
   const hasGoal = false;
-  const hasSpendingData = true;
+  const hasSpendingData = false;
   const hasSavingGoal = false;
   const hasChallenge = false;
   const hasJournal = false;
@@ -38,205 +40,8 @@ export default function SubHome() {
                 <AiCard hasSpendingData={hasSpendingData} />
               </div>
               <div className={styles.missionRow}>
-                <article
-                  className={styles.missionCard}
-                  aria-labelledby="mission-card-title"
-                >
-                  <div className={styles.missionContent}>
-                    <div className={styles.missionText}>
-                      <header className={styles.missionHeader}>
-                        <Image
-                          src="/images/challenge/star.png"
-                          alt=""
-                          width={40}
-                          height={40}
-                          aria-hidden="true"
-                        />
-
-                        <h2 id="mission-card-title">오늘의 미션</h2>
-                      </header>
-
-                      <div className={styles.missionDescription}>
-                        {hasSpendingData ? (
-                          <>
-                            <p className={styles.missionMessage}>
-                              편의점 지출 <strong>5,000원</strong> 이하로
-                              유지해보세요!
-                            </p>
-
-                            <p className={styles.missionSubText}>
-                              오늘 미션을 완료하고 새싹을 키워보세요. 🌱
-                            </p>
-                          </>
-                        ) : (
-                          <>
-                            <p
-                              className={`${styles.missionMessage} ${styles.emptyMissionTitle}`}
-                            >
-                              오늘의 소비 데이터를 기다리고 있어요.
-                            </p>
-
-                            <p className={styles.missionSubText}>
-                              기록을 시작하면 오늘의 절약 미션을 추천해드릴게요!
-                            </p>
-                          </>
-                        )}
-                      </div>
-
-                      <button type="button" className={styles.outlineButton}>
-                        <span>
-                          {hasSpendingData
-                            ? "미션 자세히 보기"
-                            : "소비 기록하기"}
-                        </span>
-
-                        <span className="material-icons" aria-hidden="true">
-                          arrow_forward
-                        </span>
-                      </button>
-                    </div>
-
-                    <div className={styles.missionImage}>
-                      <Image
-                        className={
-                          !hasSpendingData ? styles.emptyMissionCharacter : ""
-                        }
-                        src={
-                          hasSpendingData
-                            ? "/images/character/mission_moa.png"
-                            : "/images/character/mission_empty_moa.png"
-                        }
-                        alt={
-                          hasSpendingData
-                            ? "오늘의 미션을 안내하는 모아 캐릭터"
-                            : "기록을 시작하도록 안내하는 모아 캐릭터"
-                        }
-                        width={220}
-                        height={220}
-                      />
-                    </div>
-                  </div>
-                </article>
-                <article
-                  className={styles.recentCard}
-                  aria-labelledby="recent-card-title"
-                >
-                  <header className={styles.recentHeader}>
-                    <h2 id="recent-card-title">최근 소비 내역</h2>
-
-                    <button type="button" className={styles.moreButton}>
-                      <span>
-                        {hasSpendingData ? "더보기" : "소비 기록하기"}
-                      </span>
-
-                      <span className="material-icons" aria-hidden="true">
-                        arrow_forward
-                      </span>
-                    </button>
-                  </header>
-
-                  <ul
-                    className={`${styles.transactionList} ${
-                      !hasSpendingData ? styles.previewTransactionList : ""
-                    }`}
-                    aria-hidden={!hasSpendingData}
-                  >
-                    <li className={styles.transactionItem}>
-                      <Image
-                        src="/images/category/cafe-snack.png"
-                        alt=""
-                        width={40}
-                        height={40}
-                        aria-hidden="true"
-                      />
-
-                      <div className={styles.transactionInfo}>
-                        <strong>스타벅스</strong>
-                        <span className={styles.cafeCategory}>카페/간식</span>
-                      </div>
-
-                      <div className={styles.transactionAmount}>
-                        <strong>-4,500원</strong>
-                        <span>오늘 09:24</span>
-                      </div>
-                    </li>
-
-                    <li className={styles.transactionItem}>
-                      <Image
-                        src="/images/category/salary.png"
-                        alt=""
-                        width={40}
-                        height={40}
-                        aria-hidden="true"
-                      />
-
-                      <div className={styles.transactionInfo}>
-                        <strong>급여</strong>
-                        <span className={styles.salaryCategory}>급여</span>
-                      </div>
-
-                      <div className={styles.transactionAmount}>
-                        <strong className={styles.incomeAmount}>
-                          +2,850,000원
-                        </strong>
-                        <span>7/25 09:00</span>
-                      </div>
-                    </li>
-
-                    <li className={styles.transactionItem}>
-                      <Image
-                        src="/images/category/food.png"
-                        alt=""
-                        width={40}
-                        height={40}
-                        aria-hidden="true"
-                      />
-
-                      <div className={styles.transactionInfo}>
-                        <strong>배달의 민족</strong>
-                        <span className={styles.foodCategory}>식비</span>
-                      </div>
-
-                      <div className={styles.transactionAmount}>
-                        <strong>-23,000원</strong>
-                        <span>7/24 22:05</span>
-                      </div>
-                    </li>
-
-                    {hasSpendingData && (
-                      <li className={styles.transactionItem}>
-                        <Image
-                          src="/images/category/savings.png"
-                          alt=""
-                          width={40}
-                          height={40}
-                          aria-hidden="true"
-                        />
-
-                        <div className={styles.transactionInfo}>
-                          <strong>적금 계좌로 이체</strong>
-                          <span className={styles.savingsCategory}>저축</span>
-                        </div>
-
-                        <div className={styles.transactionAmount}>
-                          <strong>-200,000원</strong>
-                          <span>7/24 14:00</span>
-                        </div>
-                      </li>
-                    )}
-                  </ul>
-
-                  {!hasSpendingData && (
-                    <div className={styles.recentEmptyGuide}>
-                      <div className={styles.recentEmptyText}>
-                        <p>첫 소비를 기다리고 있어요!</p>
-                        <span>
-                          기록을 시작하면 최근 소비 내역이 표시됩니다.
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                </article>
+                <MissionCard hasSpendingData={hasSpendingData} />
+                <RecentTransactionsCard hasSpendingData={hasSpendingData} />
               </div>
               <div className={styles.statusRow}>
                 <article
