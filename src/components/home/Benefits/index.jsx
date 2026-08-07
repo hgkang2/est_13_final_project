@@ -34,21 +34,26 @@ export default function Benefits() {
     <section className={styles.benefits}>
       <div className={styles.divider}></div>
 
-      <div className={`body-xm ${styles.list}`}>
-        {benefits.map((item, index) => (
-          <button
-            key={item.id}
-            onClick={() => setSelected(index)}
-            className={`
-                ${styles.item}
-                ${selected === index ? styles.active : ""}
-            `}
-          >
-            <span className={styles.arrow}>▶</span>
+      <div className={styles.content}>
+        <div className={`heading-s-plus ${styles.textArea}`}>
+          <h2>왜 많은 사람들이 '모음'을 선택할까요?</h2>
+        </div>
+        <div className={`body-xm ${styles.list}`}>
+          {benefits.map((item, index) => (
+            <button
+              key={item.id}
+              onClick={() => setSelected(index)}
+              className={`
+                  ${styles.item}
+                  ${selected === index ? styles.active : ""}
+              `}
+            >
+              <span className={styles.arrow}>▶</span>
 
-            {item.title}
-          </button>
-        ))}
+              {item.title}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className={styles.imageArea}>
