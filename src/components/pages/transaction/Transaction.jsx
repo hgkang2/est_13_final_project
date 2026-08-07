@@ -341,9 +341,7 @@ export default function Transaction() {
     }));
   };
 
-  const handleAiReceiptChange = event => {
-    const file = event.target.files?.[0];
-
+  const handleAiReceipt = file => {
     if (!file) return;
 
     setAiTransactionForm(prevForm => ({
@@ -370,6 +368,20 @@ export default function Transaction() {
 
       setAiStatus("success");
     }, 1800);
+  };
+
+  const handleAiReceiptChange = event => {
+    handleAiReceipt(event.target.files?.[0]);
+  };
+
+  const handleAiDragOver = event => {
+    event.preventDefault();
+  };
+
+  const handleAiDrop = event => {
+    event.preventDefault();
+
+    handleAiReceipt(event.dataTransfer.files?.[0]);
   };
 
   const handleAiTransactionSubmit = event => {
@@ -675,36 +687,6 @@ export default function Transaction() {
             </div>
 
             {isEntryOpen ? (
-              // <aside className={styles.entryPanel} aria-label="소비 기록 입력">
-              //   <div className={styles.entryPanelHeader}>
-              //     <div>
-              //       <p className={styles.entryEyebrow}>소비 기록 입력</p>
-              //       <h2 className={styles.entryTitle}>새 거래 추가</h2>
-              //     </div>
-
-              //     <div className={styles.entryHeaderActions}>
-              //       <button type="button" aria-label="입력 기록 확인">
-              //         <span className="material-icons" aria-hidden="true">
-              //           history
-              //         </span>
-              //       </button>
-
-              //       <button
-              //         type="button"
-              //         onClick={() => setIsEntryOpen(false)}
-              //         aria-label="소비 기록 입력창 닫기"
-              //       >
-              //         <span className="material-icons" aria-hidden="true">
-              //           close
-              //         </span>
-              //       </button>
-              //     </div>
-              //   </div>
-
-              //   <div className={styles.entryPlaceholder}>
-              //     입력 폼은 다음 단계에서 여기에 추가
-              //   </div>
-              // </aside>
               <aside
                 className={`${styles.entryPanel} ${
                   entryMode === "multiple" ? styles.multipleEntryPanel : ""
@@ -1582,7 +1564,11 @@ export default function Transaction() {
                       </div>
 
                       {aiStatus === "idle" && (
-                        <label className={styles.aiUploadBox}>
+                        <label
+                          className={styles.aiUploadBox}
+                          onDragOver={handleAiDragOver}
+                          onDrop={handleAiDrop}
+                        >
                           <input
                             type="file"
                             accept="image/jpeg, image/png"
@@ -1618,7 +1604,10 @@ export default function Transaction() {
                           />
 
                           <div className={styles.aiRecognitionMessage}>
-                            <strong>거래 정보를 분석하고 있습니다.</strong>
+                            <strong>
+                              거래 정보를 분석하고 있습니다
+                              <span className={styles.loadingDots} />
+                            </strong>
                             <span>잠시만 기다려 주세요</span>
                           </div>
                         </div>
@@ -1739,7 +1728,6 @@ export default function Transaction() {
 
                       <label className={styles.formField}>
                         <span className={styles.aiFormLabel}>금액</span>
-
                         <span className={styles.amountInputBox}>
                           <input
                             type="number"
@@ -1748,11 +1736,16 @@ export default function Transaction() {
                             onChange={handleAiFormChange}
                             disabled={aiStatus !== "success"}
                             placeholder={
-                              aiStatus === "analyzing"
-                                ? "분석 중입니다..."
-                                : "금액을 입력하세요"
+                              aiStatus === "idle" ? "금액을 입력하세요" : ""
                             }
                           />
+
+                          {aiStatus === "analyzing" && (
+                            <span className={styles.analyzingText}>
+                              분석 중입니다
+                              <span className={styles.loadingDots} />
+                            </span>
+                          )}
 
                           <strong>원</strong>
                         </span>

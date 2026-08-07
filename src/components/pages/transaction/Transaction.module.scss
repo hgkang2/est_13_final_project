@@ -1708,3 +1708,42 @@
   background-color: var(--color-point);
   cursor: pointer;
 }
+
+.amountInputBox {
+  position: relative;
+}
+
+.analyzingText {
+  position: absolute;
+  left: 16px;
+  color: var(--color-green-gray);
+  pointer-events: none;
+
+  @include typo-body-m-minus;
+}
+
+.loadingDots::after {
+  display: inline-block;
+  width: 18px;
+  content: "";
+  animation: loading-dots 1.2s steps(4, end) infinite;
+}
+
+@keyframes loading-dots {
+  0% {
+    content: "";
+  }
+
+  25% {
+    content: ".";
+  }
+
+  50% {
+    content: "..";
+  }
+
+  75%,
+  100% {
+    content: "...";
+  }
+}
