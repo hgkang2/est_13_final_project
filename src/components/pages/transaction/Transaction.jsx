@@ -6,14 +6,13 @@ import BottomTab from "@/components/layout/BottomTab";
 import SubFooter from "@/components/layout/SubFooter";
 import styles from "./Transaction.module.scss";
 import RecentTransactions from "./components/RecentTransactions";
-import TransactionEmpty from "./components/TransactionEmpty";
 import TransactionDetail from "./components/TransactionDetail";
 import TransactionEdit from "./components/TransactionEdit";
 import SummaryCards from "./components/SummaryCards";
 import TransactionToolbar from "./components/TransactionToolbar";
 import TransactionList from "./components/TransactionList";
 
-const hasTransactionData = true;
+const hasTransactionData = false;
 
 const transactions = [
   {
