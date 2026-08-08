@@ -1,4 +1,4 @@
-import styles from "./TransactionEmpty.module.scss";
+import styles from "../Transaction.module.scss";
 
 const emptyContents = {
   empty: {

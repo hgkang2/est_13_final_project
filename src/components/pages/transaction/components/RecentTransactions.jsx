@@ -1,4 +1,4 @@
-import styles from "./RecentTransactions.module.scss";
+import styles from "../Transaction.module.scss";
 
 function formatRecentAmount(amount) {
   const sign = amount > 0 ? "+" : "-";

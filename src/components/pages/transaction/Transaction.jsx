@@ -8,6 +8,7 @@ import styles from "./Transaction.module.scss";
 import RecentTransactions from "./components/RecentTransactions";
 import TransactionEmpty from "./components/TransactionEmpty";
 import TransactionDetail from "./components/TransactionDetail";
+import TransactionEdit from "./components/TransactionEdit";
 
 const hasTransactionData = true;
 
@@ -284,6 +285,7 @@ export default function Transaction() {
   const [isCopyModalOpen, setIsCopyModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
   useEffect(() => {
     if (!toastMessage) return;
@@ -882,7 +884,26 @@ export default function Transaction() {
                 </div>
               </section>
             </div>
-            {isDetailOpen ? (
+            {isEditOpen ? (
+              <TransactionEdit
+                transaction={selectedTransaction}
+                onClose={() => {
+                  setIsEditOpen(false);
+                  setIsDetailOpen(false);
+                  setSelectedTransaction(null);
+                }}
+                onCancel={() => {
+                  setIsEditOpen(false);
+                  setIsDetailOpen(true);
+                }}
+                onSave={updatedForm => {
+                  console.log("수정 저장값", updatedForm);
+
+                  setIsEditOpen(false);
+                  setIsDetailOpen(true);
+                }}
+              />
+            ) : isDetailOpen ? (
               <TransactionDetail
                 transaction={selectedTransaction}
                 onClose={() => {
@@ -890,7 +911,8 @@ export default function Transaction() {
                   setSelectedTransaction(null);
                 }}
                 onEdit={() => {
-                  console.log("수정 화면 열기");
+                  setIsDetailOpen(false);
+                  setIsEditOpen(true);
                 }}
               />
             ) : isEntryOpen ? (

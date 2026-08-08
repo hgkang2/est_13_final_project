@@ -2454,3 +2454,111 @@
 .detailEditButton {
   color: var(--color-point);
 }
+
+/* Transaction Edit */
+
+.detailField label {
+  color: var(--color-light-gray);
+
+  @include typo-caption-plus;
+}
+
+.editInputBox {
+  display: flex;
+  width: 100%;
+  height: 48px;
+  padding: 16px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--color-white);
+}
+
+.editInputBox input {
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  flex: 1;
+  color: var(--color-text);
+  background-color: transparent;
+
+  @include typo-caption-plus;
+}
+
+.editInputBox > span {
+  flex-shrink: 0;
+  color: var(--color-light-gray);
+
+  @include typo-caption-plus;
+}
+
+.editInput {
+  width: 100%;
+  height: 48px;
+  padding: 16px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+  outline: 0;
+  color: var(--color-text);
+  background-color: var(--color-white);
+
+  @include typo-body-m-minus;
+}
+
+.editInput:focus,
+.editInputBox:focus-within,
+.editSelect:focus {
+  border-color: var(--color-point);
+}
+
+.editSelect {
+  width: 100%;
+  height: 48px;
+  padding: 0 40px 0 16px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+  outline: 0;
+  color: var(--color-light-gray);
+  background-color: var(--color-white);
+  cursor: pointer;
+
+  @include typo-body-m-minus;
+}
+
+.editPaymentSelect {
+  width: 160px;
+}
+
+.editActions {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+}
+
+.editCancelButton,
+.editSaveButton {
+  display: flex;
+  height: 48px;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  @include typo-caption-plus;
+}
+
+.editCancelButton {
+  padding: 16px;
+  border: 1px solid var(--color-point);
+  flex-shrink: 0;
+  color: var(--color-point);
+  background-color: var(--color-white);
+}
+
+.editSaveButton {
+  border: 0;
+  flex: 1;
+  color: var(--color-white);
+  background-color: var(--color-point);
+}
