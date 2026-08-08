@@ -1,3 +1,4 @@
+import { useState } from "react";
 import styles from "./TransactionList.module.scss";
 import TransactionEmpty from "../TransactionEmpty";
 
@@ -31,6 +32,12 @@ export default function TransactionList({
         transfer: 0,
       },
     );
+
+  const [expandedId, setExpandedId] = useState(null);
+
+  const handleToggleMemo = transactionId => {
+    setExpandedId(prevId => (prevId === transactionId ? null : transactionId));
+  };
 
   return (
     <div className={styles.table}>
@@ -151,7 +158,15 @@ export default function TransactionList({
                     </span>
                   </button>
 
-                  <time className={styles.dateCell}>{transaction.date}</time>
+                  <time className={styles.dateCell}>
+                    <span className={styles.transactionDate}>
+                      {transaction.date.split(" ")[0]}
+                    </span>
+
+                    <span className={styles.transactionTime}>
+                      {transaction.date.split(" ")[1]}
+                    </span>
+                  </time>
 
                   <strong
                     className={`${styles.typeCell} ${styles[transaction.type]}`}
@@ -159,29 +174,33 @@ export default function TransactionList({
                     {transaction.typeLabel}
                   </strong>
 
-                  <strong
-                    className={`${styles.categoryCell} ${
-                      styles[transaction.categoryType]
-                    }`}
-                  >
-                    {transaction.category}
-                  </strong>
+                  <div className={styles.contentGroup}>
+                    <strong
+                      className={`${styles.categoryCell} ${
+                        styles[transaction.categoryType]
+                      }`}
+                    >
+                      {transaction.category}
+                    </strong>
 
-                  <span className={styles.contentCell}>
-                    {transaction.content}
-                  </span>
+                    <span className={styles.contentCell}>
+                      {transaction.content}
+                    </span>
+                  </div>
 
-                  <strong
-                    className={`${styles.amountCell} ${
-                      styles[transaction.type]
-                    }`}
-                  >
-                    {formatAmount(transaction.amount)}
-                  </strong>
+                  <div className={styles.amountGroup}>
+                    <strong
+                      className={`${styles.amountCell} ${
+                        styles[transaction.type]
+                      }`}
+                    >
+                      {formatAmount(transaction.amount)}
+                    </strong>
 
-                  <span className={styles.paymentCell}>
-                    {transaction.paymentMethod}
-                  </span>
+                    <span className={styles.paymentCell}>
+                      {transaction.paymentMethod}
+                    </span>
+                  </div>
 
                   <span className={styles.memoCell}>{transaction.memo}</span>
 
@@ -189,22 +208,37 @@ export default function TransactionList({
                     type="button"
                     className={styles.actionCell}
                     aria-label={`${transaction.content} 거래 메뉴`}
+                    onClick={event => {
+                      event.stopPropagation();
+                    }}
                   >
                     <span
-                      className="material-icons"
+                      className={`material-icons ${styles.desktopActionIcon}`}
                       aria-hidden="true"
-                      onClick={event => {
-                        event.stopPropagation();
-                      }}
                     >
                       more_vert
                     </span>
+
+                    <span
+                      className={`material-icons ${styles.mobileActionIcon}`}
+                      aria-hidden="true"
+                      onClick={event => {
+                        event.stopPropagation();
+                        handleToggleMemo(transaction.id);
+                      }}
+                    >
+                      {expandedId === transaction.id
+                        ? "keyboard_control_key"
+                        : "keyboard_arrow_down"}
+                    </span>
                   </button>
 
-                  <div className={styles.mobileMemo}>
-                    <strong>메모</strong>
-                    <span>{transaction.memo}</span>
-                  </div>
+                  {expandedId === transaction.id && (
+                    <div className={styles.mobileMemo}>
+                      <strong>메모</strong>
+                      <span>{transaction.memo}</span>
+                    </div>
+                  )}
                 </li>
               );
             })}

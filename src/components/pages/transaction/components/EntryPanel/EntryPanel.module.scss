@@ -1,8 +1,11 @@
 @use "../../../../../styles/mixins" as *;
 
 .entryPanel {
-  position: sticky;
+  position: absolute;
   top: 0;
+  right: 0;
+  z-index: 80;
+
   display: flex;
   width: 378px;
   min-width: 378px;

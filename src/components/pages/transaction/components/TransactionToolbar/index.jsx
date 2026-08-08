@@ -25,40 +25,45 @@ export default function TransactionToolbar({ activeFilter, onFilterChange }) {
         ))}
       </div>
 
-      <button type="button" className={styles.dateButton}>
-        <span>2026.07.01 - 2026.07.31</span>
-
-        <span className="material-icons" aria-hidden="true">
-          calendar_month
-        </span>
-      </button>
-
-      <div className={styles.toolbarActions}>
-        <button type="button" className={styles.toolbarButton}>
-          <span>필터</span>
+      <div className={styles.mobileToolbarRow}>
+        <button type="button" className={styles.dateButton}>
+          <span>2026.07.01 - 2026.07.31</span>
 
           <span className="material-icons" aria-hidden="true">
-            filter_alt
+            calendar_month
           </span>
         </button>
 
-        <button type="button" className={styles.toolbarButton}>
-          <span className="material-icons" aria-hidden="true">
-            file_download
-          </span>
+        <div className={styles.toolbarActions}>
+          <button type="button" className={styles.toolbarButton}>
+            <span>필터</span>
 
-          <span>내보내기</span>
-        </button>
+            <span className="material-icons" aria-hidden="true">
+              filter_alt
+            </span>
+          </button>
 
-        <button
-          type="button"
-          className={styles.moreButton}
-          aria-label="거래 목록 추가 메뉴"
-        >
-          <span className="material-icons" aria-hidden="true">
-            more_vert
-          </span>
-        </button>
+          <button
+            type="button"
+            className={`${styles.toolbarButton} ${styles.exportButton}`}
+          >
+            <span className="material-icons" aria-hidden="true">
+              file_download
+            </span>
+
+            <span>내보내기</span>
+          </button>
+
+          <button
+            type="button"
+            className={styles.moreButton}
+            aria-label="거래 목록 추가 메뉴"
+          >
+            <span className="material-icons" aria-hidden="true">
+              more_vert
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   );

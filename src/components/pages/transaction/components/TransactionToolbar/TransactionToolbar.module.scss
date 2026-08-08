@@ -1,16 +1,17 @@
 @use "../../../../../styles/mixins" as *;
 
 .toolbar {
-  display: flex;
+  display: grid;
   width: 100%;
   padding: 16px;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   gap: 16px;
 }
 
 .typeFilters {
   display: flex;
+  justify-self: start;
   align-items: center;
   gap: 8px;
 }
@@ -25,8 +26,10 @@
   color: var(--color-light-gray);
   background-color: var(--color-background-green);
   cursor: pointer;
-
-  @include typo-caption-plus;
+  white-space: nowrap;
+  font-size: 14px;
+  line-height: 24px;
+  font-weight: var(--font-weight-bold);
 }
 
 .activeFilter {
@@ -34,13 +37,32 @@
   color: var(--color-point);
 }
 
+.dateButton {
+  display: inline-flex;
+  min-height: 48px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+  justify-self: center;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--color-light-gray);
+  background-color: var(--color-white);
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 14px;
+  line-height: 24px;
+  font-weight: var(--font-weight-bold);
+}
+
 .toolbarActions {
   display: flex;
+  justify-self: end;
   align-items: center;
   gap: 8px;
 }
 
-.dateButton,
 .toolbarButton {
   display: inline-flex;
   min-height: 48px;
@@ -53,13 +75,15 @@
   color: var(--color-light-gray);
   background-color: var(--color-white);
   cursor: pointer;
-
-  @include typo-caption-plus;
+  white-space: nowrap;
+  font-size: 14px;
+  line-height: 24px;
+  font-weight: var(--font-weight-bold);
 }
 
 .dateButton :global(.material-icons),
 .toolbarButton :global(.material-icons) {
-  font-size: var(--icon-m-size);
+  font-size: 16px;
 }
 
 .moreButton {
@@ -67,6 +91,7 @@
   width: 36px;
   min-width: 36px;
   height: 48px;
+  padding: 0;
   border: 0;
   border-radius: 8px;
   align-items: center;
@@ -77,5 +102,113 @@
 }
 
 .moreButton :global(.material-icons) {
-  font-size: var(--icon-m-size);
+  font-size: 16px;
+}
+
+.mobileToolbarRow {
+  display: contents;
+}
+
+@container (max-width: 1200px) {
+  .toolbar {
+    display: flex;
+    width: 100%;
+    padding: 16px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .typeFilters {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .typeFilter {
+    padding: 8px;
+  }
+
+  .mobileToolbarRow {
+    display: contents;
+  }
+
+  .dateButton {
+    flex: 0 0 auto;
+    min-height: 40px;
+    padding: 8px;
+  }
+
+  .toolbarActions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .toolbarButton {
+    min-height: 40px;
+    padding: 8px;
+  }
+
+  .moreButton {
+    width: 36px;
+    min-width: 36px;
+    height: 40px;
+  }
+
+  .exportButton {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .toolbar {
+    display: flex;
+    width: 100%;
+    padding: 16px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .typeFilters {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .mobileToolbarRow {
+    display: flex;
+    width: calc(100% + 8px);
+    align-items: center;
+    margin-right: -8px;
+  }
+
+  .dateButton {
+    flex: 0 0 auto;
+    min-height: 40px;
+    padding: 8px;
+  }
+
+  .toolbarActions {
+    display: flex;
+    margin-left: auto;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .toolbarButton {
+    flex: 0 0 auto;
+    min-height: 40px;
+    padding: 8px;
+  }
+
+  .moreButton {
+    flex: 0 0 36px;
+    width: 36px;
+    min-width: 36px;
+    height: 40px;
+  }
 }

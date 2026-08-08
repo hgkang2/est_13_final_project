@@ -4,29 +4,9 @@
   width: 100%;
 }
 
-// .tableHeader,
-// .transactionRow {
-//   display: grid;
-//   grid-template-columns:
-//     40px
-//     160px
-//     72px
-//     120px
-//     304px
-//     120px
-//     120px
-//     204px
-//     36px;
-//   width: 1176px;
-//   margin: 0 auto;
-//   align-items: center;
-// }
-
 .tableHeader,
 .transactionRow {
   display: grid;
-  width: 100%;
-  padding: 8px;
   grid-template-columns:
     40px
     160px
@@ -37,8 +17,11 @@
     120px
     204px
     36px;
-  justify-content: center;
+  // width: 1176px;
+  width: 100%;
+  padding: 8px;
   align-items: center;
+  justify-content: center;
 }
 
 .tableHeader {
@@ -177,6 +160,10 @@
 }
 
 .mobileMemo {
+  display: none;
+}
+
+.mobileActionIcon {
   display: none;
 }
 
@@ -320,4 +307,434 @@
 
 .loadMoreButton:hover {
   background-color: var(--color-primary);
+}
+
+.dateCell {
+  gap: 4px;
+}
+
+.transactionDate,
+.transactionTime {
+  white-space: nowrap;
+}
+
+.contentGroup,
+.amountGroup {
+  display: contents;
+}
+
+.contentGroup,
+.amountGroup {
+  display: contents;
+}
+
+@container (max-width: 1200px) {
+  .tableHeader,
+  .transactionRow {
+    display: flex;
+    width: 100%;
+    padding: 8px 16px;
+    box-sizing: border-box;
+    align-items: center;
+  }
+
+  .tableHeader {
+    min-height: 56px;
+    justify-content: space-between;
+  }
+
+  .tableHeader .typeCell,
+  .tableHeader .contentCell,
+  .tableHeader .paymentCell {
+    display: none;
+  }
+
+  .tableHeader .checkboxCell {
+    display: flex;
+    width: 40px;
+    min-width: 40px;
+    flex: 0 0 40px;
+  }
+
+  .tableHeader .dateCell {
+    width: 96px;
+    min-width: 96px;
+    flex: 0 0 96px;
+    padding: 0;
+  }
+
+  .tableHeader .categoryCell {
+    width: 204px;
+    min-width: 204px;
+    flex: 0 0 204px;
+    padding: 0;
+    font-size: 0;
+  }
+
+  .tableHeader .categoryCell::after {
+    content: "내용/카테고리";
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: var(--font-weight-bold);
+  }
+
+  .tableHeader .amountCell {
+    width: 120px;
+    min-width: 120px;
+    flex: 0 0 120px;
+    padding: 0;
+    font-size: 0;
+  }
+
+  .tableHeader .amountCell::after {
+    content: "금액/결제수단";
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: var(--font-weight-bold);
+  }
+
+  .tableHeader .memoCell {
+    width: 160px;
+    min-width: 160px;
+    flex: 0 0 160px;
+    padding: 0;
+  }
+
+  .tableHeader .actionCell {
+    display: flex;
+    width: 40px;
+    min-width: 40px;
+    flex: 0 0 40px;
+  }
+
+  .transactionRow {
+    min-height: 72px;
+    justify-content: space-between;
+  }
+
+  .transactionRow .checkboxCell {
+    display: flex;
+    width: 40px;
+    min-width: 40px;
+    flex: 0 0 40px;
+  }
+
+  .transactionRow .dateCell {
+    display: flex;
+    width: 96px;
+    min-width: 96px;
+    height: auto;
+    padding: 0;
+    flex: 0 0 96px;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: var(--font-weight-regular);
+  }
+
+  .transactionRow .typeCell {
+    display: none;
+  }
+
+  .transactionRow .contentGroup {
+    display: flex;
+    width: 204px;
+    min-width: 204px;
+    flex: 0 0 204px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .transactionRow .contentGroup .categoryCell,
+  .transactionRow .contentGroup .contentCell {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .transactionRow .contentGroup .categoryCell {
+    font-size: 14px;
+    line-height: 24px;
+  }
+
+  .transactionRow .contentGroup .contentCell {
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: var(--font-weight-medium);
+  }
+
+  .transactionRow .amountGroup {
+    display: flex;
+    width: 120px;
+    min-width: 120px;
+    flex: 0 0 120px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .transactionRow .amountGroup .amountCell,
+  .transactionRow .amountGroup .paymentCell {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .transactionRow .amountGroup .amountCell {
+    font-size: 14px;
+  }
+
+  .transactionRow .amountGroup .paymentCell {
+    font-size: 14px;
+    line-height: 24px;
+  }
+
+  .transactionRow .memoCell {
+    display: flex;
+    width: 160px;
+    min-width: 160px;
+    flex: 0 0 160px;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 24px;
+    text-align: center;
+  }
+
+  .transactionRow .actionCell {
+    display: flex;
+    width: 40px;
+    min-width: 40px;
+    flex: 0 0 40px;
+  }
+
+  .transactionTime {
+    display: none;
+  }
+}
+
+@container (max-width: 700px) {
+  .tableHeader,
+  .transactionRow {
+    display: flex;
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .tableHeader {
+    min-height: 40px;
+  }
+
+  .tableHeader .checkboxCell,
+  .tableHeader .typeCell,
+  .tableHeader .contentCell,
+  .tableHeader .paymentCell,
+  .tableHeader .memoCell {
+    display: none;
+  }
+
+  .tableHeader .dateCell {
+    display: flex;
+    width: 73px;
+    min-width: 73px;
+    flex: 0 0 73px;
+    padding: 0;
+  }
+
+  .tableHeader .categoryCell {
+    display: flex;
+    width: 97px;
+    min-width: 97px;
+    flex: 0 0 97px;
+    padding: 0;
+    font-size: 0;
+  }
+
+  .tableHeader .categoryCell::after {
+    content: "내용/카테고리";
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: var(--font-weight-bold);
+    white-space: nowrap;
+  }
+
+  .tableHeader .amountCell {
+    display: flex;
+    width: 88px;
+    min-width: 88px;
+    flex: 0 0 88px;
+    padding: 0;
+    font-size: 0;
+  }
+
+  .tableHeader .amountCell::after {
+    content: "금액/결제수단";
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: var(--font-weight-bold);
+    white-space: nowrap;
+  }
+
+  .tableHeader .actionCell {
+    display: flex;
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+  }
+
+  .transactionRow {
+    min-height: 0;
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+
+  .transactionRow .checkboxCell,
+  .transactionRow .typeCell,
+  .transactionRow .memoCell {
+    display: none;
+  }
+
+  .transactionRow .dateCell {
+    display: flex;
+    width: 73px;
+    min-width: 73px;
+    height: auto;
+    padding: 0;
+    flex: 0 0 73px;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: var(--font-weight-regular);
+  }
+
+  .transactionRow .contentGroup {
+    display: flex;
+    width: 97px;
+    min-width: 97px;
+    flex: 0 0 97px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .transactionRow .contentGroup .categoryCell,
+  .transactionRow .contentGroup .contentCell {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .transactionRow .contentGroup .categoryCell {
+    font-size: 11px;
+    line-height: 18px;
+  }
+
+  .transactionRow .contentGroup .contentCell {
+    overflow: hidden;
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: var(--font-weight-regular);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .transactionRow .amountGroup {
+    display: flex;
+    width: 88px;
+    min-width: 88px;
+    flex: 0 0 88px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .transactionRow .amountGroup .amountCell,
+  .transactionRow .amountGroup .paymentCell {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .transactionRow .amountGroup .amountCell {
+    font-size: 14px;
+  }
+
+  .transactionRow .amountGroup .paymentCell {
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .transactionRow .actionCell {
+    display: flex;
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+  }
+
+  .desktopActionIcon {
+    display: none;
+  }
+
+  .mobileActionIcon {
+    display: block;
+    font-size: 16px;
+  }
+
+  .mobileMemo {
+    display: flex;
+    width: 100%;
+    flex: 0 0 100%;
+    padding: 8px 16px;
+    border-radius: 8px;
+    align-items: center;
+    gap: 16px;
+    overflow: hidden;
+    color: var(--color-light-gray);
+    background-color: var(--color-dark-white);
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .mobileMemo strong {
+    flex-shrink: 0;
+    font-weight: var(--font-weight-bold);
+  }
+
+  .mobileMemo span {
+    min-width: 0;
+    overflow: hidden;
+    font-weight: var(--font-weight-regular);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
