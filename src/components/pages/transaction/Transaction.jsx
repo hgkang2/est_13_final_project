@@ -6,38 +6,49 @@ import BottomTab from "@/components/layout/BottomTab";
 import SubFooter from "@/components/layout/SubFooter";
 import styles from "./Transaction.module.scss";
 import RecentTransactions from "./components/RecentTransactions";
+import TransactionEmpty from "./components/TransactionEmpty";
+
+const hasTransactionData = true;
 
 const summaryCards = [
   {
     id: "income",
     title: "총 수입",
     value: "2,450,000원",
+    emptyValue: "--원",
     change: "+450,000원",
     direction: "up",
+    emptyText: "아직 수입 기록이 없어요.",
   },
   {
     id: "expense",
     title: "총 지출",
     value: "1,286,500원",
+    emptyValue: "--원",
     change: "-120,500원",
     direction: "down",
+    emptyText: "아직 지출 기록이 없어요.",
   },
   {
     id: "transaction",
     title: "이번 달 거래",
     value: "25건",
+    emptyValue: "--건",
     details: [
       { label: "지출", count: "18건", type: "expense" },
       { label: "수입", count: "7건", type: "income" },
       { label: "이체", count: "1건", type: "transfer" },
     ],
+    emptyText: "거래 기록을 기다리고 있어요.",
   },
   {
     id: "balance",
     title: "잔액",
     value: "3,213,500원",
+    emptyValue: "--원",
     change: "+218,000원",
     direction: "up",
+    emptyText: "거래를 기록하면 확인할 수 있어요.",
   },
 ];
 
@@ -556,10 +567,14 @@ export default function Transaction() {
                     <p className={styles.summaryTitle}>{card.title}</p>
 
                     <strong className={styles.summaryValue}>
-                      {card.value}
+                      {hasTransactionData ? card.value : card.emptyValue}
                     </strong>
 
-                    {card.details ? (
+                    {!hasTransactionData ? (
+                      <p className={styles.summaryEmptyText}>
+                        {card.emptyText}
+                      </p>
+                    ) : card.details ? (
                       <div className={styles.transactionCounts}>
                         {card.details.map(detail => (
                           <span
@@ -659,172 +674,190 @@ export default function Transaction() {
                 </div>
 
                 <div className={styles.table}>
-                  <div className={styles.tableHeader}>
-                    <button
-                      type="button"
-                      className={styles.checkboxCell}
-                      onClick={handleToggleAll}
-                      aria-label={
-                        isAllSelected
-                          ? "현재 거래 전체 선택 해제"
-                          : "현재 거래 전체 선택"
-                      }
-                    >
-                      <span className="material-icons" aria-hidden="true">
-                        {isAllSelected
-                          ? "check_box"
-                          : "check_box_outline_blank"}
-                      </span>
-                    </button>
-
-                    <div className={styles.dateCell}>날짜</div>
-                    <div className={styles.typeCell}>구분</div>
-                    <div className={styles.categoryCell}>카테고리</div>
-                    <div className={styles.contentCell}>내용</div>
-                    <div className={styles.amountCell}>금액</div>
-                    <div className={styles.paymentCell}>결제수단</div>
-                    <div className={styles.memoCell}>메모</div>
-
-                    <div className={styles.actionCell}>
-                      <span className="material-icons" aria-hidden="true">
-                        more_vert
-                      </span>
-                    </div>
-                  </div>
-
-                  {selectedIds.length > 0 && (
-                    <div className={styles.selectionBar}>
-                      <div className={styles.selectionInfo}>
-                        <span className="material-icons" aria-hidden="true">
-                          check_box
-                        </span>
-
-                        <span>{selectedIds.length}건이 선택되었습니다.</span>
-                      </div>
-
-                      <div className={styles.selectionActions}>
-                        <button type="button" aria-label="선택 거래 삭제">
-                          <span
-                            className="material-icons-outlined"
-                            aria-hidden="true"
-                          >
-                            delete
-                          </span>
-                        </button>
-
+                  {hasTransactionData ? (
+                    <>
+                      <div className={styles.tableHeader}>
                         <button
                           type="button"
-                          aria-label="선택 해제"
-                          onClick={() => setSelectedIds([])}
+                          className={styles.checkboxCell}
+                          onClick={handleToggleAll}
+                          aria-label={
+                            isAllSelected
+                              ? "현재 거래 전체 선택 해제"
+                              : "현재 거래 전체 선택"
+                          }
                         >
                           <span className="material-icons" aria-hidden="true">
-                            close
+                            {isAllSelected
+                              ? "check_box"
+                              : "check_box_outline_blank"}
+                          </span>
+                        </button>
+
+                        <div className={styles.dateCell}>날짜</div>
+                        <div className={styles.typeCell}>구분</div>
+                        <div className={styles.categoryCell}>카테고리</div>
+                        <div className={styles.contentCell}>내용</div>
+                        <div className={styles.amountCell}>금액</div>
+                        <div className={styles.paymentCell}>결제수단</div>
+                        <div className={styles.memoCell}>메모</div>
+
+                        <div className={styles.actionCell}>
+                          <span className="material-icons" aria-hidden="true">
+                            more_vert
+                          </span>
+                        </div>
+                      </div>
+
+                      {selectedIds.length > 0 && (
+                        <div className={styles.selectionBar}>
+                          <div className={styles.selectionInfo}>
+                            <span className="material-icons" aria-hidden="true">
+                              check_box
+                            </span>
+
+                            <span>
+                              {selectedIds.length}건이 선택되었습니다.
+                            </span>
+                          </div>
+
+                          <div className={styles.selectionActions}>
+                            <button type="button" aria-label="선택 거래 삭제">
+                              <span
+                                className="material-icons-outlined"
+                                aria-hidden="true"
+                              >
+                                delete
+                              </span>
+                            </button>
+
+                            <button
+                              type="button"
+                              aria-label="선택 해제"
+                              onClick={() => setSelectedIds([])}
+                            >
+                              <span
+                                className="material-icons"
+                                aria-hidden="true"
+                              >
+                                close
+                              </span>
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      <ul className={styles.transactionList}>
+                        {visibleTransactions.map(transaction => {
+                          const isSelected = selectedIds.includes(
+                            transaction.id,
+                          );
+
+                          return (
+                            <li
+                              className={`${styles.transactionRow} ${
+                                isSelected ? styles.selectedRow : ""
+                              }`}
+                              key={transaction.id}
+                            >
+                              <button
+                                type="button"
+                                className={styles.checkboxCell}
+                                onClick={() =>
+                                  handleToggleTransaction(transaction.id)
+                                }
+                                aria-label={`${transaction.content} 거래 ${
+                                  isSelected ? "선택 해제" : "선택"
+                                }`}
+                              >
+                                <span
+                                  className="material-icons"
+                                  aria-hidden="true"
+                                >
+                                  {isSelected
+                                    ? "check_box"
+                                    : "check_box_outline_blank"}
+                                </span>
+                              </button>
+
+                              <time className={styles.dateCell}>
+                                {transaction.date}
+                              </time>
+
+                              <strong
+                                className={`${styles.typeCell} ${
+                                  styles[transaction.type]
+                                }`}
+                              >
+                                {transaction.typeLabel}
+                              </strong>
+
+                              <strong
+                                className={`${styles.categoryCell} ${
+                                  styles[transaction.categoryType]
+                                }`}
+                              >
+                                {transaction.category}
+                              </strong>
+
+                              <span className={styles.contentCell}>
+                                {transaction.content}
+                              </span>
+
+                              <strong
+                                className={`${styles.amountCell} ${
+                                  styles[transaction.type]
+                                }`}
+                              >
+                                {formatAmount(transaction.amount)}
+                              </strong>
+
+                              <span className={styles.paymentCell}>
+                                {transaction.paymentMethod}
+                              </span>
+
+                              <span className={styles.memoCell}>
+                                {transaction.memo}
+                              </span>
+
+                              <button
+                                type="button"
+                                className={styles.actionCell}
+                                aria-label={`${transaction.content} 거래 메뉴`}
+                              >
+                                <span
+                                  className="material-icons"
+                                  aria-hidden="true"
+                                >
+                                  more_vert
+                                </span>
+                              </button>
+
+                              <div className={styles.mobileMemo}>
+                                <strong>메모</strong>
+                                <span>{transaction.memo}</span>
+                              </div>
+                            </li>
+                          );
+                        })}
+                      </ul>
+
+                      <div className={styles.loadMoreArea}>
+                        <button type="button" className={styles.loadMoreButton}>
+                          <span>더 많은 내역 보기</span>
+
+                          <span className="material-icons" aria-hidden="true">
+                            keyboard_arrow_down
                           </span>
                         </button>
                       </div>
-                    </div>
+                    </>
+                  ) : (
+                    <TransactionEmpty />
                   )}
-
-                  <ul className={styles.transactionList}>
-                    {visibleTransactions.map(transaction => {
-                      const isSelected = selectedIds.includes(transaction.id);
-
-                      return (
-                        <li
-                          className={`${styles.transactionRow} ${
-                            isSelected ? styles.selectedRow : ""
-                          }`}
-                          key={transaction.id}
-                        >
-                          <button
-                            type="button"
-                            className={styles.checkboxCell}
-                            onClick={() =>
-                              handleToggleTransaction(transaction.id)
-                            }
-                            aria-label={`${transaction.content} 거래 ${
-                              isSelected ? "선택 해제" : "선택"
-                            }`}
-                          >
-                            <span className="material-icons" aria-hidden="true">
-                              {isSelected
-                                ? "check_box"
-                                : "check_box_outline_blank"}
-                            </span>
-                          </button>
-
-                          <time className={styles.dateCell}>
-                            {transaction.date}
-                          </time>
-
-                          <strong
-                            className={`${styles.typeCell} ${
-                              styles[transaction.type]
-                            }`}
-                          >
-                            {transaction.typeLabel}
-                          </strong>
-
-                          <strong
-                            className={`${styles.categoryCell} ${
-                              styles[transaction.categoryType]
-                            }`}
-                          >
-                            {transaction.category}
-                          </strong>
-
-                          <span className={styles.contentCell}>
-                            {transaction.content}
-                          </span>
-
-                          <strong
-                            className={`${styles.amountCell} ${
-                              styles[transaction.type]
-                            }`}
-                          >
-                            {formatAmount(transaction.amount)}
-                          </strong>
-
-                          <span className={styles.paymentCell}>
-                            {transaction.paymentMethod}
-                          </span>
-
-                          <span className={styles.memoCell}>
-                            {transaction.memo}
-                          </span>
-
-                          <button
-                            type="button"
-                            className={styles.actionCell}
-                            aria-label={`${transaction.content} 거래 메뉴`}
-                          >
-                            <span className="material-icons" aria-hidden="true">
-                              more_vert
-                            </span>
-                          </button>
-
-                          <div className={styles.mobileMemo}>
-                            <strong>메모</strong>
-                            <span>{transaction.memo}</span>
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
-
-                  <div className={styles.loadMoreArea}>
-                    <button type="button" className={styles.loadMoreButton}>
-                      <span>더 많은 내역 보기</span>
-
-                      <span className="material-icons" aria-hidden="true">
-                        keyboard_arrow_down
-                      </span>
-                    </button>
-                  </div>
                 </div>
               </section>
             </div>
-
             {isEntryOpen ? (
               isRecentOpen ? (
                 <RecentTransactions
