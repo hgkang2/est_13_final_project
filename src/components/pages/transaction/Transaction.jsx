@@ -7,6 +7,7 @@ import SubFooter from "@/components/layout/SubFooter";
 import styles from "./Transaction.module.scss";
 import RecentTransactions from "./components/RecentTransactions";
 import TransactionEmpty from "./components/TransactionEmpty";
+import TransactionDetail from "./components/TransactionDetail";
 
 const hasTransactionData = true;
 
@@ -281,6 +282,8 @@ export default function Transaction() {
 
   const [copyTarget, setCopyTarget] = useState(null);
   const [isCopyModalOpen, setIsCopyModalOpen] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   useEffect(() => {
     if (!toastMessage) return;
@@ -542,6 +545,22 @@ export default function Transaction() {
     console.log("AI 자동 인식 입력값", aiTransactionForm);
   };
 
+  const handleOpenDetail = transaction => {
+    setSelectedTransaction({
+      ...transaction,
+
+      // UI 개발용 임시값
+      // 1번 거래만 영수증이 있는 상태로 테스트
+      receiptImage: transaction.id === 1 ? "/images/receipt-sample.jpg" : null,
+
+      createdAt: "2026.07.29 18:42",
+      updatedAt: "2026.07.30 09:11",
+    });
+
+    setIsDetailOpen(true);
+    setIsRecentOpen(false);
+  };
+
   return (
     <>
       <div className={styles.page}>
@@ -759,13 +778,15 @@ export default function Transaction() {
                                 isSelected ? styles.selectedRow : ""
                               }`}
                               key={transaction.id}
+                              onClick={() => handleOpenDetail(transaction)}
                             >
                               <button
                                 type="button"
                                 className={styles.checkboxCell}
-                                onClick={() =>
-                                  handleToggleTransaction(transaction.id)
-                                }
+                                onClick={event => {
+                                  event.stopPropagation();
+                                  handleToggleTransaction(transaction.id);
+                                }}
                                 aria-label={`${transaction.content} 거래 ${
                                   isSelected ? "선택 해제" : "선택"
                                 }`}
@@ -828,6 +849,9 @@ export default function Transaction() {
                                 <span
                                   className="material-icons"
                                   aria-hidden="true"
+                                  onClick={event => {
+                                    event.stopPropagation();
+                                  }}
                                 >
                                   more_vert
                                 </span>
@@ -858,7 +882,18 @@ export default function Transaction() {
                 </div>
               </section>
             </div>
-            {isEntryOpen ? (
+            {isDetailOpen ? (
+              <TransactionDetail
+                transaction={selectedTransaction}
+                onClose={() => {
+                  setIsDetailOpen(false);
+                  setSelectedTransaction(null);
+                }}
+                onEdit={() => {
+                  console.log("수정 화면 열기");
+                }}
+              />
+            ) : isEntryOpen ? (
               isRecentOpen ? (
                 <RecentTransactions
                   transactions={recentTransactions}
@@ -2141,14 +2176,10 @@ export default function Transaction() {
                 type="button"
                 className={styles.openEntryButton}
                 onClick={() => setIsEntryOpen(true)}
-                aria-label="소비 기록 입력창 열기"
               >
-                <span className="material-icons" aria-hidden="true">
-                  add
-                </span>
+                <span className="material-icons">add</span>
               </button>
             )}
-
             {isCopyModalOpen && (
               <div
                 className={styles.copyModalBackdrop}

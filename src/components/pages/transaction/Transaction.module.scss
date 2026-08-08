@@ -1897,3 +1897,560 @@
     background-color: var(--color-background-green);
   }
 }
+
+/* Recent Transactions */
+.recentPanel {
+  position: sticky;
+  top: 0;
+  display: flex;
+  width: 378px;
+  min-width: 378px;
+  padding: 16px;
+  border: 1px solid var(--color-border-gray);
+  border-right: 0;
+  border-radius: 16px 0 0 16px;
+  flex-direction: column;
+  gap: 16px;
+  background-color: var(--color-white);
+}
+
+.recentHeader {
+  display: flex;
+  width: 100%;
+  height: 48px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.recentHeaderButton,
+.recentHistoryIcon {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-light-gray);
+  background-color: transparent;
+}
+
+.recentHeaderButton {
+  cursor: pointer;
+}
+
+.recentHeaderButton :global(.material-icons),
+.recentHistoryIcon {
+  font-size: var(--icon-l-size);
+}
+
+.recentTitle {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+
+  @include typo-card-label;
+}
+
+.recentDescription {
+  color: var(--color-gray);
+
+  @include typo-caption-plus;
+}
+
+.recentList {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.recentCard {
+  display: flex;
+  width: 100%;
+  min-height: 120px;
+  padding: 16px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 16px;
+  align-items: center;
+  gap: 16px;
+  background-color: var(--color-white);
+}
+
+.copiedRecentCard {
+  background-color: var(--color-background-green);
+}
+
+.recentCardContent {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.recentCardTitle {
+  overflow: hidden;
+  color: var(--color-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @include typo-caption-plus;
+}
+
+.recentInfoRow,
+.recentSubInfo {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+.recentType,
+.recentCategory {
+  flex-shrink: 0;
+
+  @include typo-caption-plus;
+}
+
+.recentCategory {
+  padding: 0 8px;
+  border-right: 1px solid var(--color-border-gray);
+  border-left: 1px solid var(--color-border-gray);
+}
+
+.recentAmount {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-light-gray);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @include typo-caption;
+}
+
+.recentSubInfo {
+  color: var(--color-light-gray);
+}
+
+.recentSubInfo strong {
+  padding-right: 8px;
+  border-right: 1px solid var(--color-border-gray);
+
+  @include typo-body-m-minus;
+}
+
+.recentSubInfo span {
+  @include typo-body-m-minus;
+}
+
+.recentType.income {
+  color: var(--color-type-income);
+}
+
+.recentType.expense {
+  color: var(--color-type-expense);
+}
+
+.recentType.transfer {
+  color: var(--color-type-transfer);
+}
+
+.recentCategory.cafeSnack {
+  color: var(--color-expense-cafe-snack);
+}
+
+.recentCategory.salary {
+  color: var(--color-income-salary);
+}
+
+.recentCategory.food {
+  color: var(--color-expense-food);
+}
+
+.recentCategory.savings {
+  color: var(--color-transfer-savings);
+}
+
+.recentCategory.transportation {
+  color: var(--color-expense-transportation);
+}
+
+.recentCategory.otherIncome {
+  color: var(--color-income-other-income);
+}
+
+.copyButton,
+.copiedButton {
+  display: flex;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-point);
+  background-color: var(--color-white);
+
+  @include typo-caption-plus;
+}
+
+.copyButton {
+  border: 1px solid var(--color-point);
+  cursor: pointer;
+}
+
+.copiedButton {
+  border: 0;
+  gap: 4px;
+  background-color: transparent;
+}
+
+.copiedButton :global(.material-icons) {
+  font-size: var(--icon-m-size);
+}
+
+.viewAllRecentButton {
+  display: flex;
+  width: 100%;
+  height: 48px;
+  border: 0;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--color-point);
+  background-color: var(--color-primary);
+  cursor: pointer;
+
+  @include typo-body-m-plus;
+}
+
+.viewAllRecentButton :global(.material-icons) {
+  font-size: var(--icon-m-size);
+}
+
+/* Transaction Empty */
+.empty {
+  display: flex;
+  width: 100%;
+  min-height: 520px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.emptyIcon {
+  display: flex;
+  width: 56px;
+  height: 56px;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-point);
+  font-size: 52px;
+}
+
+.emptyText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.emptyTitle {
+  color: var(--color-text);
+
+  @include typo-card-head;
+}
+
+.emptyDescription {
+  color: var(--color-gray);
+
+  @include typo-body-m-minus;
+}
+
+/* Transaction Detail */
+
+.detailPanel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 60;
+  display: flex;
+  width: 378px;
+  min-height: 100%;
+  padding: 16px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 16px 0 0 16px;
+  flex-direction: column;
+  gap: 16px;
+  background-color: var(--color-white);
+}
+
+.detailHeader {
+  display: flex;
+  width: 100%;
+  height: 48px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.detailHeaderButton,
+.detailHistoryIcon {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-light-gray);
+  background-color: transparent;
+}
+
+.detailHeaderButton {
+  cursor: pointer;
+}
+
+.detailHeaderButton :global(.material-icons),
+.detailHistoryIcon :global(.material-icons) {
+  font-size: var(--icon-l-size);
+}
+
+.detailTitle {
+  display: flex;
+  flex: 1;
+  align-self: stretch;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text);
+
+  @include typo-card-label;
+}
+
+.detailReceiptNotice {
+  display: flex;
+  width: 100%;
+  padding: 16px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 16px;
+  align-items: center;
+  gap: 16px;
+  background-color: var(--color-background-green);
+}
+
+.detailReceiptNoticeIcon {
+  flex-shrink: 0;
+  color: var(--color-point);
+  font-size: var(--icon-l-size);
+}
+
+.detailReceiptNoticeText {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.detailReceiptNoticeText strong {
+  color: var(--color-text);
+
+  @include typo-caption-plus;
+}
+
+.detailReceiptNoticeText span {
+  color: var(--color-light-gray);
+
+  @include typo-caption;
+}
+
+.detailReceiptSection {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detailReceiptSection h3,
+.detailField h3 {
+  color: var(--color-text);
+
+  @include typo-caption-plus;
+}
+
+.detailReceiptImageBox {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.detailReceiptImageBox img {
+  width: 100px;
+  height: 120px;
+  object-fit: cover;
+}
+
+.detailFields {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detailField {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detailFieldRow {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.detailTypeOptions {
+  display: flex;
+  width: 100%;
+  height: 40px;
+  gap: 8px;
+}
+
+.detailTypeButton {
+  display: flex;
+  width: 110px;
+  height: 40px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--color-white);
+}
+
+.detailTypeButton :global(.material-icons) {
+  width: 16px;
+  font-size: var(--icon-m-size);
+}
+
+.detailTypeButton strong {
+  @include typo-caption-plus;
+}
+
+.detailTypeButton:nth-child(1) {
+  color: var(--color-type-income);
+}
+
+.detailTypeButton:nth-child(2) {
+  color: var(--color-type-expense);
+}
+
+.detailTypeButton:nth-child(3) {
+  color: var(--color-type-transfer);
+}
+
+.detailTypeActiveIncome {
+  border-color: var(--color-type-income);
+}
+
+.detailTypeActiveExpense {
+  border-color: var(--color-type-expense);
+}
+
+.detailTypeActiveTransfer {
+  border-color: var(--color-type-transfer);
+}
+
+.detailValueBox {
+  display: flex;
+  width: 100%;
+  height: 48px;
+  padding: 16px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  overflow: hidden;
+  background-color: var(--color-white);
+}
+
+.detailValueBox strong {
+  color: var(--color-text);
+
+  @include typo-caption-plus;
+}
+
+.detailValueBox > span {
+  color: var(--color-light-gray);
+
+  @include typo-body-m-minus;
+}
+
+.detailPaymentBox {
+  width: 160px;
+}
+
+.detailCharacterCount {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  color: var(--color-light-gray);
+  font-size: 8px;
+  line-height: 12px;
+}
+
+.detailMeta {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detailMeta > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-gray);
+}
+
+.detailMeta strong {
+  @include typo-caption-plus;
+}
+
+.detailMeta span {
+  @include typo-caption;
+}
+
+.detailActions {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+}
+
+.detailDeleteButton,
+.detailEditButton {
+  display: flex;
+  height: 48px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-white);
+  cursor: pointer;
+
+  @include typo-caption-plus;
+}
+
+.detailDeleteButton {
+  color: var(--color-error, #ef4444);
+}
+
+.detailEditButton {
+  color: var(--color-point);
+}
