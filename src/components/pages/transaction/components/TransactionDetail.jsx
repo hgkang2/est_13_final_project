@@ -1,4 +1,4 @@
-import styles from "../Transaction.module.scss";
+import styles from "./TransactionDetailEdit.module.scss";
 
 export default function TransactionDetail({ transaction, onClose, onEdit }) {
   if (!transaction) return null;

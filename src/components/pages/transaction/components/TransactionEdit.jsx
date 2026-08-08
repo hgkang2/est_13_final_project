@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import styles from "../Transaction.module.scss";
+import styles from "./TransactionDetailEdit.module.scss";
 
 export default function TransactionEdit({
   transaction,

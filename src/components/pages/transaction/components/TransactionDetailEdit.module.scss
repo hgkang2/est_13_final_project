@@ -1,0 +1,392 @@
+@use "../../../../styles/mixins" as *;
+
+/* Transaction Detail */
+.detailPanel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 60;
+  display: flex;
+  width: 378px;
+  min-height: 100%;
+  padding: 16px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 16px 0 0 16px;
+  flex-direction: column;
+  gap: 16px;
+  background-color: var(--color-white);
+}
+
+.detailHeader {
+  display: flex;
+  width: 100%;
+  height: 48px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.detailHeaderButton,
+.detailHistoryIcon {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-light-gray);
+  background-color: transparent;
+}
+
+.detailHeaderButton {
+  cursor: pointer;
+}
+
+.detailHeaderButton :global(.material-icons),
+.detailHistoryIcon :global(.material-icons) {
+  font-size: var(--icon-l-size);
+}
+
+.detailTitle {
+  display: flex;
+  flex: 1;
+  align-self: stretch;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text);
+
+  @include typo-card-label;
+}
+
+.detailReceiptNotice {
+  display: flex;
+  width: 100%;
+  padding: 16px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 16px;
+  align-items: center;
+  gap: 16px;
+  background-color: var(--color-background-green);
+}
+
+.detailReceiptNoticeIcon {
+  flex-shrink: 0;
+  color: var(--color-point);
+  font-size: var(--icon-l-size);
+}
+
+.detailReceiptNoticeText {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.detailReceiptNoticeText strong {
+  color: var(--color-text);
+
+  @include typo-caption-plus;
+}
+
+.detailReceiptNoticeText span {
+  color: var(--color-light-gray);
+
+  @include typo-caption;
+}
+
+.detailReceiptSection {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detailReceiptSection h3,
+.detailField h3 {
+  color: var(--color-text);
+
+  @include typo-caption-plus;
+}
+
+.detailReceiptImageBox {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.detailReceiptImageBox img {
+  width: 100px;
+  height: 120px;
+  object-fit: cover;
+}
+
+.detailFields {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detailField {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detailFieldRow {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.detailTypeOptions {
+  display: flex;
+  width: 100%;
+  height: 40px;
+  gap: 8px;
+}
+
+.detailTypeButton {
+  display: flex;
+  width: 110px;
+  height: 40px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--color-white);
+}
+
+.detailTypeButton :global(.material-icons) {
+  width: 16px;
+  font-size: var(--icon-m-size);
+}
+
+.detailTypeButton strong {
+  @include typo-caption-plus;
+}
+
+.detailTypeButton:nth-child(1) {
+  color: var(--color-type-income);
+}
+
+.detailTypeButton:nth-child(2) {
+  color: var(--color-type-expense);
+}
+
+.detailTypeButton:nth-child(3) {
+  color: var(--color-type-transfer);
+}
+
+.detailTypeActiveIncome {
+  border-color: var(--color-type-income);
+}
+
+.detailTypeActiveExpense {
+  border-color: var(--color-type-expense);
+}
+
+.detailTypeActiveTransfer {
+  border-color: var(--color-type-transfer);
+}
+
+.detailValueBox {
+  display: flex;
+  width: 100%;
+  height: 48px;
+  padding: 16px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  overflow: hidden;
+  background-color: var(--color-white);
+}
+
+.detailValueBox strong {
+  color: var(--color-text);
+
+  @include typo-caption-plus;
+}
+
+.detailValueBox > span {
+  color: var(--color-light-gray);
+
+  @include typo-body-m-minus;
+}
+
+.detailPaymentBox {
+  width: 160px;
+}
+
+.detailCharacterCount {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  color: var(--color-light-gray);
+  font-size: 8px;
+  line-height: 12px;
+}
+
+.detailMeta {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detailMeta > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-gray);
+}
+
+.detailMeta strong {
+  @include typo-caption-plus;
+}
+
+.detailMeta span {
+  @include typo-caption;
+}
+
+.detailActions {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+}
+
+.detailDeleteButton,
+.detailEditButton {
+  display: flex;
+  height: 48px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-white);
+  cursor: pointer;
+
+  @include typo-caption-plus;
+}
+
+.detailDeleteButton {
+  color: var(--color-error, #ef4444);
+}
+
+.detailEditButton {
+  color: var(--color-point);
+}
+
+/* Transaction Edit */
+
+.detailField label {
+  color: var(--color-light-gray);
+
+  @include typo-caption-plus;
+}
+
+.editInputBox {
+  display: flex;
+  width: 100%;
+  height: 48px;
+  padding: 16px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--color-white);
+}
+
+.editInputBox input {
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  flex: 1;
+  color: var(--color-text);
+  background-color: transparent;
+
+  @include typo-caption-plus;
+}
+
+.editInputBox > span {
+  flex-shrink: 0;
+  color: var(--color-light-gray);
+
+  @include typo-caption-plus;
+}
+
+.editInput {
+  width: 100%;
+  height: 48px;
+  padding: 16px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+  outline: 0;
+  color: var(--color-text);
+  background-color: var(--color-white);
+
+  @include typo-body-m-minus;
+}
+
+.editInput:focus,
+.editInputBox:focus-within,
+.editSelect:focus {
+  border-color: var(--color-point);
+}
+
+.editSelect {
+  width: 100%;
+  height: 48px;
+  padding: 0 40px 0 16px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+  outline: 0;
+  color: var(--color-light-gray);
+  background-color: var(--color-white);
+  cursor: pointer;
+
+  @include typo-body-m-minus;
+}
+
+.editPaymentSelect {
+  width: 160px;
+}
+
+.editActions {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+}
+
+.editCancelButton,
+.editSaveButton {
+  display: flex;
+  height: 48px;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  @include typo-caption-plus;
+}
+
+.editCancelButton {
+  padding: 16px;
+  border: 1px solid var(--color-point);
+  flex-shrink: 0;
+  color: var(--color-point);
+  background-color: var(--color-white);
+}
+
+.editSaveButton {
+  border: 0;
+  flex: 1;
+  color: var(--color-white);
+  background-color: var(--color-point);
+}
