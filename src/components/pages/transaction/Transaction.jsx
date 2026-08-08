@@ -11,8 +11,9 @@ import TransactionEdit from "./components/TransactionEdit";
 import SummaryCards from "./components/SummaryCards";
 import TransactionToolbar from "./components/TransactionToolbar";
 import TransactionList from "./components/TransactionList";
+import CopyDateModal from "./components/CopyDateModal";
 
-const hasTransactionData = false;
+const hasTransactionData = true;
 
 const transactions = [
   {
@@ -1869,69 +1870,14 @@ export default function Transaction() {
               </button>
             )}
             {isCopyModalOpen && (
-              <div
-                className={styles.copyModalBackdrop}
-                onClick={() => setIsCopyModalOpen(false)}
-              >
-                <div
-                  className={styles.copyModal}
-                  role="dialog"
-                  aria-modal="true"
-                  aria-labelledby="copy-modal-title"
-                  onClick={event => event.stopPropagation()}
-                >
-                  <div className={styles.copyModalHeader}>
-                    <strong id="copy-modal-title">날짜 선택</strong>
-
-                    <button
-                      type="button"
-                      className={styles.copyModalClose}
-                      onClick={() => setIsCopyModalOpen(false)}
-                      aria-label="닫기"
-                    >
-                      <span className="material-icons" aria-hidden="true">
-                        close
-                      </span>
-                    </button>
-                  </div>
-
-                  <p className={styles.copyModalDescription}>
-                    거래를 어떤 날짜로 복사할까요?
-                  </p>
-
-                  <div className={styles.copyModalOptions}>
-                    <button
-                      type="button"
-                      className={styles.copyDateOption}
-                      onClick={() => handleConfirmRecentCopy("today")}
-                    >
-                      <div>
-                        <strong>오늘 날짜로 복사</strong>
-                        <span>오늘의 거래로 새롭게 기록해요.</span>
-                      </div>
-
-                      <span className="material-icons" aria-hidden="true">
-                        chevron_right
-                      </span>
-                    </button>
-
-                    <button
-                      type="button"
-                      className={styles.copyDateOption}
-                      onClick={() => handleConfirmRecentCopy("original")}
-                    >
-                      <div>
-                        <strong>기존 작성일로 복사</strong>
-                        <span>{copyTarget?.date} 날짜를 그대로 사용해요.</span>
-                      </div>
-
-                      <span className="material-icons" aria-hidden="true">
-                        chevron_right
-                      </span>
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <CopyDateModal
+                copyTarget={copyTarget}
+                onClose={() => {
+                  setIsCopyModalOpen(false);
+                  setCopyTarget(null);
+                }}
+                onSelectDate={handleConfirmRecentCopy}
+              />
             )}
           </div>
         </main>
