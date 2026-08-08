@@ -35,13 +35,29 @@
 }
 
 .pageTitle {
-  @include typo-heading-s-plus;
+  color: var(--color-text);
+  font-size: 32px;
+  line-height: 42px;
+  font-weight: var(--font-weight-bold);
 }
 
 .pageDescription {
   color: var(--color-gray);
+  font-size: 18px;
+  line-height: 22px;
+  font-weight: var(--font-weight-bold);
+}
 
-  @include typo-heading-xs;
+@media (max-width: 1272px) {
+  .pageTitle {
+    font-size: 24px;
+    line-height: 36px;
+  }
+
+  .pageDescription {
+    font-size: 16px;
+    line-height: 24px;
+  }
 }
 
 .transactionSection {

@@ -4,9 +4,29 @@
   width: 100%;
 }
 
+// .tableHeader,
+// .transactionRow {
+//   display: grid;
+//   grid-template-columns:
+//     40px
+//     160px
+//     72px
+//     120px
+//     304px
+//     120px
+//     120px
+//     204px
+//     36px;
+//   width: 1176px;
+//   margin: 0 auto;
+//   align-items: center;
+// }
+
 .tableHeader,
 .transactionRow {
   display: grid;
+  width: 100%;
+  padding: 8px;
   grid-template-columns:
     40px
     160px
@@ -17,14 +37,12 @@
     120px
     204px
     36px;
-  width: 1176px;
-  margin: 0 auto;
+  justify-content: center;
   align-items: center;
 }
 
 .tableHeader {
   min-height: 72px;
-  padding: 16px 0;
   color: var(--color-gray);
   background-color: var(--color-background-green);
 
@@ -46,7 +64,6 @@
 .transactionRow {
   position: relative;
   min-height: 72px;
-  padding: 16px 0;
   border-bottom: 1px solid var(--color-primary);
   color: var(--color-text);
 
@@ -164,27 +181,87 @@
 }
 
 .selectionBar {
-  display: flex;
+  width: 100%;
   min-height: 48px;
-  padding: 4px 16px;
   border-top: 1px solid var(--color-border-gray);
   border-bottom: 1px solid var(--color-border-gray);
+  background-color: rgb(255 250 228 / 33%);
+}
+
+.selectionBarInner {
+  display: flex;
+  width: 1176px;
+  min-height: 48px;
+  margin: 0 auto;
   align-items: center;
   justify-content: space-between;
-  background-color: rgb(255 250 228 / 33%);
 }
 
 .selectionInfo {
   display: flex;
   align-items: center;
   gap: 8px;
+  color: var(--color-text);
 
   @include typo-table-content;
 }
 
-.selectionInfo :global(.material-icons) {
+.selectionInfo > :global(.material-icons) {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
   color: var(--color-point);
   font-size: var(--icon-m-size);
+}
+
+.selectionRight {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.selectionSummary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.incomeSummary,
+.expenseSummary,
+.transferSummary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+
+  @include typo-table-content;
+}
+
+.incomeSummary {
+  color: var(--color-type-income);
+}
+
+.expenseSummary {
+  color: var(--color-type-expense);
+}
+
+.transferSummary {
+  color: var(--color-type-transfer);
+}
+
+.incomeSummary span,
+.expenseSummary span,
+.transferSummary span {
+  font-weight: var(--font-weight-semibold);
+}
+
+.incomeSummary strong,
+.expenseSummary strong,
+.transferSummary strong {
+  font-weight: var(--font-weight-bold);
 }
 
 .selectionActions {
@@ -196,7 +273,9 @@
   display: flex;
   width: 40px;
   height: 40px;
+  padding: 0;
   border: 0;
+  border-radius: 8px;
   align-items: center;
   justify-content: center;
   color: var(--color-gray);
@@ -204,8 +283,9 @@
   cursor: pointer;
 }
 
-.selectionActions button span {
-  font-size: var(--icon-l-size);
+.selectionActions button :global(.material-icons),
+.selectionActions button :global(.material-icons-outlined) {
+  font-size: var(--icon-m-size);
 }
 
 .loadMoreArea {

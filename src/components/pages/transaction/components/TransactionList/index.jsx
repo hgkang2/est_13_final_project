@@ -17,6 +17,21 @@ export default function TransactionList({
   onClearSelection,
   onOpenDetail,
 }) {
+  const selectedSummary = visibleTransactions
+    .filter(transaction => selectedIds.includes(transaction.id))
+    .reduce(
+      (summary, transaction) => {
+        summary[transaction.type] += transaction.amount;
+
+        return summary;
+      },
+      {
+        income: 0,
+        expense: 0,
+        transfer: 0,
+      },
+    );
+
   return (
     <div className={styles.table}>
       {hasTransactionData ? (
@@ -54,30 +69,56 @@ export default function TransactionList({
 
           {selectedIds.length > 0 && (
             <div className={styles.selectionBar}>
-              <div className={styles.selectionInfo}>
-                <span className="material-icons" aria-hidden="true">
-                  check_box
-                </span>
-
-                <span>{selectedIds.length}건이 선택되었습니다.</span>
-              </div>
-
-              <div className={styles.selectionActions}>
-                <button type="button" aria-label="선택 거래 삭제">
-                  <span className="material-icons-outlined" aria-hidden="true">
-                    delete
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  aria-label="선택 해제"
-                  onClick={() => onClearSelection()}
-                >
+              <div className={styles.selectionBarInner}>
+                <div className={styles.selectionInfo}>
                   <span className="material-icons" aria-hidden="true">
-                    close
+                    check_box
                   </span>
-                </button>
+
+                  <span>{selectedIds.length}건이 선택되었습니다.</span>
+                </div>
+
+                <div className={styles.selectionRight}>
+                  <div className={styles.selectionSummary}>
+                    <div className={styles.incomeSummary}>
+                      <span>수입</span>
+                      <strong>{formatAmount(selectedSummary.income)}원</strong>
+                    </div>
+
+                    <div className={styles.expenseSummary}>
+                      <span>지출</span>
+                      <strong>{formatAmount(selectedSummary.expense)}원</strong>
+                    </div>
+
+                    <div className={styles.transferSummary}>
+                      <span>이체</span>
+                      <strong>
+                        {formatAmount(selectedSummary.transfer)}원
+                      </strong>
+                    </div>
+                  </div>
+
+                  <div className={styles.selectionActions}>
+                    <button type="button" aria-label="선택 거래 삭제">
+                      <span
+                        className="material-icons-outlined"
+                        aria-hidden="true"
+                      >
+                        delete
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      aria-label="선택 해제"
+                      onClick={() => onClearSelection()}
+                    >
+                      <span className="material-icons" aria-hidden="true">
+                        close
+                      </span>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           )}

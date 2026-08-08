@@ -10,7 +10,7 @@ const transactionFilters = [
 export default function TransactionToolbar({ activeFilter, onFilterChange }) {
   return (
     <div className={styles.toolbar}>
-      <div className={styles.typeFilters} aria-label="거래 구분 필터">
+      <div className={styles.typeFilters}>
         {transactionFilters.map(filter => (
           <button
             type="button"
@@ -25,15 +25,15 @@ export default function TransactionToolbar({ activeFilter, onFilterChange }) {
         ))}
       </div>
 
+      <button type="button" className={styles.dateButton}>
+        <span>2026.07.01 - 2026.07.31</span>
+
+        <span className="material-icons" aria-hidden="true">
+          calendar_month
+        </span>
+      </button>
+
       <div className={styles.toolbarActions}>
-        <button type="button" className={styles.dateButton}>
-          <span>2026.07.01 - 2026.07.31</span>
-
-          <span className="material-icons" aria-hidden="true">
-            calendar_month
-          </span>
-        </button>
-
         <button type="button" className={styles.toolbarButton}>
           <span>필터</span>
 
@@ -48,10 +48,6 @@ export default function TransactionToolbar({ activeFilter, onFilterChange }) {
           </span>
 
           <span>내보내기</span>
-
-          <span className="material-icons" aria-hidden="true">
-            keyboard_arrow_down
-          </span>
         </button>
 
         <button
