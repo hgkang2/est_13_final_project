@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
     const router = useRouter();
+     const supabase = createClient();
     const [agreements, setAgreements] = useState ({
         terms: false,
         privacy: false,
@@ -32,7 +33,7 @@ export default function RegisterPage() {
     const handleRegister = async (e) => {
         e.preventDefault();
 
-        const supabase = createClient();
+       
         const formData = new FormData(e.currentTarget);
 
         const name = formData.get("name");
@@ -200,7 +201,7 @@ export default function RegisterPage() {
                   type="button"
                   className="sns-button"
                   onClick={handleGoogleLogin}>
-                    <img src="/Google.png"
+                    <img src="/images/auth/Google.png"
                     alt="구글 로고" />
                     <span>
                      구글로 로그인
@@ -210,7 +211,7 @@ export default function RegisterPage() {
                   type="button"
                   className="sns-button"
                   onClick={handleKakaoLogin}>
-                    <img src="/Kakao.png"
+                    <img src="/images/auth/Kakao.png"
                     alt="카카오 로고" />
                     <span>
                      카카오로 로그인
@@ -220,7 +221,7 @@ export default function RegisterPage() {
            </div>
         </div>
         <div className="image-section">
-            <img src="/image.png"
+            <img src="/images/auth/image.png"
             alt="MO:UM 목표 저축 캐릭터" />
         </div>
         </section>

@@ -105,7 +105,7 @@ export default function LoginPage() {
                   type="button"
                   className="sns-button"
                   onClick={handleGoogleLogin}>
-                    <img src="/Google.png"
+                    <img src="/images/auth/Google.png"
                     alt="구글 로고" />
                     <span>
                      구글로 로그인
@@ -116,7 +116,7 @@ export default function LoginPage() {
                   type="button"
                   className="sns-button"
                   onClick={handleKakaoLogin}>
-                    <img src="/Kakao.png"
+                    <img src="/images/auth/Kakao.png"
                     alt="카카오 로고" />
                     <span>
                      카카오로 로그인
@@ -126,7 +126,7 @@ export default function LoginPage() {
         </div>
         </div>
         <div className="image-section">
-            <img src="/image.png"
+            <img src="/images/auth/image.png"
             alt="MO:UM 목표 저축 캐릭터" />
         </div>
         </section>
