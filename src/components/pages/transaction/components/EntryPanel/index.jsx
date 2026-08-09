@@ -4,38 +4,47 @@ import MultipleEntryForm from "./MultipleEntryForm";
 import AiEntryForm from "./AiEntryForm";
 
 export default function EntryPanel({
-  entryTab,
-  entryMode,
-  transactionForm,
-  transactionErrors,
-  multipleRows,
-  multipleRowStatus,
-  aiStatus,
-  aiTransactionForm,
-  aiPreview,
-
-  onClose,
-  onOpenRecent,
-  onEntryTabChange,
-  onEntryModeChange,
-
-  onTransactionFormChange,
-  onToggleRecurring,
-  onTransactionSubmit,
-  onContinueEntry,
-
-  onMultipleRowChange,
-  onAddMultipleRow,
-  onRemoveMultipleRow,
-  onCancelMultipleEntry,
-  onMultipleSubmit,
-
-  onAiFormChange,
-  onAiReceiptChange,
-  onAiDragOver,
-  onAiDrop,
-  onAiTransactionSubmit,
+  entryState,
+  manualEntry,
+  multipleEntry,
+  aiEntry,
+  panelActions,
 }) {
+  const { entryTab, entryMode } = entryState;
+
+  const {
+    transactionForm,
+    transactionErrors,
+    onTransactionFormChange,
+    onToggleRecurring,
+    onTransactionSubmit,
+    onContinueEntry,
+  } = manualEntry;
+
+  const {
+    multipleRows,
+    multipleRowStatus,
+    onMultipleRowChange,
+    onAddMultipleRow,
+    onRemoveMultipleRow,
+    onCancelMultipleEntry,
+    onMultipleSubmit,
+  } = multipleEntry;
+
+  const {
+    aiStatus,
+    aiTransactionForm,
+    aiPreview,
+    onAiFormChange,
+    onAiReceiptChange,
+    onAiDragOver,
+    onAiDrop,
+    onAiTransactionSubmit,
+  } = aiEntry;
+
+  const { onClose, onOpenRecent, onEntryTabChange, onEntryModeChange } =
+    panelActions;
+
   const isTransfer = transactionForm.type === "transfer";
 
   return (

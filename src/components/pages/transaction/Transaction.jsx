@@ -676,33 +676,43 @@ export default function Transaction() {
                 />
               ) : (
                 <EntryPanel
-                  entryTab={entryTab}
-                  entryMode={entryMode}
-                  transactionForm={transactionForm}
-                  transactionErrors={transactionErrors}
-                  multipleRows={multipleRows}
-                  multipleRowStatus={multipleRowStatus}
-                  aiStatus={aiStatus}
-                  aiTransactionForm={aiTransactionForm}
-                  aiPreview={aiPreview}
-                  onClose={() => setIsEntryOpen(false)}
-                  onOpenRecent={() => setIsRecentOpen(true)}
-                  onEntryTabChange={setEntryTab}
-                  onEntryModeChange={setEntryMode}
-                  onTransactionFormChange={onTransactionFormChange}
-                  onToggleRecurring={onToggleRecurring}
-                  onTransactionSubmit={onTransactionSubmit}
-                  onContinueEntry={onContinueEntry}
-                  onMultipleRowChange={onMultipleRowChange}
-                  onAddMultipleRow={onAddMultipleRow}
-                  onRemoveMultipleRow={onRemoveMultipleRow}
-                  onCancelMultipleEntry={onCancelMultipleEntry}
-                  onMultipleSubmit={onMultipleSubmit}
-                  onAiFormChange={onAiFormChange}
-                  onAiReceiptChange={onAiReceiptChange}
-                  onAiDragOver={onAiDragOver}
-                  onAiDrop={onAiDrop}
-                  onAiTransactionSubmit={onAiTransactionSubmit}
+                  entryState={{
+                    entryTab,
+                    entryMode,
+                  }}
+                  manualEntry={{
+                    transactionForm,
+                    transactionErrors,
+                    onTransactionFormChange,
+                    onToggleRecurring,
+                    onTransactionSubmit,
+                    onContinueEntry,
+                  }}
+                  multipleEntry={{
+                    multipleRows,
+                    multipleRowStatus,
+                    onMultipleRowChange,
+                    onAddMultipleRow,
+                    onRemoveMultipleRow,
+                    onCancelMultipleEntry,
+                    onMultipleSubmit,
+                  }}
+                  aiEntry={{
+                    aiStatus,
+                    aiTransactionForm,
+                    aiPreview,
+                    onAiFormChange,
+                    onAiReceiptChange,
+                    onAiDragOver,
+                    onAiDrop,
+                    onAiTransactionSubmit,
+                  }}
+                  panelActions={{
+                    onClose: () => setIsEntryOpen(false),
+                    onOpenRecent: () => setIsRecentOpen(true),
+                    onEntryTabChange: setEntryTab,
+                    onEntryModeChange: setEntryMode,
+                  }}
                 />
               )
             ) : (
