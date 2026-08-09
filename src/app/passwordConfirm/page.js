@@ -46,38 +46,9 @@ export default function PasswordConfirmPage() {
     }
   };
 
-<<<<<<< HEAD
-    const handleGoogleLogin = async() => {
-        const { error } = await supabase.auth.signInWithOAuth({
-            provider: "google",
-            options: {
-                redirectTo: `${window.location.origin}/`,
-            },
-        });
-        if (error) {
-            console.error(error.message);
-        }
-    };
-     const handleKakaoLogin = async() => {
-        const { error } = await supabase.auth.signInWithOAuth({
-            provider: "kakao",
-            options: {
-                redirectTo: `${window.location.origin}/`,
-            },
-        });
-        if (error) {
-            console.error(error.message);
-        }
-    };
-
-    return (
-        <main className="page">
-        <section className="auth-container">
-=======
   return (
     <main className="page">
-      <section className="container">
->>>>>>> 1ce51b2b72b4c1511714a0ea4b3feb47e471b4e4
+      <section className="auth-container">
         <div className="form-section">
           <div className="intro">
             <h1>
