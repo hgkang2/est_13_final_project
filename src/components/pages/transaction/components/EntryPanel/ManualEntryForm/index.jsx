@@ -258,16 +258,29 @@ export default function ManualEntryForm({
                 </label>
               ) : (
                 <label className={styles.formField}>
-                  <span className={styles.formLabel}>날짜</span>
+                  <span className={styles.formLabel}>
+                    날짜 <span className={styles.requiredMark}>*</span>
+                  </span>
 
-                  <span className={styles.dateInputBox}>
+                  <span
+                    className={`${styles.dateInputBox} ${
+                      transactionErrors.date ? styles.errorField : ""
+                    }`}
+                  >
                     <input
                       type="date"
                       name="date"
                       value={transactionForm.date}
                       onChange={onTransactionFormChange}
+                      aria-invalid={Boolean(transactionErrors.date)}
                     />
                   </span>
+
+                  {transactionErrors.date && (
+                    <span className={styles.errorMessage}>
+                      {transactionErrors.date}
+                    </span>
+                  )}
                 </label>
               )}
             </div>
@@ -315,16 +328,29 @@ export default function ManualEntryForm({
               </label>
 
               <label className={styles.formField}>
-                <span className={styles.formLabel}>날짜</span>
+                <span className={styles.formLabel}>
+                  날짜 <span className={styles.requiredMark}>*</span>
+                </span>
 
-                <span className={styles.dateInputBox}>
+                <span
+                  className={`${styles.dateInputBox} ${
+                    transactionErrors.date ? styles.errorField : ""
+                  }`}
+                >
                   <input
                     type="date"
                     name="date"
                     value={transactionForm.date}
                     onChange={onTransactionFormChange}
+                    aria-invalid={Boolean(transactionErrors.date)}
                   />
                 </span>
+
+                {transactionErrors.date && (
+                  <span className={styles.errorMessage}>
+                    {transactionErrors.date}
+                  </span>
+                )}
               </label>
             </div>
 

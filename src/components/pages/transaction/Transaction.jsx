@@ -430,6 +430,10 @@ export default function Transaction() {
       errors.category = "카테고리를 선택해주세요.";
     }
 
+    if (!form.date) {
+      errors.date = "날짜를 선택해주세요.";
+    }
+
     if (!form.paymentMethod && form.type !== "transfer") {
       errors.paymentMethod = "결제수단을 선택해주세요.";
     }

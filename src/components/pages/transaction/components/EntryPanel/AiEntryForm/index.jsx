@@ -273,8 +273,12 @@ export default function AiEntryForm({
           </label>
 
           <label className={styles.formField}>
-            <span className={styles.aiFormLabel}>날짜</span>
-
+            <span className={styles.aiFormLabel}>
+              날짜
+              {aiStatus === "success" && (
+                <span className={styles.requiredMark}> *</span>
+              )}
+            </span>
             <span className={styles.dateInputBox}>
               {aiStatus === "analyzing" ? (
                 <>

@@ -390,3 +390,19 @@
   color: var(--color-white);
   background-color: var(--color-point);
 }
+
+.requiredMark {
+  color: var(--color-type-expense);
+}
+
+.errorField,
+.errorField:focus,
+.errorField:focus-within {
+  border-color: var(--color-type-expense);
+}
+
+.errorMessage {
+  color: var(--color-type-expense);
+  font-size: var(--body-s-size);
+  line-height: var(--body-s-line-height);
+}
