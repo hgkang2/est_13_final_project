@@ -524,6 +524,23 @@
   .transactionTime {
     display: none;
   }
+
+  .selectionBarInner {
+    width: 100%;
+    min-height: 48px;
+    padding: 0 16px;
+    margin: 0;
+  }
+
+  .selectionRight {
+    min-width: 0;
+    gap: 16px;
+  }
+
+  .selectionSummary {
+    min-width: 0;
+    gap: 12px;
+  }
 }
 
 @container (max-width: 700px) {
@@ -736,5 +753,42 @@
     font-weight: var(--font-weight-regular);
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .selectionBar {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .selectionBarInner {
+    display: flex;
+    width: 100%;
+    min-height: 48px;
+    padding: 4px 8px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .selectionInfo {
+    min-width: 0;
+    gap: 8px;
+  }
+
+  .selectionSummary {
+    display: none;
+  }
+
+  .selectionRight {
+    flex-shrink: 0;
+    gap: 0;
+  }
+
+  .selectionActions button {
+    width: 36px;
+    height: 36px;
+  }
+
+  .selectionInfo > :global(.material-icons) {
+    display: none;
   }
 }
