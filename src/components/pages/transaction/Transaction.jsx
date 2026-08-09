@@ -193,11 +193,6 @@ const createMultipleTransactionRow = id => ({
   memo: "",
 });
 
-function formatAmount(amount) {
-  const sign = amount > 0 ? "+" : "-";
-  return `${sign}${Math.abs(amount).toLocaleString("ko-KR")}`;
-}
-
 export default function Transaction() {
   const [activeFilter, setActiveFilter] = useState("all");
   const [isEntryOpen, setIsEntryOpen] = useState(true);
@@ -252,12 +247,22 @@ export default function Transaction() {
     return () => clearTimeout(timer);
   }, [toastMessage]);
 
-  // const handleRecentCopy = transaction => {
-  //   setCopiedRecentId(transaction.id);
-  //   setToastMessage("거래 정보를 입력창에 복사했어요.");
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 1024px)");
 
-  //   console.log("복사할 최근 거래", transaction);
-  // };
+    const handleChange = event => {
+      if (event.matches && entryMode === "multiple") {
+        setEntryMode("single");
+        setToastMessage(
+          "화면이 좁아져 단건 입력으로 전환했어요. 작성 중인 다건 입력 내용은 유지돼요.",
+        );
+      }
+    };
+
+    handleChange(mediaQuery);
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, [entryMode]);
 
   const handleViewAllRecent = () => {
     console.log("최근 입력 전체 보기");
