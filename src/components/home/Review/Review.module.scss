@@ -1,0 +1,218 @@
+.review {
+  width: 100%;
+  background: rgba(253, 226, 145, 0.1);
+}
+
+.inner {
+  position: relative;
+  width: 100%;
+  max-width: 1272px;
+  min-height: 720px;
+  margin: 0 auto;
+  padding: 120px 72px;
+}
+
+.heading {
+  position: relative;
+  z-index: 4;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+
+  h2 {
+    margin-bottom: 16px;
+
+    color: var(--color-gray);
+  }
+  h2 span {
+    color: var(--color-point);
+  }
+
+  p {
+    color: var(--color-green-gray);
+  }
+}
+
+/* ----------------------- */
+/* 휴대폰 */
+/* ----------------------- */
+
+.phoneArea {
+  position: absolute;
+
+  left: 50%;
+  top: 300px;
+
+  transform: translateX(-50%);
+
+  z-index: 2;
+
+  img {
+    display: block;
+
+    width: 300px;
+    height: auto;
+  }
+}
+
+/* ----------------------- */
+/* 슬라이드 */
+/* ----------------------- */
+
+.reviewSlider {
+  position: relative;
+  z-index: 3;
+
+  width: 100%;
+  min-width: 0;
+
+  margin-top: 120px;
+}
+
+.reviewSlider :global(.swiper) {
+  width: 100%;
+  min-width: 0;
+
+  overflow: hidden;
+  padding: 10px;
+}
+
+.reviewSlider :global(.swiper-wrapper) {
+  align-items: center;
+}
+
+.reviewSlider :global(.swiper-slide) {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+
+/* ----------------------- */
+/* 후기 카드 */
+/* ----------------------- */
+
+.card {
+  width: 100%;
+  min-height: 175px;
+
+  padding: 30px;
+
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+}
+
+.profile {
+  width: 45px;
+  height: 45px;
+
+  margin-bottom: 12px;
+
+  border-radius: 50%;
+
+  background: var(--color-green-gray);
+}
+
+.card h4 {
+  margin-bottom: 10px;
+
+  color: var(--color-point);
+}
+
+.card p {
+  color: var(--color-gray);
+  line-height: var(--caption-line-height);
+}
+
+/* ----------------------- */
+/* 버튼 */
+/* ----------------------- */
+
+.prev,
+.next {
+  position: absolute;
+
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 44px;
+  height: 44px;
+
+  border: 1px solid var(--color-point);
+  border-radius: 50%;
+
+  background: white;
+
+  color: var(--color-point);
+
+  cursor: pointer;
+
+  transition: 0.25s;
+
+  z-index: 10;
+}
+
+.prev {
+  left: -24px;
+}
+
+.next {
+  right: -24px;
+}
+
+.prev:hover,
+.next:hover {
+  background: var(--color-point);
+  color: white;
+}
+
+.prev .material-symbols-rounded,
+.next .material-symbols-rounded {
+  font-size: 24px;
+}
+
+/* ----------------------- */
+/* 태블릿 반응형 */
+/* ----------------------- */
+
+@media (max-width: 768px) {
+  .inner {
+    padding: 100px 48px;
+  }
+
+  .phoneArea {
+    position: static;
+
+    display: flex;
+    justify-content: center;
+
+    margin-bottom: 48px;
+
+    transform: none;
+  }
+
+  .reviewSlider {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .inner {
+    padding: 80px 20px;
+  }
+}
