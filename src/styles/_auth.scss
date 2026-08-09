@@ -203,9 +203,9 @@
   justify-content: center;
   gap: 10px;
   padding: 10px 8px;
-  border: 1px solid var(--color-gray);
+  border: 1px solid rgba(217, 217, 217, 0.55);
   border-radius: 12px;
-  background-color: var(--color-gray);
+  background-color: rgba(217, 217, 217, 0.55);
   color: var(--color-black);
   font-size: 16px;
   font-weight: 500;
@@ -273,7 +273,7 @@
     padding: 24px;
     overflow-y: auto;
   }
-  .container {
+  .auth-container {
     width: 100%;
     min-height: 100vh;
     height: auto;
@@ -392,7 +392,7 @@
     padding: 24px 16px;
     box-sizing: border-box;
   }
-  .container {
+  .auth-container {
     width: calc(100vw - 32px);
     max-width: 358px;
     margin: 0 auto;
