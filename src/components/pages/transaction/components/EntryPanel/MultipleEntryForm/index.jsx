@@ -2,6 +2,7 @@ import styles from "./MultipleEntryForm.module.scss";
 
 export default function MultipleEntryForm({
   multipleRows,
+  multipleRowStatus,
   onMultipleRowChange,
   onAddMultipleRow,
   onRemoveMultipleRow,
@@ -194,7 +195,7 @@ export default function MultipleEntryForm({
             className={styles.saveMultipleButton}
             onClick={onMultipleSubmit}
           >
-            {multipleRows.length}건 저장하기
+            {multipleRowStatus.available}건 저장하기
           </button>
         </div>
       </div>

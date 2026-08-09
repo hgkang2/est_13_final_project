@@ -2,6 +2,7 @@ import styles from "./ManualEntryForm.module.scss";
 
 export default function ManualEntryForm({
   transactionForm,
+  transactionErrors,
   isTransfer,
   onTransactionFormChange,
   onToggleRecurring,
@@ -86,9 +87,15 @@ export default function ManualEntryForm({
         </fieldset>
 
         <label className={styles.formField}>
-          <span className={styles.formLabel}>금액</span>
+          <span className={styles.formLabel}>
+            금액 <span className={styles.requiredMark}>*</span>
+          </span>
 
-          <span className={styles.amountInputBox}>
+          <span
+            className={`${styles.amountInputBox} ${
+              transactionErrors.amount ? styles.errorField : ""
+            }`}
+          >
             <input
               type="number"
               name="amount"
@@ -97,23 +104,37 @@ export default function ManualEntryForm({
               value={transactionForm.amount}
               onChange={onTransactionFormChange}
               placeholder="금액을 입력하세요"
+              aria-invalid={Boolean(transactionErrors.amount)}
             />
 
             <strong>원</strong>
           </span>
+
+          {transactionErrors.amount && (
+            <span className={styles.errorMessage}>
+              {transactionErrors.amount}
+            </span>
+          )}
         </label>
 
         {isTransfer ? (
           <>
             <div className={styles.formFieldRow}>
               <label className={styles.formField}>
-                <span className={styles.formLabel}>출금</span>
+                <span className={styles.formLabel}>
+                  출금 <span className={styles.requiredMark}>*</span>
+                </span>
 
-                <span className={styles.selectBox}>
+                <span
+                  className={`${styles.selectBox} ${
+                    transactionErrors.withdrawAccount ? styles.errorField : ""
+                  }`}
+                >
                   <select
                     name="withdrawAccount"
                     value={transactionForm.withdrawAccount}
                     onChange={onTransactionFormChange}
+                    aria-invalid={Boolean(transactionErrors.withdrawAccount)}
                   >
                     <option value="">출금 계좌 선택</option>
                     <option value="mainAccount">주거래 계좌</option>
@@ -126,16 +147,29 @@ export default function ManualEntryForm({
                     keyboard_arrow_down
                   </span>
                 </span>
+
+                {transactionErrors.withdrawAccount && (
+                  <span className={styles.errorMessage}>
+                    {transactionErrors.withdrawAccount}
+                  </span>
+                )}
               </label>
 
               <label className={styles.formField}>
-                <span className={styles.formLabel}>입금</span>
+                <span className={styles.formLabel}>
+                  입금 <span className={styles.requiredMark}>*</span>
+                </span>
 
-                <span className={styles.selectBox}>
+                <span
+                  className={`${styles.selectBox} ${
+                    transactionErrors.depositAccount ? styles.errorField : ""
+                  }`}
+                >
                   <select
                     name="depositAccount"
                     value={transactionForm.depositAccount}
                     onChange={onTransactionFormChange}
+                    aria-invalid={Boolean(transactionErrors.depositAccount)}
                   >
                     <option value="">입금 계좌 선택</option>
                     <option value="mainAccount">주거래 계좌</option>
@@ -148,44 +182,40 @@ export default function ManualEntryForm({
                     keyboard_arrow_down
                   </span>
                 </span>
+
+                {transactionErrors.depositAccount && (
+                  <span className={styles.errorMessage}>
+                    {transactionErrors.depositAccount}
+                  </span>
+                )}
               </label>
             </div>
 
             <div className={styles.formFieldRow}>
               <label className={styles.formField}>
-                <span className={styles.formLabelRow}>
-                  <span className={styles.formLabel}>카테고리</span>
-
-                  <span className={styles.recurringControl}>
-                    <span>반복</span>
-
-                    <button
-                      type="button"
-                      role="switch"
-                      aria-checked={transactionForm.isRecurring}
-                      className={`${styles.recurringSwitch} ${
-                        transactionForm.isRecurring
-                          ? styles.recurringSwitchActive
-                          : ""
-                      }`}
-                      onClick={onToggleRecurring}
-                    >
-                      <span className={styles.recurringSwitchHandle} />
-                    </button>
-                  </span>
+                <span className={styles.formLabel}>
+                  카테고리 <span className={styles.requiredMark}>*</span>
                 </span>
 
-                <span className={styles.selectBox}>
+                <span
+                  className={`${styles.selectBox} ${
+                    transactionErrors.category ? styles.errorField : ""
+                  }`}
+                >
                   <select
                     name="category"
                     value={transactionForm.category}
                     onChange={onTransactionFormChange}
+                    aria-invalid={Boolean(transactionErrors.category)}
                   >
                     <option value="">카테고리 선택</option>
-                    <option value="savings">저축</option>
-                    <option value="accountTransfer">계좌이체</option>
-                    <option value="cardPayment">카드대금</option>
-                    <option value="investment">투자</option>
+                    <option value="salary">월급</option>
+                    <option value="otherIncome">부수입</option>
+                    <option value="food">식비</option>
+                    <option value="cafeSnack">카페/간식</option>
+                    <option value="transportation">교통</option>
+                    <option value="shopping">쇼핑</option>
+                    <option value="subscription">구독</option>
                     <option value="other">기타</option>
                   </select>
 
@@ -193,8 +223,13 @@ export default function ManualEntryForm({
                     keyboard_arrow_down
                   </span>
                 </span>
-              </label>
 
+                {transactionErrors.category && (
+                  <span className={styles.errorMessage}>
+                    {transactionErrors.category}
+                  </span>
+                )}
+              </label>
               {transactionForm.isRecurring ? (
                 <label className={styles.formField}>
                   <span className={styles.formLabel}>반복일</span>
@@ -241,13 +276,20 @@ export default function ManualEntryForm({
           <>
             <div className={styles.formFieldRow}>
               <label className={styles.formField}>
-                <span className={styles.formLabel}>카테고리</span>
+                <span className={styles.formLabel}>
+                  카테고리 <span className={styles.requiredMark}>*</span>
+                </span>
 
-                <span className={styles.selectBox}>
+                <span
+                  className={`${styles.selectBox} ${
+                    transactionErrors.category ? styles.errorField : ""
+                  }`}
+                >
                   <select
                     name="category"
                     value={transactionForm.category}
                     onChange={onTransactionFormChange}
+                    aria-invalid={Boolean(transactionErrors.category)}
                   >
                     <option value="">카테고리 선택</option>
                     <option value="salary">월급</option>
@@ -264,6 +306,12 @@ export default function ManualEntryForm({
                     keyboard_arrow_down
                   </span>
                 </span>
+
+                {transactionErrors.category && (
+                  <span className={styles.errorMessage}>
+                    {transactionErrors.category}
+                  </span>
+                )}
               </label>
 
               <label className={styles.formField}>
@@ -281,15 +329,20 @@ export default function ManualEntryForm({
             </div>
 
             <label className={styles.formField}>
-              <span className={styles.formLabel}>결제수단</span>
+              <span className={styles.formLabel}>
+                결제수단 <span className={styles.requiredMark}>*</span>
+              </span>
 
               <span
-                className={`${styles.selectBox} ${styles.paymentSelectBox}`}
+                className={`${styles.selectBox} ${styles.paymentSelectBox} ${
+                  transactionErrors.paymentMethod ? styles.errorField : ""
+                }`}
               >
                 <select
                   name="paymentMethod"
                   value={transactionForm.paymentMethod}
                   onChange={onTransactionFormChange}
+                  aria-invalid={Boolean(transactionErrors.paymentMethod)}
                 >
                   <option value="">결제수단 선택</option>
                   <option value="creditCard">신용카드</option>
@@ -304,6 +357,12 @@ export default function ManualEntryForm({
                   keyboard_arrow_down
                 </span>
               </span>
+
+              {transactionErrors.paymentMethod && (
+                <span className={styles.errorMessage}>
+                  {transactionErrors.paymentMethod}
+                </span>
+              )}
             </label>
           </>
         )}

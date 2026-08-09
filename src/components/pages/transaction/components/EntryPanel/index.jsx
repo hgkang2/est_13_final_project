@@ -7,6 +7,7 @@ export default function EntryPanel({
   entryTab,
   entryMode,
   transactionForm,
+  transactionErrors,
   multipleRows,
   multipleRowStatus,
   aiStatus,
@@ -187,6 +188,7 @@ export default function EntryPanel({
           {entryMode === "single" ? (
             <ManualEntryForm
               transactionForm={transactionForm}
+              transactionErrors={transactionErrors}
               isTransfer={isTransfer}
               onTransactionFormChange={onTransactionFormChange}
               onToggleRecurring={onToggleRecurring}
@@ -194,6 +196,7 @@ export default function EntryPanel({
           ) : (
             <MultipleEntryForm
               multipleRows={multipleRows}
+              multipleRowStatus={multipleRowStatus}
               onMultipleRowChange={onMultipleRowChange}
               onAddMultipleRow={onAddMultipleRow}
               onRemoveMultipleRow={onRemoveMultipleRow}

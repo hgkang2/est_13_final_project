@@ -13,6 +13,7 @@ import TransactionToolbar from "./components/TransactionToolbar";
 import TransactionList from "./components/TransactionList";
 import CopyDateModal from "./components/CopyDateModal";
 import EntryPanel from "./components/EntryPanel";
+import Modal from "@/components/common/Modal";
 
 const hasTransactionData = true;
 
@@ -145,11 +146,21 @@ const paymentMethodMap = {
   기타: "other",
 };
 
+const getToday = () => {
+  const today = new Date();
+
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
+
 const initialTransactionForm = {
   type: "income",
   amount: "",
   category: "",
-  date: "2026-07-29",
+  date: getToday(),
   paymentMethod: "",
   content: "",
   memo: "",
@@ -236,6 +247,8 @@ export default function Transaction() {
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isMultipleConfirmOpen, setIsMultipleConfirmOpen] = useState(false);
+  const [transactionErrors, setTransactionErrors] = useState({});
 
   useEffect(() => {
     if (!toastMessage) return;
@@ -276,7 +289,9 @@ export default function Transaction() {
   const handleConfirmRecentCopy = dateType => {
     if (!copyTarget) return;
 
-    const today = new Date().toISOString().split("T")[0];
+    const today = getToday();
+
+    setTransactionErrors({});
 
     setTransactionForm(prevForm => ({
       ...prevForm,
@@ -366,6 +381,10 @@ export default function Transaction() {
   const onTransactionFormChange = event => {
     const { name, value, files } = event.target;
 
+    setTransactionErrors(prevErrors => ({
+      ...prevErrors,
+      [name]: "",
+    }));
     setTransactionForm(prevForm => {
       const nextForm = {
         ...prevForm,
@@ -399,9 +418,45 @@ export default function Transaction() {
     }));
   };
 
+  const validateTransactionForm = form => {
+    const errors = {};
+
+    if (!form.amount) {
+      errors.amount = "금액을 입력해주세요.";
+    }
+
+    if (!form.category) {
+      errors.category = "카테고리를 선택해주세요.";
+    }
+
+    if (!form.paymentMethod && form.type !== "transfer") {
+      errors.paymentMethod = "결제수단을 선택해주세요.";
+    }
+
+    if (form.type === "transfer") {
+      if (!form.withdrawAccount) {
+        errors.withdrawAccount = "출금 계좌를 선택해주세요.";
+      }
+
+      if (!form.depositAccount) {
+        errors.depositAccount = "입금 계좌를 선택해주세요.";
+      }
+    }
+
+    return errors;
+  };
+
   const onTransactionSubmit = event => {
     event.preventDefault();
 
+    const errors = validateTransactionForm(transactionForm);
+
+    if (Object.keys(errors).length > 0) {
+      setTransactionErrors(errors);
+      return;
+    }
+
+    setTransactionErrors({});
     console.log("소비 기록 입력값", transactionForm);
   };
 
@@ -444,7 +499,29 @@ export default function Transaction() {
   };
 
   const onMultipleSubmit = () => {
-    console.log("다건 입력값", multipleRows);
+    const validRows = multipleRows.filter(
+      row =>
+        row.date && row.type && row.category && row.amount && row.paymentMethod,
+    );
+
+    if (validRows.length === 0) {
+      setToastMessage("저장할 수 있는 거래가 없어요.");
+      return;
+    }
+
+    setIsMultipleConfirmOpen(true);
+  };
+
+  const handleConfirmMultipleSubmit = () => {
+    const validRows = multipleRows.filter(
+      row =>
+        row.date && row.type && row.category && row.amount && row.paymentMethod,
+    );
+
+    console.log("다건 저장값", validRows);
+
+    setIsMultipleConfirmOpen(false);
+    setToastMessage(`${validRows.length}건의 소비 기록을 저장했어요.`);
   };
 
   const onAiFormChange = event => {
@@ -602,6 +679,7 @@ export default function Transaction() {
                   entryTab={entryTab}
                   entryMode={entryMode}
                   transactionForm={transactionForm}
+                  transactionErrors={transactionErrors}
                   multipleRows={multipleRows}
                   multipleRowStatus={multipleRowStatus}
                   aiStatus={aiStatus}
@@ -652,6 +730,17 @@ export default function Transaction() {
 
       <SubFooter />
       <BottomTab />
+      <Modal
+        isOpen={isMultipleConfirmOpen}
+        type="confirm"
+        icon="help_outline"
+        title={`${multipleRowStatus.available}건을 저장하시겠습니까?`}
+        description="입력이 완료된 거래만 저장됩니다."
+        confirmText="저장하기"
+        cancelText="취소"
+        onConfirm={handleConfirmMultipleSubmit}
+        onCancel={() => setIsMultipleConfirmOpen(false)}
+      />
 
       {toastMessage && (
         <div className={styles.toast} role="status" aria-live="polite">

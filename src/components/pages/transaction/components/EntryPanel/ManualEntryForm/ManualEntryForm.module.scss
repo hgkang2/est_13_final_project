@@ -184,3 +184,17 @@
 
   @include typo-caption-plus;
 }
+
+.requiredMark {
+  color: var(--color-type-expense);
+}
+
+.errorField {
+  border-color: var(--color-type-expense);
+}
+
+.errorMessage {
+  color: var(--color-type-expense);
+  font-size: var(--body-s-size);
+  line-height: var(--body-s-line-height);
+}

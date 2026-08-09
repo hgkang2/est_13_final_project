@@ -16,9 +16,10 @@ export default function Modal({
   if (!isOpen) return null;
 
   const isDanger = type === "danger";
+  const isConfirm = type === "confirm";
 
   return (
-    <div className={styles.backdrop} onClick={onCancel} role="presentation">
+    <div className={styles.backdrop} onClick={onCancel}>
       <div
         className={styles.modal}
         role="dialog"
@@ -26,14 +27,20 @@ export default function Modal({
         aria-labelledby="common-modal-title"
         onClick={event => event.stopPropagation()}
       >
-        <span
-          className={`material-icons ${
-            isDanger ? styles.dangerIcon : styles.successIcon
-          }`}
-          aria-hidden="true"
-        >
-          {icon}
-        </span>
+        {icon && (
+          <span
+            className={`material-icons ${
+              isDanger
+                ? styles.dangerIcon
+                : isConfirm
+                  ? styles.confirmIcon
+                  : styles.successIcon
+            }`}
+            aria-hidden="true"
+          >
+            {icon}
+          </span>
+        )}
 
         <div className={styles.textArea}>
           <strong id="common-modal-title" className={styles.title}>
@@ -56,7 +63,13 @@ export default function Modal({
 
           <button
             type="button"
-            className={isDanger ? styles.dangerButton : styles.successButton}
+            className={
+              isDanger
+                ? styles.dangerButton
+                : isConfirm
+                  ? styles.confirmButton
+                  : styles.successButton
+            }
             onClick={onConfirm}
           >
             {confirmText}

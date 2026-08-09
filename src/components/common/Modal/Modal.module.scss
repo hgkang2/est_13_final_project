@@ -1,7 +1,6 @@
-@use "@/styles/mixins" as *;
+@use "../../../styles/mixins" as *;
 
 /* Modal */
-
 .backdrop {
   position: fixed;
   inset: 0;
@@ -28,7 +27,8 @@
 }
 
 .dangerIcon,
-.successIcon {
+.successIcon,
+.confirmIcon {
   font-size: var(--icon-l-size);
 }
 
@@ -70,7 +70,8 @@
 
 .cancelButton,
 .dangerButton,
-.successButton {
+.successButton,
+.confirmButton {
   display: flex;
   height: 48px;
   border-radius: 8px;
@@ -95,6 +96,16 @@
 }
 
 .successButton {
+  border: 0;
+  color: var(--color-white);
+  background-color: var(--color-point);
+}
+
+.confirmIcon {
+  color: var(--color-point);
+}
+
+.confirmButton {
   border: 0;
   color: var(--color-white);
   background-color: var(--color-point);
