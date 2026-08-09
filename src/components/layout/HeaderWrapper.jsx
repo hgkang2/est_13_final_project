@@ -9,7 +9,8 @@ export default function HeaderWrapper() {
   const hideHeader =
     pathname === "/login" ||
     pathname === "/register" ||
-    pathname === "/passwordConfirm";
+    pathname === "/passwordConfirm" ||
+    pathname === "/reset-password";
 
   if (hideHeader) return null;
 

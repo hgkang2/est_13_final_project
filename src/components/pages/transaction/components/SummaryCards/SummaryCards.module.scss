@@ -1,0 +1,282 @@
+@use "../../../../../styles/mixins" as *;
+
+.summarySection {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.summaryCard {
+  display: flex;
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  background-color: var(--color-white);
+}
+
+.summaryTitle {
+  color: var(--color-gray);
+
+  @include typo-card-label;
+}
+
+.summaryValue {
+  color: var(--color-text);
+  white-space: nowrap;
+
+  @include typo-body-l-plus;
+}
+
+.summaryChange {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-light-gray);
+
+  @include typo-caption-plus;
+}
+
+.summaryPeriod {
+  color: var(--color-gray);
+  font-weight: var(--font-weight-regular);
+}
+
+.upIcon,
+.downIcon {
+  font-size: var(--icon-m-size);
+}
+
+.upIcon {
+  color: var(--color-type-income);
+}
+
+.downIcon {
+  color: var(--color-type-expense);
+}
+
+.transactionCounts {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.transactionCount {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-light-gray);
+
+  @include typo-caption-plus;
+}
+
+.transactionCount.income strong {
+  color: var(--color-type-income);
+}
+
+.transactionCount.expense strong {
+  color: var(--color-type-expense);
+}
+
+.transactionCount.transfer strong {
+  color: var(--color-type-transfer);
+}
+
+@media (max-width: 1272px) {
+  .summarySection {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .summaryCard {
+    padding: 16px;
+    gap: 8px;
+  }
+
+  .summaryTitle {
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: var(--font-weight-bold);
+  }
+
+  .summaryValue {
+    font-size: 18px;
+    line-height: 22px;
+    font-weight: var(--font-weight-bold);
+  }
+
+  .summaryPeriod {
+    display: none;
+  }
+
+  .summaryChange {
+    gap: 4px;
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: var(--font-weight-bold);
+  }
+
+  .upIcon,
+  .downIcon {
+    font-size: 16px;
+  }
+
+  .transactionCounts {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+  }
+
+  .transactionCount {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    line-height: 18px;
+    font-weight: var(--font-weight-bold);
+  }
+
+  .transactionCount strong,
+  .transactionCount span {
+    font-size: inherit;
+    line-height: inherit;
+    font-weight: inherit;
+  }
+}
+
+@include tablet {
+  .summarySection {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .summaryCard {
+    padding: 16px;
+    gap: 8px;
+  }
+
+  .summaryTitle {
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: var(--font-weight-bold);
+  }
+
+  .summaryValue {
+    font-size: 18px;
+    line-height: 22px;
+    font-weight: var(--font-weight-bold);
+  }
+
+  .summaryPeriod {
+    display: none;
+  }
+
+  .summaryChange {
+    gap: 4px;
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: var(--font-weight-bold);
+  }
+
+  .upIcon,
+  .downIcon {
+    font-size: 16px;
+  }
+
+  .transactionCounts {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+  }
+
+  .transactionCount {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    line-height: 18px;
+    font-weight: var(--font-weight-bold);
+  }
+
+  .transactionCount strong,
+  .transactionCount span {
+    font-size: inherit;
+    line-height: inherit;
+    font-weight: inherit;
+  }
+}
+
+@include mobile {
+  .summarySection {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .summaryCard {
+    padding: 16px;
+    gap: 8px;
+  }
+
+  .summaryTitle {
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: var(--font-weight-bold);
+  }
+
+  .summaryValue {
+    font-size: 18px;
+    line-height: 22px;
+    font-weight: var(--font-weight-bold);
+  }
+
+  .summaryPeriod {
+    display: none;
+  }
+
+  .summaryChange {
+    gap: 4px;
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: var(--font-weight-bold);
+  }
+
+  .upIcon,
+  .downIcon {
+    font-size: 16px;
+  }
+
+  .transactionCounts {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+  }
+
+  .transactionCount {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    line-height: 18px;
+    font-weight: var(--font-weight-bold);
+  }
+
+  .transactionCount strong,
+  .transactionCount span {
+    font-size: inherit;
+    line-height: inherit;
+    font-weight: inherit;
+  }
+}
