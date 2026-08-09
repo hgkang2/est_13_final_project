@@ -206,7 +206,9 @@ const createMultipleTransactionRow = id => ({
 
 export default function Transaction() {
   const [activeFilter, setActiveFilter] = useState("all");
-  const [isEntryOpen, setIsEntryOpen] = useState(true);
+  const [panelView, setPanelView] = useState("entry");
+  // "entry" | "recent" | "detail" | "edit" | "closed"
+
   const [selectedIds, setSelectedIds] = useState([]);
   const [entryTab, setEntryTab] = useState("manual");
   const [entryMode, setEntryMode] = useState("single");
@@ -237,16 +239,11 @@ export default function Transaction() {
   );
 
   const [aiPreview, setAiPreview] = useState("");
-
-  const [isRecentOpen, setIsRecentOpen] = useState(false);
   const [copiedRecentId, setCopiedRecentId] = useState(null);
   const [toastMessage, setToastMessage] = useState("");
-
   const [copyTarget, setCopyTarget] = useState(null);
   const [isCopyModalOpen, setIsCopyModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
   const [isMultipleConfirmOpen, setIsMultipleConfirmOpen] = useState(false);
   const [transactionErrors, setTransactionErrors] = useState({});
 
@@ -306,7 +303,7 @@ export default function Transaction() {
 
     setEntryTab("manual");
     setEntryMode("single");
-    setIsRecentOpen(false);
+    setPanelView("entry");
     setCopiedRecentId(copyTarget.id);
 
     setIsCopyModalOpen(false);
@@ -596,8 +593,7 @@ export default function Transaction() {
       updatedAt: "2026.07.30 09:11",
     });
 
-    setIsDetailOpen(true);
-    setIsRecentOpen(false);
+    setPanelView("detail");
   };
 
   return (
@@ -634,92 +630,94 @@ export default function Transaction() {
                 />
               </section>
             </div>
-            {isEditOpen ? (
+            {panelView === "edit" && (
               <TransactionEdit
                 transaction={selectedTransaction}
                 onClose={() => {
-                  setIsEditOpen(false);
-                  setIsDetailOpen(false);
+                  setPanelView("closed");
                   setSelectedTransaction(null);
                 }}
                 onCancel={() => {
-                  setIsEditOpen(false);
-                  setIsDetailOpen(true);
+                  setPanelView("detail");
                 }}
                 onSave={updatedForm => {
                   console.log("수정 저장값", updatedForm);
 
-                  setIsEditOpen(false);
-                  setIsDetailOpen(true);
+                  setPanelView("detail");
                 }}
               />
-            ) : isDetailOpen ? (
+            )}
+
+            {panelView === "detail" && (
               <TransactionDetail
                 transaction={selectedTransaction}
                 onClose={() => {
-                  setIsDetailOpen(false);
+                  setPanelView("closed");
                   setSelectedTransaction(null);
                 }}
                 onEdit={() => {
-                  setIsDetailOpen(false);
-                  setIsEditOpen(true);
+                  setPanelView("edit");
                 }}
               />
-            ) : isEntryOpen ? (
-              isRecentOpen ? (
-                <RecentTransactions
-                  transactions={recentTransactions}
-                  copiedId={copiedRecentId}
-                  onClose={() => setIsRecentOpen(false)}
-                  onCopy={handleRecentCopy}
-                  onViewAll={handleViewAllRecent}
-                />
-              ) : (
-                <EntryPanel
-                  entryState={{
-                    entryTab,
-                    entryMode,
-                  }}
-                  manualEntry={{
-                    transactionForm,
-                    transactionErrors,
-                    onTransactionFormChange,
-                    onToggleRecurring,
-                    onTransactionSubmit,
-                    onContinueEntry,
-                  }}
-                  multipleEntry={{
-                    multipleRows,
-                    multipleRowStatus,
-                    onMultipleRowChange,
-                    onAddMultipleRow,
-                    onRemoveMultipleRow,
-                    onCancelMultipleEntry,
-                    onMultipleSubmit,
-                  }}
-                  aiEntry={{
-                    aiStatus,
-                    aiTransactionForm,
-                    aiPreview,
-                    onAiFormChange,
-                    onAiReceiptChange,
-                    onAiDragOver,
-                    onAiDrop,
-                    onAiTransactionSubmit,
-                  }}
-                  panelActions={{
-                    onClose: () => setIsEntryOpen(false),
-                    onOpenRecent: () => setIsRecentOpen(true),
-                    onEntryTabChange: setEntryTab,
-                    onEntryModeChange: setEntryMode,
-                  }}
-                />
-              )
-            ) : (
+            )}
+
+            {panelView === "recent" && (
+              <RecentTransactions
+                transactions={recentTransactions}
+                copiedId={copiedRecentId}
+                onClose={() => setPanelView("entry")}
+                onCopy={handleRecentCopy}
+                onViewAll={handleViewAllRecent}
+              />
+            )}
+
+            {panelView === "entry" && (
+              <EntryPanel
+                entryState={{
+                  entryTab,
+                  entryMode,
+                }}
+                manualEntry={{
+                  transactionForm,
+                  transactionErrors,
+                  onTransactionFormChange,
+                  onToggleRecurring,
+                  onTransactionSubmit,
+                  onContinueEntry,
+                }}
+                multipleEntry={{
+                  multipleRows,
+                  multipleRowStatus,
+                  onMultipleRowChange,
+                  onAddMultipleRow,
+                  onRemoveMultipleRow,
+                  onCancelMultipleEntry,
+                  onMultipleSubmit,
+                }}
+                aiEntry={{
+                  aiStatus,
+                  aiTransactionForm,
+                  aiPreview,
+                  onAiFormChange,
+                  onAiReceiptChange,
+                  onAiDragOver,
+                  onAiDrop,
+                  onAiTransactionSubmit,
+                }}
+                panelActions={{
+                  onClose: () => setPanelView("closed"),
+                  onOpenRecent: () => setPanelView("recent"),
+                  onEntryTabChange: setEntryTab,
+                  onEntryModeChange: setEntryMode,
+                }}
+              />
+            )}
+
+            {panelView === "closed" && (
               <button
                 type="button"
                 className={styles.openEntryButton}
-                onClick={() => setIsEntryOpen(true)}
+                onClick={() => setPanelView("entry")}
               >
                 <span className="material-icons">add</span>
               </button>
