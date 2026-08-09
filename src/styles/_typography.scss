@@ -138,6 +138,10 @@
    Material Icons
 ======================================== */
 
+.icon-2xl {
+  @include icon-2xl;
+}
+
 .icon-xl {
   @include icon-xl;
 }
