@@ -1,0 +1,265 @@
+@use "../../../../../../styles/mixins" as *;
+
+.multipleEntryContent {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.multipleModeButton strong {
+  @include typo-body-m-plus;
+}
+
+.multipleModeButton span {
+  color: var(--color-gray);
+
+  @include typo-body-s;
+}
+
+.multipleTable {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 16px;
+}
+
+.multipleTableHeader,
+.multipleRow {
+  display: grid;
+  width: 1520px;
+  grid-template-columns:
+    48px
+    180px
+    96px
+    140px
+    536px
+    140px
+    140px
+    200px
+    40px;
+  align-items: center;
+}
+
+.multipleTableHeader {
+  min-height: 72px;
+  padding: 16px 0;
+  color: var(--color-gray);
+  background-color: var(--color-background-green);
+
+  @include typo-table-header;
+}
+
+.multipleTableHeader > div {
+  display: flex;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+}
+
+.multipleRowList {
+  width: 100%;
+}
+
+.multipleRow {
+  min-height: 68px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--color-primary);
+}
+
+.multipleRow:last-child {
+  border-bottom: 0;
+}
+
+.multipleRowNumber {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @include typo-body-m-plus;
+}
+
+.multipleDateInput,
+.multipleTextInput,
+.multipleSelect,
+.multipleAmountInput {
+  width: calc(100% - 16px);
+  height: 36px;
+  margin: 0 8px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+  background-color: var(--color-white);
+}
+
+.multipleDateInput,
+.multipleTextInput {
+  padding: 0 16px;
+  outline: 0;
+  color: var(--color-text);
+
+  @include typo-body-m-minus;
+}
+
+.multipleDateInput {
+  padding: 0 8px;
+  color: var(--color-gray);
+}
+
+.multipleTextInput::placeholder,
+.multipleAmountInput input::placeholder {
+  color: var(--color-light-gray);
+}
+
+.multipleDateInput:focus,
+.multipleTextInput:focus,
+.multipleSelect:focus-within,
+.multipleAmountInput:focus-within {
+  border-color: var(--color-point);
+}
+
+.multipleSelect {
+  position: relative;
+  display: flex;
+  padding: 0 8px 0 16px;
+  align-items: center;
+}
+
+.multipleSelect select {
+  min-width: 0;
+  height: 100%;
+  padding-right: 20px;
+  border: 0;
+  outline: 0;
+  flex: 1;
+  color: var(--color-gray);
+  background-color: transparent;
+  appearance: none;
+  cursor: pointer;
+
+  @include typo-body-m-minus;
+}
+
+.multipleSelect > :global(.material-icons) {
+  position: absolute;
+  right: 8px;
+  color: var(--color-light-gray);
+  font-size: var(--icon-m-size);
+  pointer-events: none;
+}
+
+.multipleAmountInput {
+  display: flex;
+  padding: 0 8px 0 16px;
+  align-items: center;
+  gap: 4px;
+}
+
+.multipleAmountInput input {
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  flex: 1;
+  background-color: transparent;
+  appearance: textfield;
+
+  @include typo-body-m-minus;
+}
+
+.multipleAmountInput input::-webkit-inner-spin-button,
+.multipleAmountInput input::-webkit-outer-spin-button {
+  appearance: none;
+}
+
+.multipleAmountInput strong {
+  color: var(--color-light-gray);
+
+  @include typo-caption-plus;
+}
+
+.multipleHelp,
+.removeMultipleRowButton {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gray);
+  background-color: transparent;
+}
+
+.multipleHelp :global(.material-icons),
+.removeMultipleRowButton :global(.material-icons) {
+  font-size: var(--icon-m-size);
+}
+
+.removeMultipleRowButton {
+  cursor: pointer;
+}
+
+.multipleActions {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.multipleLeftActions,
+.multipleRightActions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.addMultipleRowButton,
+.excelDownloadButton,
+.cancelMultipleButton,
+.saveMultipleButton {
+  display: flex;
+  height: 40px;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+
+  @include typo-caption-plus;
+}
+
+.addMultipleRowButton {
+  width: 120px;
+  border: 1px solid var(--color-point);
+  color: var(--color-point);
+  background-color: var(--color-white);
+}
+
+.addMultipleRowButton :global(.material-icons),
+.excelDownloadButton :global(.material-icons) {
+  font-size: var(--icon-m-size);
+}
+
+.excelDownloadButton {
+  padding: 0;
+  border: 0;
+  color: var(--color-text);
+  background-color: transparent;
+}
+
+.cancelMultipleButton,
+.saveMultipleButton {
+  padding: 0 24px;
+}
+
+.cancelMultipleButton {
+  border: 1px solid var(--color-border-gray);
+  color: var(--color-gray);
+  background-color: var(--color-white);
+}
+
+.saveMultipleButton {
+  border: 1px solid var(--color-point);
+  color: var(--color-white);
+  background-color: var(--color-point);
+}

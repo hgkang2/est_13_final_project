@@ -1,0 +1,388 @@
+@use "../../../styles/mixins" as *;
+
+$breakpoint-tablet: 768px;
+$breakpoint-mobile: 390px;
+
+.pageLayout {
+  display: flex;
+  width: 100%;
+  min-height: calc(100vh - 86px);
+  background-color: var(--color-dark-white);
+}
+
+.container {
+  flex: 1;
+  min-width: 0;
+  background-color: var(--color-white);
+  padding: 32px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.pageHeader {
+  .title {
+    font-size: 24px;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+  }
+
+  .subtitle {
+    @include typo-caption;
+    color: var(--color-light-gray);
+    margin-top: 4px;
+  }
+}
+
+/* 공통 카드 디자인 */
+.card {
+  background: var(--color-white);
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid var(--color-border-gray);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+
+  .cardHeader {
+    @include flex-between;
+    margin-bottom: 16px;
+
+    h3 {
+      @include typo-card-head;
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+    }
+  }
+}
+
+/* AI 분석 리포트 카드 */
+.aiReportCard {
+  border-color: transparent;
+  background-color: #f9fcf8;
+
+  .aiTitleGroup {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .aiDate {
+      @include typo-caption;
+      color: var(--color-light-gray);
+    }
+  }
+
+  .actionBtnInline {
+    background-color: var(--color-white);
+    color: var(--color-point);
+    border: 1px solid var(--color-point);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      background-color: var(--color-point);
+      color: var(--color-white);
+    }
+  }
+
+  .aiReportBody {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 32px;
+    align-items: center;
+
+    .characterArea {
+      .characterBox {
+        width: 100%;
+        aspect-ratio: 1;
+        background-color: transparent;
+        @include flex-center;
+        overflow: hidden;
+
+        .characterImage {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+      }
+    }
+
+    .insightContentArea {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+
+      .insightTop {
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--color-border-gray);
+
+        .insightHeader {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          margin-bottom: 8px;
+          @include icon(var(--icon-m-size));
+          color: var(--color-point);
+
+          h4 {
+            @include typo-body-m-semibold;
+            color: var(--color-text);
+          }
+        }
+
+        p {
+          @include typo-body-s;
+          color: var(--color-gray);
+          line-height: 1.5;
+
+          .highlightRed {
+            color: #ff5252;
+            font-weight: var(--font-weight-semibold);
+          }
+          .highlightYellow {
+            color: #fbc02d;
+            font-weight: var(--font-weight-semibold);
+          }
+        }
+      }
+
+      .insightBottomGrid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+
+        .insightSubItem {
+          position: relative;
+
+          &:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            right: -8px;
+            top: 10%;
+            height: 80%;
+            width: 1px;
+            background-color: var(--color-border-gray);
+          }
+
+          .insightHeader {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+            @include icon(var(--icon-m-size));
+            color: var(--color-point);
+
+            h4 {
+              @include typo-body-m-semibold;
+              color: var(--color-text);
+            }
+          }
+
+          p {
+            @include typo-body-s;
+            color: var(--color-gray);
+            line-height: 1.4;
+
+            .highlightGreen {
+              color: var(--color-point);
+              font-weight: var(--font-weight-semibold);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/* 4개 요약 그리드 */
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+
+  .card {
+    border-color: var(--color-point);
+  }
+
+  .summaryLabel {
+    @include typo-body-s;
+    color: var(--color-gray);
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .summaryValueGroup {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-bottom: 4px;
+
+    .summaryAmount {
+      font-size: 22px;
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text);
+    }
+
+    .unit {
+      @include typo-body-m;
+      color: var(--color-text);
+    }
+  }
+
+  .summarySubText {
+    @include typo-caption;
+    color: var(--color-light-gray);
+  }
+}
+
+/* 2단 그리드 */
+.gridContainer {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+}
+
+/* 예산 대비 지출 랭킹 섹션 스타일 */
+.rankingDate {
+  @include typo-caption;
+  color: var(--color-light-gray);
+}
+
+.rankingList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.rankingItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .rankBadge {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #fde291; // 요청하신 색상으로 변경
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text); // 텍스트 색상 (필요시 조정)
+
+    &.r1 {
+      background-color: #fde291; // r1 클래스도 동일한 색상으로 강제 적용
+      color: var(--color-text);
+    }
+  }
+
+  .rankCategory {
+    @include typo-body-m-semibold;
+    color: var(--color-text);
+    min-width: 45px;
+  }
+
+  .progressBarWrapper {
+    flex: 1;
+    height: 8px;
+    background-color: var(--color-dark-white);
+    border-radius: 4px;
+    overflow: hidden;
+
+    .progressBar {
+      height: 100%;
+      background-color: var(--color-point);
+      border-radius: 4px;
+    }
+  }
+
+  .rankPercent {
+    @include typo-body-s;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-point);
+    min-width: 40px;
+    text-align: right;
+  }
+
+  .rankAmount {
+    @include typo-caption;
+    color: var(--color-gray);
+    min-width: 120px;
+    text-align: right;
+  }
+}
+
+/* 순수 CSS 기반 화살표를 적용한 더보기 버튼 */
+.moreBtn {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-point);
+  border-radius: 8px;
+  color: var(--color-point);
+  @include typo-body-m-semibold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: var(--color-point);
+    color: var(--color-white);
+
+    // 호버 시 화살표 색상도 흰색으로 변경
+    &::after {
+      border-color: var(--color-white);
+    }
+  }
+
+  // Material 폰트 대신 CSS로 만든 깔끔한 아래 방향 화살표
+  &::after {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-right: 2px solid var(--color-point);
+    border-bottom: 2px solid var(--color-point);
+    transform: rotate(45deg);
+    margin-top: -3px; // 수직 정밀 정렬
+    transition: border-color 0.2s ease-in-out;
+  }
+}
+
+/* 반응형 모바일 대응 */
+@include tablet {
+  .pageLayout {
+    display: block;
+  }
+
+  .container {
+    padding: 20px 16px;
+  }
+
+  .aiReportCard .aiReportBody {
+    grid-template-columns: 1fr;
+  }
+
+  .summaryGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .gridContainer {
+    grid-template-columns: 1fr;
+  }
+
+  .aiReportCard .insightContentArea .insightBottomGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+
+    .insightSubItem:not(:last-child)::after {
+      display: none;
+    }
+  }
+}

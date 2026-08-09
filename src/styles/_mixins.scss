@@ -342,3 +342,21 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: $lines;
 }
+
+/* ========================================
+   Type Colors
+======================================== */
+
+@mixin type-colors {
+  &.income {
+    color: var(--color-type-income);
+  }
+
+  &.expense {
+    color: var(--color-type-expense);
+  }
+
+  &.transfer {
+    color: var(--color-type-transfer);
+  }
+}
