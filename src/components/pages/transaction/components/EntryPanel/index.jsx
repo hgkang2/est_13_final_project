@@ -34,6 +34,7 @@ export default function EntryPanel({
   const {
     aiStatus,
     aiTransactionForm,
+    aiTransactionErrors,
     aiPreview,
     onAiFormChange,
     onAiReceiptChange,
@@ -233,6 +234,7 @@ export default function EntryPanel({
         <AiEntryForm
           aiStatus={aiStatus}
           aiTransactionForm={aiTransactionForm}
+          aiTransactionErrors={aiTransactionErrors}
           aiPreview={aiPreview}
           onAiFormChange={onAiFormChange}
           onAiReceiptChange={onAiReceiptChange}

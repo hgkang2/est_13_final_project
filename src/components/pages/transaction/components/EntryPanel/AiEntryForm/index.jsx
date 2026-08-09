@@ -3,6 +3,7 @@ import styles from "./AiEntryForm.module.scss";
 export default function AiEntryForm({
   aiStatus,
   aiTransactionForm,
+  aiTransactionErrors,
   aiPreview,
   onAiFormChange,
   onAiReceiptChange,
@@ -182,8 +183,18 @@ export default function AiEntryForm({
         </fieldset>
 
         <label className={styles.formField}>
-          <span className={styles.aiFormLabel}>금액</span>
-          <span className={styles.amountInputBox}>
+          <span className={styles.aiFormLabel}>
+            금액
+            {aiStatus === "success" && (
+              <span className={styles.requiredMark}> *</span>
+            )}
+          </span>
+
+          <span
+            className={`${styles.amountInputBox} ${
+              aiTransactionErrors.amount ? styles.errorField : ""
+            }`}
+          >
             <input
               type="number"
               name="amount"
@@ -191,6 +202,7 @@ export default function AiEntryForm({
               onChange={onAiFormChange}
               disabled={aiStatus !== "success"}
               placeholder={aiStatus === "idle" ? "금액을 입력하세요" : ""}
+              aria-invalid={Boolean(aiTransactionErrors.amount)}
             />
 
             {aiStatus === "analyzing" && (
@@ -202,18 +214,34 @@ export default function AiEntryForm({
 
             <strong>원</strong>
           </span>
+
+          {aiTransactionErrors.amount && (
+            <span className={styles.errorMessage}>
+              {aiTransactionErrors.amount}
+            </span>
+          )}
         </label>
 
         <div className={styles.formFieldRow}>
           <label className={styles.formField}>
-            <span className={styles.aiFormLabel}>카테고리</span>
+            <span className={styles.aiFormLabel}>
+              카테고리
+              {aiStatus === "success" && (
+                <span className={styles.requiredMark}> *</span>
+              )}
+            </span>
 
-            <span className={styles.selectBox}>
+            <span
+              className={`${styles.selectBox} ${
+                aiTransactionErrors.category ? styles.errorField : ""
+              }`}
+            >
               <select
                 name="category"
                 value={aiTransactionForm.category}
                 onChange={onAiFormChange}
                 disabled={aiStatus !== "success"}
+                aria-invalid={Boolean(aiTransactionErrors.category)}
               >
                 <option value="">
                   {aiStatus === "analyzing"
@@ -236,6 +264,12 @@ export default function AiEntryForm({
                 keyboard_arrow_down
               </span>
             </span>
+
+            {aiTransactionErrors.category && (
+              <span className={styles.errorMessage}>
+                {aiTransactionErrors.category}
+              </span>
+            )}
           </label>
 
           <label className={styles.formField}>
@@ -266,14 +300,24 @@ export default function AiEntryForm({
         </div>
 
         <label className={styles.formField}>
-          <span className={styles.aiFormLabel}>결제수단</span>
+          <span className={styles.aiFormLabel}>
+            결제수단
+            {aiStatus === "success" && (
+              <span className={styles.requiredMark}> *</span>
+            )}
+          </span>
 
-          <span className={`${styles.selectBox} ${styles.aiPaymentSelectBox}`}>
+          <span
+            className={`${styles.selectBox} ${styles.aiPaymentSelectBox} ${
+              aiTransactionErrors.paymentMethod ? styles.errorField : ""
+            }`}
+          >
             <select
               name="paymentMethod"
               value={aiTransactionForm.paymentMethod}
               onChange={onAiFormChange}
               disabled={aiStatus !== "success"}
+              aria-invalid={Boolean(aiTransactionErrors.paymentMethod)}
             >
               <option value="">
                 {aiStatus === "analyzing"
@@ -293,6 +337,12 @@ export default function AiEntryForm({
               keyboard_arrow_down
             </span>
           </span>
+
+          {aiTransactionErrors.paymentMethod && (
+            <span className={styles.errorMessage}>
+              {aiTransactionErrors.paymentMethod}
+            </span>
+          )}
         </label>
 
         <label className={styles.formField}>

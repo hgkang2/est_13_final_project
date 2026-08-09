@@ -246,6 +246,7 @@ export default function Transaction() {
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [isMultipleConfirmOpen, setIsMultipleConfirmOpen] = useState(false);
   const [transactionErrors, setTransactionErrors] = useState({});
+  const [aiTransactionErrors, setAiTransactionErrors] = useState({});
 
   useEffect(() => {
     if (!toastMessage) return;
@@ -415,7 +416,10 @@ export default function Transaction() {
     }));
   };
 
-  const validateTransactionForm = form => {
+  const validateTransactionForm = (
+    form,
+    { validateTransferAccounts = true } = {},
+  ) => {
     const errors = {};
 
     if (!form.amount) {
@@ -430,7 +434,7 @@ export default function Transaction() {
       errors.paymentMethod = "결제수단을 선택해주세요.";
     }
 
-    if (form.type === "transfer") {
+    if (form.type === "transfer" && validateTransferAccounts) {
       if (!form.withdrawAccount) {
         errors.withdrawAccount = "출금 계좌를 선택해주세요.";
       }
@@ -524,6 +528,11 @@ export default function Transaction() {
   const onAiFormChange = event => {
     const { name, value } = event.target;
 
+    setAiTransactionErrors(prevErrors => ({
+      ...prevErrors,
+      [name]: "",
+    }));
+
     setAiTransactionForm(prevForm => ({
       ...prevForm,
       [name]: value,
@@ -578,6 +587,16 @@ export default function Transaction() {
 
     if (aiStatus !== "success") return;
 
+    const errors = validateTransactionForm(aiTransactionForm, {
+      validateTransferAccounts: false,
+    });
+
+    if (Object.keys(errors).length > 0) {
+      setAiTransactionErrors(errors);
+      return;
+    }
+
+    setAiTransactionErrors({});
     console.log("AI 자동 인식 입력값", aiTransactionForm);
   };
 
@@ -697,6 +716,7 @@ export default function Transaction() {
                 aiEntry={{
                   aiStatus,
                   aiTransactionForm,
+                  aiTransactionErrors,
                   aiPreview,
                   onAiFormChange,
                   onAiReceiptChange,
