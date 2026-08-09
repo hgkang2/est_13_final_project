@@ -1,0 +1,794 @@
+@use "../../../../../styles/mixins" as *;
+
+.table {
+  width: 100%;
+}
+
+.tableHeader,
+.transactionRow {
+  display: grid;
+  grid-template-columns:
+    40px
+    160px
+    72px
+    120px
+    304px
+    120px
+    120px
+    204px
+    36px;
+  // width: 1176px;
+  width: 100%;
+  padding: 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+.tableHeader {
+  min-height: 72px;
+  color: var(--color-gray);
+  background-color: var(--color-background-green);
+
+  @include typo-table-header;
+}
+
+.tableHeader > div,
+.tableHeader > button {
+  display: flex;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+}
+
+.transactionList {
+  width: 100%;
+}
+
+.transactionRow {
+  position: relative;
+  min-height: 72px;
+  border-bottom: 1px solid var(--color-primary);
+  color: var(--color-text);
+
+  @include typo-table-content;
+}
+
+.selectedRow {
+  background-color: var(--color-selection-background);
+}
+
+.checkboxCell {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-green-gray);
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.selectedRow .checkboxCell {
+  color: var(--color-point);
+}
+
+.checkboxCell :global(.material-icons) {
+  font-size: var(--icon-m-size);
+}
+
+.dateCell,
+.typeCell,
+.categoryCell,
+.contentCell,
+.amountCell,
+.paymentCell,
+.memoCell {
+  display: flex;
+  min-width: 0;
+  height: 40px;
+  padding: 0 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+.contentCell,
+.memoCell {
+  @include ellipsis;
+}
+
+.typeCell,
+.categoryCell,
+.amountCell {
+  font-weight: var(--font-weight-bold);
+}
+
+.paymentCell {
+  color: var(--color-light-gray);
+  font-weight: var(--font-weight-semibold);
+}
+
+.memoCell,
+.dateCell {
+  color: var(--color-light-gray);
+}
+
+.actionCell {
+  display: flex;
+  width: 36px;
+  height: 40px;
+  border: 0;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-light-gray);
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.actionCell :global(.material-icons) {
+  font-size: var(--icon-m-size);
+}
+
+.income {
+  color: var(--color-type-income);
+}
+
+.expense {
+  color: var(--color-type-expense);
+}
+
+.transfer {
+  color: var(--color-type-transfer);
+}
+
+.cafeSnack {
+  color: var(--color-expense-cafe-snack);
+}
+
+.salary {
+  color: var(--color-income-salary);
+}
+
+.food {
+  color: var(--color-expense-food);
+}
+
+.savings {
+  color: var(--color-transfer-savings);
+}
+
+.mobileMemo {
+  display: none;
+}
+
+.mobileActionIcon {
+  display: none;
+}
+
+.selectionBar {
+  width: 100%;
+  min-height: 48px;
+  border-top: 1px solid var(--color-border-gray);
+  border-bottom: 1px solid var(--color-border-gray);
+  background-color: rgb(255 250 228 / 33%);
+}
+
+.selectionBarInner {
+  display: flex;
+  width: 1176px;
+  min-height: 48px;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.selectionInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text);
+
+  @include typo-table-content;
+}
+
+.selectionInfo > :global(.material-icons) {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-point);
+  font-size: var(--icon-m-size);
+}
+
+.selectionRight {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.selectionSummary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.incomeSummary,
+.expenseSummary,
+.transferSummary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+
+  @include typo-table-content;
+}
+
+.incomeSummary {
+  color: var(--color-type-income);
+}
+
+.expenseSummary {
+  color: var(--color-type-expense);
+}
+
+.transferSummary {
+  color: var(--color-type-transfer);
+}
+
+.incomeSummary span,
+.expenseSummary span,
+.transferSummary span {
+  font-weight: var(--font-weight-semibold);
+}
+
+.incomeSummary strong,
+.expenseSummary strong,
+.transferSummary strong {
+  font-weight: var(--font-weight-bold);
+}
+
+.selectionActions {
+  display: flex;
+  align-items: center;
+}
+
+.selectionActions button {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gray);
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.selectionActions button :global(.material-icons),
+.selectionActions button :global(.material-icons-outlined) {
+  font-size: var(--icon-m-size);
+}
+
+.loadMoreArea {
+  display: flex;
+  width: 100%;
+  padding: 16px;
+  align-items: center;
+  justify-content: center;
+}
+
+.loadMoreButton {
+  display: flex;
+  width: 100%;
+  min-height: 56px;
+  padding: 16px;
+  border: 0;
+  border-radius: 16px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  color: var(--color-point);
+  background-color: var(--color-background-green);
+  cursor: pointer;
+
+  @include typo-body-m-plus;
+}
+
+.loadMoreButton :global(.material-icons) {
+  font-size: var(--icon-m-size);
+}
+
+.loadMoreButton:hover {
+  background-color: var(--color-primary);
+}
+
+.dateCell {
+  gap: 4px;
+}
+
+.transactionDate,
+.transactionTime {
+  white-space: nowrap;
+}
+
+.contentGroup,
+.amountGroup {
+  display: contents;
+}
+
+.contentGroup,
+.amountGroup {
+  display: contents;
+}
+
+@container (max-width: 1200px) {
+  .tableHeader,
+  .transactionRow {
+    display: flex;
+    width: 100%;
+    padding: 8px 16px;
+    box-sizing: border-box;
+    align-items: center;
+  }
+
+  .tableHeader {
+    min-height: 56px;
+    justify-content: space-between;
+  }
+
+  .tableHeader .typeCell,
+  .tableHeader .contentCell,
+  .tableHeader .paymentCell {
+    display: none;
+  }
+
+  .tableHeader .checkboxCell {
+    display: flex;
+    width: 40px;
+    min-width: 40px;
+    flex: 0 0 40px;
+  }
+
+  .tableHeader .dateCell {
+    width: 96px;
+    min-width: 96px;
+    flex: 0 0 96px;
+    padding: 0;
+  }
+
+  .tableHeader .categoryCell {
+    width: 204px;
+    min-width: 204px;
+    flex: 0 0 204px;
+    padding: 0;
+    font-size: 0;
+  }
+
+  .tableHeader .categoryCell::after {
+    content: "내용/카테고리";
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: var(--font-weight-bold);
+  }
+
+  .tableHeader .amountCell {
+    width: 120px;
+    min-width: 120px;
+    flex: 0 0 120px;
+    padding: 0;
+    font-size: 0;
+  }
+
+  .tableHeader .amountCell::after {
+    content: "금액/결제수단";
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: var(--font-weight-bold);
+  }
+
+  .tableHeader .memoCell {
+    width: 160px;
+    min-width: 160px;
+    flex: 0 0 160px;
+    padding: 0;
+  }
+
+  .tableHeader .actionCell {
+    display: flex;
+    width: 40px;
+    min-width: 40px;
+    flex: 0 0 40px;
+  }
+
+  .transactionRow {
+    min-height: 72px;
+    justify-content: space-between;
+  }
+
+  .transactionRow .checkboxCell {
+    display: flex;
+    width: 40px;
+    min-width: 40px;
+    flex: 0 0 40px;
+  }
+
+  .transactionRow .dateCell {
+    display: flex;
+    width: 96px;
+    min-width: 96px;
+    height: auto;
+    padding: 0;
+    flex: 0 0 96px;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: var(--font-weight-regular);
+  }
+
+  .transactionRow .typeCell {
+    display: none;
+  }
+
+  .transactionRow .contentGroup {
+    display: flex;
+    width: 204px;
+    min-width: 204px;
+    flex: 0 0 204px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .transactionRow .contentGroup .categoryCell,
+  .transactionRow .contentGroup .contentCell {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .transactionRow .contentGroup .categoryCell {
+    font-size: 14px;
+    line-height: 24px;
+  }
+
+  .transactionRow .contentGroup .contentCell {
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: var(--font-weight-medium);
+  }
+
+  .transactionRow .amountGroup {
+    display: flex;
+    width: 120px;
+    min-width: 120px;
+    flex: 0 0 120px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .transactionRow .amountGroup .amountCell,
+  .transactionRow .amountGroup .paymentCell {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .transactionRow .amountGroup .amountCell {
+    font-size: 14px;
+  }
+
+  .transactionRow .amountGroup .paymentCell {
+    font-size: 14px;
+    line-height: 24px;
+  }
+
+  .transactionRow .memoCell {
+    display: flex;
+    width: 160px;
+    min-width: 160px;
+    flex: 0 0 160px;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 24px;
+    text-align: center;
+  }
+
+  .transactionRow .actionCell {
+    display: flex;
+    width: 40px;
+    min-width: 40px;
+    flex: 0 0 40px;
+  }
+
+  .transactionTime {
+    display: none;
+  }
+
+  .selectionBarInner {
+    width: 100%;
+    min-height: 48px;
+    padding: 0 16px;
+    margin: 0;
+  }
+
+  .selectionRight {
+    min-width: 0;
+    gap: 16px;
+  }
+
+  .selectionSummary {
+    min-width: 0;
+    gap: 12px;
+  }
+}
+
+@container (max-width: 700px) {
+  .tableHeader,
+  .transactionRow {
+    display: flex;
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .tableHeader {
+    min-height: 40px;
+  }
+
+  .tableHeader .checkboxCell,
+  .tableHeader .typeCell,
+  .tableHeader .contentCell,
+  .tableHeader .paymentCell,
+  .tableHeader .memoCell {
+    display: none;
+  }
+
+  .tableHeader .dateCell {
+    display: flex;
+    width: 73px;
+    min-width: 73px;
+    flex: 0 0 73px;
+    padding: 0;
+  }
+
+  .tableHeader .categoryCell {
+    display: flex;
+    width: 97px;
+    min-width: 97px;
+    flex: 0 0 97px;
+    padding: 0;
+    font-size: 0;
+  }
+
+  .tableHeader .categoryCell::after {
+    content: "내용/카테고리";
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: var(--font-weight-bold);
+    white-space: nowrap;
+  }
+
+  .tableHeader .amountCell {
+    display: flex;
+    width: 88px;
+    min-width: 88px;
+    flex: 0 0 88px;
+    padding: 0;
+    font-size: 0;
+  }
+
+  .tableHeader .amountCell::after {
+    content: "금액/결제수단";
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: var(--font-weight-bold);
+    white-space: nowrap;
+  }
+
+  .tableHeader .actionCell {
+    display: flex;
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+  }
+
+  .transactionRow {
+    min-height: 0;
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+
+  .transactionRow .checkboxCell,
+  .transactionRow .typeCell,
+  .transactionRow .memoCell {
+    display: none;
+  }
+
+  .transactionRow .dateCell {
+    display: flex;
+    width: 73px;
+    min-width: 73px;
+    height: auto;
+    padding: 0;
+    flex: 0 0 73px;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: var(--font-weight-regular);
+  }
+
+  .transactionRow .contentGroup {
+    display: flex;
+    width: 97px;
+    min-width: 97px;
+    flex: 0 0 97px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .transactionRow .contentGroup .categoryCell,
+  .transactionRow .contentGroup .contentCell {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .transactionRow .contentGroup .categoryCell {
+    font-size: 11px;
+    line-height: 18px;
+  }
+
+  .transactionRow .contentGroup .contentCell {
+    overflow: hidden;
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: var(--font-weight-regular);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .transactionRow .amountGroup {
+    display: flex;
+    width: 88px;
+    min-width: 88px;
+    flex: 0 0 88px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .transactionRow .amountGroup .amountCell,
+  .transactionRow .amountGroup .paymentCell {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .transactionRow .amountGroup .amountCell {
+    font-size: 14px;
+  }
+
+  .transactionRow .amountGroup .paymentCell {
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .transactionRow .actionCell {
+    display: flex;
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+  }
+
+  .desktopActionIcon {
+    display: none;
+  }
+
+  .mobileActionIcon {
+    display: block;
+    font-size: 16px;
+  }
+
+  .mobileMemo {
+    display: flex;
+    width: 100%;
+    flex: 0 0 100%;
+    padding: 8px 16px;
+    border-radius: 8px;
+    align-items: center;
+    gap: 16px;
+    overflow: hidden;
+    color: var(--color-light-gray);
+    background-color: var(--color-dark-white);
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .mobileMemo strong {
+    flex-shrink: 0;
+    font-weight: var(--font-weight-bold);
+  }
+
+  .mobileMemo span {
+    min-width: 0;
+    overflow: hidden;
+    font-weight: var(--font-weight-regular);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .selectionBar {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .selectionBarInner {
+    display: flex;
+    width: 100%;
+    min-height: 48px;
+    padding: 4px 8px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .selectionInfo {
+    min-width: 0;
+    gap: 8px;
+  }
+
+  .selectionSummary {
+    display: none;
+  }
+
+  .selectionRight {
+    flex-shrink: 0;
+    gap: 0;
+  }
+
+  .selectionActions button {
+    width: 36px;
+    height: 36px;
+  }
+
+  .selectionInfo > :global(.material-icons) {
+    display: none;
+  }
+}

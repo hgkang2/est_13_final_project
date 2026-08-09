@@ -1,0 +1,178 @@
+@use "../../../../../styles/mixins" as *;
+
+.formField {
+  display: flex;
+  min-width: 0;
+  border: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formFieldRow {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.transactionTypeOptions {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.transactionTypeButton {
+  display: flex;
+  height: 40px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--color-white);
+  cursor: pointer;
+
+  @include typo-caption-plus;
+}
+
+.transactionTypeButton input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.transactionTypeButton :global(.material-icons) {
+  font-size: var(--icon-m-size);
+}
+
+.incomeTypeButton {
+  color: var(--color-type-income);
+}
+
+.expenseTypeButton {
+  color: var(--color-type-expense);
+}
+
+.transferTypeButton {
+  color: var(--color-type-transfer);
+}
+
+.incomeTypeButton.activeTypeButton {
+  border-color: var(--color-type-income);
+}
+
+.expenseTypeButton.activeTypeButton {
+  border-color: var(--color-type-expense);
+}
+
+.transferTypeButton.activeTypeButton {
+  border-color: var(--color-type-transfer);
+}
+
+.textInput,
+.amountInputBox,
+.selectBox,
+.dateInputBox {
+  width: 100%;
+  height: 48px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+  background-color: var(--color-white);
+}
+
+.textInput {
+  padding: 0 16px;
+  outline: 0;
+
+  @include typo-body-m-minus;
+}
+
+.textInput::placeholder,
+.amountInputBox input::placeholder {
+  color: var(--color-green-gray);
+}
+
+.textInput:focus,
+.amountInputBox:focus-within,
+.selectBox:focus-within,
+.dateInputBox:focus-within {
+  border-color: var(--color-point);
+}
+
+.amountInputBox,
+.selectBox,
+.dateInputBox {
+  display: flex;
+  padding: 0 16px;
+  align-items: center;
+  gap: 8px;
+}
+
+.amountInputBox input,
+.selectBox select,
+.dateInputBox input {
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  flex: 1;
+  color: var(--color-text);
+  background-color: transparent;
+
+  @include typo-body-m-minus;
+}
+
+.amountInputBox input {
+  appearance: textfield;
+}
+
+.amountInputBox input::-webkit-inner-spin-button,
+.amountInputBox input::-webkit-outer-spin-button {
+  margin: 0;
+  appearance: none;
+}
+
+.amountInputBox strong {
+  color: var(--color-light-gray);
+
+  @include typo-caption-plus;
+}
+
+.selectBox {
+  position: relative;
+}
+
+.selectBox select {
+  padding-right: 20px;
+  color: var(--color-green-gray);
+  appearance: none;
+  cursor: pointer;
+}
+
+.selectBox > :global(.material-icons) {
+  position: absolute;
+  right: 12px;
+  color: var(--color-light-gray);
+  font-size: var(--icon-m-size);
+  pointer-events: none;
+}
+
+.dateInputBox {
+  padding-right: 8px;
+}
+
+.dateInputBox input {
+  color: var(--color-light-gray);
+  cursor: pointer;
+}
+
+.characterCount {
+  align-self: flex-end;
+  color: var(--color-light-gray);
+  font-size: var(--body-xs-size);
+  line-height: var(--body-xs-line-height);
+}

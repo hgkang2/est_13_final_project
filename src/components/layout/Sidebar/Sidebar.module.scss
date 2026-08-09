@@ -7,8 +7,10 @@
   padding: 24px;
   flex-shrink: 0;
   flex-direction: column;
+
   position: sticky;
   top: 56px;
+
   background-color: var(--color-white);
 }
 
@@ -22,20 +24,29 @@
   margin: 0;
   padding: 0;
   flex-direction: column;
-  gap: 8px;
   list-style: none;
+}
+
+.menuList {
+  gap: 16px;
+}
+
+.optionList {
+  gap: 8px;
 }
 
 .menuItem,
 .optionItem {
   display: flex;
   width: 100%;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 16px;
   padding: 12px;
   border: 0;
   border-radius: 12px;
+
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+
   color: var(--color-gray);
   background-color: var(--color-white);
   cursor: pointer;
@@ -63,10 +74,11 @@
 .goalCard {
   display: flex;
   padding: 20px;
-  flex-direction: column;
-  gap: 12px;
   border: 1px solid var(--color-border-gray);
   border-radius: 16px;
+
+  flex-direction: column;
+  gap: 12px;
 }
 
 .goalTitle,

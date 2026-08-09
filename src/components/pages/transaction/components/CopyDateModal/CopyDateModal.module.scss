@@ -1,0 +1,110 @@
+@use "../../../../../styles/mixins" as *;
+
+/* Copy Date Modal */
+.copyModalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  padding: 16px;
+  align-items: center;
+  justify-content: center;
+  background: rgb(6 7 14 / 28%);
+}
+
+.copyModal {
+  display: flex;
+  width: 100%;
+  max-width: 400px;
+  padding: 24px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 16px;
+  flex-direction: column;
+  gap: 16px;
+  background-color: var(--color-white);
+  box-shadow: 0 12px 32px rgb(6 7 14 / 12%);
+}
+
+.copyModalHeader {
+  display: flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: space-between;
+
+  strong {
+    @include typo-card-label;
+  }
+}
+
+.copyModalClose {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-light-gray);
+  background-color: transparent;
+  cursor: pointer;
+
+  :global(.material-icons) {
+    font-size: var(--icon-l-size);
+  }
+}
+
+.copyModalDescription {
+  color: var(--color-gray);
+
+  @include typo-body-m-minus;
+}
+
+.copyModalOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.copyDateOption {
+  display: flex;
+  width: 100%;
+  min-height: 80px;
+  padding: 16px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--color-text);
+  background-color: var(--color-white);
+  text-align: left;
+  cursor: pointer;
+
+  > div {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  strong {
+    @include typo-body-m-plus;
+  }
+
+  span:not(:global(.material-icons)) {
+    color: var(--color-gray);
+
+    @include typo-caption;
+  }
+
+  :global(.material-icons) {
+    flex-shrink: 0;
+    color: var(--color-point);
+    font-size: var(--icon-m-size);
+  }
+
+  &:hover {
+    border-color: var(--color-point);
+    background-color: var(--color-background-green);
+  }
+}

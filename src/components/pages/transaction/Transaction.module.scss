@@ -1,0 +1,163 @@
+@use "../../../styles/mixins" as *;
+
+.page {
+  display: flex;
+  width: 100%;
+  max-width: 1920px;
+  min-height: calc(100vh - 56px);
+  margin: 0 auto;
+}
+
+.main {
+  min-width: 0;
+  flex: 1;
+}
+
+.workspace {
+  position: relative;
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+}
+
+.content {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  padding-top: 32px;
+  padding-bottom: 32px;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.content:global(.container) {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.pageHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.pageTitle {
+  color: var(--color-text);
+  font-size: 32px;
+  line-height: 42px;
+  font-weight: var(--font-weight-bold);
+}
+
+.pageDescription {
+  color: var(--color-gray);
+  font-size: 18px;
+  line-height: 22px;
+  font-weight: var(--font-weight-bold);
+}
+
+@media (max-width: 1272px) {
+  .pageTitle {
+    font-size: 24px;
+    line-height: 36px;
+  }
+
+  .pageDescription {
+    font-size: 16px;
+    line-height: 24px;
+  }
+}
+
+.transactionSection {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 16px;
+  background-color: var(--color-white);
+  container-type: inline-size;
+}
+
+.openEntryButton {
+  position: fixed;
+  right: max(32px, calc((100vw - 1272px) / 2 + 32px));
+  bottom: 40px;
+  z-index: 50;
+
+  display: flex;
+  width: 62px;
+  height: 62px;
+  padding: 16px;
+  border: 0;
+  border-radius: 999px;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--color-white);
+  background-color: var(--color-point);
+  cursor: pointer;
+}
+
+.openEntryButton :global(.material-icons) {
+  font-size: 30px;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  z-index: 1000;
+
+  display: flex;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  min-height: 48px;
+  padding: 12px 20px;
+
+  border: 1px solid var(--color-border-gray);
+  border-radius: 999px;
+
+  align-items: center;
+  gap: 12px;
+
+  color: var(--color-light-gray);
+  background-color: var(--color-white);
+  box-shadow: 0 4px 16px rgb(6 7 14 / 8%);
+
+  transform: translateX(-50%);
+  animation: toast-in 0.2s ease-out;
+
+  @include typo-caption-plus;
+}
+
+.toastIcon {
+  flex-shrink: 0;
+  color: var(--color-point);
+  font-size: var(--icon-l-size);
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@media (max-width: 1024px) {
+  .openEntryButton {
+    right: 24px;
+    bottom: 96px;
+  }
+}
+
+@media (max-width: 600px) {
+  .openEntryButton {
+    right: 16px;
+    bottom: 88px;
+  }
+}

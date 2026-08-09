@@ -1,0 +1,262 @@
+import { useState } from "react";
+import styles from "./TransactionList.module.scss";
+import TransactionEmpty from "../TransactionEmpty";
+
+function formatAmount(amount) {
+  const sign = amount > 0 ? "+" : "-";
+
+  return `${sign}${Math.abs(amount).toLocaleString("ko-KR")}`;
+}
+
+export default function TransactionList({
+  hasTransactionData,
+  visibleTransactions,
+  selectedIds,
+  isAllSelected,
+  onToggleAll,
+  onToggleTransaction,
+  onClearSelection,
+  onOpenDetail,
+}) {
+  const selectedSummary = visibleTransactions
+    .filter(transaction => selectedIds.includes(transaction.id))
+    .reduce(
+      (summary, transaction) => {
+        summary[transaction.type] += transaction.amount;
+
+        return summary;
+      },
+      {
+        income: 0,
+        expense: 0,
+        transfer: 0,
+      },
+    );
+
+  const [expandedId, setExpandedId] = useState(null);
+
+  const handleToggleMemo = transactionId => {
+    setExpandedId(prevId => (prevId === transactionId ? null : transactionId));
+  };
+
+  return (
+    <div className={styles.table}>
+      {hasTransactionData ? (
+        <>
+          <div className={styles.tableHeader}>
+            <button
+              type="button"
+              className={styles.checkboxCell}
+              onClick={onToggleAll}
+              aria-label={
+                isAllSelected
+                  ? "현재 거래 전체 선택 해제"
+                  : "현재 거래 전체 선택"
+              }
+            >
+              <span className="material-icons" aria-hidden="true">
+                {isAllSelected ? "check_box" : "check_box_outline_blank"}
+              </span>
+            </button>
+
+            <div className={styles.dateCell}>날짜</div>
+            <div className={styles.typeCell}>구분</div>
+            <div className={styles.categoryCell}>카테고리</div>
+            <div className={styles.contentCell}>내용</div>
+            <div className={styles.amountCell}>금액</div>
+            <div className={styles.paymentCell}>결제수단</div>
+            <div className={styles.memoCell}>메모</div>
+
+            <div className={styles.actionCell}>
+              <span className="material-icons" aria-hidden="true">
+                more_vert
+              </span>
+            </div>
+          </div>
+
+          {selectedIds.length > 0 && (
+            <div className={styles.selectionBar}>
+              <div className={styles.selectionBarInner}>
+                <div className={styles.selectionInfo}>
+                  <span className="material-icons" aria-hidden="true">
+                    check_box
+                  </span>
+
+                  <span>{selectedIds.length}건이 선택되었습니다.</span>
+                </div>
+
+                <div className={styles.selectionRight}>
+                  <div className={styles.selectionSummary}>
+                    <div className={styles.incomeSummary}>
+                      <span>수입</span>
+                      <strong>{formatAmount(selectedSummary.income)}원</strong>
+                    </div>
+
+                    <div className={styles.expenseSummary}>
+                      <span>지출</span>
+                      <strong>{formatAmount(selectedSummary.expense)}원</strong>
+                    </div>
+
+                    <div className={styles.transferSummary}>
+                      <span>이체</span>
+                      <strong>
+                        {formatAmount(selectedSummary.transfer)}원
+                      </strong>
+                    </div>
+                  </div>
+
+                  <div className={styles.selectionActions}>
+                    <button type="button" aria-label="선택 거래 삭제">
+                      <span
+                        className="material-icons-outlined"
+                        aria-hidden="true"
+                      >
+                        delete
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      aria-label="선택 해제"
+                      onClick={() => onClearSelection()}
+                    >
+                      <span className="material-icons" aria-hidden="true">
+                        close
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <ul className={styles.transactionList}>
+            {visibleTransactions.map(transaction => {
+              const isSelected = selectedIds.includes(transaction.id);
+
+              return (
+                <li
+                  className={`${styles.transactionRow} ${
+                    isSelected ? styles.selectedRow : ""
+                  }`}
+                  key={transaction.id}
+                  onClick={() => onOpenDetail(transaction)}
+                >
+                  <button
+                    type="button"
+                    className={styles.checkboxCell}
+                    onClick={event => {
+                      event.stopPropagation();
+                      onToggleTransaction(transaction.id);
+                    }}
+                    aria-label={`${transaction.content} 거래 ${
+                      isSelected ? "선택 해제" : "선택"
+                    }`}
+                  >
+                    <span className="material-icons" aria-hidden="true">
+                      {isSelected ? "check_box" : "check_box_outline_blank"}
+                    </span>
+                  </button>
+
+                  <time className={styles.dateCell}>
+                    <span className={styles.transactionDate}>
+                      {transaction.date.split(" ")[0]}
+                    </span>
+
+                    <span className={styles.transactionTime}>
+                      {transaction.date.split(" ")[1]}
+                    </span>
+                  </time>
+
+                  <strong
+                    className={`${styles.typeCell} ${styles[transaction.type]}`}
+                  >
+                    {transaction.typeLabel}
+                  </strong>
+
+                  <div className={styles.contentGroup}>
+                    <strong
+                      className={`${styles.categoryCell} ${
+                        styles[transaction.categoryType]
+                      }`}
+                    >
+                      {transaction.category}
+                    </strong>
+
+                    <span className={styles.contentCell}>
+                      {transaction.content}
+                    </span>
+                  </div>
+
+                  <div className={styles.amountGroup}>
+                    <strong
+                      className={`${styles.amountCell} ${
+                        styles[transaction.type]
+                      }`}
+                    >
+                      {formatAmount(transaction.amount)}
+                    </strong>
+
+                    <span className={styles.paymentCell}>
+                      {transaction.paymentMethod}
+                    </span>
+                  </div>
+
+                  <span className={styles.memoCell}>{transaction.memo}</span>
+
+                  <button
+                    type="button"
+                    className={styles.actionCell}
+                    aria-label={`${transaction.content} 거래 메뉴`}
+                    onClick={event => {
+                      event.stopPropagation();
+                    }}
+                  >
+                    <span
+                      className={`material-icons ${styles.desktopActionIcon}`}
+                      aria-hidden="true"
+                    >
+                      more_vert
+                    </span>
+
+                    <span
+                      className={`material-icons ${styles.mobileActionIcon}`}
+                      aria-hidden="true"
+                      onClick={event => {
+                        event.stopPropagation();
+                        handleToggleMemo(transaction.id);
+                      }}
+                    >
+                      {expandedId === transaction.id
+                        ? "keyboard_control_key"
+                        : "keyboard_arrow_down"}
+                    </span>
+                  </button>
+
+                  {expandedId === transaction.id && (
+                    <div className={styles.mobileMemo}>
+                      <strong>메모</strong>
+                      <span>{transaction.memo}</span>
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+
+          <div className={styles.loadMoreArea}>
+            <button type="button" className={styles.loadMoreButton}>
+              <span>더 많은 내역 보기</span>
+
+              <span className="material-icons" aria-hidden="true">
+                keyboard_arrow_down
+              </span>
+            </button>
+          </div>
+        </>
+      ) : (
+        <TransactionEmpty />
+      )}
+    </div>
+  );
+}
