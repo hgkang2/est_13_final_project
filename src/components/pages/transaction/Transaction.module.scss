@@ -4,6 +4,7 @@
   display: flex;
   width: 100%;
   max-width: 1920px;
+  min-height: calc(100vh - 56px);
   margin: 0 auto;
 }
 
@@ -78,8 +79,8 @@
 
 .openEntryButton {
   position: fixed;
-  right: 32px;
-  bottom: 32px;
+  right: max(32px, calc((100vw - 1272px) / 2 + 32px));
+  bottom: 40px;
   z-index: 50;
 
   display: flex;
@@ -106,16 +107,23 @@
   top: 24px;
   left: 50%;
   z-index: 1000;
+
   display: flex;
+  width: max-content;
+  max-width: calc(100vw - 32px);
   min-height: 48px;
   padding: 12px 20px;
+
   border: 1px solid var(--color-border-gray);
   border-radius: 999px;
+
   align-items: center;
   gap: 12px;
+
   color: var(--color-light-gray);
   background-color: var(--color-white);
   box-shadow: 0 4px 16px rgb(6 7 14 / 8%);
+
   transform: translateX(-50%);
   animation: toast-in 0.2s ease-out;
 
@@ -137,5 +145,19 @@
   to {
     opacity: 1;
     transform: translate(-50%, 0);
+  }
+}
+
+@media (max-width: 1024px) {
+  .openEntryButton {
+    right: 24px;
+    bottom: 96px;
+  }
+}
+
+@media (max-width: 600px) {
+  .openEntryButton {
+    right: 16px;
+    bottom: 88px;
   }
 }
