@@ -22,14 +22,14 @@ export default function LoginPage() {
       console.error(error);
       return;
     }
-    router.push("/");
+    router.push("/sub-home");
   };
 
   const handleGoogleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/`,
+        redirectTo: `${window.location.origin}/sub-home`,
       },
     });
     if (error) {
@@ -40,7 +40,7 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "kakao",
       options: {
-        redirectTo: `${window.location.origin}/`,
+        redirectTo: `${window.location.origin}/sub-home`,
       },
     });
     if (error) {
