@@ -51,7 +51,7 @@ export default function LoginPage() {
 
     return (
         <main className="page">
-        <section className="container">
+        <section className="auth-container">
         <div className="form-section">
         <div className="intro">
         <h1>오늘을 모아
