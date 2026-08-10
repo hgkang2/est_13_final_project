@@ -26,9 +26,12 @@ html,
 body {
   width: 100%;
   min-height: 100%;
+  height: 100%;
 }
 
 body {
+  display: flex;
+  flex-direction: column;
   font-family: var(--font-family-base);
   color: var(--color-text);
   background-color: var(--color-white);
@@ -40,6 +43,10 @@ textarea,
 select {
   font: inherit;
   color: inherit;
+}
+
+main {
+  flex: 1;
 }
 
 /* ========================================
