@@ -666,6 +666,8 @@ export default function Transaction() {
           content,
           memo,
           transaction_at,
+          created_at,
+          updated_at,
           is_recurring,
           recurring_day,
 
@@ -937,6 +939,162 @@ export default function Transaction() {
     console.log("AI 자동 인식 입력값", aiTransactionForm);
   };
 
+  const handleUpdateTransaction = async updatedForm => {
+    if (!selectedTransaction) {
+      setToastMessage("수정할 거래 정보를 확인할 수 없어요.");
+      return;
+    }
+
+    // 1. 로그인 사용자 확인
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      console.error("사용자 확인 실패:", userError);
+      setToastMessage("로그인 정보를 확인할 수 없어요.");
+      return;
+    }
+
+    // 2. 수정 날짜/시간 생성
+    const [year, month, day] = updatedForm.date.split("-").map(Number);
+
+    const [hour, minute] = (updatedForm.time || "00:00").split(":").map(Number);
+
+    const transactionDate = new Date(year, month - 1, day, hour, minute, 0);
+
+    if (Number.isNaN(transactionDate.getTime())) {
+      setToastMessage("거래 날짜를 확인해주세요.");
+      return;
+    }
+
+    // 3. DB 수정값 구성
+    const updateData = {
+      transaction_type: updatedForm.type,
+      amount: Number(updatedForm.amount),
+      category_id: updatedForm.category,
+
+      payment_method_id:
+        updatedForm.type === "transfer" ? null : updatedForm.paymentMethod,
+
+      withdraw_account_id:
+        updatedForm.type === "transfer" ? updatedForm.withdrawAccount : null,
+
+      deposit_account_id:
+        updatedForm.type === "transfer" ? updatedForm.depositAccount : null,
+
+      content: updatedForm.content.trim() || null,
+      memo: updatedForm.memo.trim() || null,
+
+      transaction_at: transactionDate.toISOString(),
+
+      // 이체가 아니게 변경되면 반복이체 정보 제거
+      is_recurring:
+        updatedForm.type === "transfer"
+          ? Boolean(selectedTransaction.isRecurring)
+          : false,
+
+      recurring_day:
+        updatedForm.type === "transfer" && selectedTransaction.isRecurring
+          ? selectedTransaction.recurringDay
+          : null,
+
+      updated_at: new Date().toISOString(),
+    };
+
+    // 4. 거래 수정
+    const { data: updatedTransaction, error: updateError } = await supabase
+      .from("transactions")
+      .update(updateData)
+      .eq("id", selectedTransaction.id)
+      .eq("user_id", user.id)
+      .select(
+        `
+        id,
+        transaction_type,
+        amount,
+        content,
+        memo,
+        transaction_at,
+        created_at,
+        updated_at,
+        is_recurring,
+        recurring_day,
+
+        category:categories (
+          id,
+          code,
+          name
+        ),
+
+        payment_method:payment_methods (
+          id,
+          code,
+          name
+        ),
+
+        withdraw_account:transfer_accounts!transactions_withdraw_account_id_fkey (
+          id,
+          code,
+          name
+        ),
+
+        deposit_account:transfer_accounts!transactions_deposit_account_id_fkey (
+          id,
+          code,
+          name
+        )
+      `,
+      )
+      .single();
+
+    // 5. 수정 실패
+    if (updateError) {
+      console.error("소비 기록 수정 실패:", updateError);
+      setToastMessage("소비 기록을 수정하지 못했어요.");
+      return;
+    }
+
+    if (!updatedTransaction) {
+      console.error("수정 결과가 반환되지 않았습니다.");
+      setToastMessage("수정된 소비 기록을 확인하지 못했어요.");
+      return;
+    }
+
+    // 6. DB 데이터 → UI 형식
+    const formattedTransaction = formatTransaction(updatedTransaction);
+
+    // 7. 목록 즉시 반영
+    setTransactions(prevTransactions =>
+      prevTransactions.map(transaction =>
+        transaction.id === formattedTransaction.id
+          ? formattedTransaction
+          : transaction,
+      ),
+    );
+
+    setRecentlyAddedId(formattedTransaction.id);
+
+    setTimeout(() => {
+      setRecentlyAddedId(null);
+    }, 1800);
+
+    // 8. 상세도 즉시 수정
+    setSelectedTransaction({
+      ...formattedTransaction,
+
+      // 기존 영수증 signed URL 유지
+      receiptImage: selectedTransaction.receiptImage ?? null,
+    });
+
+    // 9. 상세화면으로 복귀
+    setPanelView("detail");
+    setToastMessage("소비 기록을 수정했어요.");
+
+    console.log("소비 기록 수정 성공:", updatedTransaction);
+  };
+
   const handleOpenDetail = async transaction => {
     const { data: attachmentData, error: attachmentError } = await supabase
       .from("transaction_attachments")
@@ -1008,6 +1166,9 @@ export default function Transaction() {
             {panelView === "edit" && (
               <TransactionEdit
                 transaction={selectedTransaction}
+                categories={categories}
+                paymentMethods={paymentMethods}
+                transferAccounts={transferAccounts}
                 onClose={() => {
                   setPanelView("closed");
                   setSelectedTransaction(null);
@@ -1015,11 +1176,7 @@ export default function Transaction() {
                 onCancel={() => {
                   setPanelView("detail");
                 }}
-                onSave={updatedForm => {
-                  console.log("수정 저장값", updatedForm);
-
-                  setPanelView("detail");
-                }}
+                onSave={handleUpdateTransaction}
               />
             )}
 

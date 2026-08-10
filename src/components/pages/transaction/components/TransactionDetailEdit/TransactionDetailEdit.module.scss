@@ -1,4 +1,5 @@
 @use "../../../../../styles/mixins" as *;
+@use "../EntryPanel/formControls";
 
 /* Transaction Detail */
 .detailPanel {
@@ -335,27 +336,8 @@
 }
 
 .editInput:focus,
-.editInputBox:focus-within,
-.editSelect:focus {
+.editInputBox:focus-within {
   border-color: var(--color-point);
-}
-
-.editSelect {
-  width: 100%;
-  height: 48px;
-  padding: 0 40px 0 16px;
-  border: 1px solid var(--color-border-gray);
-  border-radius: 8px;
-  outline: 0;
-  color: var(--color-light-gray);
-  background-color: var(--color-white);
-  cursor: pointer;
-
-  @include typo-body-m-minus;
-}
-
-.editPaymentSelect {
-  width: 160px;
 }
 
 .editActions {
