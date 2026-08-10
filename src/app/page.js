@@ -13,6 +13,7 @@ export default function Home() {
       <Story />
       <Benefits />
       <Review />
+      <CTA />
     </main>
   );
 }
