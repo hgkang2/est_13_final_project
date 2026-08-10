@@ -17,6 +17,7 @@ export default function TransactionList({
   onToggleTransaction,
   onClearSelection,
   onOpenDetail,
+  recentlyAddedId,
 }) {
   const selectedSummary = visibleTransactions
     .filter(transaction => selectedIds.includes(transaction.id))
@@ -137,7 +138,9 @@ export default function TransactionList({
               return (
                 <li
                   className={`${styles.transactionRow} ${
-                    isSelected ? styles.selectedRow : ""
+                    transaction.id === recentlyAddedId
+                      ? styles.recentlyAdded
+                      : ""
                   }`}
                   key={transaction.id}
                   onClick={() => onOpenDetail(transaction)}

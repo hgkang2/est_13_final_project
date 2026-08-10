@@ -151,6 +151,8 @@
   @include typo-body-m-minus;
 }
 
+/* Recent Transaction Type */
+
 .recentType.income {
   color: var(--color-type-income);
 }
@@ -163,28 +165,74 @@
   color: var(--color-type-transfer);
 }
 
-.recentCategory.cafeSnack {
-  color: var(--color-expense-cafe-snack);
-}
-
-.recentCategory.salary {
-  color: var(--color-income-salary);
-}
+/* Recent Expense Categories */
 
 .recentCategory.food {
   color: var(--color-expense-food);
 }
 
-.recentCategory.savings {
-  color: var(--color-transfer-savings);
+.recentCategory.cafe_snack {
+  color: var(--color-expense-cafe_snack);
 }
 
 .recentCategory.transportation {
   color: var(--color-expense-transportation);
 }
 
-.recentCategory.otherIncome {
-  color: var(--color-income-other-income);
+.recentCategory.shopping {
+  color: var(--color-expense-shopping);
+}
+
+.recentCategory.subscription {
+  color: var(--color-expense-subscription);
+}
+
+.recentCategory.household_goods {
+  color: var(--color-expense-household_goods);
+}
+
+.recentCategory.medical {
+  color: var(--color-expense-medical);
+}
+
+.recentCategory.hobby {
+  color: var(--color-expense-hobby);
+}
+
+.recentCategory.education {
+  color: var(--color-expense-education);
+}
+
+/* Recent Income Categories */
+
+.recentCategory.salary {
+  color: var(--color-income-salary);
+}
+
+.recentCategory.other_income {
+  color: var(--color-income-other_income);
+}
+
+.recentCategory.bonus {
+  color: var(--color-income-bonus);
+}
+
+.recentCategory.investment_income {
+  color: var(--color-income-investment_income);
+}
+
+.recentCategory.allowance {
+  color: var(--color-income-allowance);
+}
+
+.recentCategory.income_other {
+  color: var(--color-category-other);
+}
+
+/* Recent Transfer Categories */
+
+.recentCategory.saving_transfer {
+  color: var(--color-transfer-savings);
 }
 
 .copyButton,

@@ -131,6 +131,7 @@
   font-size: var(--icon-m-size);
 }
 
+/* Transaction Type */
 .income {
   color: var(--color-type-income);
 }
@@ -143,19 +144,71 @@
   color: var(--color-type-transfer);
 }
 
-.cafeSnack {
-  color: var(--color-expense-cafe-snack);
-}
-
-.salary {
-  color: var(--color-income-salary);
-}
-
+/* Expense Categories */
 .food {
   color: var(--color-expense-food);
 }
 
-.savings {
+.cafe_snack {
+  color: var(--color-expense-cafe_snack);
+}
+
+.transportation {
+  color: var(--color-expense-transportation);
+}
+
+.shopping {
+  color: var(--color-expense-shopping);
+}
+
+.subscription {
+  color: var(--color-expense-subscription);
+}
+
+.household_goods {
+  color: var(--color-expense-household_goods);
+}
+
+.medical {
+  color: var(--color-expense-medical);
+}
+
+.hobby {
+  color: var(--color-expense-hobby);
+}
+
+.education {
+  color: var(--color-expense-education);
+}
+
+/* Income Categories */
+.salary {
+  color: var(--color-income-salary);
+}
+
+.other_income {
+  color: var(--color-income-other_income);
+}
+
+.bonus {
+  color: var(--color-income-bonus);
+}
+
+.investment_income {
+  color: var(--color-income-investment_income);
+}
+
+.allowance {
+  color: var(--color-income-allowance);
+}
+
+.income_other {
+  color: var(--color-category-other);
+}
+
+/* Transfer Categories */
+
+.saving_transfer {
   color: var(--color-transfer-savings);
 }
 
@@ -790,5 +843,36 @@
 
   .selectionInfo > :global(.material-icons) {
     display: none;
+  }
+}
+
+.recentlyAdded {
+  animation: recently-added 1.8s ease-out;
+}
+
+@keyframes recently-added {
+  0% {
+    background-color: color-mix(
+      in srgb,
+      var(--color-point) 18%,
+      var(--color-white)
+    );
+    box-shadow: inset 4px 0 0 var(--color-point);
+  }
+
+  100% {
+    background-color: var(--color-white);
+    box-shadow: inset 0 0 0 var(--color-point);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recentlyAdded {
+    animation: none;
+    background-color: color-mix(
+      in srgb,
+      var(--color-point) 12%,
+      var(--color-white)
+    );
   }
 }

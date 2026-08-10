@@ -16,137 +16,6 @@ import CopyDateModal from "./components/CopyDateModal";
 import EntryPanel from "./components/EntryPanel";
 import Modal from "@/components/common/Modal";
 
-const hasTransactionData = true;
-
-const transactions = [
-  {
-    id: 1,
-    date: "2025.07.29 18:42",
-    type: "expense",
-    typeLabel: "지출",
-    category: "카페/간식",
-    categoryType: "cafeSnack",
-    content: "스타벅스 아메리카노",
-    amount: -4500,
-    paymentMethod: "신용카드",
-    memo: "점심 후 커피",
-  },
-  {
-    id: 2,
-    date: "2025.07.29 18:42",
-    type: "income",
-    typeLabel: "수입",
-    category: "월급",
-    categoryType: "salary",
-    content: "급여",
-    amount: 2000000,
-    paymentMethod: "계좌이체",
-    memo: "7월 급여",
-  },
-  {
-    id: 3,
-    date: "2025.07.29 18:42",
-    type: "expense",
-    typeLabel: "지출",
-    category: "식비",
-    categoryType: "food",
-    content: "배달의 민족",
-    amount: -23000,
-    paymentMethod: "체크카드",
-    memo: "저녁 배달",
-  },
-  {
-    id: 4,
-    date: "2025.07.29 18:42",
-    type: "transfer",
-    typeLabel: "이체",
-    category: "저축",
-    categoryType: "savings",
-    content: "적금 계좌로 이체",
-    amount: -200000,
-    paymentMethod: "계좌이체",
-    memo: "정기 적금",
-  },
-];
-
-const recentTransactions = [
-  {
-    id: 1,
-    type: "expense",
-    typeLabel: "지출",
-    category: "카페/간식",
-    categoryType: "cafeSnack",
-    content: "스타벅스 아메리카노",
-    amount: -4500,
-    paymentMethod: "신용카드",
-    date: "2026.07.29",
-  },
-  {
-    id: 2,
-    type: "income",
-    typeLabel: "수입",
-    category: "월급",
-    categoryType: "salary",
-    content: "7월 급여",
-    amount: 2000000,
-    paymentMethod: "계좌이체",
-    date: "2026.07.29",
-  },
-  {
-    id: 3,
-    type: "expense",
-    typeLabel: "지출",
-    category: "식비",
-    categoryType: "food",
-    content: "배달의 민족",
-    amount: -23000,
-    paymentMethod: "체크카드",
-    date: "2026.07.29",
-  },
-  {
-    id: 4,
-    type: "transfer",
-    typeLabel: "이체",
-    category: "저축",
-    categoryType: "savings",
-    content: "적금 계좌로 이체",
-    amount: -200000,
-    paymentMethod: "계좌이체",
-    date: "2026.07.29",
-  },
-  {
-    id: 5,
-    type: "expense",
-    typeLabel: "지출",
-    category: "교통",
-    categoryType: "transportation",
-    content: "버스",
-    amount: -1450,
-    paymentMethod: "교통카드",
-    date: "2026.07.29",
-  },
-  {
-    id: 6,
-    type: "income",
-    typeLabel: "수입",
-    category: "부수입",
-    categoryType: "otherIncome",
-    content: "프리랜서 용역비",
-    amount: 450000,
-    paymentMethod: "계좌이체",
-    date: "2026.07.29",
-  },
-];
-
-const paymentMethodMap = {
-  신용카드: "creditCard",
-  체크카드: "checkCard",
-  계좌이체: "accountTransfer",
-  현금: "cash",
-  카카오페이: "kakaoPay",
-  기타: "other",
-};
-
 const getToday = () => {
   const today = new Date();
 
@@ -155,6 +24,69 @@ const getToday = () => {
   const day = String(today.getDate()).padStart(2, "0");
 
   return `${year}-${month}-${day}`;
+};
+
+const formatTransaction = transaction => {
+  const transactionDate = new Date(transaction.transaction_at);
+
+  const date = transactionDate.toLocaleString("ko-KR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+
+  const dateValue = [
+    transactionDate.getFullYear(),
+    String(transactionDate.getMonth() + 1).padStart(2, "0"),
+    String(transactionDate.getDate()).padStart(2, "0"),
+  ].join("-");
+
+  return {
+    id: transaction.id,
+    date,
+    dateValue,
+
+    type: transaction.transaction_type,
+
+    typeLabel:
+      transaction.transaction_type === "income"
+        ? "수입"
+        : transaction.transaction_type === "expense"
+          ? "지출"
+          : "이체",
+
+    category: transaction.category?.name ?? "-",
+    categoryType: transaction.category?.code ?? "",
+    categoryId: transaction.category?.id ?? "",
+
+    content: transaction.content ?? "-",
+
+    amount:
+      transaction.transaction_type === "income"
+        ? transaction.amount
+        : -transaction.amount,
+
+    paymentMethod:
+      transaction.transaction_type === "transfer"
+        ? "계좌이체"
+        : (transaction.payment_method?.name ?? "-"),
+
+    paymentMethodId: transaction.payment_method?.id ?? "",
+
+    memo: transaction.memo ?? "",
+
+    withdrawAccount: transaction.withdraw_account?.name ?? null,
+    withdrawAccountId: transaction.withdraw_account?.id ?? "",
+
+    depositAccount: transaction.deposit_account?.name ?? null,
+    depositAccountId: transaction.deposit_account?.id ?? "",
+
+    isRecurring: transaction.is_recurring,
+    recurringDay: transaction.recurring_day,
+  };
 };
 
 const initialTransactionForm = {
@@ -208,6 +140,10 @@ const createMultipleTransactionRow = id => ({
 });
 
 export default function Transaction() {
+  const [transactions, setTransactions] = useState([]);
+  const hasTransactionData = transactions.length > 0;
+  const [isTransactionsLoading, setIsTransactionsLoading] = useState(true);
+  const [recentlyAddedId, setRecentlyAddedId] = useState(null);
   const supabase = createClient();
   const [activeFilter, setActiveFilter] = useState("all");
   const [panelView, setPanelView] = useState("entry");
@@ -332,6 +268,82 @@ export default function Transaction() {
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, [entryMode]);
 
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      setIsTransactionsLoading(true);
+
+      // 1. 로그인 사용자 확인
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError || !user) {
+        console.error("사용자 확인 실패:", userError);
+        setIsTransactionsLoading(false);
+        return;
+      }
+
+      // 2. 거래 목록 조회
+      const { data, error } = await supabase
+        .from("transactions")
+        .select(
+          `
+        id,
+        transaction_type,
+        amount,
+        content,
+        memo,
+        transaction_at,
+        is_recurring,
+        recurring_day,
+
+        category:categories (
+          id,
+          code,
+          name
+        ),
+
+        payment_method:payment_methods (
+          id,
+          code,
+          name
+        ),
+
+        withdraw_account:transfer_accounts!transactions_withdraw_account_id_fkey (
+          id,
+          code,
+          name
+        ),
+
+        deposit_account:transfer_accounts!transactions_deposit_account_id_fkey (
+          id,
+          code,
+          name
+        )
+      `,
+        )
+        .eq("user_id", user.id)
+        .order("transaction_at", { ascending: false });
+
+      if (error) {
+        console.error("소비 기록 조회 실패:", error);
+        setIsTransactionsLoading(false);
+        return;
+      }
+
+      // 3. DB 데이터 → 현재 UI 형식으로 변환
+      const formattedTransactions = (data ?? []).map(formatTransaction);
+
+      setTransactions(formattedTransactions);
+      setIsTransactionsLoading(false);
+
+      console.log("소비 기록 조회 성공:", formattedTransactions);
+    };
+
+    fetchTransactions();
+  }, []);
+
   const handleViewAllRecent = () => {
     console.log("최근 입력 전체 보기");
   };
@@ -352,10 +364,10 @@ export default function Transaction() {
       ...prevForm,
       type: copyTarget.type,
       amount: Math.abs(copyTarget.amount).toString(),
-      category: copyTarget.categoryType,
-      date: dateType === "today" ? today : copyTarget.date.replaceAll(".", "-"),
-      paymentMethod: paymentMethodMap[copyTarget.paymentMethod] ?? "",
-      content: copyTarget.content,
+      category: copyTarget.categoryId,
+      date: dateType === "today" ? today : copyTarget.dateValue,
+      paymentMethod: copyTarget.paymentMethodId,
+      content: copyTarget.content === "-" ? "" : copyTarget.content,
       memo: "",
     }));
 
@@ -395,6 +407,7 @@ export default function Transaction() {
     },
   );
 
+  const recentTransactions = transactions.slice(0, 6);
   const visibleTransactions =
     activeFilter === "all"
       ? transactions
@@ -602,7 +615,42 @@ export default function Transaction() {
     const { data: insertedTransaction, error: insertError } = await supabase
       .from("transactions")
       .insert(transactionData)
-      .select()
+      .select(
+        `
+          id,
+          transaction_type,
+          amount,
+          content,
+          memo,
+          transaction_at,
+          is_recurring,
+          recurring_day,
+
+          category:categories (
+            id,
+            code,
+            name
+          ),
+
+          payment_method:payment_methods (
+            id,
+            code,
+            name
+          ),
+
+          withdraw_account:transfer_accounts!transactions_withdraw_account_id_fkey (
+            id,
+            code,
+            name
+          ),
+
+          deposit_account:transfer_accounts!transactions_deposit_account_id_fkey (
+            id,
+            code,
+            name
+          )
+        `,
+      )
       .single();
 
     // 6. 저장 실패
@@ -622,9 +670,20 @@ export default function Transaction() {
     // 7. 저장 성공
     console.log("소비 기록 저장 성공:", insertedTransaction);
 
+    const newTransaction = formatTransaction(insertedTransaction);
+
+    setTransactions(prevTransactions => [newTransaction, ...prevTransactions]);
+
+    setRecentlyAddedId(insertedTransaction.id);
+
+    setTimeout(() => {
+      setRecentlyAddedId(null);
+    }, 1800);
+
     setToastMessage("소비 기록을 저장했어요.");
     setTransactionForm(initialTransactionForm);
   };
+
   const onContinueEntry = () => {
     setTransactionForm(initialTransactionForm);
   };
@@ -804,6 +863,7 @@ export default function Transaction() {
                 <TransactionList
                   hasTransactionData={hasTransactionData}
                   visibleTransactions={visibleTransactions}
+                  recentlyAddedId={recentlyAddedId}
                   selectedIds={selectedIds}
                   isAllSelected={isAllSelected}
                   onToggleAll={handleToggleAll}
