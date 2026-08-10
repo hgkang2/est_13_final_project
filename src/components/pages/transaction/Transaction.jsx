@@ -26,6 +26,25 @@ const getToday = () => {
   return `${year}-${month}-${day}`;
 };
 
+const formatDateTime = value => {
+  if (!value) return "-";
+
+  const date = new Date(value);
+
+  const formattedDate = [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0"),
+  ].join(".");
+
+  const formattedTime = [
+    String(date.getHours()).padStart(2, "0"),
+    String(date.getMinutes()).padStart(2, "0"),
+  ].join(":");
+
+  return `${formattedDate} ${formattedTime}`;
+};
+
 const formatTransaction = transaction => {
   const transactionDate = new Date(transaction.transaction_at);
 
@@ -88,6 +107,9 @@ const formatTransaction = transaction => {
 
     isRecurring: transaction.is_recurring,
     recurringDay: transaction.recurring_day,
+
+    createdAt: formatDateTime(transaction.created_at),
+    updatedAt: formatDateTime(transaction.updated_at),
   };
 };
 
@@ -96,7 +118,7 @@ const initialTransactionForm = {
   amount: "",
   category: "",
   date: getToday(),
-  time: "", // 추가
+  time: "",
   paymentMethod: "",
   content: "",
   memo: "",
@@ -297,6 +319,8 @@ export default function Transaction() {
         content,
         memo,
         transaction_at,
+        created_at,
+        updated_at,
         is_recurring,
         recurring_day,
 
@@ -679,7 +703,6 @@ export default function Transaction() {
       return;
     }
 
-    
     if (!insertedTransaction) {
       console.error("저장 결과가 반환되지 않았습니다.");
       setToastMessage("소비 기록 저장 결과를 확인하지 못했어요.");
@@ -914,21 +937,39 @@ export default function Transaction() {
     console.log("AI 자동 인식 입력값", aiTransactionForm);
   };
 
-  const handleOpenDetail = transaction => {
+  const handleOpenDetail = async transaction => {
+    const { data: attachmentData, error: attachmentError } = await supabase
+      .from("transaction_attachments")
+      .select("storage_path")
+      .eq("transaction_id", transaction.id)
+      .maybeSingle();
+
+    if (attachmentError) {
+      console.error("영수증 첨부정보 조회 실패:", attachmentError);
+    }
+
+    let receiptImage = null;
+
+    if (attachmentData?.storage_path) {
+      const { data: signedUrlData, error: signedUrlError } =
+        await supabase.storage
+          .from("transaction-attachments")
+          .createSignedUrl(attachmentData.storage_path, 60 * 10);
+
+      if (signedUrlError) {
+        console.error("영수증 이미지 URL 생성 실패:", signedUrlError);
+      } else {
+        receiptImage = signedUrlData.signedUrl;
+      }
+    }
+
     setSelectedTransaction({
       ...transaction,
-
-      // UI 개발용 임시값
-      // 1번 거래만 영수증이 있는 상태로 테스트
-      receiptImage: transaction.id === 1 ? "/images/receipt-sample.jpg" : null,
-
-      createdAt: "2026.07.29 18:42",
-      updatedAt: "2026.07.30 09:11",
+      receiptImage,
     });
 
     setPanelView("detail");
   };
-
   return (
     <>
       <div className={styles.page}>
