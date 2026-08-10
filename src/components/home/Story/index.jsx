@@ -72,7 +72,7 @@ const storyItems = [
         얼마나 달라졌는지 한눈에 확인할 수 있습니다.
       </>
     ),
-    image: "/images/home/main-5.png",
+    image: "/images/home/main_5.png",
     imageAlt: "저축 성장을 확인하는 모아 캐릭터",
   },
   {
