@@ -92,6 +92,17 @@ export default function GoalForm({ initialGoal = null, onClose, onSave }) {
     onSave(savedGoal);
   };
 
+  const handleStopGoal = () => {
+    if (!initialGoal) {
+      return;
+    }
+
+    onSave({
+      ...initialGoal,
+      status: "중단",
+    });
+  };
+
   return (
     <aside className={styles.goalSettingFormPanel} aria-label="새 목표 생성">
       <form className={styles.goalSettingForm} onSubmit={handleSubmit}>
@@ -298,10 +309,20 @@ export default function GoalForm({ initialGoal = null, onClose, onSave }) {
           </label>
         </div>
 
-        <footer className={styles.goalSettingFormActions}>
+        <footer
+          className={`${styles.goalSettingFormActions} ${
+            goalFormIsEditMode ? styles.goalSettingFormActionsEdit : ""
+          }`}
+        >
           <button type="submit" value="save">
             {goalFormIsEditMode ? "수정하기" : "저장하기"}
           </button>
+
+          {goalFormIsEditMode && (
+            <button type="button" value="stop" onClick={handleStopGoal}>
+              중단
+            </button>
+          )}
         </footer>
       </form>
     </aside>
