@@ -1,20 +1,22 @@
 @use "../../../../../styles/mixins" as *;
 
 .entryPanel {
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 80;
+  position: sticky;
+  top: 72px;
 
-  display: flex;
   width: 378px;
   min-width: 378px;
+  align-self: flex-start;
+
   padding: 16px;
   border: 1px solid var(--color-border-gray);
   border-right: 0;
   border-radius: 16px 0 0 16px;
+
+  display: flex;
   flex-direction: column;
   gap: 16px;
+
   background-color: var(--color-white);
 }
 
@@ -341,6 +343,19 @@
 }
 
 @media (max-width: 1024px) {
+  .entryPanel {
+    position: fixed;
+    top: 56px;
+    right: 0;
+    bottom: 69px;
+
+    width: 378px;
+    min-width: 0;
+    max-width: 100%;
+
+    overflow-y: auto;
+  }
+
   .entryModeButton:last-child {
     display: none;
   }

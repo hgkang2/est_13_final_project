@@ -149,6 +149,11 @@
 }
 
 @media (max-width: 1024px) {
+  .content:global(.container) {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   .openEntryButton {
     right: 24px;
     bottom: 96px;
