@@ -162,6 +162,7 @@ const initialTransactionForm = {
   amount: "",
   category: "",
   date: getToday(),
+  time: "", // 추가
   paymentMethod: "",
   content: "",
   memo: "",
@@ -480,6 +481,11 @@ export default function Transaction() {
 
     if (!form.amount) {
       errors.amount = "금액을 입력해주세요.";
+    } else if (
+      !Number.isFinite(Number(form.amount)) ||
+      Number(form.amount) <= 0
+    ) {
+      errors.amount = "금액은 0보다 큰 숫자로 입력해주세요.";
     }
 
     if (!form.category) {
@@ -507,9 +513,10 @@ export default function Transaction() {
     return errors;
   };
 
-  const onTransactionSubmit = event => {
+  const onTransactionSubmit = async event => {
     event.preventDefault();
 
+    // 1. 입력값 검증
     const errors = validateTransactionForm(transactionForm);
 
     if (Object.keys(errors).length > 0) {
@@ -518,9 +525,106 @@ export default function Transaction() {
     }
 
     setTransactionErrors({});
-    console.log("소비 기록 입력값", transactionForm);
-  };
 
+    // 2. 로그인 사용자 확인
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      console.error("사용자 확인 실패:", userError);
+      setToastMessage("로그인 정보를 확인할 수 없어요.");
+      return;
+    }
+
+    // 3. transaction_at 생성
+    const now = new Date();
+
+    const transactionDate = new Date(
+      Number(transactionForm.date.slice(0, 4)),
+      Number(transactionForm.date.slice(5, 7)) - 1,
+      Number(transactionForm.date.slice(8, 10)),
+      now.getHours(),
+      now.getMinutes(),
+      now.getSeconds(),
+    );
+
+    if (Number.isNaN(transactionDate.getTime())) {
+      setTransactionErrors(prev => ({
+        ...prev,
+        date: "올바른 날짜를 선택해주세요.",
+      }));
+      return;
+    }
+
+    // 4. DB 저장값 구성
+    const transactionData = {
+      user_id: user.id,
+      transaction_type: transactionForm.type,
+      amount: Number(transactionForm.amount),
+      category_id: transactionForm.category,
+
+      payment_method_id:
+        transactionForm.type === "transfer"
+          ? null
+          : transactionForm.paymentMethod,
+
+      withdraw_account_id:
+        transactionForm.type === "transfer"
+          ? transactionForm.withdrawAccount
+          : null,
+
+      deposit_account_id:
+        transactionForm.type === "transfer"
+          ? transactionForm.depositAccount
+          : null,
+
+      content: transactionForm.content.trim() || null,
+      memo: transactionForm.memo.trim() || null,
+
+      transaction_at: transactionDate.toISOString(),
+
+      input_method: "manual",
+
+      is_recurring:
+        transactionForm.type === "transfer"
+          ? transactionForm.isRecurring
+          : false,
+
+      recurring_day:
+        transactionForm.type === "transfer" && transactionForm.isRecurring
+          ? Number(transactionForm.recurringDay)
+          : null,
+    };
+
+    // 5. 거래 저장
+    const { data: insertedTransaction, error: insertError } = await supabase
+      .from("transactions")
+      .insert(transactionData)
+      .select()
+      .single();
+
+    // 6. 저장 실패
+    if (insertError) {
+      console.error("소비 기록 저장 실패:", insertError);
+      setToastMessage("소비 기록을 저장하지 못했어요.");
+      return;
+    }
+
+    // 방어 코드
+    if (!insertedTransaction) {
+      console.error("저장 결과가 반환되지 않았습니다.");
+      setToastMessage("소비 기록 저장 결과를 확인하지 못했어요.");
+      return;
+    }
+
+    // 7. 저장 성공
+    console.log("소비 기록 저장 성공:", insertedTransaction);
+
+    setToastMessage("소비 기록을 저장했어요.");
+    setTransactionForm(initialTransactionForm);
+  };
   const onContinueEntry = () => {
     setTransactionForm(initialTransactionForm);
   };
