@@ -247,14 +247,14 @@ $breakpoint-mobile: 390px;
   }
 }
 
-/* 지출 추이 차트 영역 */
+/* 지출 추이 차트  */
 .lineChartArea {
   position: relative;
   width: 100%;
-  height: 260px;
+  height: 340px;
 
   @include tablet {
-    height: 220px;
+    height: 280px;
   }
 }
 

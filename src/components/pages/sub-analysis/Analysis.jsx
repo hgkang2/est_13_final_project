@@ -168,9 +168,17 @@ export default function Analysis() {
   };
 
   return (
-    <>
-      <div className={styles.pageLayout}>
-        <Sidebar />
+    <div className={styles.pageLayout}>
+      <Sidebar />
+      <div
+        className={styles.contentWrapper}
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          minWidth: 0,
+        }}
+      >
         <main className={styles.container}>
           <div className={styles.pageHeader}>
             <h1 className={styles.title}>소비 분석</h1>
@@ -392,10 +400,10 @@ export default function Analysis() {
             </button>
           </section>
         </main>
-      </div>
 
-      <SubFooter />
+        <SubFooter />
+      </div>
       <BottomTab />
-    </>
+    </div>
   );
 }
