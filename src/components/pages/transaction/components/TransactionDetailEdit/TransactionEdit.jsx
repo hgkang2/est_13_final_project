@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./TransactionDetailEdit.module.scss";
 
 export default function TransactionEdit({
@@ -11,6 +11,7 @@ export default function TransactionEdit({
 }) {
   const [editForm, setEditForm] = useState(null);
   const [editErrors, setEditErrors] = useState({});
+  const timeInputRef = useRef(null);
 
   useEffect(() => {
     if (!transaction) return;
@@ -19,6 +20,7 @@ export default function TransactionEdit({
       amount: Math.abs(transaction.amount).toString(),
       category: transaction.categoryType,
       date: transaction.date.split(" ")[0].replaceAll(".", "-"),
+      time: transaction.time ?? "",
       paymentMethod: transaction.paymentMethod,
       content: transaction.content ?? "",
       memo: transaction.memo ?? "",
@@ -272,6 +274,33 @@ export default function TransactionEdit({
               }`}
               aria-invalid={Boolean(editErrors.date)}
             />
+
+            <div className={styles.timePicker}>
+              <input
+                ref={timeInputRef}
+                type="time"
+                name="time"
+                value={editForm.time}
+                onChange={handleChange}
+                className={styles.hiddenTimeInput}
+              />
+
+              <button
+                type="button"
+                className={styles.timeButton}
+                onClick={() => timeInputRef.current?.showPicker()}
+              >
+                <span className="material-icons" aria-hidden="true">
+                  schedule
+                </span>
+
+                <span>{editForm.time || "시간 설정"}</span>
+
+                {editForm.time && (
+                  <span className={styles.timeAction}>변경</span>
+                )}
+              </button>
+            </div>
 
             {editErrors.date && (
               <span className={styles.errorMessage}>{editErrors.date}</span>

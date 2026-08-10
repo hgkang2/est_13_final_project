@@ -34,14 +34,42 @@ export default function MultipleEntryForm({
             <li className={styles.multipleRow} key={row.id}>
               <strong className={styles.multipleRowNumber}>{index + 1}</strong>
 
-              <input
-                type="date"
-                name="date"
-                value={row.date}
-                onChange={event => onMultipleRowChange(row.id, event)}
-                className={styles.multipleDateInput}
-                aria-label={`${index + 1}번 거래 날짜`}
-              />
+              <div className={styles.multipleDateCell}>
+                <input
+                  type="date"
+                  name="date"
+                  value={row.date}
+                  onChange={event => onMultipleRowChange(row.id, event)}
+                  className={styles.multipleDateInput}
+                  aria-label={`${index + 1}번 거래 날짜`}
+                />
+
+                <div className={styles.multipleTimePicker}>
+                  <input
+                    id={`time-${row.id}`}
+                    type="time"
+                    name="time"
+                    value={row.time ?? ""}
+                    onChange={event => onMultipleRowChange(row.id, event)}
+                    className={styles.hiddenTimeInput}
+                    aria-label={`${index + 1}번 거래 시간`}
+                  />
+
+                  <button
+                    type="button"
+                    className={styles.multipleTimeButton}
+                    onClick={() => {
+                      document.getElementById(`time-${row.id}`)?.showPicker();
+                    }}
+                  >
+                    <span>{row.time || "시간 설정"}</span>
+
+                    <span className="material-icons" aria-hidden="true">
+                      schedule
+                    </span>
+                  </button>
+                </div>
+              </div>
 
               <span className={styles.multipleSelect}>
                 <select

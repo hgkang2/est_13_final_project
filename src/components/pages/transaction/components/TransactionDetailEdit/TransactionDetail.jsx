@@ -128,7 +128,10 @@ export default function TransactionDetail({ transaction, onClose, onEdit }) {
             <h3>날짜</h3>
 
             <div className={styles.detailValueBox}>
-              <strong>{transaction.date}</strong>
+              <strong>
+                {transaction.date}
+                {transaction.time ? ` ${transaction.time}` : ""}
+              </strong>
             </div>
           </section>
         </div>

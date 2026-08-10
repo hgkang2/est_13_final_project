@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import styles from "./ManualEntryForm.module.scss";
 
 export default function ManualEntryForm({
@@ -7,6 +8,8 @@ export default function ManualEntryForm({
   onTransactionFormChange,
   onToggleRecurring,
 }) {
+  const timeInputRef = useRef(null);
+
   return (
     <>
       <div className={styles.formFields}>
@@ -276,6 +279,34 @@ export default function ManualEntryForm({
                     />
                   </span>
 
+                  <div className={styles.timePicker}>
+                    <input
+                      ref={timeInputRef}
+                      type="time"
+                      name="time"
+                      value={transactionForm.time}
+                      onChange={onTransactionFormChange}
+                      className={styles.hiddenTimeInput}
+                    />
+
+                    <button
+                      type="button"
+                      className={styles.timeButton}
+                      onClick={() => timeInputRef.current?.showPicker()}
+                    >
+                      <span className="material-icons" aria-hidden="true">
+                        schedule
+                      </span>
+
+                      <span>{transactionForm.time}</span>
+                      <span>{transactionForm.time || "시간 설정"}</span>
+
+                      {transactionForm.time && (
+                        <span className={styles.timeAction}>변경</span>
+                      )}
+                    </button>
+                  </div>
+
                   {transactionErrors.date && (
                     <span className={styles.errorMessage}>
                       {transactionErrors.date}
@@ -331,7 +362,6 @@ export default function ManualEntryForm({
                 <span className={styles.formLabel}>
                   날짜 <span className={styles.requiredMark}>*</span>
                 </span>
-
                 <span
                   className={`${styles.dateInputBox} ${
                     transactionErrors.date ? styles.errorField : ""
@@ -345,6 +375,34 @@ export default function ManualEntryForm({
                     aria-invalid={Boolean(transactionErrors.date)}
                   />
                 </span>
+
+                <div className={styles.timePicker}>
+                  <input
+                    ref={timeInputRef}
+                    type="time"
+                    name="time"
+                    value={transactionForm.time}
+                    onChange={onTransactionFormChange}
+                    className={styles.hiddenTimeInput}
+                  />
+
+                  <button
+                    type="button"
+                    className={styles.timeButton}
+                    onClick={() => timeInputRef.current?.showPicker()}
+                  >
+                    <span className="material-icons" aria-hidden="true">
+                      schedule
+                    </span>
+
+                    <span>{transactionForm.time}</span>
+                    <span>{transactionForm.time || "시간 설정"}</span>
+
+                    {transactionForm.time && (
+                      <span className={styles.timeAction}>변경</span>
+                    )}
+                  </button>
+                </div>
 
                 {transactionErrors.date && (
                   <span className={styles.errorMessage}>

@@ -196,6 +196,7 @@ const mockAiResult = {
 const createMultipleTransactionRow = id => ({
   id,
   date: "",
+  time: "",
   type: "",
   category: "",
   content: "",
