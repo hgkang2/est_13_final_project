@@ -290,6 +290,10 @@
    Icon Variants
 ======================================== */
 
+@mixin icon-2xl {
+  @include icon(var(--icon-2xl-size));
+}
+
 @mixin icon-xl {
   @include icon(var(--icon-xl-size));
 }

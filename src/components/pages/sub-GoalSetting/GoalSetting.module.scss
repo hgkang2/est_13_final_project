@@ -1,0 +1,1218 @@
+@use "../../../styles/mixins" as *;
+
+/* ========================================
+   전체 페이지
+======================================== */
+
+.goalSettingPage {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: calc(100vh - 56px);
+}
+
+.goalSettingPageLayout {
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+}
+
+.goalSettingContainer {
+  display: flex;
+  align-self: stretch;
+  flex: 1;
+  width: auto;
+  min-width: 0;
+  padding-top: 32px;
+  padding-bottom: 32px;
+}
+
+.goalSettingSection {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  min-height: 0;
+  gap: 32px;
+}
+
+/* ========================================
+   페이지 제목
+======================================== */
+
+.goalSettingPageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  gap: 35px;
+  padding-bottom: 24px;
+  border-bottom: 0.5px solid var(--color-light-gray);
+}
+
+.goalSettingTitleGroup {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  gap: 16px;
+
+  h1,
+  p {
+    margin: 0;
+  }
+
+  h1 {
+    @include typo-heading-s-plus;
+  }
+
+  p {
+    color: var(--color-gray);
+
+    @include typo-heading-xs;
+  }
+}
+
+.goalSettingCreateButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid var(--color-point);
+  border-radius: 8px;
+  color: var(--color-point);
+  background-color: transparent;
+  cursor: pointer;
+
+  @include typo-body-m;
+
+  &:hover {
+    color: var(--color-white);
+    background-color: var(--color-point);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-point);
+    outline-offset: 2px;
+  }
+}
+
+.goalSettingCreateIcon {
+  @include icon-m;
+}
+
+/* ========================================
+   필터
+======================================== */
+
+.goalSettingFilters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 16px 0;
+}
+
+.goalSettingFilterButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 60px;
+  min-height: 36px;
+  padding: 6px 16px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--color-point);
+  background-color: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+
+  @include typo-body-m-plus;
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-point);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+.goalSettingActiveFilter {
+  color: var(--color-white);
+  background-color: var(--color-point);
+
+  &:hover:not(:disabled) {
+    color: var(--color-white);
+    background-color: var(--color-point);
+  }
+}
+
+/* ========================================
+   빈값 화면
+======================================== */
+
+.goalSettingEmptyState {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 0;
+  text-align: center;
+  border-radius: 8px;
+  background-color: var(--color-memo-background);
+}
+
+.goalSettingEmptyIcon {
+  color: var(--color-point);
+
+  @include icon-2xl;
+}
+
+.goalSettingEmptyText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+
+  h2,
+  p {
+    margin: 0;
+  }
+
+  h2 {
+    color: var(--color-text);
+
+    @include typo-heading-s-plus;
+  }
+
+  p {
+    color: var(--color-light-gray);
+
+    @include typo-body-m;
+  }
+}
+
+.goalSettingEmptyCreateButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid var(--color-point);
+  border-radius: 8px;
+  color: var(--color-point);
+  background-color: transparent;
+  cursor: pointer;
+
+  @include typo-body-m;
+
+  &:hover {
+    color: var(--color-white);
+    background-color: var(--color-point);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-point);
+    outline-offset: 2px;
+  }
+
+  .goalSettingCreateIcon {
+    @include icon-m;
+  }
+}
+
+/* ========================================
+   목표 입력 폼 전체 영역
+======================================== */
+
+.goalSettingFormPanel {
+  display: flex;
+  align-self: stretch;
+  width: 360px;
+  min-height: calc(100vh - 56px);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+  padding: 16px;
+  box-shadow: -6px 0 10px 0 rgba(0, 0, 0, 0.25);
+}
+
+.goalSettingForm {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  background-color: var(--color-white);
+}
+
+/* ========================================
+   목표 입력 폼 헤더
+======================================== */
+
+.goalSettingFormHeader {
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 16px;
+
+  h2 {
+    margin: 0;
+    text-align: center;
+
+    @include typo-card-label;
+  }
+}
+
+.goalSettingFormIconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  color: var(--color-gray);
+  background-color: transparent;
+  cursor: pointer;
+
+  span {
+    @include icon-l;
+  }
+
+  &:hover {
+    color: var(--color-point);
+  }
+}
+
+/* ========================================
+   목표 입력 카드
+======================================== */
+
+.goalSettingFormCard {
+  display: flex;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  background-color: var(--color-white);
+
+  h3 {
+    margin: 0;
+
+    @include typo-body-m-plus;
+  }
+}
+
+/* ========================================
+   공통 입력 필드
+======================================== */
+
+.goalSettingFormField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  input {
+    width: 100%;
+    height: 40px;
+    padding: 12px;
+    border: 1px solid var(--color-border-gray);
+    border-radius: 8px;
+    color: var(--color-text);
+    background-color: var(--color-white);
+    outline: 0;
+
+    @include typo-caption;
+
+    &::placeholder {
+      color: var(--color-green-gray);
+    }
+
+    &:focus {
+      border-color: var(--color-point);
+    }
+  }
+}
+
+.goalSettingFieldLabel {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  @include typo-caption-plus;
+}
+
+/* 작성 전과 작성 완료 표시 */
+
+.goalSettingFieldStatus,
+.goalSettingFieldStatusComplete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+
+  @include more-icon-s;
+}
+
+/* 입력 전 아이콘 */
+.goalSettingFieldStatus {
+  color: var(--color-border-gray);
+}
+
+/* 입력 완료 danger-dot */
+.goalSettingFieldStatusComplete {
+  color: var(--color-danger-dot);
+}
+
+/* ========================================
+   금액 입력
+======================================== */
+
+.goalSettingAmountInput {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+  background-color: var(--color-white);
+
+  input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    text-align: left;
+  }
+
+  > span {
+    flex-shrink: 0;
+    padding-right: 12px;
+    color: var(--color-light-gray);
+
+    @include typo-caption-plus;
+  }
+
+  &:focus-within {
+    border-color: var(--color-point);
+  }
+}
+
+.goalSettingAmountOptions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    gap: 4px;
+    padding: 4px;
+    border: 1px solid var(--color-point);
+    border-radius: 8px;
+    color: var(--color-point);
+    background-color: var(--color-white);
+    cursor: pointer;
+    white-space: nowrap;
+
+    @include typo-body-s;
+
+    > span:first-child {
+      @include icon-m;
+    }
+
+    &:hover {
+      color: var(--color-white);
+      background-color: var(--color-point);
+    }
+  }
+}
+
+/* ========================================
+   기간
+======================================== */
+
+.goalSettingDateField {
+  margin: 0;
+  padding: 0;
+  border: 0;
+
+  legend {
+    width: 100%;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 0.5px solid var(--color-border-gray);
+  }
+
+  > div {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  label {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 8px;
+
+    > span {
+      @include typo-caption-plus;
+    }
+  }
+}
+
+.goalSettingDateInput {
+  width: 100%;
+  position: relative;
+
+  input {
+    width: 100%;
+    min-width: 0;
+    height: 40px;
+    padding: 12px 40px 12px 12px;
+    border: 1px solid var(--color-border-gray);
+    border-radius: 8px;
+    color: var(--color-green-gray);
+    background-color: var(--color-white);
+    outline: 0;
+
+    @include typo-caption;
+
+    &:focus {
+      border-color: var(--color-point);
+    }
+
+    &::-webkit-calendar-picker-indicator {
+      width: 20px;
+      height: 20px;
+      position: absolute;
+      right: 12px;
+      z-index: 2;
+      cursor: pointer;
+      opacity: 0;
+    }
+  }
+
+  > span {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    color: var(--color-light-gray);
+    pointer-events: none;
+    transform: translateY(-50%);
+
+    @include icon-m;
+  }
+}
+/* ========================================
+   이미지
+======================================== */
+
+.goalSettingImageInput {
+  width: 1px !important;
+  height: 1px !important;
+  position: absolute;
+  overflow: hidden;
+  padding: 0 !important;
+  border: 0 !important;
+  opacity: 0;
+}
+
+.goalSettingImageButton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-height: 40px;
+  padding: 12px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+  color: var(--color-green-gray);
+  background-color: var(--color-white);
+  cursor: pointer;
+
+  @include typo-caption;
+
+  span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  span:last-child {
+    flex-shrink: 0;
+    color: var(--color-light-gray);
+
+    @include icon-m;
+  }
+
+  &:hover {
+    border-color: var(--color-point);
+  }
+}
+
+/* ========================================
+   메모 글자 수
+======================================== */
+
+.goalSettingMemoCount {
+  align-self: flex-end;
+  color: var(--color-light-gray);
+
+  @include typo-caption;
+}
+
+/* ========================================
+   저장 버튼
+======================================== */
+
+.goalSettingFormActions {
+  display: grid;
+  grid-template-columns: 1fr;
+  flex-shrink: 0;
+  gap: 8px;
+  width: 100%;
+  margin-top: auto;
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 48px;
+    padding: 0 16px;
+    border: 1px solid var(--color-point);
+    border-radius: 8px;
+    color: var(--color-white);
+    background-color: var(--color-point);
+    cursor: pointer;
+
+    @include typo-body-m-plus;
+
+    &:hover {
+      color: var(--color-white);
+      background-color: var(--color-point);
+    }
+
+    &[value="save"] {
+      color: var(--color-white);
+      background-color: var(--color-point);
+    }
+  }
+}
+
+/* ========================================
+   태블릿
+======================================== */
+
+@include tablet {
+  .goalSettingContainer {
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+
+  .goalSettingSection {
+    gap: 16px;
+  }
+
+  .goalSettingPageHeader {
+    gap: 16px;
+
+    h1 {
+      @include typo-body-l-plus;
+    }
+
+    p {
+      @include typo-body-m-plus;
+    }
+  }
+
+  .goalSettingEmptyIcon {
+    @include icon-xl;
+  }
+
+  .goalSettingEmptyText {
+    h2 {
+      @include typo-body-l-plus;
+    }
+
+    p {
+      @include typo-body-s;
+    }
+  }
+
+  .goalSettingFormIsOpen {
+    .goalSettingContainer {
+      display: none;
+    }
+
+    .goalSettingFormPanel {
+      width: 100%;
+      min-height: calc(100vh - 56px);
+      padding: 16px 80px;
+      box-shadow: none;
+    }
+  }
+}
+
+/* ========================================
+   모바일
+======================================== */
+
+@include mobile {
+  .goalSettingContainer {
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+
+  .goalSettingSection {
+    gap: 16px;
+  }
+
+  .goalSettingPageHeader {
+    padding-bottom: 16px;
+  }
+
+  .goalSettingFilters {
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px;
+    overflow: visible;
+  }
+
+  .goalSettingFilterButton {
+    flex: 1;
+    min-width: 0;
+    padding: 8px;
+    white-space: nowrap;
+
+    @include typo-body-s-plus;
+  }
+
+  .goalSettingEmptyState {
+    padding: 16px;
+  }
+
+  .goalSettingEmptyCreateButton {
+    gap: 4px;
+  }
+
+  .goalSettingForm {
+    padding: 16px;
+  }
+
+  .goalSettingFormCard {
+    padding: 16px;
+  }
+
+  .goalSettingFormPanel {
+    width: 100%;
+    padding: 16px;
+    box-shadow: none;
+  }
+
+  .goalSettingFormIsOpen {
+    .goalSettingContainer {
+      display: none;
+    }
+
+    .goalSettingFormPanel {
+      width: 100%;
+      min-height: calc(100vh - 56px);
+      padding: 16px;
+    }
+  }
+}
+/* ========================================
+   목표 카드 목록
+======================================== */
+
+.goalSettingGoalListSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.goalSettingGoalList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+/* ========================================
+   목표 카드
+======================================== */
+
+.goalSettingGoalCard {
+  display: grid;
+  grid-template-columns:
+    61px
+    80px
+    minmax(0, 1fr)
+    88px
+    auto;
+  align-items: center;
+  column-gap: 16px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  padding: 16px 24px;
+  border: 0.5px solid var(--color-border-gray);
+  border-radius: 24px;
+  background-color: var(--color-white);
+  transition:
+    box-shadow 0.2s ease,
+    grid-template-columns 0.2s ease;
+  touch-action: pan-y;
+
+  &:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+
+    .goalSettingGoalDetails {
+      max-height: 80px;
+      margin-top: 8px;
+      opacity: 1;
+    }
+
+    .goalSettingGoalDesktopActions {
+      display: flex;
+    }
+  }
+}
+
+/* ========================================
+   D-day
+======================================== */
+
+.goalSettingGoalDday {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 61px;
+  min-height: 28px;
+  padding: 4px 16px;
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  color: var(--color-white);
+  white-space: nowrap;
+
+  @include typo-body-s;
+}
+
+.goalSettingGoalDdayUrgent {
+  background-color: var(--color-saving-pig, #ff7474);
+}
+
+.goalSettingGoalDdayNormal {
+  background-color: var(--color-secondary, #ffd978);
+}
+
+.goalSettingGoalDdayFinished {
+  border-color: var(--color-light-gray);
+  color: var(--color-light-gray);
+  background-color: var(--color-white);
+}
+
+/* ========================================
+   목표 이미지
+======================================== */
+
+.goalSettingGoalImage {
+  width: 80px;
+  height: 80px;
+  display: block;
+  object-fit: cover;
+  border-radius: 50%;
+  background-color: var(--color-dark-white);
+}
+
+/* ========================================
+   목표 내용
+======================================== */
+
+.goalSettingGoalContent {
+  display: flex;
+  min-width: 0;
+  grid-column: 3;
+  grid-row: 1;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.goalSettingGoalTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+
+  h3 {
+    overflow: hidden;
+    margin: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    @include typo-body-m;
+  }
+}
+
+.goalSettingGoalStatus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 4px 8px;
+  border: 1px solid var(--color-point);
+  border-radius: 8px;
+  color: var(--color-point);
+  background-color: var(--color-white);
+
+  @include typo-body-s;
+}
+
+.goalSettingGoalStatusFinished {
+  border-color: var(--color-light-gray);
+  color: var(--color-light-gray);
+}
+
+.goalSettingGoalAmounts {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  color: var(--color-gray);
+
+  @include typo-body-s;
+}
+
+/* ========================================
+   프로그래스바
+======================================== */
+
+.goalSettingGoalProgressRow {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 8px;
+
+  > span {
+    flex-shrink: 0;
+    color: var(--color-point);
+
+    @include typo-body-s;
+  }
+}
+
+.goalSettingGoalProgress {
+  width: 100%;
+  min-width: 0;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 9999px;
+  background-color: var(--color-dark-white);
+}
+
+.goalSettingGoalProgressFill {
+  height: 100%;
+  border-radius: inherit;
+  background-color: var(--color-point);
+  transition: width 0.3s ease;
+}
+
+/* ========================================
+   목표일
+======================================== */
+
+.goalSettingGoalTarget {
+  display: flex;
+  align-items: center;
+  grid-column: 4;
+  grid-row: 1;
+  flex-direction: column;
+  color: var(--color-gray);
+
+  @include typo-body-s;
+}
+/* ========================================
+   호버 상세 내용
+======================================== */
+
+.goalSettingGoalDetails {
+  max-height: 0;
+  overflow: hidden;
+  margin-top: 0;
+  opacity: 0;
+  transition:
+    max-height 0.2s ease,
+    margin-top 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.goalSettingGoalPace,
+.goalSettingGoalMemo {
+  margin: 0;
+  color: var(--color-gray);
+
+  @include typo-body-s;
+}
+
+.goalSettingGoalPace {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.goalSettingGoalMemo {
+  margin-top: 8px;
+}
+
+.goalSettingGoalDifficult {
+  color: var(--color-danger-dot, #ff4d5e);
+}
+
+.goalSettingGoalPossible {
+  color: var(--color-point);
+}
+
+/* ========================================
+   데스크톱 수정 및 삭제
+======================================== */
+
+.goalSettingGoalDesktopActions {
+  display: none;
+  align-items: center;
+  justify-content: flex-end;
+  grid-column: 5;
+  grid-row: 1;
+  gap: 16px;
+  margin: 0;
+
+  button {
+    padding: 0;
+    border: 0;
+    color: var(--color-text);
+    background-color: transparent;
+    cursor: pointer;
+    white-space: nowrap;
+
+    @include typo-body-s;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:last-child {
+      color: var(--color-type-expense);
+    }
+  }
+}
+
+.goalSettingGoalMobileActions {
+  display: none;
+}
+
+/* ========================================
+   더보기
+======================================== */
+
+.goalSettingMoreButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px 16px;
+  border: 1px solid var(--color-point);
+  border-radius: 8px;
+  color: var(--color-point);
+  background-color: var(--color-white);
+  cursor: pointer;
+
+  @include typo-body-s;
+
+  span:last-child {
+    @include icon-m;
+  }
+
+  &:hover {
+    color: var(--color-white);
+    background-color: var(--color-point);
+  }
+}
+
+/* ========================================
+   태블릿
+======================================== */
+
+@include tablet {
+  .goalSettingGoalCard {
+    grid-template-columns:
+      61px
+      64px
+      minmax(0, 1fr)
+      72px
+      auto;
+    column-gap: 12px;
+    padding: 16px;
+  }
+
+  .goalSettingGoalImage {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+/* ========================================
+   모바일
+======================================== */
+
+@include mobile {
+  .goalSettingGoalListSection {
+    align-items: stretch;
+  }
+
+  .goalSettingGoalCard {
+    display: grid;
+    grid-template-columns: 61px 50px minmax(0, 1fr);
+    align-items: center;
+    column-gap: 16px;
+    row-gap: 8px;
+    overflow: hidden;
+    padding: 4px 8px;
+    border: 1px solid var(--color-border-gray);
+    border-radius: 8px;
+    box-shadow: none;
+
+    &:hover {
+      box-shadow: none;
+
+      .goalSettingGoalDetails {
+        max-height: 0;
+        margin-top: 0;
+        opacity: 0;
+      }
+
+      .goalSettingGoalDesktopActions {
+        display: none;
+      }
+    }
+  }
+
+  .goalSettingGoalImage {
+    width: 50px;
+    height: 50px;
+  }
+
+  .goalSettingGoalContent {
+    grid-column: 1 / -1;
+    gap: 8px;
+  }
+
+  .goalSettingGoalTitleRow {
+    h3 {
+      @include typo-body-m;
+    }
+  }
+
+  .goalSettingGoalTarget {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+  }
+
+  .goalSettingGoalProgressRow {
+    gap: 8px;
+
+    > span {
+      @include typo-body-s;
+    }
+  }
+
+  .goalSettingGoalCardExpanded {
+    .goalSettingGoalDetails {
+      max-height: 100px;
+      margin-top: 8px;
+      opacity: 1;
+    }
+  }
+
+  .goalSettingGoalDesktopActions {
+    display: none;
+  }
+
+  .goalSettingGoalMobileActions {
+    display: none;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    gap: 8px;
+    transform: translateY(-50%);
+
+    button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      color: var(--color-white);
+      cursor: pointer;
+
+      &:first-child {
+        background-color: var(--color-c-expense-transportation, #4388f7);
+      }
+
+      &:last-child {
+        background-color: var(--color-saving-pig, #ff7474);
+      }
+
+      span {
+        @include icon-m;
+      }
+    }
+  }
+
+  .goalSettingGoalCardSwiped {
+    .goalSettingGoalTarget {
+      display: none;
+    }
+
+    .goalSettingGoalMobileActions {
+      display: flex;
+    }
+  }
+
+  .goalSettingMoreButton {
+    align-self: center;
+  }
+}
