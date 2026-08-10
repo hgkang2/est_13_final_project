@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createClient } from "@/utils/supabase/client";
 import Sidebar from "@/components/layout/Sidebar";
 import BottomTab from "@/components/layout/BottomTab";
 import SubFooter from "@/components/layout/SubFooter";
@@ -206,6 +207,7 @@ const createMultipleTransactionRow = id => ({
 });
 
 export default function Transaction() {
+  const supabase = createClient();
   const [activeFilter, setActiveFilter] = useState("all");
   const [panelView, setPanelView] = useState("entry");
   // "entry" | "recent" | "detail" | "edit" | "closed"
@@ -248,6 +250,59 @@ export default function Transaction() {
   const [isMultipleConfirmOpen, setIsMultipleConfirmOpen] = useState(false);
   const [transactionErrors, setTransactionErrors] = useState({});
   const [aiTransactionErrors, setAiTransactionErrors] = useState({});
+
+  const [categories, setCategories] = useState([]);
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [transferAccounts, setTransferAccounts] = useState([]);
+
+  useEffect(() => {
+    const fetchTransactionOptions = async () => {
+      const [
+        { data: categoryData, error: categoryError },
+        { data: paymentMethodData, error: paymentMethodError },
+        { data: transferAccountData, error: transferAccountError },
+      ] = await Promise.all([
+        supabase
+          .from("categories")
+          .select("id, code, name, transaction_type, sort_order")
+          .eq("is_active", true)
+          .order("sort_order"),
+
+        supabase
+          .from("payment_methods")
+          .select("id, code, name, sort_order")
+          .eq("is_active", true)
+          .order("sort_order"),
+
+        supabase
+          .from("transfer_accounts")
+          .select("id, code, name, sort_order")
+          .eq("is_active", true)
+          .order("sort_order"),
+      ]);
+
+      if (categoryError) {
+        console.error("카테고리 조회 실패:", categoryError);
+        return;
+      }
+
+      if (paymentMethodError) {
+        console.error("결제수단 조회 실패:", paymentMethodError);
+        return;
+      }
+
+      if (transferAccountError) {
+        console.error("이체 계좌 조회 실패:", transferAccountError);
+        return;
+      }
+
+      setCategories(categoryData ?? []);
+      setPaymentMethods(paymentMethodData ?? []);
+      setTransferAccounts(transferAccountData ?? []);
+    };
+
+    fetchTransactionOptions();
+  }, []);
 
   useEffect(() => {
     if (!toastMessage) return;
@@ -704,6 +759,11 @@ export default function Transaction() {
                 manualEntry={{
                   transactionForm,
                   transactionErrors,
+
+                  categories,
+                  paymentMethods,
+                  transferAccounts,
+
                   onTransactionFormChange,
                   onToggleRecurring,
                   onTransactionSubmit,
