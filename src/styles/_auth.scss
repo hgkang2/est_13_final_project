@@ -2,7 +2,18 @@
 * {
   box-sizing: border-box;
 }
-
+html,
+body {
+  height: 100%;
+}
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+main {
+  flex: 1;
+}
 .page {
   min-height: 100vh;
   padding: 40px 40px 40px;
