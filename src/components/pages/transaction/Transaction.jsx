@@ -29,14 +29,16 @@ const getToday = () => {
 const formatTransaction = transaction => {
   const transactionDate = new Date(transaction.transaction_at);
 
-  const date = transactionDate.toLocaleString("ko-KR", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
+  const date = [
+    transactionDate.getFullYear(),
+    String(transactionDate.getMonth() + 1).padStart(2, "0"),
+    String(transactionDate.getDate()).padStart(2, "0"),
+  ].join(".");
+
+  const time = [
+    String(transactionDate.getHours()).padStart(2, "0"),
+    String(transactionDate.getMinutes()).padStart(2, "0"),
+  ].join(":");
 
   const dateValue = [
     transactionDate.getFullYear(),
@@ -47,7 +49,7 @@ const formatTransaction = transaction => {
   return {
     id: transaction.id,
     date,
-    dateValue,
+    time,
 
     type: transaction.transaction_type,
 

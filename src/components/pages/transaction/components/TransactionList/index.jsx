@@ -161,13 +161,16 @@ export default function TransactionList({
                     </span>
                   </button>
 
-                  <time className={styles.dateCell}>
+                  <time
+                    className={styles.dateCell}
+                    dateTime={`${transaction.date}T${transaction.time}`}
+                  >
                     <span className={styles.transactionDate}>
-                      {transaction.date.split(" ")[0]}
+                      {transaction.date}
                     </span>
 
                     <span className={styles.transactionTime}>
-                      {transaction.date.split(" ")[1]}
+                      {transaction.time}
                     </span>
                   </time>
 
