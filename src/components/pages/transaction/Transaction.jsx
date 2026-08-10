@@ -760,7 +760,7 @@ export default function Transaction() {
         </main>
       </div>
 
-      <SubFooter />
+      {panelView === "closed" && <SubFooter />}
       <BottomTab />
       <Modal
         isOpen={isMultipleConfirmOpen}

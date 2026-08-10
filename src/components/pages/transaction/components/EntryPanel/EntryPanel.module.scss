@@ -1,22 +1,20 @@
 @use "../../../../../styles/mixins" as *;
 
 .entryPanel {
-  position: sticky;
-  top: 72px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 80;
 
+  display: flex;
   width: 378px;
   min-width: 378px;
-  align-self: flex-start;
-
   padding: 16px;
   border: 1px solid var(--color-border-gray);
   border-right: 0;
   border-radius: 16px 0 0 16px;
-
-  display: flex;
   flex-direction: column;
   gap: 16px;
-
   background-color: var(--color-white);
 }
 
