@@ -8,7 +8,7 @@ const menus = [
   { label: "홈", icon: "home", href: "/sub-home" },
   { label: "가계부", icon: "description", href: "/transaction" },
   { label: "분석", icon: "donut_large", href: null },
-  { label: "목표", icon: "add_task", href: null },
+  { label: "목표", icon: "add_task", href: "/sub-goalsetting" },
   { label: "챌린지", icon: "military_tech", href: "/sub-challenge" },
   { label: "프로필", icon: "person", href: "/my-page" },
 ];
