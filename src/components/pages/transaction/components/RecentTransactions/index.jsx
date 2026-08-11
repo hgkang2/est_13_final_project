@@ -43,8 +43,9 @@ export default function RecentTransactions({
 
       <ul className={styles.recentList}>
         {transactions.map(transaction => {
-          const isCopied = copiedId === transaction.id;
+          console.log("최근입력 실제 렌더 데이터:", transaction);
 
+          const isCopied = copiedId === transaction.id;
           return (
             <li
               className={`${styles.recentCard} ${
@@ -80,7 +81,14 @@ export default function RecentTransactions({
                 </div>
 
                 <div className={styles.recentSubInfo}>
-                  <strong>{transaction.paymentMethod}</strong>
+                  {transaction.type === "transfer" ? (
+                    <strong>
+                      {transaction.withdrawAccount || "-"} →{" "}
+                      {transaction.depositAccount || "-"}
+                    </strong>
+                  ) : (
+                    <strong>{transaction.paymentMethod || "-"}</strong>
+                  )}
 
                   <span>
                     {transaction.date}

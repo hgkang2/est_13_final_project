@@ -390,6 +390,10 @@ export default function Transaction() {
       time: dateType === "today" ? "" : copyTarget.time,
 
       paymentMethod: copyTarget.paymentMethodId,
+
+      withdrawAccount: copyTarget.withdrawAccountId,
+      depositAccount: copyTarget.depositAccountId,
+
       content: copyTarget.content === "-" ? "" : copyTarget.content,
       memo: "",
     }));
