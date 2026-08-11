@@ -57,7 +57,7 @@ export default function Benefits() {
       </div>
 
       <div className={styles.imageArea}>
-        <Image src={benefits[selected].image} width={307} height={311} alt="" />
+        <Image key={benefits[selected].image} src={benefits[selected].image} width={307} height={311} alt="" />
       </div>
     </section>
   );
