@@ -215,6 +215,8 @@ export default function Transaction() {
   const [categories, setCategories] = useState([]);
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [transferAccounts, setTransferAccounts] = useState([]);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [isDeleteSuccessOpen, setIsDeleteSuccessOpen] = useState(false);
 
   useEffect(() => {
     const fetchTransactionOptions = async () => {
@@ -1128,6 +1130,83 @@ export default function Transaction() {
 
     setPanelView("detail");
   };
+
+  const handleDeleteTransaction = async () => {
+    if (!selectedTransaction) {
+      setToastMessage("삭제할 거래 정보를 확인할 수 없어요.");
+      return;
+    }
+
+    // 1. 로그인 사용자 확인
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      console.error("사용자 확인 실패:", userError);
+      setToastMessage("로그인 정보를 확인할 수 없어요.");
+      return;
+    }
+
+    // 2. 첨부파일 정보 조회
+    const { data: attachmentData, error: attachmentError } = await supabase
+      .from("transaction_attachments")
+      .select("storage_path")
+      .eq("transaction_id", selectedTransaction.id)
+      .maybeSingle();
+
+    if (attachmentError) {
+      console.error("첨부파일 정보 조회 실패:", attachmentError);
+      setToastMessage("첨부파일 정보를 확인하지 못했어요.");
+      return;
+    }
+
+    // 3. Storage 파일이 있으면 먼저 삭제
+    if (attachmentData?.storage_path) {
+      const { error: storageDeleteError } = await supabase.storage
+        .from("transaction-attachments")
+        .remove([attachmentData.storage_path]);
+
+      if (storageDeleteError) {
+        console.error("영수증 Storage 삭제 실패:", storageDeleteError);
+        setToastMessage("영수증 파일을 삭제하지 못했어요.");
+        return;
+      }
+    }
+
+    // 4. 거래 삭제
+    const { error: deleteError } = await supabase
+      .from("transactions")
+      .delete()
+      .eq("id", selectedTransaction.id)
+      .eq("user_id", user.id);
+
+    if (deleteError) {
+      console.error("소비 기록 삭제 실패:", deleteError);
+      setToastMessage("소비 기록을 삭제하지 못했어요.");
+      return;
+    }
+
+    // 5. 화면에서 즉시 제거
+    setTransactions(prevTransactions =>
+      prevTransactions.filter(
+        transaction => transaction.id !== selectedTransaction.id,
+      ),
+    );
+
+    // 체크된 상태였다면 같이 제거
+    setSelectedIds(prevSelectedIds =>
+      prevSelectedIds.filter(id => id !== selectedTransaction.id),
+    );
+
+    setSelectedTransaction(null);
+    setPanelView("closed");
+
+    setIsDeleteConfirmOpen(false);
+    setIsDeleteSuccessOpen(true);
+  };
+
   return (
     <>
       <div className={styles.page}>
@@ -1190,6 +1269,7 @@ export default function Transaction() {
                 onEdit={() => {
                   setPanelView("edit");
                 }}
+                onDelete={() => setIsDeleteConfirmOpen(true)}
               />
             )}
 
@@ -1286,6 +1366,31 @@ export default function Transaction() {
         cancelText="취소"
         onConfirm={handleConfirmMultipleSubmit}
         onCancel={() => setIsMultipleConfirmOpen(false)}
+      />
+      <Modal
+        isOpen={isDeleteConfirmOpen}
+        type="danger"
+        icon="error_outline"
+        title="삭제하시겠습니까?"
+        description="삭제한 내역은 복구할 수 없습니다."
+        confirmText="삭제하기"
+        cancelText="취소"
+        onCancel={() => setIsDeleteConfirmOpen(false)}
+        onConfirm={handleDeleteTransaction}
+      />
+      <Modal
+        isOpen={isDeleteSuccessOpen}
+        type="danger"
+        icon="delete_outline"
+        title="삭제되었습니다."
+        description="목록에서 변경된 내용을 확인하세요"
+        confirmText="확인"
+        onConfirm={() => {
+          setIsDeleteSuccessOpen(false);
+          setPanelView("entry");
+          setEntryMode("single");
+          setPanelView("entry");
+        }}
       />
 
       {toastMessage && (
