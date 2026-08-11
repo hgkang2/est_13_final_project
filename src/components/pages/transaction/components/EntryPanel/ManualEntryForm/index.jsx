@@ -4,14 +4,13 @@ import styles from "./ManualEntryForm.module.scss";
 export default function ManualEntryForm({
   transactionForm,
   transactionErrors,
-
   categories,
   paymentMethods,
   transferAccounts,
-
   isTransfer,
   onTransactionFormChange,
   onToggleRecurring,
+  onResetTransactionForm,
 }) {
   const timeInputRef = useRef(null);
   const filteredCategories = categories.filter(
@@ -22,8 +21,20 @@ export default function ManualEntryForm({
     <>
       <div className={styles.formFields}>
         <fieldset className={styles.formField}>
-          <legend className={styles.formLabel}>거래구분</legend>
+          <div className={styles.formLabelRow}>
+            <legend className={styles.formLabel}>거래구분</legend>
 
+            <button
+              type="button"
+              className={styles.resetButton}
+              onClick={onResetTransactionForm}
+            >
+              <span className="material-icons" aria-hidden="true">
+                restart_alt
+              </span>
+              <span>초기화</span>
+            </button>
+          </div>
           <div className={styles.transactionTypeOptions}>
             <label
               className={`${styles.transactionTypeButton} ${

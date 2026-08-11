@@ -478,6 +478,12 @@ export default function Transaction() {
     ]);
   };
 
+  const handleResetTransactionForm = () => {
+    setTransactionForm(initialTransactionForm);
+    setTransactionErrors({});
+    setCopiedRecentId(null);
+  };
+
   const onTransactionFormChange = event => {
     const { name, value, files } = event.target;
 
@@ -1458,6 +1464,7 @@ export default function Transaction() {
                   onToggleRecurring,
                   onTransactionSubmit,
                   onContinueEntry,
+                  onResetTransactionForm: handleResetTransactionForm,
                 }}
                 multipleEntry={{
                   multipleRows,
