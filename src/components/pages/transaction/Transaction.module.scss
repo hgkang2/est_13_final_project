@@ -135,6 +135,16 @@
   font-size: var(--icon-l-size);
 }
 
+.toastError {
+  border-color: var(--color-danger-dot);
+  color: var(--color-danger-text);
+  background-color: var(--color-danger-background);
+}
+
+.toastError .toastIcon {
+  color: var(--color-danger-dot);
+}
+
 @keyframes toast-in {
   from {
     opacity: 0;

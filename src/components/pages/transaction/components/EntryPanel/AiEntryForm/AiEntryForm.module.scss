@@ -309,3 +309,27 @@
 .timeButtonDisabled:hover .timeAction {
   text-decoration: none;
 }
+
+.hiddenFileInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.aiErrorBox {
+  border-color: var(--color-danger-dot);
+  color: var(--color-danger-text);
+  background-color: var(--color-danger-background);
+}
+
+.aiErrorIcon {
+  flex-shrink: 0;
+  color: var(--color-danger-dot);
+  font-size: var(--icon-l-size);
+}

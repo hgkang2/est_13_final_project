@@ -193,6 +193,7 @@ export default function Transaction() {
   ]);
 
   const [aiStatus, setAiStatus] = useState("idle");
+  const [aiErrorMessage, setAiErrorMessage] = useState("");
 
   const [aiTransactionForm, setAiTransactionForm] = useState(
     initialAiTransactionForm,
@@ -201,6 +202,7 @@ export default function Transaction() {
   const [aiPreview, setAiPreview] = useState("");
   const [copiedRecentId, setCopiedRecentId] = useState(null);
   const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("success");
   const [copyTarget, setCopyTarget] = useState(null);
   const [isCopyModalOpen, setIsCopyModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
@@ -1140,11 +1142,13 @@ export default function Transaction() {
     const maxSize = 5 * 1024 * 1024;
 
     if (!allowedTypes.includes(file.type)) {
+      setToastType("error");
       setToastMessage("JPG, PNG, WEBP 이미지만 분석할 수 있어요.");
       return;
     }
 
     if (file.size > maxSize) {
+      setToastType("error");
       setToastMessage("이미지는 5MB 이하만 등록할 수 있어요.");
       return;
     }
@@ -1160,6 +1164,8 @@ export default function Transaction() {
       const imageDataUrl = reader.result;
 
       setAiPreview(imageDataUrl);
+      setAiErrorMessage("");
+      setToastType("success");
       setAiStatus("analyzing");
 
       const { data, error } = await supabase.functions.invoke(
@@ -1185,14 +1191,30 @@ export default function Transaction() {
       console.log("AI 분석 error:", error);
 
       if (error) {
-        setAiStatus("idle");
-        setToastMessage("AI 분석 요청을 보내지 못했어요.");
+        setAiErrorMessage(
+          "AI 분석 요청 중 문제가 발생했습니다. 이미지를 다시 업로드해주세요.",
+        );
+        setAiStatus("error");
         return;
       }
 
       if (!data?.success || !data?.data) {
-        setAiStatus("idle");
-        setToastMessage(data?.message ?? "거래 정보를 인식하지 못했어요.");
+        let message = "거래 정보를 인식하지 못했어요.";
+
+        if (data?.reason === "not_transaction_evidence") {
+          message = "영수증 또는 거래내역 이미지를 확인할 수 없어요.";
+        }
+
+        if (data?.reason === "unreadable") {
+          message = "이미지의 거래 정보를 정확히 읽기 어려워요.";
+        }
+
+        if (data?.reason === "missing_critical_data") {
+          message = "최종 거래 금액을 확인할 수 없어요.";
+        }
+
+        setAiErrorMessage(message);
+        setAiStatus("error");
         return;
       }
 
@@ -1800,6 +1822,7 @@ export default function Transaction() {
                 }}
                 aiEntry={{
                   aiStatus,
+                  aiErrorMessage,
                   aiTransactionForm,
                   aiTransactionErrors,
                   aiPreview,
@@ -1881,12 +1904,18 @@ export default function Transaction() {
       />
 
       {toastMessage && (
-        <div className={styles.toast} role="status" aria-live="polite">
+        <div
+          className={`${styles.toast} ${
+            toastType === "error" ? styles.toastError : ""
+          }`}
+          role={toastType === "error" ? "alert" : "status"}
+          aria-live={toastType === "error" ? "assertive" : "polite"}
+        >
           <span
             className={`material-icons ${styles.toastIcon}`}
             aria-hidden="true"
           >
-            check_circle
+            {toastType === "error" ? "error" : "check_circle"}
           </span>
 
           <span>{toastMessage}</span>

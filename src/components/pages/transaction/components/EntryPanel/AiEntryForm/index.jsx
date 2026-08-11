@@ -3,6 +3,7 @@ import styles from "./AiEntryForm.module.scss";
 
 export default function AiEntryForm({
   aiStatus,
+  aiErrorMessage,
   aiTransactionForm,
   aiTransactionErrors,
   aiPreview,
@@ -39,6 +40,7 @@ export default function AiEntryForm({
               type="file"
               accept="image/jpeg, image/png, image/webp"
               onChange={onAiReceiptChange}
+              className={styles.hiddenFileInput}
             />
 
             <span
@@ -72,6 +74,34 @@ export default function AiEntryForm({
               <span>잠시만 기다려 주세요</span>
             </div>
           </div>
+        )}
+
+        {aiStatus === "error" && (
+          <label
+            className={`${styles.aiRecognitionBox} ${styles.aiErrorBox}`}
+            onDragOver={onAiDragOver}
+            onDrop={onAiDrop}
+          >
+            <input
+              type="file"
+              accept="image/jpeg, image/png, image/webp"
+              onChange={onAiReceiptChange}
+              className={styles.hiddenFileInput}
+            />
+
+            <span
+              className={`material-icons ${styles.aiErrorIcon}`}
+              aria-hidden="true"
+            >
+              error_outline
+            </span>
+
+            <div className={styles.aiRecognitionMessage}>
+              <strong>이미지를 분석하지 못했습니다.</strong>
+              <span>{aiErrorMessage}</span>
+              <span>다른 이미지를 다시 업로드해주세요.</span>
+            </div>
+          </label>
         )}
 
         {aiStatus === "success" && (
