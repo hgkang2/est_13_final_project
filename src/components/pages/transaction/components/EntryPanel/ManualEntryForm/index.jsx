@@ -4,14 +4,13 @@ import styles from "./ManualEntryForm.module.scss";
 export default function ManualEntryForm({
   transactionForm,
   transactionErrors,
-
   categories,
   paymentMethods,
   transferAccounts,
-
   isTransfer,
   onTransactionFormChange,
   onToggleRecurring,
+  onResetTransactionForm,
 }) {
   const timeInputRef = useRef(null);
   const filteredCategories = categories.filter(
@@ -22,8 +21,20 @@ export default function ManualEntryForm({
     <>
       <div className={styles.formFields}>
         <fieldset className={styles.formField}>
-          <legend className={styles.formLabel}>거래구분</legend>
+          <div className={styles.formLabelRow}>
+            <legend className={styles.formLabel}>거래구분</legend>
 
+            <button
+              type="button"
+              className={styles.resetButton}
+              onClick={onResetTransactionForm}
+            >
+              <span className="material-icons" aria-hidden="true">
+                restart_alt
+              </span>
+              <span>초기화</span>
+            </button>
+          </div>
           <div className={styles.transactionTypeOptions}>
             <label
               className={`${styles.transactionTypeButton} ${
@@ -208,9 +219,32 @@ export default function ManualEntryForm({
 
             <div className={styles.formFieldRow}>
               <label className={styles.formField}>
-                <span className={styles.formLabel}>
-                  카테고리 <span className={styles.requiredMark}>*</span>
-                </span>
+                <div className={styles.formLabelRow}>
+                  <span className={styles.formLabel}>
+                    카테고리 <span className={styles.requiredMark}>*</span>
+                  </span>
+
+                  {isTransfer && (
+                    <div className={styles.recurringControl}>
+                      <span>반복</span>
+
+                      <button
+                        type="button"
+                        className={`${styles.recurringSwitch} ${
+                          transactionForm.isRecurring
+                            ? styles.recurringSwitchActive
+                            : ""
+                        }`}
+                        onClick={onToggleRecurring}
+                        role="switch"
+                        aria-checked={transactionForm.isRecurring}
+                        aria-label="반복 이체 설정"
+                      >
+                        <span className={styles.recurringSwitchHandle} />
+                      </button>
+                    </div>
+                  )}
+                </div>
 
                 <span
                   className={`${styles.selectBox} ${
@@ -268,6 +302,32 @@ export default function ManualEntryForm({
                       calendar_month
                     </span>
                   </span>
+                  <div className={styles.timePicker}>
+                    <input
+                      ref={timeInputRef}
+                      type="time"
+                      name="time"
+                      value={transactionForm.time}
+                      onChange={onTransactionFormChange}
+                      className={styles.hiddenTimeInput}
+                    />
+
+                    <button
+                      type="button"
+                      className={styles.timeButton}
+                      onClick={() => timeInputRef.current?.showPicker()}
+                    >
+                      <span className="material-icons" aria-hidden="true">
+                        schedule
+                      </span>
+
+                      <span>{transactionForm.time || "시간 설정"}</span>
+
+                      {transactionForm.time && (
+                        <span className={styles.timeAction}>변경</span>
+                      )}
+                    </button>
+                  </div>
                 </label>
               ) : (
                 <label className={styles.formField}>
@@ -283,7 +343,7 @@ export default function ManualEntryForm({
                     <input
                       type="date"
                       name="date"
-                      value={transactionForm.date}
+                      value={transactionForm.date ?? ""}
                       onChange={onTransactionFormChange}
                       aria-invalid={Boolean(transactionErrors.date)}
                     />
@@ -377,7 +437,7 @@ export default function ManualEntryForm({
                   <input
                     type="date"
                     name="date"
-                    value={transactionForm.date}
+                    value={transactionForm.date ?? ""}
                     onChange={onTransactionFormChange}
                     aria-invalid={Boolean(transactionErrors.date)}
                   />
