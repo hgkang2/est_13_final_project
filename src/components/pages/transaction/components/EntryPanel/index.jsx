@@ -211,7 +211,7 @@ export default function EntryPanel({
               isTransfer={isTransfer}
               onTransactionFormChange={onTransactionFormChange}
               onToggleRecurring={onToggleRecurring}
-              onResetTransactionForm={onResetTransactionForm} 
+              onResetTransactionForm={onResetTransactionForm}
             />
           ) : (
             <MultipleEntryForm
@@ -219,6 +219,7 @@ export default function EntryPanel({
               multipleRowStatus={multipleRowStatus}
               categories={categories}
               paymentMethods={paymentMethods}
+              transferAccounts={transferAccounts}
               onMultipleRowChange={onMultipleRowChange}
               onAddMultipleRow={onAddMultipleRow}
               onRemoveMultipleRow={onRemoveMultipleRow}

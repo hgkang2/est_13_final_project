@@ -5,6 +5,7 @@ export default function MultipleEntryForm({
   multipleRowStatus,
   categories,
   paymentMethods,
+  transferAccounts,
   onMultipleRowChange,
   onAddMultipleRow,
   onRemoveMultipleRow,
@@ -139,25 +140,63 @@ export default function MultipleEntryForm({
                 <strong>원</strong>
               </span>
 
-              <span className={styles.multipleSelect}>
-                <select
-                  name="paymentMethod"
-                  value={row.paymentMethod}
-                  onChange={event => onMultipleRowChange(row.id, event)}
-                >
-                  <option value="">결제수단 선택</option>
+              {row.type === "transfer" ? (
+                <span className={styles.multipleSelect}>
+                  <select
+                    name="transferRoute"
+                    value={
+                      row.withdrawAccount && row.depositAccount
+                        ? `${row.withdrawAccount}|${row.depositAccount}`
+                        : ""
+                    }
+                    onChange={event => onMultipleRowChange(row.id, event)}
+                    aria-label={`${index + 1}번 거래 계좌 이동`}
+                  >
+                    <option value="">계좌 선택</option>
 
-                  {paymentMethods.map(method => (
-                    <option key={method.id} value={method.id}>
-                      {method.name}
-                    </option>
-                  ))}
-                </select>
+                    {transferAccounts.flatMap(withdrawAccount =>
+                      transferAccounts
+                        .filter(
+                          depositAccount =>
+                            depositAccount.id !== withdrawAccount.id,
+                        )
+                        .map(depositAccount => (
+                          <option
+                            key={`${withdrawAccount.id}-${depositAccount.id}`}
+                            value={`${withdrawAccount.id}|${depositAccount.id}`}
+                          >
+                            {withdrawAccount.name} → {depositAccount.name}
+                          </option>
+                        )),
+                    )}
+                  </select>
 
-                <span className="material-icons" aria-hidden="true">
-                  keyboard_arrow_down
+                  <span className="material-icons" aria-hidden="true">
+                    keyboard_arrow_down
+                  </span>
                 </span>
-              </span>
+              ) : (
+                <span className={styles.multipleSelect}>
+                  <select
+                    name="paymentMethod"
+                    value={row.paymentMethod}
+                    onChange={event => onMultipleRowChange(row.id, event)}
+                    aria-label={`${index + 1}번 거래 결제수단`}
+                  >
+                    <option value="">결제수단 선택</option>
+
+                    {paymentMethods.map(method => (
+                      <option key={method.id} value={method.id}>
+                        {method.name}
+                      </option>
+                    ))}
+                  </select>
+
+                  <span className="material-icons" aria-hidden="true">
+                    keyboard_arrow_down
+                  </span>
+                </span>
+              )}
 
               <input
                 type="text"
