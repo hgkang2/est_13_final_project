@@ -10,6 +10,9 @@ const AMOUNT_OPTIONS = [
   { label: "100만", value: 1000000 },
 ];
 
+const GOAL_IMAGE_MAX_SIZE = 2 * 1024 * 1024;
+const GOAL_IMAGE_TYPES = ["image/jpeg", "image/png"];
+
 export default function GoalForm({ initialGoal = null, onClose, onSave }) {
   const goalFormFileInputRef = useRef(null);
 
@@ -31,6 +34,9 @@ export default function GoalForm({ initialGoal = null, onClose, onSave }) {
 
   const [goalFormMemo, setGoalFormMemo] = useState(initialGoal?.memo ?? "");
 
+  const [goalFormError, setGoalFormError] = useState("");
+  const [goalFormIsSaving, setGoalFormIsSaving] = useState(false);
+
   const goalFormIsEditMode = Boolean(initialGoal);
 
   const handleAmountAdd = (amount) => {
@@ -46,6 +52,21 @@ export default function GoalForm({ initialGoal = null, onClose, onSave }) {
       return;
     }
 
+    if (!GOAL_IMAGE_TYPES.includes(selectedFile.type)) {
+      setGoalFormError("JPG 또는 PNG 이미지 파일만 선택해주세요.");
+      event.target.value = "";
+      setGoalFormImage(null);
+      return;
+    }
+
+    if (selectedFile.size > GOAL_IMAGE_MAX_SIZE) {
+      setGoalFormError("이미지는 최대 2MB까지 업로드할 수 있습니다.");
+      event.target.value = "";
+      setGoalFormImage(null);
+      return;
+    }
+
+    setGoalFormError("");
     setGoalFormImage(selectedFile);
   };
 
@@ -62,26 +83,55 @@ export default function GoalForm({ initialGoal = null, onClose, onSave }) {
 
     setGoalFormImage(null);
     setGoalFormMemo(initialGoal?.memo ?? "");
+    setGoalFormError("");
 
     if (goalFormFileInputRef.current) {
       goalFormFileInputRef.current.value = "";
     }
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
+    const trimmedName = goalFormName.trim();
+    const targetAmount = Number(goalFormAmount);
+
+    if (!trimmedName) {
+      setGoalFormError("목표 이름을 입력해주세요.");
+      return;
+    }
+
+    if (!Number.isFinite(targetAmount) || targetAmount <= 0) {
+      setGoalFormError("목표 금액을 0원보다 크게 입력해주세요.");
+      return;
+    }
+
+    if (!goalFormStartDate || !goalFormEndDate) {
+      setGoalFormError("시작일과 종료일을 입력해주세요.");
+      return;
+    }
+
+    if (goalFormEndDate < goalFormStartDate) {
+      setGoalFormError("종료일은 시작일보다 빠를 수 없습니다.");
+      return;
+    }
+
+    setGoalFormError("");
+    setGoalFormIsSaving(true);
+
     const savedGoal = {
-      id: initialGoal?.id ?? Date.now(),
+      id: initialGoal?.id ?? null,
       dday: initialGoal?.dday ?? "",
-      title: goalFormName,
+      title: trimmedName,
       status: initialGoal?.status ?? "진행 중",
       currentAmount: initialGoal?.currentAmount ?? 0,
-      targetAmount: Number(goalFormAmount),
+      targetAmount,
       progress: initialGoal?.progress ?? 0,
       targetDate: goalFormEndDate,
       startDate: goalFormStartDate,
       memo: goalFormMemo,
+      imageFile: goalFormImage,
+      imagePath: initialGoal?.imagePath ?? null,
       imageName: goalFormImage?.name ?? initialGoal?.imageName ?? "",
       imageUrl: goalFormImage
         ? URL.createObjectURL(goalFormImage)
@@ -89,7 +139,26 @@ export default function GoalForm({ initialGoal = null, onClose, onSave }) {
       color: initialGoal?.color ?? "green",
     };
 
-    onSave(savedGoal);
+    try {
+      const didSave = await onSave(savedGoal);
+
+      if (didSave === false) {
+        setGoalFormError("목표를 저장하지 못했습니다. 잠시 후 다시 시도해주세요.");
+      }
+    } finally {
+      setGoalFormIsSaving(false);
+    }
+  };
+
+  const handleStopGoal = () => {
+    if (!initialGoal) {
+      return;
+    }
+
+    onSave({
+      ...initialGoal,
+      status: "중단",
+    });
   };
 
   return (
@@ -298,10 +367,35 @@ export default function GoalForm({ initialGoal = null, onClose, onSave }) {
           </label>
         </div>
 
-        <footer className={styles.goalSettingFormActions}>
-          <button type="submit" value="save">
-            {goalFormIsEditMode ? "수정하기" : "저장하기"}
+        {goalFormError && (
+          <p className={styles.goalSettingFormError} role="alert">
+            {goalFormError}
+          </p>
+        )}
+
+        <footer
+          className={`${styles.goalSettingFormActions} ${
+            goalFormIsEditMode ? styles.goalSettingFormActionsEdit : ""
+          }`}
+        >
+          <button type="submit" value="save" disabled={goalFormIsSaving}>
+            {goalFormIsSaving
+              ? "저장 중..."
+              : goalFormIsEditMode
+                ? "수정하기"
+                : "저장하기"}
           </button>
+
+          {goalFormIsEditMode && (
+            <button
+              type="button"
+              value="stop"
+              disabled={goalFormIsSaving}
+              onClick={handleStopGoal}
+            >
+              중단
+            </button>
+          )}
         </footer>
       </form>
     </aside>

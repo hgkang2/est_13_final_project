@@ -69,6 +69,7 @@ const formatTransaction = transaction => {
     id: transaction.id,
     date,
     time,
+    dateValue,
 
     type: transaction.transaction_type,
 
@@ -393,7 +394,10 @@ export default function Transaction() {
       type: copyTarget.type,
       amount: Math.abs(copyTarget.amount).toString(),
       category: copyTarget.categoryId,
+
       date: dateType === "today" ? today : copyTarget.dateValue,
+      time: dateType === "today" ? "" : copyTarget.time,
+
       paymentMethod: copyTarget.paymentMethodId,
       content: copyTarget.content === "-" ? "" : copyTarget.content,
       memo: "",
@@ -403,6 +407,9 @@ export default function Transaction() {
     setEntryMode("single");
     setPanelView("entry");
     setCopiedRecentId(copyTarget.id);
+    setTimeout(() => {
+      setCopiedRecentId(null);
+    }, 1800);
 
     setIsCopyModalOpen(false);
     setCopyTarget(null);
@@ -472,6 +479,16 @@ export default function Transaction() {
         ...visibleTransactions.map(transaction => transaction.id),
       ]),
     ]);
+  };
+
+  const handleResetTransactionForm = () => {
+    setTransactionForm(prev => ({
+      ...initialTransactionForm,
+      type: prev.type,
+    }));
+
+    setTransactionErrors({});
+    setCopiedRecentId(null);
   };
 
   const onTransactionFormChange = event => {
@@ -599,22 +616,18 @@ export default function Transaction() {
     // transaction_at 생성
     const now = new Date();
 
+    const [hour, minute] = transactionForm.time
+      ? transactionForm.time.split(":").map(Number)
+      : [now.getHours(), now.getMinutes()];
+
     const transactionDate = new Date(
       Number(transactionForm.date.slice(0, 4)),
       Number(transactionForm.date.slice(5, 7)) - 1,
       Number(transactionForm.date.slice(8, 10)),
-      now.getHours(),
-      now.getMinutes(),
-      now.getSeconds(),
+      hour,
+      minute,
+      transactionForm.time ? 0 : now.getSeconds(),
     );
-
-    if (Number.isNaN(transactionDate.getTime())) {
-      setTransactionErrors(prev => ({
-        ...prev,
-        date: "올바른 날짜를 선택해주세요.",
-      }));
-      return;
-    }
 
     // DB 저장값 구성
     const transactionData = {
@@ -647,7 +660,7 @@ export default function Transaction() {
 
       is_recurring:
         transactionForm.type === "transfer"
-          ? transactionForm.isRecurring
+          ? Boolean(transactionForm.isRecurring)
           : false,
 
       recurring_day:
@@ -1011,14 +1024,13 @@ export default function Transaction() {
       // 이체가 아니게 변경되면 반복이체 정보 제거
       is_recurring:
         updatedForm.type === "transfer"
-          ? Boolean(selectedTransaction.isRecurring)
+          ? Boolean(updatedForm.isRecurring)
           : false,
 
       recurring_day:
-        updatedForm.type === "transfer" && selectedTransaction.isRecurring
-          ? selectedTransaction.recurringDay
+        updatedForm.type === "transfer" && updatedForm.isRecurring
+          ? Number(updatedForm.recurringDay)
           : null,
-
       updated_at: new Date().toISOString(),
     };
 
@@ -1421,7 +1433,7 @@ export default function Transaction() {
               <TransactionDetail
                 transaction={selectedTransaction}
                 onClose={() => {
-                  setPanelView("closed");
+                  setPanelView("entry");
                   setSelectedTransaction(null);
                 }}
                 onEdit={() => {
@@ -1459,6 +1471,7 @@ export default function Transaction() {
                   onToggleRecurring,
                   onTransactionSubmit,
                   onContinueEntry,
+                  onResetTransactionForm: handleResetTransactionForm,
                 }}
                 multipleEntry={{
                   multipleRows,

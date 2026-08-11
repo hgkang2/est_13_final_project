@@ -46,11 +46,22 @@ export default function GoalList({ goals, onEdit, onDelete }) {
 
   const goalListSortedGoals = useMemo(
     () =>
-      [...goals].sort(
-        (firstGoal, secondGoal) =>
+      [...goals].sort((firstGoal, secondGoal) => {
+        const firstGoalIsFinished =
+          firstGoal.status === "중단" || firstGoal.status === "달성 완료";
+
+        const secondGoalIsFinished =
+          secondGoal.status === "중단" || secondGoal.status === "달성 완료";
+
+        if (firstGoalIsFinished !== secondGoalIsFinished) {
+          return firstGoalIsFinished ? 1 : -1;
+        }
+
+        return (
           getGoalTargetTime(firstGoal.targetDate) -
-          getGoalTargetTime(secondGoal.targetDate),
-      ),
+          getGoalTargetTime(secondGoal.targetDate)
+        );
+      }),
     [goals],
   );
 

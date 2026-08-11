@@ -120,7 +120,9 @@ export default function Header() {
     <header className={`${styles.header} ${isIntroducePage ? styles.sticky : ""}`}>
       <div className={styles.inner}>
         <div className={styles.logoArea}>
-          <Logo className={styles.logo} />
+          <Link href="/" aria-label="모음 홈으로 이동">
+            <Logo className={styles.logo} />
+          </Link>
         </div>
 
         <nav className={styles.navigation} aria-label="주요 메뉴">
