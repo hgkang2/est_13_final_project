@@ -183,16 +183,7 @@ export default function Transaction() {
   );
 
   const [multipleRows, setMultipleRows] = useState([
-    {
-      id: 1,
-      date: "2026-07-29",
-      type: "expense",
-      category: "cafeSnack",
-      content: "스타벅스 아메리카노",
-      amount: "4500",
-      paymentMethod: "creditCard",
-      memo: "점심 후 커피",
-    },
+    createMultipleTransactionRow(1),
     createMultipleTransactionRow(2),
     createMultipleTransactionRow(3),
   ]);

@@ -264,31 +264,41 @@
   background-color: var(--color-point);
 }
 
+.multipleRow {
+  position: relative;
+  min-height: 80px;
+  padding: 16px 0 28px;
+}
+
 .multipleDateCell {
   position: relative;
   width: 100%;
-  padding-bottom: 18px;
+  height: 36px;
 }
 
 .multipleDateInput {
-  width: 100%;
+  width: calc(100% - 16px);
+  height: 36px;
+  margin: 0 8px;
 }
 
 .multipleTimePicker {
   position: absolute;
-  right: 0;
-  bottom: 0;
+  right: 8px;
+  top: 40px;
 }
 
 .multipleTimeButton {
   display: inline-flex;
-  align-items: center;
-  gap: 4px;
   padding: 0;
   border: 0;
+  align-items: center;
+  gap: 4px;
+
   color: var(--color-gray);
   background: transparent;
   cursor: pointer;
+
   font-size: 11px;
   line-height: 14px;
 }

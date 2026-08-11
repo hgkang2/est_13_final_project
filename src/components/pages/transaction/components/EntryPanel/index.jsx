@@ -217,6 +217,8 @@ export default function EntryPanel({
             <MultipleEntryForm
               multipleRows={multipleRows}
               multipleRowStatus={multipleRowStatus}
+              categories={categories}
+              paymentMethods={paymentMethods}
               onMultipleRowChange={onMultipleRowChange}
               onAddMultipleRow={onAddMultipleRow}
               onRemoveMultipleRow={onRemoveMultipleRow}
