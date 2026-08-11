@@ -9,6 +9,7 @@ export default function AiEntryForm({
   aiPreview,
   categories,
   paymentMethods,
+  transferAccounts,
   onAiFormChange,
   onAiReceiptChange,
   onAiDragOver,
@@ -377,50 +378,136 @@ export default function AiEntryForm({
           </label>
         </div>
 
-        <label className={styles.formField}>
-          <span className={styles.aiFormLabel}>
-            결제수단
-            {aiStatus === "success" && (
-              <span className={styles.requiredMark}> *</span>
-            )}
-          </span>
+        {aiTransactionForm.type === "transfer" ? (
+          <div className={styles.formFieldRow}>
+            <label className={styles.formField}>
+              <span className={styles.aiFormLabel}>
+                출금 계좌
+                {aiStatus === "success" && (
+                  <span className={styles.requiredMark}> *</span>
+                )}
+              </span>
 
-          <span
-            className={`${styles.selectBox} ${styles.aiPaymentSelectBox} ${
-              aiTransactionErrors.paymentMethod ? styles.errorField : ""
-            }`}
-          >
-            <select
-              name="paymentMethod"
-              value={aiTransactionForm.paymentMethod}
-              onChange={onAiFormChange}
-              disabled={aiStatus !== "success"}
-              aria-invalid={Boolean(aiTransactionErrors.paymentMethod)}
+              <span
+                className={`${styles.selectBox} ${
+                  aiTransactionErrors.withdrawAccount ? styles.errorField : ""
+                }`}
+              >
+                <select
+                  name="withdrawAccount"
+                  value={aiTransactionForm.withdrawAccount}
+                  onChange={onAiFormChange}
+                  disabled={aiStatus !== "success"}
+                  aria-invalid={Boolean(aiTransactionErrors.withdrawAccount)}
+                >
+                  <option value="">출금 계좌 선택</option>
+
+                  {transferAccounts.map(account => (
+                    <option key={account.id} value={account.id}>
+                      {account.name}
+                    </option>
+                  ))}
+                </select>
+
+                <span className="material-icons" aria-hidden="true">
+                  keyboard_arrow_down
+                </span>
+              </span>
+
+              {aiTransactionErrors.withdrawAccount && (
+                <span className={styles.errorMessage}>
+                  {aiTransactionErrors.withdrawAccount}
+                </span>
+              )}
+            </label>
+
+            <label className={styles.formField}>
+              <span className={styles.aiFormLabel}>
+                입금 계좌
+                {aiStatus === "success" && (
+                  <span className={styles.requiredMark}> *</span>
+                )}
+              </span>
+
+              <span
+                className={`${styles.selectBox} ${
+                  aiTransactionErrors.depositAccount ? styles.errorField : ""
+                }`}
+              >
+                <select
+                  name="depositAccount"
+                  value={aiTransactionForm.depositAccount}
+                  onChange={onAiFormChange}
+                  disabled={aiStatus !== "success"}
+                  aria-invalid={Boolean(aiTransactionErrors.depositAccount)}
+                >
+                  <option value="">입금 계좌 선택</option>
+
+                  {transferAccounts.map(account => (
+                    <option key={account.id} value={account.id}>
+                      {account.name}
+                    </option>
+                  ))}
+                </select>
+
+                <span className="material-icons" aria-hidden="true">
+                  keyboard_arrow_down
+                </span>
+              </span>
+
+              {aiTransactionErrors.depositAccount && (
+                <span className={styles.errorMessage}>
+                  {aiTransactionErrors.depositAccount}
+                </span>
+              )}
+            </label>
+          </div>
+        ) : (
+          <label className={styles.formField}>
+            <span className={styles.aiFormLabel}>
+              결제수단
+              {aiStatus === "success" && (
+                <span className={styles.requiredMark}> *</span>
+              )}
+            </span>
+
+            <span
+              className={`${styles.selectBox} ${styles.aiPaymentSelectBox} ${
+                aiTransactionErrors.paymentMethod ? styles.errorField : ""
+              }`}
             >
-              <option value="">
-                {aiStatus === "analyzing"
-                  ? "분석 중입니다..."
-                  : "결제수단 선택"}
-              </option>
-
-              {paymentMethods.map(method => (
-                <option key={method.id} value={method.id}>
-                  {method.name}
+              <select
+                name="paymentMethod"
+                value={aiTransactionForm.paymentMethod}
+                onChange={onAiFormChange}
+                disabled={aiStatus !== "success"}
+                aria-invalid={Boolean(aiTransactionErrors.paymentMethod)}
+              >
+                <option value="">
+                  {aiStatus === "analyzing"
+                    ? "분석 중입니다..."
+                    : "결제수단 선택"}
                 </option>
-              ))}
-            </select>
 
-            <span className="material-icons" aria-hidden="true">
-              keyboard_arrow_down
-            </span>
-          </span>
+                {paymentMethods.map(method => (
+                  <option key={method.id} value={method.id}>
+                    {method.name}
+                  </option>
+                ))}
+              </select>
 
-          {aiTransactionErrors.paymentMethod && (
-            <span className={styles.errorMessage}>
-              {aiTransactionErrors.paymentMethod}
+              <span className="material-icons" aria-hidden="true">
+                keyboard_arrow_down
+              </span>
             </span>
-          )}
-        </label>
+
+            {aiTransactionErrors.paymentMethod && (
+              <span className={styles.errorMessage}>
+                {aiTransactionErrors.paymentMethod}
+              </span>
+            )}
+          </label>
+        )}
 
         <label className={styles.formField}>
           <span className={styles.aiFormLabel}>내용</span>

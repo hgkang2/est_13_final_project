@@ -15,11 +15,9 @@ export default function EntryPanel({
   const {
     transactionForm,
     transactionErrors,
-
     categories,
     paymentMethods,
     transferAccounts,
-
     onTransactionFormChange,
     onToggleRecurring,
     onTransactionSubmit,
@@ -253,6 +251,7 @@ export default function EntryPanel({
           aiPreview={aiPreview}
           categories={categories}
           paymentMethods={paymentMethods}
+          transferAccounts={transferAccounts}
           onAiFormChange={onAiFormChange}
           onAiReceiptChange={onAiReceiptChange}
           onAiDragOver={onAiDragOver}
