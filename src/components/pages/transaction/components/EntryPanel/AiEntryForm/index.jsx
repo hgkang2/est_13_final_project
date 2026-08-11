@@ -6,6 +6,8 @@ export default function AiEntryForm({
   aiTransactionForm,
   aiTransactionErrors,
   aiPreview,
+  categories,
+  paymentMethods,
   onAiFormChange,
   onAiReceiptChange,
   onAiDragOver,
@@ -252,17 +254,17 @@ export default function AiEntryForm({
                     : "카테고리 선택"}
                 </option>
 
-                <option value="salary">월급</option>
-                <option value="otherIncome">부수입</option>
-                <option value="food">식비</option>
-                <option value="cafeSnack">카페/간식</option>
-                <option value="transportation">교통</option>
-                <option value="shopping">쇼핑</option>
-                <option value="subscription">구독</option>
-                <option value="savings">저축</option>
-                <option value="other">기타</option>
+                {categories
+                  .filter(
+                    category =>
+                      category.transaction_type === aiTransactionForm.type,
+                  )
+                  .map(category => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
               </select>
-
               <span className="material-icons" aria-hidden="true">
                 keyboard_arrow_down
               </span>
@@ -371,12 +373,11 @@ export default function AiEntryForm({
                   : "결제수단 선택"}
               </option>
 
-              <option value="creditCard">신용카드</option>
-              <option value="checkCard">체크카드</option>
-              <option value="accountTransfer">계좌이체</option>
-              <option value="cash">현금</option>
-              <option value="kakaoPay">카카오페이</option>
-              <option value="other">기타</option>
+              {paymentMethods.map(method => (
+                <option key={method.id} value={method.id}>
+                  {method.name}
+                </option>
+              ))}
             </select>
 
             <span className="material-icons" aria-hidden="true">

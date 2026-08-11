@@ -136,6 +136,7 @@ const initialAiTransactionForm = {
   amount: "",
   category: "",
   date: "",
+  time: "",
   paymentMethod: "",
   content: "",
   memo: "",
@@ -1167,8 +1168,8 @@ export default function Transaction() {
         },
       );
 
-      console.log("AI 요청 테스트 data:", data);
-      console.log("AI 요청 테스트 error:", error);
+      console.log("AI 분석 data:", data);
+      console.log("AI 분석 error:", error);
 
       if (error) {
         setAiStatus("idle");
@@ -1176,7 +1177,43 @@ export default function Transaction() {
         return;
       }
 
-      setAiStatus("idle");
+      if (!data?.success || !data?.data) {
+        setAiStatus("idle");
+        setToastMessage(data?.message ?? "거래 정보를 인식하지 못했어요.");
+        return;
+      }
+
+      const aiResult = data.data;
+
+      const matchedCategory = categories.find(
+        category =>
+          category.name === aiResult.category &&
+          category.transaction_type === aiResult.type,
+      );
+
+      const matchedPaymentMethod = paymentMethods.find(
+        method => method.name === aiResult.paymentMethod,
+      );
+
+      setAiTransactionForm(prevForm => ({
+        ...prevForm,
+        type: aiResult.type ?? "",
+        amount:
+          aiResult.amount !== null && aiResult.amount !== undefined
+            ? String(aiResult.amount)
+            : "",
+        category: matchedCategory?.id ?? "",
+        date: aiResult.date ?? "",
+        time: aiResult.time ?? "",
+        paymentMethod:
+          aiResult.type === "transfer" ? "" : (matchedPaymentMethod?.id ?? ""),
+        content: aiResult.content ?? "",
+        memo: aiResult.memo ?? "",
+        receipt: prevForm.receipt,
+      }));
+
+      setAiTransactionErrors({});
+      setAiStatus("success");
     };
 
     reader.readAsDataURL(file);

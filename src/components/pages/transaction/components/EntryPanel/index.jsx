@@ -249,6 +249,8 @@ export default function EntryPanel({
           aiTransactionForm={aiTransactionForm}
           aiTransactionErrors={aiTransactionErrors}
           aiPreview={aiPreview}
+          categories={categories}
+          paymentMethods={paymentMethods}
           onAiFormChange={onAiFormChange}
           onAiReceiptChange={onAiReceiptChange}
           onAiDragOver={onAiDragOver}
