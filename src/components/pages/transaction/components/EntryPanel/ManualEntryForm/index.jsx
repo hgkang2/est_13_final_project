@@ -1,12 +1,23 @@
+import { useRef } from "react";
 import styles from "./ManualEntryForm.module.scss";
 
 export default function ManualEntryForm({
   transactionForm,
   transactionErrors,
+
+  categories,
+  paymentMethods,
+  transferAccounts,
+
   isTransfer,
   onTransactionFormChange,
   onToggleRecurring,
 }) {
+  const timeInputRef = useRef(null);
+  const filteredCategories = categories.filter(
+    category => category.transaction_type === transactionForm.type,
+  );
+
   return (
     <>
       <div className={styles.formFields}>
@@ -137,10 +148,12 @@ export default function ManualEntryForm({
                     aria-invalid={Boolean(transactionErrors.withdrawAccount)}
                   >
                     <option value="">출금 계좌 선택</option>
-                    <option value="mainAccount">주거래 계좌</option>
-                    <option value="salaryAccount">급여 계좌</option>
-                    <option value="savingAccount">저축 계좌</option>
-                    <option value="cash">현금</option>
+
+                    {transferAccounts.map(account => (
+                      <option value={account.id} key={account.id}>
+                        {account.name}
+                      </option>
+                    ))}
                   </select>
 
                   <span className="material-icons" aria-hidden="true">
@@ -172,10 +185,12 @@ export default function ManualEntryForm({
                     aria-invalid={Boolean(transactionErrors.depositAccount)}
                   >
                     <option value="">입금 계좌 선택</option>
-                    <option value="mainAccount">주거래 계좌</option>
-                    <option value="salaryAccount">급여 계좌</option>
-                    <option value="savingAccount">저축 계좌</option>
-                    <option value="cash">현금</option>
+
+                    {transferAccounts.map(account => (
+                      <option value={account.id} key={account.id}>
+                        {account.name}
+                      </option>
+                    ))}
                   </select>
 
                   <span className="material-icons" aria-hidden="true">
@@ -209,14 +224,12 @@ export default function ManualEntryForm({
                     aria-invalid={Boolean(transactionErrors.category)}
                   >
                     <option value="">카테고리 선택</option>
-                    <option value="salary">월급</option>
-                    <option value="otherIncome">부수입</option>
-                    <option value="food">식비</option>
-                    <option value="cafeSnack">카페/간식</option>
-                    <option value="transportation">교통</option>
-                    <option value="shopping">쇼핑</option>
-                    <option value="subscription">구독</option>
-                    <option value="other">기타</option>
+
+                    {filteredCategories.map(category => (
+                      <option value={category.id} key={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
                   </select>
 
                   <span className="material-icons" aria-hidden="true">
@@ -276,6 +289,33 @@ export default function ManualEntryForm({
                     />
                   </span>
 
+                  <div className={styles.timePicker}>
+                    <input
+                      ref={timeInputRef}
+                      type="time"
+                      name="time"
+                      value={transactionForm.time}
+                      onChange={onTransactionFormChange}
+                      className={styles.hiddenTimeInput}
+                    />
+
+                    <button
+                      type="button"
+                      className={styles.timeButton}
+                      onClick={() => timeInputRef.current?.showPicker()}
+                    >
+                      <span className="material-icons" aria-hidden="true">
+                        schedule
+                      </span>
+
+                      <span>{transactionForm.time || "시간 설정"}</span>
+
+                      {transactionForm.time && (
+                        <span className={styles.timeAction}>변경</span>
+                      )}
+                    </button>
+                  </div>
+
                   {transactionErrors.date && (
                     <span className={styles.errorMessage}>
                       {transactionErrors.date}
@@ -305,14 +345,12 @@ export default function ManualEntryForm({
                     aria-invalid={Boolean(transactionErrors.category)}
                   >
                     <option value="">카테고리 선택</option>
-                    <option value="salary">월급</option>
-                    <option value="otherIncome">부수입</option>
-                    <option value="food">식비</option>
-                    <option value="cafeSnack">카페/간식</option>
-                    <option value="transportation">교통</option>
-                    <option value="shopping">쇼핑</option>
-                    <option value="subscription">구독</option>
-                    <option value="other">기타</option>
+
+                    {filteredCategories.map(category => (
+                      <option value={category.id} key={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
                   </select>
 
                   <span className="material-icons" aria-hidden="true">
@@ -331,7 +369,6 @@ export default function ManualEntryForm({
                 <span className={styles.formLabel}>
                   날짜 <span className={styles.requiredMark}>*</span>
                 </span>
-
                 <span
                   className={`${styles.dateInputBox} ${
                     transactionErrors.date ? styles.errorField : ""
@@ -345,6 +382,33 @@ export default function ManualEntryForm({
                     aria-invalid={Boolean(transactionErrors.date)}
                   />
                 </span>
+
+                <div className={styles.timePicker}>
+                  <input
+                    ref={timeInputRef}
+                    type="time"
+                    name="time"
+                    value={transactionForm.time}
+                    onChange={onTransactionFormChange}
+                    className={styles.hiddenTimeInput}
+                  />
+
+                  <button
+                    type="button"
+                    className={styles.timeButton}
+                    onClick={() => timeInputRef.current?.showPicker()}
+                  >
+                    <span className="material-icons" aria-hidden="true">
+                      schedule
+                    </span>
+
+                    <span>{transactionForm.time || "시간 설정"}</span>
+
+                    {transactionForm.time && (
+                      <span className={styles.timeAction}>변경</span>
+                    )}
+                  </button>
+                </div>
 
                 {transactionErrors.date && (
                   <span className={styles.errorMessage}>
@@ -371,12 +435,12 @@ export default function ManualEntryForm({
                   aria-invalid={Boolean(transactionErrors.paymentMethod)}
                 >
                   <option value="">결제수단 선택</option>
-                  <option value="creditCard">신용카드</option>
-                  <option value="checkCard">체크카드</option>
-                  <option value="accountTransfer">계좌이체</option>
-                  <option value="cash">현금</option>
-                  <option value="kakaoPay">카카오페이</option>
-                  <option value="other">기타</option>
+
+                  {paymentMethods.map(method => (
+                    <option value={method.id} key={method.id}>
+                      {method.name}
+                    </option>
+                  ))}
                 </select>
 
                 <span className="material-icons" aria-hidden="true">

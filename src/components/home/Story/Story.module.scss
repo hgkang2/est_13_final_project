@@ -1,6 +1,6 @@
 .story {
   width: 100%;
-  padding: 160px 0 0 0;
+  padding: 160px 0 0;
 }
 
 .inner {
@@ -16,58 +16,94 @@
   gap: 200px;
 }
 
+/* ----------------------- */
+/* 스토리 아이템 */
+/* ----------------------- */
+
 .storyItem {
   display: flex;
   align-items: flex-end;
-
   gap: 64px;
 
   width: 100%;
 
   opacity: 0;
-  transform: translateY(60px);
+  transform: translateY(70px) rotate(1.5deg) scale(0.97);
 
   transition:
-    opacity 0.8s ease,
-    transform 0.8s ease;
+    opacity 0.7s ease,
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .storyItem.reverse {
   flex-direction: row-reverse;
+
+  transform: translateY(70px) rotate(-1.5deg) scale(0.97);
 }
 
 .storyItem.visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(0) rotate(0) scale(1);
 }
+
+/* ----------------------- */
+/* 이미지 */
+/* ----------------------- */
 
 .imageArea {
   flex: 0 1 620px;
+
+  overflow: hidden;
+  border-radius: 20px;
+
+  transform: scale(0.96);
+
+  transition:
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.8s ease;
+}
+
+.storyItem.visible .imageArea {
+  transform: scale(1);
 }
 
 .image {
   display: block;
+
   width: 100%;
   height: auto;
+
+  transition: transform 0.6s ease;
+}
+
+.storyItem:hover .image {
+  transform: scale(1.03);
 }
 
 .content {
+  position: relative;
+
   flex: 1;
   max-width: 380px;
-  position: relative;
+
+  opacity: 0;
+
+  transition:
+    opacity 0.6s ease 0.15s,
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
 }
 
 .storyItem:not(.reverse) .content {
-  transform: translateX(30px);
+  transform: translateX(50px);
 }
 
 .storyItem.reverse .content {
-  transform: translateX(-30px);
+  transform: translateX(-50px);
 }
 
-.number {
-  display: block;
-  color: var(--color-point);
+.storyItem.visible .content {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 .numberArea {
@@ -76,22 +112,175 @@
   align-items: flex-start;
 }
 
+.number {
+  display: block;
+
+  color: var(--color-point);
+
+  opacity: 0;
+  transform: scale(0.7);
+
+  transform-origin: left bottom;
+}
+
+.storyItem.visible .number {
+  animation: numberPop 0.55s 0.35s both;
+}
+
+@keyframes numberPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+
+  70% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 .numberLine {
   display: block;
 
-  width: 238px;
+  width: 0;
   height: 1px;
+
   margin-top: 9px;
   margin-bottom: 12px;
 
   background-color: var(--color-point);
   border-radius: 999px;
+
+  transition: width 0.7s ease 0.45s;
+}
+
+.storyItem.visible .numberLine {
+  width: 238px;
 }
 
 .description {
-  color: var(--color-text);
   margin-top: 8px;
+
+  color: var(--color-text);
+
+  opacity: 0;
+  transform: translateY(12px);
+
+  transition:
+    opacity 0.5s ease 0.45s,
+    transform 0.6s ease 0.45s;
+
   strong {
     font-weight: 700;
+  }
+}
+
+.storyItem.visible .description {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ----------------------- */
+/* 태블릿 */
+/* ----------------------- */
+
+@media (max-width: 768px) {
+  .story {
+    padding-top: 120px;
+  }
+
+  .inner {
+    padding: 0 48px;
+  }
+
+  .storyList {
+    gap: 140px;
+  }
+
+  .storyItem,
+  .storyItem.reverse {
+    flex-direction: column;
+    align-items: stretch;
+
+    gap: 40px;
+
+    transform: translateY(60px) scale(0.97);
+  }
+
+  .storyItem.visible {
+    transform: translateY(0) scale(1);
+  }
+
+  .imageArea {
+    flex: none;
+    width: 100%;
+  }
+
+  .content {
+    max-width: 100%;
+  }
+
+  .storyItem:not(.reverse) .content,
+  .storyItem.reverse .content {
+    transform: translateY(30px);
+  }
+
+  .storyItem.visible .content {
+    transform: translateY(0);
+  }
+}
+
+/* ----------------------- */
+/* 모바일 */
+/* ----------------------- */
+
+@media (max-width: 480px) {
+  .story {
+    padding-top: 100px;
+  }
+
+  .inner {
+    padding: 0 20px;
+  }
+
+  .storyList {
+    gap: 100px;
+  }
+
+  .storyItem,
+  .storyItem.reverse {
+    gap: 28px;
+  }
+
+  .numberLine {
+    max-width: 180px;
+  }
+
+  .storyItem.visible .numberLine {
+    width: 180px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .storyItem,
+  .imageArea,
+  .image,
+  .content,
+  .number,
+  .numberLine,
+  .description {
+    animation: none;
+    transition: none;
+    transform: none;
+    opacity: 1;
+  }
+
+  .numberLine {
+    width: 238px;
   }
 }

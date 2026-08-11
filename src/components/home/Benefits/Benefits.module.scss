@@ -111,25 +111,35 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
+  perspective: 800px;
 }
 
 .imageArea img {
   display: block;
+
   width: 307px;
   height: auto;
 
-  animation: imageFade 0.35s ease;
+  transform-origin: center bottom;
+
+  animation: imageChange 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-@keyframes imageFade {
-  from {
+@keyframes imageChange {
+  0% {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(18px) scale(0.92) rotate(-2deg);
   }
 
-  to {
+  65% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(-4px) scale(1.03) rotate(1deg);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0);
   }
 }
 

@@ -81,7 +81,11 @@ export default function RecentTransactions({
 
                 <div className={styles.recentSubInfo}>
                   <strong>{transaction.paymentMethod}</strong>
-                  <span>{transaction.date}</span>
+
+                  <span>
+                    {transaction.date}
+                    {transaction.time ? ` ${transaction.time}` : ""}
+                  </span>
                 </div>
               </div>
 
