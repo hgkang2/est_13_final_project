@@ -1,6 +1,11 @@
 import styles from "./TransactionDetailEdit.module.scss";
 
-export default function TransactionDetail({ transaction, onClose, onEdit }) {
+export default function TransactionDetail({
+  transaction,
+  onClose,
+  onEdit,
+  onDelete,
+}) {
   if (!transaction) return null;
 
   return (
@@ -128,7 +133,10 @@ export default function TransactionDetail({ transaction, onClose, onEdit }) {
             <h3>날짜</h3>
 
             <div className={styles.detailValueBox}>
-              <strong>{transaction.date}</strong>
+              <strong>
+                {transaction.date}
+                {transaction.time ? ` ${transaction.time}` : ""}
+              </strong>
             </div>
           </section>
         </div>
@@ -181,7 +189,11 @@ export default function TransactionDetail({ transaction, onClose, onEdit }) {
       </div>
 
       <div className={styles.detailActions}>
-        <button type="button" className={styles.detailDeleteButton}>
+        <button
+          type="button"
+          className={styles.detailDeleteButton}
+          onClick={onDelete}
+        >
           삭제하기
         </button>
 

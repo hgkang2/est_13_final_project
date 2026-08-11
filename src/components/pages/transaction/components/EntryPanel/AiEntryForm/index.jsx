@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import styles from "./AiEntryForm.module.scss";
 
 export default function AiEntryForm({
@@ -11,6 +12,8 @@ export default function AiEntryForm({
   onAiDrop,
   onAiTransactionSubmit,
 }) {
+  const timeInputRef = useRef(null);
+
   return (
     <form className={styles.aiEntryForm} onSubmit={onAiTransactionSubmit}>
       <section className={styles.aiRecognitionSection}>
@@ -300,6 +303,45 @@ export default function AiEntryForm({
                 />
               )}
             </span>
+
+            <div className={styles.aiTimePicker}>
+              <input
+                ref={timeInputRef}
+                type="time"
+                name="time"
+                value={aiTransactionForm.time ?? ""}
+                onChange={onAiFormChange}
+                className={styles.hiddenTimeInput}
+                disabled={aiStatus !== "success"}
+              />
+
+              <button
+                type="button"
+                className={`${styles.timeButton} ${
+                  aiStatus !== "success" ? styles.timeButtonDisabled : ""
+                }`}
+                onClick={() => {
+                  if (aiStatus !== "success") return;
+
+                  timeInputRef.current?.showPicker();
+                }}
+                disabled={aiStatus !== "success"}
+              >
+                <span className="material-icons" aria-hidden="true">
+                  schedule
+                </span>
+
+                <span>
+                  {aiStatus === "analyzing"
+                    ? "분석 중..."
+                    : aiTransactionForm.time || "시간 설정"}
+                </span>
+
+                {aiStatus === "success" && aiTransactionForm.time && (
+                  <span className={styles.timeAction}>변경</span>
+                )}
+              </button>
+            </div>
           </label>
         </div>
 

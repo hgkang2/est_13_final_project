@@ -15,6 +15,11 @@ export default function EntryPanel({
   const {
     transactionForm,
     transactionErrors,
+
+    categories,
+    paymentMethods,
+    transferAccounts,
+
     onTransactionFormChange,
     onToggleRecurring,
     onTransactionSubmit,
@@ -199,6 +204,9 @@ export default function EntryPanel({
             <ManualEntryForm
               transactionForm={transactionForm}
               transactionErrors={transactionErrors}
+              categories={categories}
+              paymentMethods={paymentMethods}
+              transferAccounts={transferAccounts}
               isTransfer={isTransfer}
               onTransactionFormChange={onTransactionFormChange}
               onToggleRecurring={onToggleRecurring}
