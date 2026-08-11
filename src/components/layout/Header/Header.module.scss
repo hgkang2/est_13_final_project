@@ -5,6 +5,14 @@
   background-color: var(--color-white);
 }
 
+.sticky {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
 .inner {
   display: flex;
   width: 100%;
@@ -46,13 +54,31 @@
 .menuLink {
   @include typo-body-m-plus;
 
+  position: relative;
   display: block;
-  padding: 7px 14px;
+  padding: 7px 14px 12px;
   color: var(--color-light-gray);
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
-  transition: color 0.2s ease;
+  transition: color 0.3s ease;
+
+  &::after {
+    content: "";
+
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+
+    width: 0;
+    height: 3px;
+
+    background-color: var(--color-point);
+    border-radius: 999px;
+
+    transform: translateX(-50%);
+    transition: width 0.3s ease;
+  }
 
   &:hover {
     color: var(--color-point);
@@ -88,6 +114,14 @@
   font-family: var(--font-family-icon);
   font-size: 35px;
   line-height: 1;
+}
+
+.active {
+  color: var(--color-point);
+
+  &::after {
+    width: calc(100% - 28px);
+  }
 }
 
 @media (max-width: 1024px) {
