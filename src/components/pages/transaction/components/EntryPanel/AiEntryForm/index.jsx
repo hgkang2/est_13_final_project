@@ -37,7 +37,7 @@ export default function AiEntryForm({
           >
             <input
               type="file"
-              accept="image/jpeg, image/png"
+              accept="image/jpeg, image/png, image/webp"
               onChange={onAiReceiptChange}
             />
 
@@ -51,7 +51,7 @@ export default function AiEntryForm({
             <div className={styles.aiUploadText}>
               <strong>영수증 이미지를 드래그하거나 클릭하여 업로드</strong>
 
-              <span>JPG, PNG · 최대 2MB</span>
+              <span>JPG, PNG, WEBP · 최대 5MB</span>
             </div>
           </label>
         )}

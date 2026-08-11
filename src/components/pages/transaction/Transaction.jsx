@@ -1136,6 +1136,19 @@ export default function Transaction() {
   const handleAiReceipt = file => {
     if (!file) return;
 
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    const maxSize = 5 * 1024 * 1024;
+
+    if (!allowedTypes.includes(file.type)) {
+      setToastMessage("JPG, PNG, WEBP 이미지만 분석할 수 있어요.");
+      return;
+    }
+
+    if (file.size > maxSize) {
+      setToastMessage("이미지는 5MB 이하만 등록할 수 있어요.");
+      return;
+    }
+
     setAiTransactionForm(prevForm => ({
       ...prevForm,
       receipt: file,
