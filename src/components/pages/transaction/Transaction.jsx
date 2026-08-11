@@ -959,6 +959,23 @@ export default function Transaction() {
       return;
     }
 
+    const { data: existingAttachment, error: existingAttachmentError } =
+      await supabase
+        .from("transaction_attachments")
+        .select("id, storage_path, file_name, mime_type")
+        .eq("transaction_id", selectedTransaction.id)
+        .maybeSingle();
+
+    if (existingAttachmentError) {
+      console.error("기존 영수증 정보 조회 실패:", existingAttachmentError);
+      setToastMessage("기존 영수증 정보를 확인하지 못했어요.");
+      return;
+    }
+
+    const newAttachment = updatedForm.attachment;
+
+    let nextReceiptImage = selectedTransaction.receiptImage ?? null;
+
     // 2. 수정 날짜/시간 생성
     const [year, month, day] = updatedForm.date.split("-").map(Number);
 
@@ -1064,6 +1081,149 @@ export default function Transaction() {
       return;
     }
 
+    //영수증 첨부 수정 처리
+    // 새 영수증 선택 → 신규 첨부 또는 기존 첨부 교체
+    if (newAttachment) {
+      const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+      const maxSize = 5 * 1024 * 1024;
+
+      if (!allowedTypes.includes(newAttachment.type)) {
+        setToastMessage("영수증은 JPG, PNG, WEBP 이미지만 등록할 수 있어요.");
+        return;
+      }
+
+      if (newAttachment.size > maxSize) {
+        setToastMessage("영수증 이미지는 5MB 이하만 등록할 수 있어요.");
+        return;
+      }
+
+      const extension =
+        newAttachment.name.split(".").pop()?.toLowerCase() || "jpg";
+
+      const safeFileName = `receipt-${Date.now()}.${extension}`;
+
+      const newStoragePath = `${user.id}/${selectedTransaction.id}/${safeFileName}`;
+
+      // 새 파일부터 업로드
+      const { error: uploadError } = await supabase.storage
+        .from("transaction-attachments")
+        .upload(newStoragePath, newAttachment, {
+          contentType: newAttachment.type,
+          upsert: false,
+        });
+
+      if (uploadError) {
+        console.error("새 영수증 업로드 실패:", uploadError);
+        setToastMessage("새 영수증을 업로드하지 못했어요.");
+        return;
+      }
+
+      let attachmentSaveError = null;
+
+      // 기존 첨부가 있으면 metadata UPDATE
+      if (existingAttachment) {
+        const { error } = await supabase
+          .from("transaction_attachments")
+          .update({
+            storage_path: newStoragePath,
+            file_name: newAttachment.name,
+            mime_type: newAttachment.type,
+          })
+          .eq("id", existingAttachment.id);
+
+        attachmentSaveError = error;
+      } else {
+        // 기존 첨부가 없으면 INSERT
+        const { error } = await supabase
+          .from("transaction_attachments")
+          .insert({
+            transaction_id: selectedTransaction.id,
+            storage_path: newStoragePath,
+            file_name: newAttachment.name,
+            mime_type: newAttachment.type,
+          });
+
+        attachmentSaveError = error;
+      }
+
+      // attachment DB 저장 실패 → 방금 올린 Storage 파일 롤백
+      if (attachmentSaveError) {
+        console.error("영수증 첨부정보 저장 실패:", attachmentSaveError);
+
+        const { error: rollbackStorageError } = await supabase.storage
+          .from("transaction-attachments")
+          .remove([newStoragePath]);
+
+        if (rollbackStorageError) {
+          console.error("새 영수증 Storage 롤백 실패:", rollbackStorageError);
+        }
+
+        setToastMessage("영수증 정보를 수정하지 못했어요.");
+        return;
+      }
+
+      if (
+        existingAttachment?.storage_path &&
+        existingAttachment.storage_path !== newStoragePath
+      ) {
+        const { error: oldStorageRemoveError } = await supabase.storage
+          .from("transaction-attachments")
+          .remove([existingAttachment.storage_path]);
+
+        if (oldStorageRemoveError) {
+          console.error(
+            "기존 영수증 Storage 정리 실패:",
+            oldStorageRemoveError,
+          );
+        }
+      }
+
+      // 새 영수증 상세화면용 signed URL 생성
+      const { data: signedUrlData, error: signedUrlError } =
+        await supabase.storage
+          .from("transaction-attachments")
+          .createSignedUrl(newStoragePath, 60 * 10);
+
+      if (signedUrlError) {
+        console.error("새 영수증 URL 생성 실패:", signedUrlError);
+        nextReceiptImage = null;
+      } else {
+        nextReceiptImage = signedUrlData.signedUrl;
+      }
+    }
+
+    // 새 파일은 X "첨부 삭제"를 선택 경우
+    else if (updatedForm.removeAttachment) {
+      if (existingAttachment) {
+        // DB 연결 제거
+        const { error: attachmentDeleteError } = await supabase
+          .from("transaction_attachments")
+          .delete()
+          .eq("id", existingAttachment.id);
+
+        if (attachmentDeleteError) {
+          console.error("영수증 첨부정보 삭제 실패:", attachmentDeleteError);
+          setToastMessage("영수증 정보를 삭제하지 못했어요.");
+          return;
+        }
+
+        // Storage 실제 파일 제거
+        if (existingAttachment.storage_path) {
+          const { error: storageRemoveError } = await supabase.storage
+            .from("transaction-attachments")
+            .remove([existingAttachment.storage_path]);
+
+          if (storageRemoveError) {
+            // DB 연결은 이미 제거
+            // Storage에 파일만 남는 cleanup 문제 -> 사용자 수정은 유지.
+            console.error("영수증 Storage 삭제 실패:", storageRemoveError);
+          }
+        }
+      }
+
+      nextReceiptImage = null;
+    }
+
     // 6. DB 데이터 → UI 형식
     const formattedTransaction = formatTransaction(updatedTransaction);
 
@@ -1085,9 +1245,7 @@ export default function Transaction() {
     // 8. 상세도 즉시 수정
     setSelectedTransaction({
       ...formattedTransaction,
-
-      // 기존 영수증 signed URL 유지
-      receiptImage: selectedTransaction.receiptImage ?? null,
+      receiptImage: nextReceiptImage,
     });
 
     // 9. 상세화면으로 복귀

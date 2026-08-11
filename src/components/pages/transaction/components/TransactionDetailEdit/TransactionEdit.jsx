@@ -14,7 +14,9 @@ export default function TransactionEdit({
 }) {
   const [editForm, setEditForm] = useState(null);
   const [editErrors, setEditErrors] = useState({});
+  const [attachmentPreview, setAttachmentPreview] = useState("");
   const timeInputRef = useRef(null);
+  const attachmentInputRef = useRef(null);
 
   useEffect(() => {
     if (!transaction) return;
@@ -29,6 +31,9 @@ export default function TransactionEdit({
       memo: transaction.memo ?? "",
       withdrawAccount: transaction.withdrawAccountId,
       depositAccount: transaction.depositAccountId,
+
+      attachment: null, // 새로 선택한 파일
+      removeAttachment: false, // 시존 영수증 삭제 여부
     });
   }, [transaction]);
 
@@ -46,6 +51,69 @@ export default function TransactionEdit({
       ...prevForm,
       [name]: value,
     }));
+  };
+
+  const handleAttachmentChange = event => {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    const maxSize = 5 * 1024 * 1024;
+
+    if (!allowedTypes.includes(file.type)) {
+      setEditErrors(prev => ({
+        ...prev,
+        attachment: "JPG, PNG, WEBP 이미지만 등록할 수 있어요.",
+      }));
+      return;
+    }
+
+    if (file.size > maxSize) {
+      setEditErrors(prev => ({
+        ...prev,
+        attachment: "영수증 이미지는 5MB 이하만 등록할 수 있어요.",
+      }));
+      return;
+    }
+
+    setEditErrors(prev => ({
+      ...prev,
+      attachment: "",
+    }));
+
+    setEditForm(prev => ({
+      ...prev,
+      attachment: file,
+      removeAttachment: false,
+    }));
+
+    setAttachmentPreview(prevPreview => {
+      if (prevPreview) {
+        URL.revokeObjectURL(prevPreview);
+      }
+
+      return URL.createObjectURL(file);
+    });
+  };
+
+  const handleRemoveAttachment = () => {
+    setEditForm(prev => ({
+      ...prev,
+      attachment: null,
+      removeAttachment: true,
+    }));
+
+    if (attachmentInputRef.current) {
+      attachmentInputRef.current.value = "";
+    }
+    setAttachmentPreview(prevPreview => {
+      if (prevPreview) {
+        URL.revokeObjectURL(prevPreview);
+      }
+
+      return "";
+    });
   };
 
   const handleTypeChange = type => {
@@ -135,7 +203,7 @@ export default function TransactionEdit({
         </div>
       </div>
 
-      {transaction.receiptImage && (
+      {transaction.receiptImage && !editForm.removeAttachment && (
         <>
           <div className={styles.detailReceiptNotice}>
             <span
@@ -147,7 +215,7 @@ export default function TransactionEdit({
 
             <div className={styles.detailReceiptNoticeText}>
               <strong>영수증으로 등록된 내역이에요</strong>
-              <span>원본 영수증을 참고하여 내용을 수정할 수 있습니다.</span>
+              <span>기존 영수증을 교체하거나 삭제할 수 있습니다.</span>
             </div>
           </div>
 
@@ -155,10 +223,129 @@ export default function TransactionEdit({
             <h3>영수증 / 거래내역 첨부</h3>
 
             <div className={styles.detailReceiptImageBox}>
-              <img src={transaction.receiptImage} alt="등록된 영수증" />
+              <img
+                src={attachmentPreview || transaction.receiptImage}
+                alt={
+                  attachmentPreview
+                    ? "새로 선택한 영수증 미리보기"
+                    : "등록된 영수증"
+                }
+              />
             </div>
+
+            <div className={styles.receiptEditActions}>
+              <button
+                type="button"
+                onClick={() => attachmentInputRef.current?.click()}
+              >
+                교체하기
+              </button>
+
+              <button type="button" onClick={handleRemoveAttachment}>
+                첨부 삭제
+              </button>
+            </div>
+
+            {/* 새로 선택 */}
+            {editForm.attachment && (
+              <div className={styles.newAttachmentInfo}>
+                <span className="material-icons" aria-hidden="true">
+                  image
+                </span>
+
+                <span>{editForm.attachment.name}</span>
+              </div>
+            )}
+            {editErrors.attachment && (
+              <span className={styles.errorMessage}>
+                {editErrors.attachment}
+              </span>
+            )}
           </section>
         </>
+      )}
+      {!transaction.receiptImage && !editForm.attachment && (
+        <section className={styles.detailReceiptSection}>
+          <h3>영수증 / 거래내역 첨부</h3>
+
+          <button
+            type="button"
+            className={styles.addAttachmentButton}
+            onClick={() => attachmentInputRef.current?.click()}
+          >
+            <span className="material-icons" aria-hidden="true">
+              add_photo_alternate
+            </span>
+
+            <span>영수증 첨부하기</span>
+          </button>
+
+          {editErrors.attachment && (
+            <span className={styles.errorMessage}>{editErrors.attachment}</span>
+          )}
+        </section>
+      )}
+
+      {!transaction.receiptImage && editForm.attachment && (
+        <section className={styles.detailReceiptSection}>
+          <h3>영수증 / 거래내역 첨부</h3>
+          {attachmentPreview && (
+            <div className={styles.detailReceiptImageBox}>
+              <img src={attachmentPreview} alt="새로 선택한 영수증 미리보기" />
+            </div>
+          )}
+
+          <div className={styles.newAttachmentInfo}>
+            <span className="material-icons" aria-hidden="true">
+              image
+            </span>
+
+            <span>{editForm.attachment.name}</span>
+          </div>
+
+          <div className={styles.receiptEditActions}>
+            <button
+              type="button"
+              onClick={() => attachmentInputRef.current?.click()}
+            >
+              변경하기
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setEditForm(prev => ({
+                  ...prev,
+                  attachment: null,
+                }));
+
+                setAttachmentPreview(prevPreview => {
+                  if (prevPreview) {
+                    URL.revokeObjectURL(prevPreview);
+                  }
+
+                  return "";
+                });
+
+                if (attachmentInputRef.current) {
+                  attachmentInputRef.current.value = "";
+                }
+              }}
+            >
+              선택 취소
+            </button>
+          </div>
+        </section>
+      )}
+
+      {editForm.removeAttachment && (
+        <div className={styles.removedAttachmentInfo}>
+          <span className="material-icons" aria-hidden="true">
+            delete_outline
+          </span>
+
+          <span>기존 영수증이 삭제됩니다.</span>
+        </div>
       )}
 
       <form className={styles.detailFields} onSubmit={handleSubmit}>
@@ -476,6 +663,13 @@ export default function TransactionEdit({
             {editForm.memo.length}/50
           </span>
         </section>
+        <input
+          ref={attachmentInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          onChange={handleAttachmentChange}
+          hidden
+        />
 
         <div className={styles.editActions}>
           <button
