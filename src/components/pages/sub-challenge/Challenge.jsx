@@ -5,10 +5,11 @@ import styles from "./Challenge.module.scss";
 
 export default function Challenge() {
   return (
-    <>
-      <div className={styles.pageLayout}>
-        <Sidebar />
+    <div className={styles.pageLayout}>
+      <Sidebar />
 
+      {/* 메인 콘텐츠와 푸터를 감싸는 우측 영역 컨테이너 (필요시 SCSS에서 flex-direction: column 적용) */}
+      <div className={styles.contentWrapper}>
         <main className={styles.main}>
           <div className="container">
             {/* 페이지 타이틀 영역 */}
@@ -27,7 +28,6 @@ export default function Challenge() {
                 <section className={styles.card}>
                   <div className={styles.aiBadge}>AI 추천 미션</div>
                   <div className={styles.missionContent}>
-                    {/* 우측 카드와 동일한 원형 아이콘 스타일 클래스 적용 */}
                     <div className={styles.missionCardIcon}>
                       <span className="material-icons">restaurant</span>
                     </div>
@@ -51,7 +51,6 @@ export default function Challenge() {
                 <section className={styles.card}>
                   <h3>7월 챌린지 진행 현황</h3>
                   <div className={styles.statusBox}>
-                    {/* 요일별 진행 상황 그리드/flex 영역 */}
                     {["월", "화", "수", "목", "금", "토", "일"].map(
                       (day, index) => (
                         <div key={index} className={styles.dayItem}>
@@ -73,7 +72,7 @@ export default function Challenge() {
                     <span className={styles.moreText}>더 보기 &gt;</span>
                   </div>
                   <div className={styles.missionGrid}>
-                    {/* 미션 아이템 1 */}
+                    {/* 미션 아이템들 생략 없이 유지 */}
                     <div className={styles.missionItemCard}>
                       <div className={styles.missionCardIcon}>
                         <span className="material-icons">local_cafe</span>
@@ -85,8 +84,6 @@ export default function Challenge() {
                         미션 선택
                       </button>
                     </div>
-
-                    {/* 미션 아이템 2 */}
                     <div className={styles.missionItemCard}>
                       <div className={styles.missionCardIcon}>
                         <span className="material-icons">two_wheeler</span>
@@ -98,8 +95,6 @@ export default function Challenge() {
                         미션 선택
                       </button>
                     </div>
-
-                    {/* 미션 아이템 3 */}
                     <div className={styles.missionItemCard}>
                       <div className={styles.missionCardIcon}>
                         <span className="material-icons">directions_bus</span>
@@ -111,8 +106,6 @@ export default function Challenge() {
                         미션 선택
                       </button>
                     </div>
-
-                    {/* 미션 아이템 4 */}
                     <div className={styles.missionItemCard}>
                       <div className={styles.missionCardIcon}>
                         <span className="material-icons">subscriptions</span>
@@ -122,8 +115,6 @@ export default function Challenge() {
                         미션 선택
                       </button>
                     </div>
-
-                    {/* 미션 아이템 5 */}
                     <div className={styles.missionItemCard}>
                       <div className={styles.missionCardIcon}>
                         <span className="material-icons">local_drink</span>
@@ -135,8 +126,6 @@ export default function Challenge() {
                         미션 선택
                       </button>
                     </div>
-
-                    {/* 미션 아이템 6 */}
                     <div className={styles.missionItemCard}>
                       <div className={styles.missionCardIcon}>
                         <span className="material-icons">shopping_bag</span>
@@ -148,8 +137,6 @@ export default function Challenge() {
                         미션 선택
                       </button>
                     </div>
-
-                    {/* 미션 아이템 7 */}
                     <div className={styles.missionItemCard}>
                       <div className={styles.missionCardIcon}>
                         <span className="material-icons">flash_on</span>
@@ -159,8 +146,6 @@ export default function Challenge() {
                         미션 선택
                       </button>
                     </div>
-
-                    {/* 미션 아이템 8 */}
                     <div className={styles.missionItemCard}>
                       <div className={styles.missionCardIcon}>
                         <span className="material-icons">savings</span>
@@ -180,13 +165,11 @@ export default function Challenge() {
                     <span className={styles.moreText}>기록 펼쳐보기 &gt;</span>
                   </div>
                   <div className={styles.historyList}>
-                    {/* 이미지의 5개 카드 구조 반영 */}
                     {[...Array(5)].map((_, index) => (
                       <div key={index} className={styles.historyItemCard}>
                         <div className={styles.historyDate}>8/04 (화)</div>
                         <div className={styles.historyAmount}>--원</div>
                         <div className={styles.historyCharacterBox}>
-                          {/* 캐릭터 일러스트 영역 (이미지 경로 또는 아이콘으로 대체 가능) */}
                           <div className={styles.characterPlaceholder}></div>
                         </div>
                         <div className={styles.historyMessage}>
@@ -202,10 +185,12 @@ export default function Challenge() {
             </div>
           </div>
         </main>
+
+        {/* SubFooter를 메인 영역 내부 하단으로 이동 */}
+        <SubFooter />
       </div>
 
-      <SubFooter />
       <BottomTab />
-    </>
+    </div>
   );
 }
