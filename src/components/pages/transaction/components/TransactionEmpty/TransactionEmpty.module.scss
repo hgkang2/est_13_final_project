@@ -40,3 +40,23 @@
 
   @include typo-body-m-minus;
 }
+
+@include tablet {
+  .empty {
+    min-height: 420px;
+  }
+}
+
+@include mobile {
+  .empty {
+    min-height: 320px;
+    padding: 32px 16px;
+    gap: 12px;
+  }
+
+  .emptyIcon {
+    width: 48px;
+    height: 48px;
+    font-size: 44px;
+  }
+}
