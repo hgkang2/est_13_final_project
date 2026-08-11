@@ -407,6 +407,9 @@ export default function Transaction() {
     setEntryMode("single");
     setPanelView("entry");
     setCopiedRecentId(copyTarget.id);
+    setTimeout(() => {
+      setCopiedRecentId(null);
+    }, 1800);
 
     setIsCopyModalOpen(false);
     setCopyTarget(null);
@@ -479,7 +482,11 @@ export default function Transaction() {
   };
 
   const handleResetTransactionForm = () => {
-    setTransactionForm(initialTransactionForm);
+    setTransactionForm(prev => ({
+      ...initialTransactionForm,
+      type: prev.type,
+    }));
+
     setTransactionErrors({});
     setCopiedRecentId(null);
   };
