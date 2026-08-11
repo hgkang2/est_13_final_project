@@ -341,17 +341,28 @@
 }
 
 @media (max-width: 1024px) {
+  .entryModeSection {
+    display: none;
+  }
+
   .entryPanel {
     position: fixed;
-    top: 56px;
-    right: 0;
-    bottom: 69px;
-
-    width: 378px;
-    min-width: 0;
-    max-width: 100%;
-
+    inset: 0;
+    z-index: 100;
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
     overflow-y: auto;
+    border-radius: 0;
+    gap: 8px;
+  }
+
+  .formActions {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    padding: 12px 0;
+    background-color: var(--color-white);
   }
 
   .entryModeButton:last-child {

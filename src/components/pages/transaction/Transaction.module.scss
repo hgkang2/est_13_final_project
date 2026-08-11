@@ -24,10 +24,9 @@
   display: flex;
   min-width: 0;
   flex: 1;
-  padding-top: 32px;
-  padding-bottom: 32px;
+  padding: 24px;
   flex-direction: column;
-  gap: 32px;
+  gap: 24px;
 }
 
 .content:global(.container) {

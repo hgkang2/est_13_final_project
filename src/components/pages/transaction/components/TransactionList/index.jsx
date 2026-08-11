@@ -35,6 +35,13 @@ export default function TransactionList({
     );
 
   const [expandedId, setExpandedId] = useState(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const INITIAL_VISIBLE_COUNT = 8;
+
+  const displayedTransactions = isExpanded
+    ? visibleTransactions
+    : visibleTransactions.slice(0, INITIAL_VISIBLE_COUNT);
 
   const handleToggleMemo = transactionId => {
     setExpandedId(prevId => (prevId === transactionId ? null : transactionId));
@@ -131,8 +138,12 @@ export default function TransactionList({
             </div>
           )}
 
-          <ul className={styles.transactionList}>
-            {visibleTransactions.map(transaction => {
+          <ul
+            className={`${styles.transactionList} ${
+              isExpanded ? styles.expandedList : ""
+            }`}
+          >
+            {displayedTransactions.map(transaction => {
               const isSelected = selectedIds.includes(transaction.id);
 
               return (
@@ -250,15 +261,21 @@ export default function TransactionList({
             })}
           </ul>
 
-          <div className={styles.loadMoreArea}>
-            <button type="button" className={styles.loadMoreButton}>
-              <span>더 많은 내역 보기</span>
+          {visibleTransactions.length > INITIAL_VISIBLE_COUNT && (
+            <div className={styles.loadMoreArea}>
+              <button
+                type="button"
+                className={styles.loadMoreButton}
+                onClick={() => setIsExpanded(prev => !prev)}
+              >
+                <span>{isExpanded ? "접기" : "더 많은 내역 보기"}</span>
 
-              <span className="material-icons" aria-hidden="true">
-                keyboard_arrow_down
-              </span>
-            </button>
-          </div>
+                <span className="material-icons" aria-hidden="true">
+                  {isExpanded ? "keyboard_arrow_up" : "keyboard_arrow_down"}
+                </span>
+              </button>
+            </div>
+          )}
         </>
       ) : (
         <TransactionEmpty />
