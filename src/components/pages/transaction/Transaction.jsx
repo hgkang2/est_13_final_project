@@ -171,6 +171,18 @@ export default function Transaction() {
   const [isTransactionsLoading, setIsTransactionsLoading] = useState(true);
   const [recentlyAddedId, setRecentlyAddedId] = useState(null);
   const supabase = createClient();
+
+  const testAnalyzeReceipt = async () => {
+    const { data, error } = await supabase.functions.invoke("analyze-receipt", {
+      body: {
+        name: "MO:UM",
+      },
+    });
+
+    console.log("Edge Function data:", data);
+    console.log("Edge Function error:", error);
+  };
+
   const [activeFilter, setActiveFilter] = useState("all");
   const [panelView, setPanelView] = useState("entry");
   // "entry" | "recent" | "detail" | "edit" | "closed"
@@ -1628,6 +1640,9 @@ export default function Transaction() {
                 <p className={styles.pageDescription}>
                   모든 거래 내역을 한눈에 확인하고 관리해보세요.
                 </p>
+                <button type="button" onClick={testAnalyzeReceipt}>
+                  Edge Function 테스트
+                </button>
               </header>
 
               <SummaryCards
