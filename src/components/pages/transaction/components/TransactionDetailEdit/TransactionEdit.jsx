@@ -1,30 +1,39 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./TransactionDetailEdit.module.scss";
 
 export default function TransactionEdit({
   transaction,
+  categories,
+  paymentMethods,
+  transferAccounts,
   onClose,
   onCancel,
   onSave,
 }) {
   const [editForm, setEditForm] = useState(null);
   const [editErrors, setEditErrors] = useState({});
+  const [attachmentPreview, setAttachmentPreview] = useState("");
+  const timeInputRef = useRef(null);
+  const attachmentInputRef = useRef(null);
 
   useEffect(() => {
     if (!transaction) return;
     setEditForm({
       type: transaction.type,
       amount: Math.abs(transaction.amount).toString(),
-      category: transaction.categoryType,
-      date: transaction.date.split(" ")[0].replaceAll(".", "-"),
-      paymentMethod: transaction.paymentMethod,
-      content: transaction.content ?? "",
+      category: transaction.categoryId,
+      date: transaction.date.replaceAll(".", "-"),
+      time: transaction.time ?? "",
+      paymentMethod: transaction.paymentMethodId,
+      content: transaction.content === "-" ? "" : transaction.content,
       memo: transaction.memo ?? "",
+      withdrawAccount: transaction.withdrawAccountId,
+      depositAccount: transaction.depositAccountId,
 
-      withdrawAccount: transaction.withdrawAccount ?? "",
-      depositAccount: transaction.depositAccount ?? "",
+      attachment: null, // 새로 선택한 파일
+      removeAttachment: false, // 시존 영수증 삭제 여부
     });
   }, [transaction]);
 
@@ -44,12 +53,76 @@ export default function TransactionEdit({
     }));
   };
 
+  const handleAttachmentChange = event => {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    const maxSize = 5 * 1024 * 1024;
+
+    if (!allowedTypes.includes(file.type)) {
+      setEditErrors(prev => ({
+        ...prev,
+        attachment: "JPG, PNG, WEBP 이미지만 등록할 수 있어요.",
+      }));
+      return;
+    }
+
+    if (file.size > maxSize) {
+      setEditErrors(prev => ({
+        ...prev,
+        attachment: "영수증 이미지는 5MB 이하만 등록할 수 있어요.",
+      }));
+      return;
+    }
+
+    setEditErrors(prev => ({
+      ...prev,
+      attachment: "",
+    }));
+
+    setEditForm(prev => ({
+      ...prev,
+      attachment: file,
+      removeAttachment: false,
+    }));
+
+    setAttachmentPreview(prevPreview => {
+      if (prevPreview) {
+        URL.revokeObjectURL(prevPreview);
+      }
+
+      return URL.createObjectURL(file);
+    });
+  };
+
+  const handleRemoveAttachment = () => {
+    setEditForm(prev => ({
+      ...prev,
+      attachment: null,
+      removeAttachment: true,
+    }));
+
+    if (attachmentInputRef.current) {
+      attachmentInputRef.current.value = "";
+    }
+    setAttachmentPreview(prevPreview => {
+      if (prevPreview) {
+        URL.revokeObjectURL(prevPreview);
+      }
+
+      return "";
+    });
+  };
+
   const handleTypeChange = type => {
     setEditErrors({});
 
     setEditForm(prevForm => ({
       ...prevForm,
       type,
+      category: "",
       paymentMethod: type === "transfer" ? "" : prevForm.paymentMethod,
       withdrawAccount: type === "transfer" ? prevForm.withdrawAccount : "",
       depositAccount: type === "transfer" ? prevForm.depositAccount : "",
@@ -75,6 +148,11 @@ export default function TransactionEdit({
 
     if (!form.amount) {
       errors.amount = "금액을 입력해주세요.";
+    } else if (
+      !Number.isFinite(Number(form.amount)) ||
+      Number(form.amount) <= 0
+    ) {
+      errors.amount = "금액은 0보다 큰 숫자로 입력해주세요.";
     }
 
     if (!form.category) {
@@ -125,7 +203,7 @@ export default function TransactionEdit({
         </div>
       </div>
 
-      {transaction.receiptImage && (
+      {transaction.receiptImage && !editForm.removeAttachment && (
         <>
           <div className={styles.detailReceiptNotice}>
             <span
@@ -137,7 +215,7 @@ export default function TransactionEdit({
 
             <div className={styles.detailReceiptNoticeText}>
               <strong>영수증으로 등록된 내역이에요</strong>
-              <span>원본 영수증을 참고하여 내용을 수정할 수 있습니다.</span>
+              <span>기존 영수증을 교체하거나 삭제할 수 있습니다.</span>
             </div>
           </div>
 
@@ -145,10 +223,129 @@ export default function TransactionEdit({
             <h3>영수증 / 거래내역 첨부</h3>
 
             <div className={styles.detailReceiptImageBox}>
-              <img src={transaction.receiptImage} alt="등록된 영수증" />
+              <img
+                src={attachmentPreview || transaction.receiptImage}
+                alt={
+                  attachmentPreview
+                    ? "새로 선택한 영수증 미리보기"
+                    : "등록된 영수증"
+                }
+              />
             </div>
+
+            <div className={styles.receiptEditActions}>
+              <button
+                type="button"
+                onClick={() => attachmentInputRef.current?.click()}
+              >
+                교체하기
+              </button>
+
+              <button type="button" onClick={handleRemoveAttachment}>
+                첨부 삭제
+              </button>
+            </div>
+
+            {/* 새로 선택 */}
+            {editForm.attachment && (
+              <div className={styles.newAttachmentInfo}>
+                <span className="material-icons" aria-hidden="true">
+                  image
+                </span>
+
+                <span>{editForm.attachment.name}</span>
+              </div>
+            )}
+            {editErrors.attachment && (
+              <span className={styles.errorMessage}>
+                {editErrors.attachment}
+              </span>
+            )}
           </section>
         </>
+      )}
+      {!transaction.receiptImage && !editForm.attachment && (
+        <section className={styles.detailReceiptSection}>
+          <h3>영수증 / 거래내역 첨부</h3>
+
+          <button
+            type="button"
+            className={styles.addAttachmentButton}
+            onClick={() => attachmentInputRef.current?.click()}
+          >
+            <span className="material-icons" aria-hidden="true">
+              add_photo_alternate
+            </span>
+
+            <span>영수증 첨부하기</span>
+          </button>
+
+          {editErrors.attachment && (
+            <span className={styles.errorMessage}>{editErrors.attachment}</span>
+          )}
+        </section>
+      )}
+
+      {!transaction.receiptImage && editForm.attachment && (
+        <section className={styles.detailReceiptSection}>
+          <h3>영수증 / 거래내역 첨부</h3>
+          {attachmentPreview && (
+            <div className={styles.detailReceiptImageBox}>
+              <img src={attachmentPreview} alt="새로 선택한 영수증 미리보기" />
+            </div>
+          )}
+
+          <div className={styles.newAttachmentInfo}>
+            <span className="material-icons" aria-hidden="true">
+              image
+            </span>
+
+            <span>{editForm.attachment.name}</span>
+          </div>
+
+          <div className={styles.receiptEditActions}>
+            <button
+              type="button"
+              onClick={() => attachmentInputRef.current?.click()}
+            >
+              변경하기
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setEditForm(prev => ({
+                  ...prev,
+                  attachment: null,
+                }));
+
+                setAttachmentPreview(prevPreview => {
+                  if (prevPreview) {
+                    URL.revokeObjectURL(prevPreview);
+                  }
+
+                  return "";
+                });
+
+                if (attachmentInputRef.current) {
+                  attachmentInputRef.current.value = "";
+                }
+              }}
+            >
+              선택 취소
+            </button>
+          </div>
+        </section>
+      )}
+
+      {editForm.removeAttachment && (
+        <div className={styles.removedAttachmentInfo}>
+          <span className="material-icons" aria-hidden="true">
+            delete_outline
+          </span>
+
+          <span>기존 영수증이 삭제됩니다.</span>
+        </div>
       )}
 
       <form className={styles.detailFields} onSubmit={handleSubmit}>
@@ -231,25 +428,35 @@ export default function TransactionEdit({
             <label htmlFor="editCategory">
               카테고리 <span className={styles.requiredMark}>*</span>
             </label>
-
-            <select
-              id="editCategory"
-              name="category"
-              value={editForm.category}
-              onChange={handleChange}
-              className={`${styles.editSelect} ${
+            <div
+              className={`${styles.selectBox} ${
                 editErrors.category ? styles.errorField : ""
               }`}
-              aria-invalid={Boolean(editErrors.category)}
             >
-              <option value="">카테고리 선택</option>
-              <option value="cafeSnack">카페/간식</option>
-              <option value="food">식비</option>
-              <option value="transportation">교통</option>
-              <option value="salary">월급</option>
-              <option value="otherIncome">부수입</option>
-              <option value="savings">저축</option>
-            </select>
+              <select
+                id="editCategory"
+                name="category"
+                value={editForm.category}
+                onChange={handleChange}
+                aria-invalid={Boolean(editErrors.category)}
+              >
+                <option value="">카테고리 선택</option>
+
+                {categories
+                  .filter(
+                    category => category.transaction_type === editForm.type,
+                  )
+                  .map(category => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+              </select>
+
+              <span className="material-icons" aria-hidden="true">
+                keyboard_arrow_down
+              </span>
+            </div>
 
             {editErrors.category && (
               <span className={styles.errorMessage}>{editErrors.category}</span>
@@ -273,6 +480,33 @@ export default function TransactionEdit({
               aria-invalid={Boolean(editErrors.date)}
             />
 
+            <div className={styles.timePicker}>
+              <input
+                ref={timeInputRef}
+                type="time"
+                name="time"
+                value={editForm.time}
+                onChange={handleChange}
+                className={styles.hiddenTimeInput}
+              />
+
+              <button
+                type="button"
+                className={styles.timeButton}
+                onClick={() => timeInputRef.current?.showPicker()}
+              >
+                <span className="material-icons" aria-hidden="true">
+                  schedule
+                </span>
+
+                <span>{editForm.time || "시간 설정"}</span>
+
+                {editForm.time && (
+                  <span className={styles.timeAction}>변경</span>
+                )}
+              </button>
+            </div>
+
             {editErrors.date && (
               <span className={styles.errorMessage}>{editErrors.date}</span>
             )}
@@ -286,23 +520,31 @@ export default function TransactionEdit({
                 출금 계좌 <span className={styles.requiredMark}>*</span>
               </label>
 
-              <select
-                id="editWithdrawAccount"
-                name="withdrawAccount"
-                value={editForm.withdrawAccount}
-                onChange={handleChange}
-                className={`${styles.editSelect} ${
+              <div
+                className={`${styles.selectBox} ${
                   editErrors.withdrawAccount ? styles.errorField : ""
                 }`}
-                aria-invalid={Boolean(editErrors.withdrawAccount)}
               >
-                <option value="">출금 계좌 선택</option>
-                <option value="mainAccount">주거래 계좌</option>
-                <option value="salaryAccount">급여 계좌</option>
-                <option value="savingAccount">저축 계좌</option>
-                <option value="cash">현금</option>
-              </select>
+                <select
+                  id="editWithdrawAccount"
+                  name="withdrawAccount"
+                  value={editForm.withdrawAccount}
+                  onChange={handleChange}
+                  aria-invalid={Boolean(editErrors.withdrawAccount)}
+                >
+                  <option value="">출금 계좌 선택</option>
 
+                  {transferAccounts.map(account => (
+                    <option key={account.id} value={account.id}>
+                      {account.name}
+                    </option>
+                  ))}
+                </select>
+
+                <span className="material-icons" aria-hidden="true">
+                  keyboard_arrow_down
+                </span>
+              </div>
               {editErrors.withdrawAccount && (
                 <span className={styles.errorMessage}>
                   {editErrors.withdrawAccount}
@@ -314,24 +556,31 @@ export default function TransactionEdit({
               <label htmlFor="editDepositAccount">
                 입금 계좌 <span className={styles.requiredMark}>*</span>
               </label>
-
-              <select
-                id="editDepositAccount"
-                name="depositAccount"
-                value={editForm.depositAccount}
-                onChange={handleChange}
-                className={`${styles.editSelect} ${
+              <div
+                className={`${styles.selectBox} ${
                   editErrors.depositAccount ? styles.errorField : ""
                 }`}
-                aria-invalid={Boolean(editErrors.depositAccount)}
               >
-                <option value="">입금 계좌 선택</option>
-                <option value="mainAccount">주거래 계좌</option>
-                <option value="salaryAccount">급여 계좌</option>
-                <option value="savingAccount">저축 계좌</option>
-                <option value="cash">현금</option>
-              </select>
+                <select
+                  id="editDepositAccount"
+                  name="depositAccount"
+                  value={editForm.depositAccount}
+                  onChange={handleChange}
+                  aria-invalid={Boolean(editErrors.depositAccount)}
+                >
+                  <option value="">입금 계좌 선택</option>
 
+                  {transferAccounts.map(account => (
+                    <option key={account.id} value={account.id}>
+                      {account.name}
+                    </option>
+                  ))}
+                </select>
+
+                <span className="material-icons" aria-hidden="true">
+                  keyboard_arrow_down
+                </span>
+              </div>
               {editErrors.depositAccount && (
                 <span className={styles.errorMessage}>
                   {editErrors.depositAccount}
@@ -345,23 +594,31 @@ export default function TransactionEdit({
               결제수단 <span className={styles.requiredMark}>*</span>
             </label>
 
-            <select
-              id="editPaymentMethod"
-              name="paymentMethod"
-              value={editForm.paymentMethod}
-              onChange={handleChange}
-              className={`${styles.editSelect} ${styles.editPaymentSelect} ${
+            <div
+              className={`${styles.selectBox} ${
                 editErrors.paymentMethod ? styles.errorField : ""
               }`}
-              aria-invalid={Boolean(editErrors.paymentMethod)}
             >
-              <option value="">결제수단 선택</option>
-              <option value="신용카드">신용카드</option>
-              <option value="체크카드">체크카드</option>
-              <option value="계좌이체">계좌이체</option>
-              <option value="현금">현금</option>
-              <option value="교통카드">교통카드</option>
-            </select>
+              <select
+                id="editPaymentMethod"
+                name="paymentMethod"
+                value={editForm.paymentMethod}
+                onChange={handleChange}
+                aria-invalid={Boolean(editErrors.paymentMethod)}
+              >
+                <option value="">결제수단 선택</option>
+
+                {paymentMethods.map(method => (
+                  <option key={method.id} value={method.id}>
+                    {method.name}
+                  </option>
+                ))}
+              </select>
+
+              <span className="material-icons" aria-hidden="true">
+                keyboard_arrow_down
+              </span>
+            </div>
 
             {editErrors.paymentMethod && (
               <span className={styles.errorMessage}>
@@ -406,6 +663,13 @@ export default function TransactionEdit({
             {editForm.memo.length}/50
           </span>
         </section>
+        <input
+          ref={attachmentInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          onChange={handleAttachmentChange}
+          hidden
+        />
 
         <div className={styles.editActions}>
           <button

@@ -243,3 +243,69 @@
   font-size: var(--body-s-size);
   line-height: var(--body-s-line-height);
 }
+
+.timeButton {
+  display: inline-flex;
+  align-self: flex-end;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  padding: 0;
+  border: 0;
+  color: var(--color-gray);
+  background: transparent;
+  cursor: pointer;
+
+  @include typo-body-s-plus;
+}
+
+.aiTimePicker {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.hiddenTimeInput {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.timeButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  color: var(--color-gray);
+  background: transparent;
+  cursor: pointer;
+
+  @include typo-body-s-plus;
+}
+
+.timeButton :global(.material-icons) {
+  font-size: var(--icon-s-size);
+}
+
+.timeAction {
+  color: var(--color-point);
+  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+}
+
+.timeButton:hover .timeAction {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.timeButtonDisabled {
+  color: var(--color-light-gray);
+  cursor: default;
+}
+
+.timeButtonDisabled:hover .timeAction {
+  text-decoration: none;
+}

@@ -1,0 +1,141 @@
+.cta {
+  width: 100%;
+  padding-bottom: 80px;
+}
+
+.inner {
+  width: 100%;
+  max-width: 1272px;
+
+  margin: 0 auto;
+  padding: 0 72px;
+}
+
+.scrollArrow {
+  position: relative;
+
+  width: 24px;
+  height: 28px;
+  margin: 155px auto 100px;
+
+  animation: floatingArrow 1.6s ease-in-out infinite;
+}
+
+.scrollArrow span {
+  position: absolute;
+  left: 50%;
+
+  width: 11px;
+  height: 11px;
+
+  border-right: 3px solid var(--color-green-gray);
+  border-bottom: 3px solid var(--color-green-gray);
+
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.scrollArrow span:first-child {
+  top: 0;
+}
+
+.scrollArrow span:last-child {
+  top: 8px;
+}
+
+@keyframes floatingArrow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(10px);
+  }
+}
+
+.CTAcard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: clamp(24px, 4vw, 48px);
+
+  background: var(--color-primary);
+  border-radius: 16px;
+}
+
+.textArea {
+  flex: 1;
+
+  h2 {
+    color: var(--color-gray);
+    font-size: clamp(var(--heading-xs-size), 4vw, var(--heading-m-size));
+    white-space: nowrap;
+  }
+
+  strong {
+    color: var(--color-point);
+  }
+}
+
+.ctaButton {
+  width: clamp(240px, 32vw, 403px);
+  flex-shrink: 0;
+
+  cursor: pointer;
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+.ctaButton {
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1024px) {
+  .inner {
+    padding: 0 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .CTAcard {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    gap: 32px;
+
+    padding: 56px 32px;
+
+    text-align: center;
+    background: none;
+  }
+
+  .textArea {
+    h2 {
+      font-size: 32px;
+      line-height: 48px;
+      white-space: normal;
+    }
+  }
+
+  .ctaButton {
+    width: min(272px, 80%);
+
+    img {
+      width: 100%;
+      height: auto;
+    }
+  }
+}
