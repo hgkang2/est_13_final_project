@@ -1,30 +1,40 @@
+import Image from "next/image";
 import styles from "../MyPage.module.scss";
 
 export default function GrowthSection() {
-  return (
-    <section className={styles.MyPage_Growth}>
-      <div className={styles.Growth_Info}>
-        <div className={styles.Title_Group}>
-          <h2>이번 달 나의 성장</h2>
+  const growthRate = 0;
+  const previousRate = null;
 
-          <p>
-            지난달보다 <strong>12%p</strong> 더 성장했어요.
+  return (
+    <section className={styles.growth}>
+      <div className={styles.growthContent}>
+        <div className={styles.growthHeading}>
+          <h2 className="body-l-plus">이번 달 나의 성장</h2>
+
+          <p className="body-l-plus">
+            {previousRate === null
+              ? "저번 달의 기록이 아직 없어요!"
+              : "지난달과 동일한 저축 실천율을 유지했어요!"}
           </p>
         </div>
 
-        <div className={styles.Progress_Group}>
-          <strong className={styles.Progress_Value}>65%</strong>
+        <div className={styles.progressContent}>
+          <strong className="heading-s-plus">{growthRate}%</strong>
 
-          <div className={styles.Progress_Bar}>
-            <div className={styles.Progress_Fill} style={{ width: "65%" }} />
+          <div className={styles.progressTrack}>
+            <div
+              className={styles.progressFill}
+              style={{ width: `${growthRate}%` }}
+            />
           </div>
         </div>
       </div>
 
-      <img
-        src="/images/mypage/06-character-cheering.png"
-        alt="응원하는 모아 캐릭터"
-        className={styles.Growth_Image}
+      <Image
+        src="/images/mypage/08-character-happy.png"
+        alt=""
+        width={140}
+        height={140}
       />
     </section>
   );
