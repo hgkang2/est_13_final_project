@@ -603,22 +603,18 @@ export default function Transaction() {
     // transaction_at 생성
     const now = new Date();
 
+    const [hour, minute] = transactionForm.time
+      ? transactionForm.time.split(":").map(Number)
+      : [now.getHours(), now.getMinutes()];
+
     const transactionDate = new Date(
       Number(transactionForm.date.slice(0, 4)),
       Number(transactionForm.date.slice(5, 7)) - 1,
       Number(transactionForm.date.slice(8, 10)),
-      now.getHours(),
-      now.getMinutes(),
-      now.getSeconds(),
+      hour,
+      minute,
+      transactionForm.time ? 0 : now.getSeconds(),
     );
-
-    if (Number.isNaN(transactionDate.getTime())) {
-      setTransactionErrors(prev => ({
-        ...prev,
-        date: "올바른 날짜를 선택해주세요.",
-      }));
-      return;
-    }
 
     // DB 저장값 구성
     const transactionData = {
