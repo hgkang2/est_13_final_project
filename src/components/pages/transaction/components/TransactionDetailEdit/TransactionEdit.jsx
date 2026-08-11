@@ -137,7 +137,7 @@ export default function TransactionEdit({
       isRecurring: type === "transfer" ? prevForm.isRecurring : false,
     }));
   };
-  
+
   const handleSubmit = event => {
     event.preventDefault();
 
@@ -434,9 +434,30 @@ export default function TransactionEdit({
         </section>
         <div className={styles.detailFieldRow}>
           <section className={styles.detailField}>
-            <label htmlFor="editCategory">
-              카테고리 <span className={styles.requiredMark}>*</span>
-            </label>
+            <div className={styles.formLabelRow}>
+              <label htmlFor="editCategory">
+                카테고리 <span className={styles.requiredMark}>*</span>
+              </label>
+
+              {editForm.type === "transfer" && (
+                <div className={styles.recurringControl}>
+                  <span>반복</span>
+
+                  <button
+                    type="button"
+                    className={`${styles.recurringSwitch} ${
+                      editForm.isRecurring ? styles.recurringSwitchActive : ""
+                    }`}
+                    onClick={handleToggleRecurring}
+                    aria-pressed={editForm.isRecurring}
+                    aria-label="반복 이체 설정"
+                  >
+                    <span className={styles.recurringSwitchHandle} />
+                  </button>
+                </div>
+              )}
+            </div>
+
             <div
               className={`${styles.selectBox} ${
                 editErrors.category ? styles.errorField : ""
@@ -473,28 +494,61 @@ export default function TransactionEdit({
           </section>
 
           <section className={styles.detailField}>
-            <label htmlFor="editDate">
-              날짜 <span className={styles.requiredMark}>*</span>
-            </label>
+            {editForm.type === "transfer" && editForm.isRecurring ? (
+              <>
+                <label htmlFor="editRecurringDay">반복일</label>
 
-            <input
-              id="editDate"
-              name="date"
-              type="date"
-              value={editForm.date}
-              onChange={handleChange}
-              className={`${styles.editInput} ${
-                editErrors.date ? styles.errorField : ""
-              }`}
-              aria-invalid={Boolean(editErrors.date)}
-            />
+                <div className={styles.recurringDateBox}>
+                  <select
+                    id="editRecurringDay"
+                    name="recurringDay"
+                    value={editForm.recurringDay}
+                    onChange={handleChange}
+                  >
+                    {Array.from({ length: 31 }, (_, index) => index + 1).map(
+                      day => (
+                        <option key={day} value={day}>
+                          매월 {day}일
+                        </option>
+                      ),
+                    )}
+                  </select>
+
+                  <span className="material-icons" aria-hidden="true">
+                    calendar_month
+                  </span>
+                </div>
+              </>
+            ) : (
+              <>
+                <label htmlFor="editDate">
+                  날짜 <span className={styles.requiredMark}>*</span>
+                </label>
+
+                <input
+                  id="editDate"
+                  name="date"
+                  type="date"
+                  value={editForm.date ?? ""}
+                  onChange={handleChange}
+                  className={`${styles.editInput} ${
+                    editErrors.date ? styles.errorField : ""
+                  }`}
+                  aria-invalid={Boolean(editErrors.date)}
+                />
+
+                {editErrors.date && (
+                  <span className={styles.errorMessage}>{editErrors.date}</span>
+                )}
+              </>
+            )}
 
             <div className={styles.timePicker}>
               <input
                 ref={timeInputRef}
                 type="time"
                 name="time"
-                value={editForm.time}
+                value={editForm.time ?? ""}
                 onChange={handleChange}
                 className={styles.hiddenTimeInput}
               />
@@ -515,10 +569,6 @@ export default function TransactionEdit({
                 )}
               </button>
             </div>
-
-            {editErrors.date && (
-              <span className={styles.errorMessage}>{editErrors.date}</span>
-            )}
           </section>
         </div>
 
