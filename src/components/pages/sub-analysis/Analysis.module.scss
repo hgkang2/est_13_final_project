@@ -236,11 +236,104 @@ $breakpoint-mobile: 390px;
   }
 }
 
-/* 2단 그리드 */
+/* 2단 그리드 (차트가 찌그러지지 않도록 min-width: 0 적용) */
 .gridContainer {
   display: grid;
   grid-template-columns: 1.4fr 1fr;
   gap: 24px;
+
+  > .card {
+    min-width: 0;
+  }
+}
+
+/* 지출 추이 차트  */
+.lineChartArea {
+  position: relative;
+  width: 100%;
+  height: 340px;
+
+  @include tablet {
+    height: 280px;
+  }
+}
+
+/* 카테고리별 소비 비중 차트 영역 */
+.donutChartArea {
+  position: relative;
+  width: 100%;
+  height: 200px;
+}
+
+.donutCenterText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  span {
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+
+  strong {
+    font-size: 14px;
+    color: #0f172a;
+    font-weight: 700;
+  }
+}
+
+.categoryLegendList {
+  list-style: none;
+  padding: 0 20px;
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+
+    .legendLeft {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+
+      .legendName {
+        color: #334155;
+        font-weight: 500;
+        width: 35px;
+      }
+
+      .legendPercent {
+        color: #64748b;
+        font-weight: 600;
+      }
+    }
+
+    .price {
+      color: #64748b;
+      font-weight: 400;
+    }
+  }
 }
 
 /* 예산 대비 지출 랭킹 섹션 스타일 */
@@ -265,16 +358,16 @@ $breakpoint-mobile: 390px;
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background-color: #fde291; // 요청하신 색상으로 변경
+    background-color: #fde291;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 13px;
     font-weight: var(--font-weight-semibold);
-    color: var(--color-text); // 텍스트 색상 (필요시 조정)
+    color: var(--color-text);
 
     &.r1 {
-      background-color: #fde291; // r1 클래스도 동일한 색상으로 강제 적용
+      background-color: #fde291;
       color: var(--color-text);
     }
   }
@@ -315,7 +408,7 @@ $breakpoint-mobile: 390px;
   }
 }
 
-/* 순수 CSS 기반 화살표를 적용한 더보기 버튼 */
+/* 더보기 버튼 */
 .moreBtn {
   width: 100%;
   padding: 12px;
@@ -335,13 +428,11 @@ $breakpoint-mobile: 390px;
     background-color: var(--color-point);
     color: var(--color-white);
 
-    // 호버 시 화살표 색상도 흰색으로 변경
     &::after {
       border-color: var(--color-white);
     }
   }
 
-  // Material 폰트 대신 CSS로 만든 깔끔한 아래 방향 화살표
   &::after {
     content: "";
     display: inline-block;
@@ -350,7 +441,7 @@ $breakpoint-mobile: 390px;
     border-right: 2px solid var(--color-point);
     border-bottom: 2px solid var(--color-point);
     transform: rotate(45deg);
-    margin-top: -3px; // 수직 정밀 정렬
+    margin-top: -3px;
     transition: border-color 0.2s ease-in-out;
   }
 }

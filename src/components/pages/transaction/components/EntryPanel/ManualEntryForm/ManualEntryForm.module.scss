@@ -245,3 +245,24 @@
   text-decoration: underline;
   text-underline-offset: 2px;
 }
+
+.resetButton {
+  display: inline-flex;
+  padding: 0;
+  border: 0;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-gray);
+  background-color: transparent;
+  cursor: pointer;
+
+  @include typo-body-s-plus;
+}
+
+.resetButton :global(.material-icons) {
+  font-size: var(--icon-s-size);
+}
+
+.resetButton:hover {
+  color: var(--color-point);
+}

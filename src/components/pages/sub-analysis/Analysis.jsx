@@ -1,18 +1,185 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { createClient } from "@/utils/supabase/client";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Line, Doughnut } from "react-chartjs-2";
+
 import Sidebar from "@/components/layout/Sidebar";
 import BottomTab from "@/components/layout/BottomTab";
 import SubFooter from "@/components/layout/SubFooter";
 import styles from "./Analysis.module.scss";
 
-export default function Analysis() {
-  return (
-    <>
-      <div className={styles.pageLayout}>
-        {/* 사이드바 */}
-        <Sidebar />
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+);
 
-        {/* 메인 콘텐츠 영역 */}
+const COLORS = [
+  "#6366f1",
+  "#ef4444",
+  "#f59e0b",
+  "#10b981",
+  "#3b82f6",
+  "#94a3b8",
+];
+
+export default function Analysis() {
+  const supabase = createClient();
+
+  const [totalExpense, setTotalExpense] = useState(1468123);
+  const [showAllRanking, setShowAllRanking] = useState(false);
+
+  const [categoryData, setCategoryData] = useState([
+    { name: "식비", amount: 660855, percentage: 45, color: "#6366f1" },
+    { name: "쇼핑", amount: 293215, percentage: 20, color: "#ef4444" },
+    { name: "교통", amount: 176175, percentage: 12, color: "#f59e0b" },
+    { name: "여가", amount: 146812, percentage: 10, color: "#10b981" },
+    { name: "주거", amount: 117266, percentage: 8, color: "#3b82f6" },
+    { name: "기타", amount: 73000, percentage: 5, color: "#94a3b8" },
+  ]);
+
+  const [lineChartData] = useState({
+    labels: ["6월", "7월", "8월"],
+    datasets: [
+      {
+        label: "지출",
+        data: [420000, 510000, 520000],
+        borderColor: "#6366f1",
+        backgroundColor: "#6366f1",
+        tension: 0.3,
+      },
+      {
+        label: "예산",
+        data: [680000, 700000, 720000],
+        borderColor: "#94a3b8",
+        borderDash: [5, 5],
+        tension: 0.3,
+      },
+    ],
+  });
+
+  const lineChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+  };
+
+  useEffect(() => {
+    async function fetchAnalysisData() {
+      if (!supabase) return;
+
+      try {
+        const {
+          data: { user },
+          error: userError,
+        } = await supabase.auth.getUser();
+        if (userError || !user) {
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from("transactions")
+          .select(
+            `
+            id,
+            amount,
+            date,
+            type,
+            categories (
+              id,
+              name
+            )
+          `,
+          )
+          .eq("user_id", user.id);
+
+        if (error || !data || data.length === 0) return;
+
+        processCategoryStats(data);
+      } catch (err) {
+        console.error("Supabase 연동 대기 중:", err);
+      }
+    }
+
+    fetchAnalysisData();
+  }, [supabase]);
+
+  const processCategoryStats = txData => {
+    const expenses = txData.filter(tx => tx.type === "지출" || tx.amount > 0);
+    const total = expenses.reduce((acc, cur) => acc + cur.amount, 0);
+    setTotalExpense(total);
+
+    const categoryMap = {};
+    expenses.forEach(tx => {
+      const catName = tx.categories?.name || "기타";
+      if (!categoryMap[catName]) categoryMap[catName] = 0;
+      categoryMap[catName] += tx.amount;
+    });
+
+    const formattedData = Object.keys(categoryMap).map((name, index) => {
+      const amount = categoryMap[name];
+      const percentage = total > 0 ? Math.round((amount / total) * 100) : 0;
+      return {
+        name,
+        amount,
+        percentage,
+        color: COLORS[index % COLORS.length],
+      };
+    });
+
+    formattedData.sort((a, b) => b.amount - a.amount);
+    setCategoryData(formattedData);
+  };
+
+  const doughnutData = {
+    labels: categoryData.map(item => item.name),
+    datasets: [
+      {
+        data: categoryData.map(item => item.amount),
+        backgroundColor: categoryData.map(item => item.color),
+        borderWidth: 0,
+      },
+    ],
+  };
+
+  const doughnutOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+    },
+    cutout: "75%",
+  };
+
+  return (
+    <div className={styles.pageLayout}>
+      <Sidebar />
+      <div
+        className={styles.contentWrapper}
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          minWidth: 0,
+        }}
+      >
         <main className={styles.container}>
-          {/* 페이지 헤더 */}
           <div className={styles.pageHeader}>
             <h1 className={styles.title}>소비 분석</h1>
             <p className={styles.subtitle}>
@@ -20,7 +187,6 @@ export default function Analysis() {
             </p>
           </div>
 
-          {/* AI 분석 리포트 섹션 */}
           <section className={`${styles.card} ${styles.aiReportCard}`}>
             <div className={styles.cardHeader}>
               <div className={styles.aiTitleGroup}>
@@ -33,7 +199,6 @@ export default function Analysis() {
             </div>
 
             <div className={styles.aiReportBody}>
-              {/* 캐릭터 영역 */}
               <div className={styles.characterArea}>
                 <div className={styles.characterBox}>
                   <img
@@ -44,9 +209,7 @@ export default function Analysis() {
                 </div>
               </div>
 
-              {/* 인사이트 영역 (분석 + 하단 3열) */}
               <div className={styles.insightContentArea}>
-                {/* 상단 분석 */}
                 <div className={styles.insightTop}>
                   <div className={styles.insightHeader}>
                     <span className="material-symbols-rounded">analytics</span>
@@ -63,7 +226,6 @@ export default function Analysis() {
                   </p>
                 </div>
 
-                {/* 하단 3열 (예측 / 실행 / 피드백) */}
                 <div className={styles.insightBottomGrid}>
                   <div className={styles.insightSubItem}>
                     <div className={styles.insightHeader}>
@@ -107,7 +269,6 @@ export default function Analysis() {
             </div>
           </section>
 
-          {/* 4개 지표 요약 카드 섹션 */}
           <div className={styles.summaryGrid}>
             <div className={styles.card}>
               <span className={styles.summaryLabel}>총 지출</span>
@@ -150,91 +311,99 @@ export default function Analysis() {
             </div>
           </div>
 
-          {/* 2단 그래프/비중 섹션 */}
           <div className={styles.gridContainer}>
-            {/* 지출 추이 그래프 카드 */}
             <section className={styles.card}>
               <div className={styles.cardHeader}>
                 <h3>지출 추이</h3>
-                <div className={styles.selectBox}>일일</div>
+                <div className={styles.selectBox}>월별</div>
               </div>
-              <div className={styles.chartPlaceholderBox}>
-                {/* 그래프 컴포넌트나 이미지 영역 */}
+              <div className={styles.lineChartArea}>
+                <Line data={lineChartData} options={lineChartOptions} />
               </div>
             </section>
 
-            {/* 카테고리별 소비 비중 카드 */}
             <section className={styles.card}>
               <div className={styles.cardHeader}>
                 <h3>카테고리별 소비 비중</h3>
               </div>
               <div className={styles.donutChartArea}>
+                <Doughnut data={doughnutData} options={doughnutOptions} />
                 <div className={styles.donutCenterText}>
                   <span>총 지출</span>
-                  <strong>1,468,123원</strong>
+                  <strong>{totalExpense.toLocaleString()}원</strong>
                 </div>
               </div>
               <ul className={styles.categoryLegendList}>
-                <li>
-                  <span className={`${styles.dot} ${styles.c1}`} /> 식비 45%{" "}
-                  <span className={styles.price}>660,855원</span>
-                </li>
-                <li>
-                  <span className={`${styles.dot} ${styles.c2}`} /> 쇼핑 20%{" "}
-                  <span className={styles.price}>293,215원</span>
-                </li>
-                <li>
-                  <span className={`${styles.dot} ${styles.c3}`} /> 교통 12%{" "}
-                  <span className={styles.price}>176,175원</span>
-                </li>
-                <li>
-                  <span className={`${styles.dot} ${styles.c4}`} /> 여가 10%{" "}
-                  <span className={styles.price}>146,812원</span>
-                </li>
-                <li>
-                  <span className={`${styles.dot} ${styles.c5}`} /> 주거 8%{" "}
-                  <span className={styles.price}>117,260원</span>
-                </li>
-                <li>
-                  <span className={`${styles.dot} ${styles.c6}`} /> 기타 5%{" "}
-                  <span className={styles.price}>73,406원</span>
-                </li>
+                {categoryData.map((item, idx) => (
+                  <li key={idx}>
+                    <div className={styles.legendLeft}>
+                      <span
+                        className={styles.dot}
+                        style={{ backgroundColor: item.color }}
+                      />
+                      <span className={styles.legendName}>{item.name}</span>
+                      <span className={styles.legendPercent}>
+                        {item.percentage}%
+                      </span>
+                    </div>
+                    <span className={styles.price}>
+                      {item.amount.toLocaleString()}원
+                    </span>
+                  </li>
+                ))}
               </ul>
             </section>
           </div>
 
-          {/* 예산 대비 지출 랭킹 섹션 */}
           <section className={styles.card}>
             <div className={styles.cardHeader}>
               <h3>예산 대비 지출 랭킹</h3>
               <span className={styles.rankingDate}>2026.08</span>
             </div>
             <div className={styles.rankingList}>
-              <div className={styles.rankingItem}>
-                <span className={`${styles.rankBadge} ${styles.r1}`}>1</span>
-                <span className={styles.rankCategory}>식비</span>
-                <div className={styles.progressBarWrapper}>
-                  <div
-                    className={styles.progressBar}
-                    style={{ width: "100%" }}
-                  />
-                </div>
-                <span className={styles.rankPercent}>100%</span>
-                <span className={styles.rankAmount}>123,467 / 250,000</span>
-              </div>
+              {categoryData
+                .slice(0, showAllRanking ? categoryData.length : 3)
+                .map((item, index) => {
+                  const budget = 300000;
+                  const percent = Math.min(
+                    Math.round((item.amount / budget) * 100),
+                    100,
+                  );
+
+                  return (
+                    <div className={styles.rankingItem} key={index}>
+                      <span className={`${styles.rankBadge} ${styles.r1}`}>
+                        {index + 1}
+                      </span>
+                      <span className={styles.rankCategory}>{item.name}</span>
+                      <div className={styles.progressBarWrapper}>
+                        <div
+                          className={styles.progressBar}
+                          style={{ width: `${percent}%` }}
+                        />
+                      </div>
+                      <span className={styles.rankPercent}>{percent}%</span>
+                      <span className={styles.rankAmount}>
+                        {item.amount.toLocaleString()} /{" "}
+                        {budget.toLocaleString()}
+                      </span>
+                    </div>
+                  );
+                })}
             </div>
-            <button type="button" className={styles.moreBtn}>
-              더보기{" "}
+            <button
+              type="button"
+              className={styles.moreBtn}
+              onClick={() => setShowAllRanking(!showAllRanking)}
+            >
+              {showAllRanking ? "접기" : "더보기"}
             </button>
           </section>
         </main>
+
+        <SubFooter />
       </div>
-
-      {/* 서브 푸터 */}
-      <SubFooter />
-
-      {/* 모바일 하단 탭 */}
       <BottomTab />
-    </>
+    </div>
   );
 }
