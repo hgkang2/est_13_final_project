@@ -1,48 +1,74 @@
 import styles from "./SummaryCards.module.scss";
 
-const summaryCards = [
-  {
-    id: "income",
-    title: "총 수입",
-    value: "2,450,000원",
-    emptyValue: "--원",
-    change: "+450,000원",
-    direction: "up",
-    emptyText: "아직 수입 기록이 없어요.",
-  },
-  {
-    id: "expense",
-    title: "총 지출",
-    value: "1,286,500원",
-    emptyValue: "--원",
-    change: "-120,500원",
-    direction: "down",
-    emptyText: "아직 지출 기록이 없어요.",
-  },
-  {
-    id: "transaction",
-    title: "이번 달 거래",
-    value: "25건",
-    emptyValue: "--건",
-    details: [
-      { label: "지출", count: "18건", type: "expense" },
-      { label: "수입", count: "7건", type: "income" },
-      { label: "이체", count: "1건", type: "transfer" },
-    ],
-    emptyText: "거래 기록을 기다리고 있어요.",
-  },
-  {
-    id: "balance",
-    title: "잔액",
-    value: "3,213,500원",
-    emptyValue: "--원",
-    change: "+218,000원",
-    direction: "up",
-    emptyText: "거래를 기록하면 확인할 수 있어요.",
-  },
-];
+const formatAmount = amount => `${Math.abs(amount).toLocaleString()}원`;
 
-export default function SummaryCards({ hasTransactionData }) {
+const formatChange = amount => {
+  if (amount > 0) {
+    return `+${amount.toLocaleString()}원`;
+  }
+
+  if (amount < 0) {
+    return `${amount.toLocaleString()}원`;
+  }
+
+  return "0원";
+};
+
+export default function SummaryCards({ hasTransactionData, summaryData }) {
+  const summaryCards = [
+    {
+      id: "income",
+      title: "총 수입",
+      value: formatAmount(summaryData.income),
+      emptyValue: "--원",
+      change: formatChange(summaryData.incomeChange),
+      direction: summaryData.incomeChange < 0 ? "down" : "up",
+      emptyText: "아직 수입 기록이 없어요.",
+    },
+    {
+      id: "expense",
+      title: "총 지출",
+      value: formatAmount(summaryData.expense),
+      emptyValue: "--원",
+      change: formatChange(summaryData.expenseChange),
+      direction: summaryData.expenseChange < 0 ? "down" : "up",
+      emptyText: "아직 지출 기록이 없어요.",
+    },
+    {
+      id: "transaction",
+      title: "이번 달 거래",
+      value: `${summaryData.transactionCount}건`,
+      emptyValue: "--건",
+      details: [
+        {
+          label: "지출",
+          count: `${summaryData.expenseCount}건`,
+          type: "expense",
+        },
+        {
+          label: "수입",
+          count: `${summaryData.incomeCount}건`,
+          type: "income",
+        },
+        {
+          label: "이체",
+          count: `${summaryData.transferCount}건`,
+          type: "transfer",
+        },
+      ],
+      emptyText: "거래 기록을 기다리고 있어요.",
+    },
+    {
+      id: "balance",
+      title: "잔액",
+      value: `${summaryData.balance.toLocaleString()}원`,
+      emptyValue: "--원",
+      change: formatChange(summaryData.balanceChange),
+      direction: summaryData.balanceChange < 0 ? "down" : "up",
+      emptyText: "거래를 기록하면 확인할 수 있어요.",
+    },
+  ];
+
   return (
     <section className={styles.summarySection} aria-label="이번 달 소비 요약">
       {summaryCards.map(card => (
@@ -71,7 +97,7 @@ export default function SummaryCards({ hasTransactionData }) {
             </div>
           ) : (
             <div className={styles.summaryChange}>
-              <span className={styles.summaryPeriod}>이번 달</span>
+              <span className={styles.summaryPeriod}>지난달 대비</span>
 
               <strong>{card.change}</strong>
 

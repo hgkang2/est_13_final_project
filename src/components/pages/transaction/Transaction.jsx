@@ -168,7 +168,6 @@ const createMultipleTransactionRow = id => ({
 
 export default function Transaction() {
   const [transactions, setTransactions] = useState([]);
-  const hasTransactionData = transactions.length > 0;
   const [isTransactionsLoading, setIsTransactionsLoading] = useState(true);
   const [recentlyAddedId, setRecentlyAddedId] = useState(null);
   const supabase = createClient();
@@ -446,6 +445,87 @@ export default function Transaction() {
       error: 0,
     },
   );
+
+  const now = new Date();
+
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
+
+  const thisMonthTransactions = transactions.filter(transaction => {
+    const transactionDate = new Date(transaction.dateValue);
+
+    return (
+      transactionDate.getFullYear() === currentYear &&
+      transactionDate.getMonth() === currentMonth
+    );
+  });
+
+  const lastMonthDate = new Date(currentYear, currentMonth - 1, 1);
+  const lastMonthYear = lastMonthDate.getFullYear();
+  const lastMonth = lastMonthDate.getMonth();
+
+  const lastMonthTransactions = transactions.filter(transaction => {
+    const transactionDate = new Date(transaction.dateValue);
+
+    return (
+      transactionDate.getFullYear() === lastMonthYear &&
+      transactionDate.getMonth() === lastMonth
+    );
+  });
+
+  const calculateSummary = transactionList => {
+    return transactionList.reduce(
+      (summary, transaction) => {
+        if (transaction.type === "income") {
+          summary.income += Math.abs(transaction.amount);
+          summary.incomeCount += 1;
+        }
+
+        if (transaction.type === "expense") {
+          summary.expense += Math.abs(transaction.amount);
+          summary.expenseCount += 1;
+        }
+
+        if (transaction.type === "transfer") {
+          summary.transferCount += 1;
+        }
+
+        return summary;
+      },
+      {
+        income: 0,
+        expense: 0,
+        incomeCount: 0,
+        expenseCount: 0,
+        transferCount: 0,
+      },
+    );
+  };
+
+  const thisMonthSummary = calculateSummary(thisMonthTransactions);
+  const lastMonthSummary = calculateSummary(lastMonthTransactions);
+
+  const summaryData = {
+    income: thisMonthSummary.income,
+    expense: thisMonthSummary.expense,
+
+    transactionCount: thisMonthTransactions.length,
+    incomeCount: thisMonthSummary.incomeCount,
+    expenseCount: thisMonthSummary.expenseCount,
+    transferCount: thisMonthSummary.transferCount,
+
+    balance: thisMonthSummary.income - thisMonthSummary.expense,
+
+    incomeChange: thisMonthSummary.income - lastMonthSummary.income,
+    expenseChange: thisMonthSummary.expense - lastMonthSummary.expense,
+
+    balanceChange:
+      thisMonthSummary.income -
+      thisMonthSummary.expense -
+      (lastMonthSummary.income - lastMonthSummary.expense),
+  };
+
+  const hasTransactionData = thisMonthTransactions.length > 0;
 
   const recentTransactions = transactions.slice(0, 6);
   const visibleTransactions =
@@ -1550,7 +1630,10 @@ export default function Transaction() {
                 </p>
               </header>
 
-              <SummaryCards hasTransactionData={hasTransactionData} />
+              <SummaryCards
+                hasTransactionData={hasTransactionData}
+                summaryData={summaryData}
+              />
               <section className={styles.transactionSection}>
                 <TransactionToolbar
                   activeFilter={activeFilter}

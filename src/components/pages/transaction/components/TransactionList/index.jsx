@@ -149,6 +149,8 @@ export default function TransactionList({
               return (
                 <li
                   className={`${styles.transactionRow} ${
+                    isSelected ? styles.selectedRow : ""
+                  } ${
                     transaction.id === recentlyAddedId
                       ? styles.recentlyAdded
                       : ""

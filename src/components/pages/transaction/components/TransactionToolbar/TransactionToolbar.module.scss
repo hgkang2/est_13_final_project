@@ -2,8 +2,9 @@
 
 .toolbar {
   display: grid;
-  width: 100%;
-  padding: 16px;
+  width: 1176px;
+  margin: 0 auto;
+  padding: 16px 0;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 16px;
@@ -163,11 +164,12 @@
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
   .toolbar {
     display: flex;
     width: 100%;
-    padding: 16px;
+    padding: 8px;
+    box-sizing: border-box;
     flex-direction: column;
     align-items: stretch;
     gap: 16px;
@@ -175,15 +177,15 @@
 
   .typeFilters {
     display: flex;
+    width: 100%;
     align-items: center;
     gap: 8px;
   }
 
   .mobileToolbarRow {
     display: flex;
-    width: calc(100% + 8px);
+    width: 100%;
     align-items: center;
-    margin-right: -8px;
   }
 
   .dateButton {
@@ -202,7 +204,7 @@
   .toolbarButton {
     flex: 0 0 auto;
     min-height: 40px;
-    padding: 8px;
+    padding: 6px;
   }
 
   .moreButton {
