@@ -23,8 +23,29 @@
   overflow-y: hidden;
   border: 1px solid var(--color-border-gray);
   border-radius: 16px;
-}
 
+  // Firefox
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-gray) transparent;
+
+  // Chrome / Edge / Safari
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--color-border-gray);
+    border-radius: 999px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-gray);
+  }
+}
 .multipleTableHeader,
 .multipleRow {
   display: grid;

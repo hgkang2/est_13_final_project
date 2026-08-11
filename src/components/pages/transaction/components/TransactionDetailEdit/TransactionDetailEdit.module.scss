@@ -9,7 +9,7 @@
   z-index: 60;
   display: flex;
   width: 378px;
-  min-height: 100%;
+  // min-height: 100%;
   padding: 16px;
   border: 1px solid var(--color-border-gray);
   border-radius: 16px 0 0 16px;
@@ -115,9 +115,12 @@
 }
 
 .detailReceiptImageBox img {
-  width: 100px;
-  height: 120px;
-  object-fit: cover;
+  width: 160px;
+  max-width: 100%;
+  height: auto;
+  max-height: 240px;
+  object-fit: contain;
+  border-radius: 8px;
 }
 
 .detailFields {
