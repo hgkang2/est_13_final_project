@@ -16,7 +16,9 @@ const heroSlides = [
     id: 1,
     title: (
       <>
-        돈을 모으는 가장 <span className={styles.highlight}>즐거운</span> 방법, 모음
+        돈을 모으는 가장
+        <br className={styles.mobileBr} />
+        <span className={styles.highlight}>즐거운</span> 방법, 모음
       </>
     ),
     description: (
@@ -27,7 +29,9 @@ const heroSlides = [
       </>
     ),
     image: "/images/home/Hero1.png",
+    position: "75% center",
     imageAlt: "저축 목표를 세우는 모음 캐릭터",
+
     href: "#",
   },
   {
@@ -45,6 +49,7 @@ const heroSlides = [
       </>
     ),
     image: "/images/home/Hero2.png",
+    position: "75% center",
     imageAlt: "선물 상자를 안고 있는 모음 캐릭터",
     href: "#",
   },
@@ -63,6 +68,7 @@ const heroSlides = [
       </>
     ),
     image: "/images/home/Hero3.png",
+    position: "95% center",
     imageAlt: "다양한 선물을 보여주는 모음 캐릭터",
     href: "/login",
   },
@@ -70,17 +76,22 @@ const heroSlides = [
     id: 4,
     title: (
       <>
-        매일 기록하고 <span className={styles.highlight}>보상을 모아</span> 보세요!
+        매일 기록하고
+        <br className={styles.mobileBr} />
+        <span className={styles.highlight}>보상을 모아</span> 보세요!
       </>
     ),
     description: (
       <>
         매일 한 번의 기록이 더 좋은 소비 습관으로 이어집니다.
         <br />
-        출석 배지와 리워드를 모으며 목표를 향해 성장하는 즐거움을 경험해보세요.
+        출석 배지와 리워드를 모으며 목표를 향해
+        <br className={styles.mobileBr} />
+        성장하는 즐거움을 경험해보세요.
       </>
     ),
     image: "/images/home/Hero4.png",
+    position: "75% center",
     imageAlt: "소비와 저축을 기록하는 모음 캐릭터",
     href: "#",
   },
@@ -107,6 +118,7 @@ export default function Hero() {
           <SwiperSlide key={slide.id}>
             <div className={styles.slide}>
               <Image
+                style={{ objectPosition: slide.position }}
                 src={slide.image}
                 alt={slide.imageAlt}
                 fill
@@ -123,6 +135,7 @@ export default function Hero() {
                       alt="자세히 보기를 들고 있는 모아 캐릭터"
                       width={150}
                       height={189}
+                      className={styles.mascotImage}
                     />
                   </div>
                   {index === 0 ? (
