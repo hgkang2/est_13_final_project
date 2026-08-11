@@ -1213,6 +1213,10 @@ export default function Transaction() {
           message = "최종 거래 금액을 확인할 수 없어요.";
         }
 
+        if (data?.reason === "unsupported_currency") {
+          message = "현재는 원화(KRW) 거래 내역만 자동 인식할 수 있어요.";
+        }
+
         setAiErrorMessage(message);
         setAiStatus("error");
         return;

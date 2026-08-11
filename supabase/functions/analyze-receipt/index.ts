@@ -159,6 +159,11 @@ export default {
 17. 이미지에서 실제 결제, 입금, 출금, 이체 또는 영수증 형식이 명확히 확인되지 않으면
 isTransactionEvidence는 반드시 false로 반환하세요.
 18. 단순 캐릭터, 사진, 일러스트, 문서, 화면 캡처만으로는 거래 증빙으로 판단하지 마세요.
+19. 통화는 이미지에서 명확히 확인되는 경우에만 판별하세요.
+20. 원화 표시(₩, KRW, 원)가 명확하면 currency는 "KRW"입니다.
+21. USD, JPY, EUR 등 다른 통화가 명확하면 해당 통화 코드를 반환하세요.
+22. "$" 기호만 있거나 통화를 확정할 수 없으면 임의로 USD라고 추측하지 말고 "UNKNOWN"으로 반환하세요.
+23. 통화가 KRW가 아니거나 UNKNOWN인 경우에도 금액을 원화로 환산하지 마세요.
 
 허용 거래구분:
 ${transactionTypeValues.join(", ")}
@@ -227,6 +232,7 @@ ${paymentMethods.join(", ")}
                         "not_transaction_evidence",
                         "unreadable",
                         "missing_critical_data",
+                        "unsupported_currency",
                         null,
                       ],
                     },
@@ -242,6 +248,19 @@ ${paymentMethods.join(", ")}
 
                         amount: {
                           type: ["number", "null"],
+                        },
+
+                        currency: {
+                          type: ["string", "null"],
+                          enum: [
+                            "KRW",
+                            "USD",
+                            "JPY",
+                            "EUR",
+                            "OTHER",
+                            "UNKNOWN",
+                            null,
+                          ],
                         },
 
                         category: {
@@ -272,6 +291,7 @@ ${paymentMethods.join(", ")}
                       required: [
                         "type",
                         "amount",
+                        "currency",
                         "category",
                         "date",
                         "time",
@@ -382,6 +402,18 @@ ${paymentMethods.join(", ")}
           evidenceType: analysisResult.evidenceType ?? null,
           reason: "unreadable",
           message: "이미지의 거래 정보를 정확히 읽기 어렵습니다.",
+          data: null,
+        });
+      }
+
+      if (!analysisResult.data || analysisResult.data.currency !== "KRW") {
+        return jsonResponse({
+          success: false,
+          isTransactionEvidence: true,
+          isReadable: true,
+          evidenceType: analysisResult.evidenceType ?? null,
+          reason: "unsupported_currency",
+          message: "현재는 원화(KRW) 거래 내역만 자동 인식할 수 있습니다.",
           data: null,
         });
       }
