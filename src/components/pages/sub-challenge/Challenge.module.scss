@@ -1,10 +1,7 @@
 @use "../../../styles/mixins" as *;
 
-/* ========================================
-   Breakpoints (디자인 토큰 연동)
-======================================== */
-$breakpoint-tablet: 768px;
-$breakpoint-mobile: 390px;
+$sidebar-collapse-breakpoint: 1024px;
+$mission-grid-mobile-breakpoint: 480px;
 
 .pageLayout {
   display: flex;
@@ -49,6 +46,7 @@ $breakpoint-mobile: 390px;
   display: flex;
   flex-direction: column;
   gap: 24px;
+  min-width: 0;
 }
 
 /* 공통 카드 스타일 */
@@ -58,6 +56,7 @@ $breakpoint-mobile: 390px;
   padding: 24px;
   border: 1px solid var(--color-point);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  min-width: 0;
 
   .cardHeader {
     @include flex-between;
@@ -240,10 +239,10 @@ $breakpoint-mobile: 390px;
   }
 }
 
-/* 반응형 설정 (믹스인 적용) */
-@include tablet {
+@media (max-width: $sidebar-collapse-breakpoint) {
   .pageLayout {
     display: block;
+    padding-bottom: 69px;
   }
 
   .main {
@@ -254,6 +253,10 @@ $breakpoint-mobile: 390px;
     grid-template-columns: 1fr;
   }
 
+  /* missionGrid는 이 구간에서 4열 유지 (기획안 반영) */
+}
+
+@media (max-width: $mission-grid-mobile-breakpoint) {
   .missionGrid {
     grid-template-columns: repeat(2, 1fr);
   }
