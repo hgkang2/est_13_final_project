@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import styles from "../GoalSetting.module.scss";
 
-const DEFAULT_GOAL_IMAGE = "/images/default-goal.png";
+const DEFAULT_GOAL_IMAGE = "/images/category/savings.png";
 
 const DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
 
@@ -209,6 +209,10 @@ export default function GoalCard({ goal, onEdit, onDelete }) {
         src={goal.imageUrl || goal.image || DEFAULT_GOAL_IMAGE}
         alt=""
         onError={(event) => {
+          if (event.currentTarget.src.endsWith(DEFAULT_GOAL_IMAGE)) {
+            return;
+          }
+
           event.currentTarget.src = DEFAULT_GOAL_IMAGE;
         }}
       />
