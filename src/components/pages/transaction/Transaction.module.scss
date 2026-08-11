@@ -5,11 +5,11 @@
   align-items: flex-start;
   width: 100%;
   max-width: 1920px;
-  min-height: calc(100vh - 56px);
   margin: 0 auto;
 }
 
 .main {
+  flex: 1;
   min-width: 0;
 }
 
