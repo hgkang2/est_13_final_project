@@ -29,7 +29,7 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/sub-home`,
+        redirectTo: `${window.location.origin}/auth/callback?next=/sub-home`,
       },
     });
     if (error) {
@@ -40,7 +40,7 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "kakao",
       options: {
-        redirectTo: `${window.location.origin}/sub-home`,
+        redirectTo: `${window.location.origin}/auth/callback?next=/sub-home`,
       },
     });
     if (error) {

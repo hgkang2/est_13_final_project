@@ -17,6 +17,7 @@ export default function TransactionList({
   onToggleTransaction,
   onClearSelection,
   onOpenDetail,
+  recentlyAddedId,
 }) {
   const selectedSummary = visibleTransactions
     .filter(transaction => selectedIds.includes(transaction.id))
@@ -137,7 +138,9 @@ export default function TransactionList({
               return (
                 <li
                   className={`${styles.transactionRow} ${
-                    isSelected ? styles.selectedRow : ""
+                    transaction.id === recentlyAddedId
+                      ? styles.recentlyAdded
+                      : ""
                   }`}
                   key={transaction.id}
                   onClick={() => onOpenDetail(transaction)}
@@ -158,13 +161,16 @@ export default function TransactionList({
                     </span>
                   </button>
 
-                  <time className={styles.dateCell}>
+                  <time
+                    className={styles.dateCell}
+                    dateTime={`${transaction.date}T${transaction.time}`}
+                  >
                     <span className={styles.transactionDate}>
-                      {transaction.date.split(" ")[0]}
+                      {transaction.date}
                     </span>
 
                     <span className={styles.transactionTime}>
-                      {transaction.date.split(" ")[1]}
+                      {transaction.time}
                     </span>
                   </time>
 

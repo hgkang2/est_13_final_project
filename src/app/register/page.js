@@ -74,7 +74,7 @@ export default function RegisterPage() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/sub-home`,
+        redirectTo: `${window.location.origin}/auth/callback?next=/sub-home`,
       },
     });
     if (error) {
@@ -85,7 +85,7 @@ export default function RegisterPage() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "kakao",
       options: {
-        redirectTo: `${window.location.origin}/sub-home`,
+        redirectTo: `${window.location.origin}/auth/callback?next=/sub-home`,
       },
     });
     if (error) {
@@ -167,7 +167,7 @@ export default function RegisterPage() {
                   checked={allChecked}
                   onChange={handleAllChange}
                 />
-                <span>[필수] 전체 약관에 동의합니다</span>
+                <span>전체 약관에 동의합니다</span>
               </label>
               <label className="termItem">
                 <input

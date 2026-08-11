@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
 import styles from "./Sidebar.module.scss";
 
 const menus = [
@@ -15,6 +16,20 @@ const menus = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const supabase = createClient();
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.error("로그아웃 실패:", error);
+      return;
+    }
+
+    router.push("/login");
+    router.refresh();
+  };
 
   return (
     <aside className={styles.sidebar}>
@@ -90,7 +105,11 @@ export default function Sidebar() {
         </li>
 
         <li>
-          <button type="button" className={styles.optionItem}>
+          <button
+            type="button"
+            className={styles.optionItem}
+            onClick={handleLogout}
+          >
             <span
               className={`material-icons-outlined ${styles.optionIcon}`}
               aria-hidden="true"

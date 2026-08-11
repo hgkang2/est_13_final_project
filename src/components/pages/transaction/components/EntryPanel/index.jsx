@@ -15,10 +15,16 @@ export default function EntryPanel({
   const {
     transactionForm,
     transactionErrors,
+
+    categories,
+    paymentMethods,
+    transferAccounts,
+
     onTransactionFormChange,
     onToggleRecurring,
     onTransactionSubmit,
     onContinueEntry,
+    onResetTransactionForm,
   } = manualEntry;
 
   const {
@@ -199,9 +205,13 @@ export default function EntryPanel({
             <ManualEntryForm
               transactionForm={transactionForm}
               transactionErrors={transactionErrors}
+              categories={categories}
+              paymentMethods={paymentMethods}
+              transferAccounts={transferAccounts}
               isTransfer={isTransfer}
               onTransactionFormChange={onTransactionFormChange}
               onToggleRecurring={onToggleRecurring}
+              onResetTransactionForm={onResetTransactionForm} 
             />
           ) : (
             <MultipleEntryForm

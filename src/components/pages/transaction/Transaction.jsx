@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createClient } from "@/utils/supabase/client";
 import Sidebar from "@/components/layout/Sidebar";
 import BottomTab from "@/components/layout/BottomTab";
 import SubFooter from "@/components/layout/SubFooter";
@@ -15,137 +16,6 @@ import CopyDateModal from "./components/CopyDateModal";
 import EntryPanel from "./components/EntryPanel";
 import Modal from "@/components/common/Modal";
 
-const hasTransactionData = true;
-
-const transactions = [
-  {
-    id: 1,
-    date: "2025.07.29 18:42",
-    type: "expense",
-    typeLabel: "지출",
-    category: "카페/간식",
-    categoryType: "cafeSnack",
-    content: "스타벅스 아메리카노",
-    amount: -4500,
-    paymentMethod: "신용카드",
-    memo: "점심 후 커피",
-  },
-  {
-    id: 2,
-    date: "2025.07.29 18:42",
-    type: "income",
-    typeLabel: "수입",
-    category: "월급",
-    categoryType: "salary",
-    content: "급여",
-    amount: 2000000,
-    paymentMethod: "계좌이체",
-    memo: "7월 급여",
-  },
-  {
-    id: 3,
-    date: "2025.07.29 18:42",
-    type: "expense",
-    typeLabel: "지출",
-    category: "식비",
-    categoryType: "food",
-    content: "배달의 민족",
-    amount: -23000,
-    paymentMethod: "체크카드",
-    memo: "저녁 배달",
-  },
-  {
-    id: 4,
-    date: "2025.07.29 18:42",
-    type: "transfer",
-    typeLabel: "이체",
-    category: "저축",
-    categoryType: "savings",
-    content: "적금 계좌로 이체",
-    amount: -200000,
-    paymentMethod: "계좌이체",
-    memo: "정기 적금",
-  },
-];
-
-const recentTransactions = [
-  {
-    id: 1,
-    type: "expense",
-    typeLabel: "지출",
-    category: "카페/간식",
-    categoryType: "cafeSnack",
-    content: "스타벅스 아메리카노",
-    amount: -4500,
-    paymentMethod: "신용카드",
-    date: "2026.07.29",
-  },
-  {
-    id: 2,
-    type: "income",
-    typeLabel: "수입",
-    category: "월급",
-    categoryType: "salary",
-    content: "7월 급여",
-    amount: 2000000,
-    paymentMethod: "계좌이체",
-    date: "2026.07.29",
-  },
-  {
-    id: 3,
-    type: "expense",
-    typeLabel: "지출",
-    category: "식비",
-    categoryType: "food",
-    content: "배달의 민족",
-    amount: -23000,
-    paymentMethod: "체크카드",
-    date: "2026.07.29",
-  },
-  {
-    id: 4,
-    type: "transfer",
-    typeLabel: "이체",
-    category: "저축",
-    categoryType: "savings",
-    content: "적금 계좌로 이체",
-    amount: -200000,
-    paymentMethod: "계좌이체",
-    date: "2026.07.29",
-  },
-  {
-    id: 5,
-    type: "expense",
-    typeLabel: "지출",
-    category: "교통",
-    categoryType: "transportation",
-    content: "버스",
-    amount: -1450,
-    paymentMethod: "교통카드",
-    date: "2026.07.29",
-  },
-  {
-    id: 6,
-    type: "income",
-    typeLabel: "수입",
-    category: "부수입",
-    categoryType: "otherIncome",
-    content: "프리랜서 용역비",
-    amount: 450000,
-    paymentMethod: "계좌이체",
-    date: "2026.07.29",
-  },
-];
-
-const paymentMethodMap = {
-  신용카드: "creditCard",
-  체크카드: "checkCard",
-  계좌이체: "accountTransfer",
-  현금: "cash",
-  카카오페이: "kakaoPay",
-  기타: "other",
-};
-
 const getToday = () => {
   const today = new Date();
 
@@ -156,11 +26,100 @@ const getToday = () => {
   return `${year}-${month}-${day}`;
 };
 
+const formatDateTime = value => {
+  if (!value) return "-";
+
+  const date = new Date(value);
+
+  const formattedDate = [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0"),
+  ].join(".");
+
+  const formattedTime = [
+    String(date.getHours()).padStart(2, "0"),
+    String(date.getMinutes()).padStart(2, "0"),
+  ].join(":");
+
+  return `${formattedDate} ${formattedTime}`;
+};
+
+const formatTransaction = transaction => {
+  const transactionDate = new Date(transaction.transaction_at);
+
+  const date = [
+    transactionDate.getFullYear(),
+    String(transactionDate.getMonth() + 1).padStart(2, "0"),
+    String(transactionDate.getDate()).padStart(2, "0"),
+  ].join(".");
+
+  const time = [
+    String(transactionDate.getHours()).padStart(2, "0"),
+    String(transactionDate.getMinutes()).padStart(2, "0"),
+  ].join(":");
+
+  const dateValue = [
+    transactionDate.getFullYear(),
+    String(transactionDate.getMonth() + 1).padStart(2, "0"),
+    String(transactionDate.getDate()).padStart(2, "0"),
+  ].join("-");
+
+  return {
+    id: transaction.id,
+    date,
+    time,
+    dateValue,
+
+    type: transaction.transaction_type,
+
+    typeLabel:
+      transaction.transaction_type === "income"
+        ? "수입"
+        : transaction.transaction_type === "expense"
+          ? "지출"
+          : "이체",
+
+    category: transaction.category?.name ?? "-",
+    categoryType: transaction.category?.code ?? "",
+    categoryId: transaction.category?.id ?? "",
+
+    content: transaction.content ?? "-",
+
+    amount:
+      transaction.transaction_type === "income"
+        ? transaction.amount
+        : -transaction.amount,
+
+    paymentMethod:
+      transaction.transaction_type === "transfer"
+        ? "계좌이체"
+        : (transaction.payment_method?.name ?? "-"),
+
+    paymentMethodId: transaction.payment_method?.id ?? "",
+
+    memo: transaction.memo ?? "",
+
+    withdrawAccount: transaction.withdraw_account?.name ?? null,
+    withdrawAccountId: transaction.withdraw_account?.id ?? "",
+
+    depositAccount: transaction.deposit_account?.name ?? null,
+    depositAccountId: transaction.deposit_account?.id ?? "",
+
+    isRecurring: transaction.is_recurring,
+    recurringDay: transaction.recurring_day,
+
+    createdAt: formatDateTime(transaction.created_at),
+    updatedAt: formatDateTime(transaction.updated_at),
+  };
+};
+
 const initialTransactionForm = {
   type: "income",
   amount: "",
   category: "",
   date: getToday(),
+  time: "",
   paymentMethod: "",
   content: "",
   memo: "",
@@ -196,6 +155,7 @@ const mockAiResult = {
 const createMultipleTransactionRow = id => ({
   id,
   date: "",
+  time: "",
   type: "",
   category: "",
   content: "",
@@ -205,6 +165,11 @@ const createMultipleTransactionRow = id => ({
 });
 
 export default function Transaction() {
+  const [transactions, setTransactions] = useState([]);
+  const hasTransactionData = transactions.length > 0;
+  const [isTransactionsLoading, setIsTransactionsLoading] = useState(true);
+  const [recentlyAddedId, setRecentlyAddedId] = useState(null);
+  const supabase = createClient();
   const [activeFilter, setActiveFilter] = useState("all");
   const [panelView, setPanelView] = useState("entry");
   // "entry" | "recent" | "detail" | "edit" | "closed"
@@ -248,6 +213,61 @@ export default function Transaction() {
   const [transactionErrors, setTransactionErrors] = useState({});
   const [aiTransactionErrors, setAiTransactionErrors] = useState({});
 
+  const [categories, setCategories] = useState([]);
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [transferAccounts, setTransferAccounts] = useState([]);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [isDeleteSuccessOpen, setIsDeleteSuccessOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchTransactionOptions = async () => {
+      const [
+        { data: categoryData, error: categoryError },
+        { data: paymentMethodData, error: paymentMethodError },
+        { data: transferAccountData, error: transferAccountError },
+      ] = await Promise.all([
+        supabase
+          .from("categories")
+          .select("id, code, name, transaction_type, sort_order")
+          .eq("is_active", true)
+          .order("sort_order"),
+
+        supabase
+          .from("payment_methods")
+          .select("id, code, name, sort_order")
+          .eq("is_active", true)
+          .order("sort_order"),
+
+        supabase
+          .from("transfer_accounts")
+          .select("id, code, name, sort_order")
+          .eq("is_active", true)
+          .order("sort_order"),
+      ]);
+
+      if (categoryError) {
+        console.error("카테고리 조회 실패:", categoryError);
+        return;
+      }
+
+      if (paymentMethodError) {
+        console.error("결제수단 조회 실패:", paymentMethodError);
+        return;
+      }
+
+      if (transferAccountError) {
+        console.error("이체 계좌 조회 실패:", transferAccountError);
+        return;
+      }
+
+      setCategories(categoryData ?? []);
+      setPaymentMethods(paymentMethodData ?? []);
+      setTransferAccounts(transferAccountData ?? []);
+    };
+
+    fetchTransactionOptions();
+  }, []);
+
   useEffect(() => {
     if (!toastMessage) return;
 
@@ -275,6 +295,84 @@ export default function Transaction() {
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, [entryMode]);
 
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      setIsTransactionsLoading(true);
+
+      // 1. 로그인 사용자 확인
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError || !user) {
+        console.error("사용자 확인 실패:", userError);
+        setIsTransactionsLoading(false);
+        return;
+      }
+
+      // 2. 거래 목록 조회
+      const { data, error } = await supabase
+        .from("transactions")
+        .select(
+          `
+        id,
+        transaction_type,
+        amount,
+        content,
+        memo,
+        transaction_at,
+        created_at,
+        updated_at,
+        is_recurring,
+        recurring_day,
+
+        category:categories (
+          id,
+          code,
+          name
+        ),
+
+        payment_method:payment_methods (
+          id,
+          code,
+          name
+        ),
+
+        withdraw_account:transfer_accounts!transactions_withdraw_account_id_fkey (
+          id,
+          code,
+          name
+        ),
+
+        deposit_account:transfer_accounts!transactions_deposit_account_id_fkey (
+          id,
+          code,
+          name
+        )
+      `,
+        )
+        .eq("user_id", user.id)
+        .order("transaction_at", { ascending: false });
+
+      if (error) {
+        console.error("소비 기록 조회 실패:", error);
+        setIsTransactionsLoading(false);
+        return;
+      }
+
+      // 3. DB 데이터 → 현재 UI 형식으로 변환
+      const formattedTransactions = (data ?? []).map(formatTransaction);
+
+      setTransactions(formattedTransactions);
+      setIsTransactionsLoading(false);
+
+      console.log("소비 기록 조회 성공:", formattedTransactions);
+    };
+
+    fetchTransactions();
+  }, []);
+
   const handleViewAllRecent = () => {
     console.log("최근 입력 전체 보기");
   };
@@ -295,10 +393,13 @@ export default function Transaction() {
       ...prevForm,
       type: copyTarget.type,
       amount: Math.abs(copyTarget.amount).toString(),
-      category: copyTarget.categoryType,
-      date: dateType === "today" ? today : copyTarget.date.replaceAll(".", "-"),
-      paymentMethod: paymentMethodMap[copyTarget.paymentMethod] ?? "",
-      content: copyTarget.content,
+      category: copyTarget.categoryId,
+
+      date: dateType === "today" ? today : copyTarget.dateValue,
+      time: dateType === "today" ? "" : copyTarget.time,
+
+      paymentMethod: copyTarget.paymentMethodId,
+      content: copyTarget.content === "-" ? "" : copyTarget.content,
       memo: "",
     }));
 
@@ -306,6 +407,9 @@ export default function Transaction() {
     setEntryMode("single");
     setPanelView("entry");
     setCopiedRecentId(copyTarget.id);
+    setTimeout(() => {
+      setCopiedRecentId(null);
+    }, 1800);
 
     setIsCopyModalOpen(false);
     setCopyTarget(null);
@@ -338,6 +442,7 @@ export default function Transaction() {
     },
   );
 
+  const recentTransactions = transactions.slice(0, 6);
   const visibleTransactions =
     activeFilter === "all"
       ? transactions
@@ -374,6 +479,16 @@ export default function Transaction() {
         ...visibleTransactions.map(transaction => transaction.id),
       ]),
     ]);
+  };
+
+  const handleResetTransactionForm = () => {
+    setTransactionForm(prev => ({
+      ...initialTransactionForm,
+      type: prev.type,
+    }));
+
+    setTransactionErrors({});
+    setCopiedRecentId(null);
   };
 
   const onTransactionFormChange = event => {
@@ -424,6 +539,11 @@ export default function Transaction() {
 
     if (!form.amount) {
       errors.amount = "금액을 입력해주세요.";
+    } else if (
+      !Number.isFinite(Number(form.amount)) ||
+      Number(form.amount) <= 0
+    ) {
+      errors.amount = "금액은 0보다 큰 숫자로 입력해주세요.";
     }
 
     if (!form.category) {
@@ -451,9 +571,10 @@ export default function Transaction() {
     return errors;
   };
 
-  const onTransactionSubmit = event => {
+  const onTransactionSubmit = async event => {
     event.preventDefault();
 
+    // 입력값 검증
     const errors = validateTransactionForm(transactionForm);
 
     if (Object.keys(errors).length > 0) {
@@ -462,7 +583,236 @@ export default function Transaction() {
     }
 
     setTransactionErrors({});
-    console.log("소비 기록 입력값", transactionForm);
+
+    // 로그인 사용자 확인
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      console.error("사용자 확인 실패:", userError);
+      setToastMessage("로그인 정보를 확인할 수 없어요.");
+      return;
+    }
+
+    const attachment = transactionForm.attachment;
+
+    if (attachment) {
+      const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+      const maxSize = 5 * 1024 * 1024; // 5MB
+
+      if (!allowedTypes.includes(attachment.type)) {
+        setToastMessage("영수증은 JPG, PNG, WEBP 이미지만 등록할 수 있어요.");
+        return;
+      }
+
+      if (attachment.size > maxSize) {
+        setToastMessage("영수증 이미지는 5MB 이하만 등록할 수 있어요.");
+        return;
+      }
+    }
+
+    // transaction_at 생성
+    const now = new Date();
+
+    const [hour, minute] = transactionForm.time
+      ? transactionForm.time.split(":").map(Number)
+      : [now.getHours(), now.getMinutes()];
+
+    const transactionDate = new Date(
+      Number(transactionForm.date.slice(0, 4)),
+      Number(transactionForm.date.slice(5, 7)) - 1,
+      Number(transactionForm.date.slice(8, 10)),
+      hour,
+      minute,
+      transactionForm.time ? 0 : now.getSeconds(),
+    );
+
+    // DB 저장값 구성
+    const transactionData = {
+      user_id: user.id,
+      transaction_type: transactionForm.type,
+      amount: Number(transactionForm.amount),
+      category_id: transactionForm.category,
+
+      payment_method_id:
+        transactionForm.type === "transfer"
+          ? null
+          : transactionForm.paymentMethod,
+
+      withdraw_account_id:
+        transactionForm.type === "transfer"
+          ? transactionForm.withdrawAccount
+          : null,
+
+      deposit_account_id:
+        transactionForm.type === "transfer"
+          ? transactionForm.depositAccount
+          : null,
+
+      content: transactionForm.content.trim() || null,
+      memo: transactionForm.memo.trim() || null,
+
+      transaction_at: transactionDate.toISOString(),
+
+      input_method: "manual",
+
+      is_recurring:
+        transactionForm.type === "transfer"
+          ? Boolean(transactionForm.isRecurring)
+          : false,
+
+      recurring_day:
+        transactionForm.type === "transfer" && transactionForm.isRecurring
+          ? Number(transactionForm.recurringDay)
+          : null,
+    };
+
+    // 거래 저장
+    const { data: insertedTransaction, error: insertError } = await supabase
+      .from("transactions")
+      .insert(transactionData)
+      .select(
+        `
+          id,
+          transaction_type,
+          amount,
+          content,
+          memo,
+          transaction_at,
+          created_at,
+          updated_at,
+          is_recurring,
+          recurring_day,
+
+          category:categories (
+            id,
+            code,
+            name
+          ),
+
+          payment_method:payment_methods (
+            id,
+            code,
+            name
+          ),
+
+          withdraw_account:transfer_accounts!transactions_withdraw_account_id_fkey (
+            id,
+            code,
+            name
+          ),
+
+          deposit_account:transfer_accounts!transactions_deposit_account_id_fkey (
+            id,
+            code,
+            name
+          )
+        `,
+      )
+      .single();
+
+    // 저장 실패
+    if (insertError) {
+      console.error("소비 기록 저장 실패:", insertError);
+      setToastMessage("소비 기록을 저장하지 못했어요.");
+      return;
+    }
+
+    if (!insertedTransaction) {
+      console.error("저장 결과가 반환되지 않았습니다.");
+      setToastMessage("소비 기록 저장 결과를 확인하지 못했어요.");
+      return;
+    }
+
+    // 영수증 첨부파일 저장
+    if (attachment) {
+      const extension =
+        attachment.name.split(".").pop()?.toLowerCase() || "jpg";
+
+      const safeFileName = `receipt-${Date.now()}.${extension}`;
+
+      const storagePath = `${user.id}/${insertedTransaction.id}/${safeFileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("transaction-attachments")
+        .upload(storagePath, attachment, {
+          contentType: attachment.type,
+          upsert: false,
+        });
+
+      if (uploadError) {
+        console.error("영수증 Storage 업로드 실패:", uploadError);
+
+        // 영수증까지 포함해서 하나의 저장 작업으로 취급
+        const { error: rollbackTransactionError } = await supabase
+          .from("transactions")
+          .delete()
+          .eq("id", insertedTransaction.id)
+          .eq("user_id", user.id);
+
+        if (rollbackTransactionError) {
+          console.error("거래 저장 롤백 실패:", rollbackTransactionError);
+        }
+
+        setToastMessage("영수증 업로드에 실패해 거래 저장을 취소했어요.");
+        return;
+      }
+
+      const { error: attachmentInsertError } = await supabase
+        .from("transaction_attachments")
+        .insert({
+          transaction_id: insertedTransaction.id,
+          storage_path: storagePath,
+          file_name: attachment.name,
+          mime_type: attachment.type,
+        });
+
+      if (attachmentInsertError) {
+        console.error("영수증 첨부정보 저장 실패:", attachmentInsertError);
+
+        // DB 연결 실패 → 이미 올라간 Storage 파일 제거
+        const { error: storageRemoveError } = await supabase.storage
+          .from("transaction-attachments")
+          .remove([storagePath]);
+
+        if (storageRemoveError) {
+          console.error("영수증 Storage 롤백 실패:", storageRemoveError);
+        }
+
+        const { error: rollbackTransactionError } = await supabase
+          .from("transactions")
+          .delete()
+          .eq("id", insertedTransaction.id)
+          .eq("user_id", user.id);
+
+        if (rollbackTransactionError) {
+          console.error("거래 저장 롤백 실패:", rollbackTransactionError);
+        }
+
+        setToastMessage("영수증 정보를 저장하지 못해 거래 저장을 취소했어요.");
+        return;
+      }
+
+      console.log("영수증 저장 성공:", storagePath);
+    }
+
+    // 저장 성공
+    console.log("소비 기록 저장 성공:", insertedTransaction);
+
+    const newTransaction = formatTransaction(insertedTransaction);
+
+    setTransactions(prevTransactions => [newTransaction, ...prevTransactions]);
+
+    setRecentlyAddedId(insertedTransaction.id);
+
+    setTimeout(() => {
+      setRecentlyAddedId(null);
+    }, 1800);
+
+    setToastMessage("소비 기록을 저장했어요.");
+    setTransactionForm(initialTransactionForm);
   };
 
   const onContinueEntry = () => {
@@ -604,19 +954,427 @@ export default function Transaction() {
     console.log("AI 자동 인식 입력값", aiTransactionForm);
   };
 
-  const handleOpenDetail = transaction => {
+  const handleUpdateTransaction = async updatedForm => {
+    if (!selectedTransaction) {
+      setToastMessage("수정할 거래 정보를 확인할 수 없어요.");
+      return;
+    }
+
+    // 1. 로그인 사용자 확인
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      console.error("사용자 확인 실패:", userError);
+      setToastMessage("로그인 정보를 확인할 수 없어요.");
+      return;
+    }
+
+    const { data: existingAttachment, error: existingAttachmentError } =
+      await supabase
+        .from("transaction_attachments")
+        .select("id, storage_path, file_name, mime_type")
+        .eq("transaction_id", selectedTransaction.id)
+        .maybeSingle();
+
+    if (existingAttachmentError) {
+      console.error("기존 영수증 정보 조회 실패:", existingAttachmentError);
+      setToastMessage("기존 영수증 정보를 확인하지 못했어요.");
+      return;
+    }
+
+    const newAttachment = updatedForm.attachment;
+
+    let nextReceiptImage = selectedTransaction.receiptImage ?? null;
+
+    // 2. 수정 날짜/시간 생성
+    const [year, month, day] = updatedForm.date.split("-").map(Number);
+
+    const [hour, minute] = (updatedForm.time || "00:00").split(":").map(Number);
+
+    const transactionDate = new Date(year, month - 1, day, hour, minute, 0);
+
+    if (Number.isNaN(transactionDate.getTime())) {
+      setToastMessage("거래 날짜를 확인해주세요.");
+      return;
+    }
+
+    // 3. DB 수정값 구성
+    const updateData = {
+      transaction_type: updatedForm.type,
+      amount: Number(updatedForm.amount),
+      category_id: updatedForm.category,
+
+      payment_method_id:
+        updatedForm.type === "transfer" ? null : updatedForm.paymentMethod,
+
+      withdraw_account_id:
+        updatedForm.type === "transfer" ? updatedForm.withdrawAccount : null,
+
+      deposit_account_id:
+        updatedForm.type === "transfer" ? updatedForm.depositAccount : null,
+
+      content: updatedForm.content.trim() || null,
+      memo: updatedForm.memo.trim() || null,
+
+      transaction_at: transactionDate.toISOString(),
+
+      // 이체가 아니게 변경되면 반복이체 정보 제거
+      is_recurring:
+        updatedForm.type === "transfer"
+          ? Boolean(updatedForm.isRecurring)
+          : false,
+
+      recurring_day:
+        updatedForm.type === "transfer" && updatedForm.isRecurring
+          ? Number(updatedForm.recurringDay)
+          : null,
+      updated_at: new Date().toISOString(),
+    };
+
+    // 4. 거래 수정
+    const { data: updatedTransaction, error: updateError } = await supabase
+      .from("transactions")
+      .update(updateData)
+      .eq("id", selectedTransaction.id)
+      .eq("user_id", user.id)
+      .select(
+        `
+        id,
+        transaction_type,
+        amount,
+        content,
+        memo,
+        transaction_at,
+        created_at,
+        updated_at,
+        is_recurring,
+        recurring_day,
+
+        category:categories (
+          id,
+          code,
+          name
+        ),
+
+        payment_method:payment_methods (
+          id,
+          code,
+          name
+        ),
+
+        withdraw_account:transfer_accounts!transactions_withdraw_account_id_fkey (
+          id,
+          code,
+          name
+        ),
+
+        deposit_account:transfer_accounts!transactions_deposit_account_id_fkey (
+          id,
+          code,
+          name
+        )
+      `,
+      )
+      .single();
+
+    // 5. 수정 실패
+    if (updateError) {
+      console.error("소비 기록 수정 실패:", updateError);
+      setToastMessage("소비 기록을 수정하지 못했어요.");
+      return;
+    }
+
+    if (!updatedTransaction) {
+      console.error("수정 결과가 반환되지 않았습니다.");
+      setToastMessage("수정된 소비 기록을 확인하지 못했어요.");
+      return;
+    }
+
+    //영수증 첨부 수정 처리
+    // 새 영수증 선택 → 신규 첨부 또는 기존 첨부 교체
+    if (newAttachment) {
+      const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+      const maxSize = 5 * 1024 * 1024;
+
+      if (!allowedTypes.includes(newAttachment.type)) {
+        setToastMessage("영수증은 JPG, PNG, WEBP 이미지만 등록할 수 있어요.");
+        return;
+      }
+
+      if (newAttachment.size > maxSize) {
+        setToastMessage("영수증 이미지는 5MB 이하만 등록할 수 있어요.");
+        return;
+      }
+
+      const extension =
+        newAttachment.name.split(".").pop()?.toLowerCase() || "jpg";
+
+      const safeFileName = `receipt-${Date.now()}.${extension}`;
+
+      const newStoragePath = `${user.id}/${selectedTransaction.id}/${safeFileName}`;
+
+      // 새 파일부터 업로드
+      const { error: uploadError } = await supabase.storage
+        .from("transaction-attachments")
+        .upload(newStoragePath, newAttachment, {
+          contentType: newAttachment.type,
+          upsert: false,
+        });
+
+      if (uploadError) {
+        console.error("새 영수증 업로드 실패:", uploadError);
+        setToastMessage("새 영수증을 업로드하지 못했어요.");
+        return;
+      }
+
+      let attachmentSaveError = null;
+
+      // 기존 첨부가 있으면 metadata UPDATE
+      if (existingAttachment) {
+        const { error } = await supabase
+          .from("transaction_attachments")
+          .update({
+            storage_path: newStoragePath,
+            file_name: newAttachment.name,
+            mime_type: newAttachment.type,
+          })
+          .eq("id", existingAttachment.id);
+
+        attachmentSaveError = error;
+      } else {
+        // 기존 첨부가 없으면 INSERT
+        const { error } = await supabase
+          .from("transaction_attachments")
+          .insert({
+            transaction_id: selectedTransaction.id,
+            storage_path: newStoragePath,
+            file_name: newAttachment.name,
+            mime_type: newAttachment.type,
+          });
+
+        attachmentSaveError = error;
+      }
+
+      // attachment DB 저장 실패 → 방금 올린 Storage 파일 롤백
+      if (attachmentSaveError) {
+        console.error("영수증 첨부정보 저장 실패:", attachmentSaveError);
+
+        const { error: rollbackStorageError } = await supabase.storage
+          .from("transaction-attachments")
+          .remove([newStoragePath]);
+
+        if (rollbackStorageError) {
+          console.error("새 영수증 Storage 롤백 실패:", rollbackStorageError);
+        }
+
+        setToastMessage("영수증 정보를 수정하지 못했어요.");
+        return;
+      }
+
+      if (
+        existingAttachment?.storage_path &&
+        existingAttachment.storage_path !== newStoragePath
+      ) {
+        const { error: oldStorageRemoveError } = await supabase.storage
+          .from("transaction-attachments")
+          .remove([existingAttachment.storage_path]);
+
+        if (oldStorageRemoveError) {
+          console.error(
+            "기존 영수증 Storage 정리 실패:",
+            oldStorageRemoveError,
+          );
+        }
+      }
+
+      // 새 영수증 상세화면용 signed URL 생성
+      const { data: signedUrlData, error: signedUrlError } =
+        await supabase.storage
+          .from("transaction-attachments")
+          .createSignedUrl(newStoragePath, 60 * 10);
+
+      if (signedUrlError) {
+        console.error("새 영수증 URL 생성 실패:", signedUrlError);
+        nextReceiptImage = null;
+      } else {
+        nextReceiptImage = signedUrlData.signedUrl;
+      }
+    }
+
+    // 새 파일은 X "첨부 삭제"를 선택 경우
+    else if (updatedForm.removeAttachment) {
+      if (existingAttachment) {
+        // DB 연결 제거
+        const { error: attachmentDeleteError } = await supabase
+          .from("transaction_attachments")
+          .delete()
+          .eq("id", existingAttachment.id);
+
+        if (attachmentDeleteError) {
+          console.error("영수증 첨부정보 삭제 실패:", attachmentDeleteError);
+          setToastMessage("영수증 정보를 삭제하지 못했어요.");
+          return;
+        }
+
+        // Storage 실제 파일 제거
+        if (existingAttachment.storage_path) {
+          const { error: storageRemoveError } = await supabase.storage
+            .from("transaction-attachments")
+            .remove([existingAttachment.storage_path]);
+
+          if (storageRemoveError) {
+            // DB 연결은 이미 제거
+            // Storage에 파일만 남는 cleanup 문제 -> 사용자 수정은 유지.
+            console.error("영수증 Storage 삭제 실패:", storageRemoveError);
+          }
+        }
+      }
+
+      nextReceiptImage = null;
+    }
+
+    // 6. DB 데이터 → UI 형식
+    const formattedTransaction = formatTransaction(updatedTransaction);
+
+    // 7. 목록 즉시 반영
+    setTransactions(prevTransactions =>
+      prevTransactions.map(transaction =>
+        transaction.id === formattedTransaction.id
+          ? formattedTransaction
+          : transaction,
+      ),
+    );
+
+    setRecentlyAddedId(formattedTransaction.id);
+
+    setTimeout(() => {
+      setRecentlyAddedId(null);
+    }, 1800);
+
+    // 8. 상세도 즉시 수정
+    setSelectedTransaction({
+      ...formattedTransaction,
+      receiptImage: nextReceiptImage,
+    });
+
+    // 9. 상세화면으로 복귀
+    setPanelView("detail");
+    setToastMessage("소비 기록을 수정했어요.");
+
+    console.log("소비 기록 수정 성공:", updatedTransaction);
+  };
+
+  const handleOpenDetail = async transaction => {
+    const { data: attachmentData, error: attachmentError } = await supabase
+      .from("transaction_attachments")
+      .select("storage_path")
+      .eq("transaction_id", transaction.id)
+      .maybeSingle();
+
+    if (attachmentError) {
+      console.error("영수증 첨부정보 조회 실패:", attachmentError);
+    }
+
+    let receiptImage = null;
+
+    if (attachmentData?.storage_path) {
+      const { data: signedUrlData, error: signedUrlError } =
+        await supabase.storage
+          .from("transaction-attachments")
+          .createSignedUrl(attachmentData.storage_path, 60 * 10);
+
+      if (signedUrlError) {
+        console.error("영수증 이미지 URL 생성 실패:", signedUrlError);
+      } else {
+        receiptImage = signedUrlData.signedUrl;
+      }
+    }
+
     setSelectedTransaction({
       ...transaction,
-
-      // UI 개발용 임시값
-      // 1번 거래만 영수증이 있는 상태로 테스트
-      receiptImage: transaction.id === 1 ? "/images/receipt-sample.jpg" : null,
-
-      createdAt: "2026.07.29 18:42",
-      updatedAt: "2026.07.30 09:11",
+      receiptImage,
     });
 
     setPanelView("detail");
+  };
+
+  const handleDeleteTransaction = async () => {
+    if (!selectedTransaction) {
+      setToastMessage("삭제할 거래 정보를 확인할 수 없어요.");
+      return;
+    }
+
+    // 1. 로그인 사용자 확인
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      console.error("사용자 확인 실패:", userError);
+      setToastMessage("로그인 정보를 확인할 수 없어요.");
+      return;
+    }
+
+    // 2. 첨부파일 정보 조회
+    const { data: attachmentData, error: attachmentError } = await supabase
+      .from("transaction_attachments")
+      .select("storage_path")
+      .eq("transaction_id", selectedTransaction.id)
+      .maybeSingle();
+
+    if (attachmentError) {
+      console.error("첨부파일 정보 조회 실패:", attachmentError);
+      setToastMessage("첨부파일 정보를 확인하지 못했어요.");
+      return;
+    }
+
+    // 3. Storage 파일이 있으면 먼저 삭제
+    if (attachmentData?.storage_path) {
+      const { error: storageDeleteError } = await supabase.storage
+        .from("transaction-attachments")
+        .remove([attachmentData.storage_path]);
+
+      if (storageDeleteError) {
+        console.error("영수증 Storage 삭제 실패:", storageDeleteError);
+        setToastMessage("영수증 파일을 삭제하지 못했어요.");
+        return;
+      }
+    }
+
+    // 4. 거래 삭제
+    const { error: deleteError } = await supabase
+      .from("transactions")
+      .delete()
+      .eq("id", selectedTransaction.id)
+      .eq("user_id", user.id);
+
+    if (deleteError) {
+      console.error("소비 기록 삭제 실패:", deleteError);
+      setToastMessage("소비 기록을 삭제하지 못했어요.");
+      return;
+    }
+
+    // 5. 화면에서 즉시 제거
+    setTransactions(prevTransactions =>
+      prevTransactions.filter(
+        transaction => transaction.id !== selectedTransaction.id,
+      ),
+    );
+
+    // 체크된 상태였다면 같이 제거
+    setSelectedIds(prevSelectedIds =>
+      prevSelectedIds.filter(id => id !== selectedTransaction.id),
+    );
+
+    setSelectedTransaction(null);
+    setPanelView("closed");
+
+    setIsDeleteConfirmOpen(false);
+    setIsDeleteSuccessOpen(true);
   };
 
   return (
@@ -644,6 +1402,7 @@ export default function Transaction() {
                 <TransactionList
                   hasTransactionData={hasTransactionData}
                   visibleTransactions={visibleTransactions}
+                  recentlyAddedId={recentlyAddedId}
                   selectedIds={selectedIds}
                   isAllSelected={isAllSelected}
                   onToggleAll={handleToggleAll}
@@ -656,6 +1415,9 @@ export default function Transaction() {
             {panelView === "edit" && (
               <TransactionEdit
                 transaction={selectedTransaction}
+                categories={categories}
+                paymentMethods={paymentMethods}
+                transferAccounts={transferAccounts}
                 onClose={() => {
                   setPanelView("closed");
                   setSelectedTransaction(null);
@@ -663,11 +1425,7 @@ export default function Transaction() {
                 onCancel={() => {
                   setPanelView("detail");
                 }}
-                onSave={updatedForm => {
-                  console.log("수정 저장값", updatedForm);
-
-                  setPanelView("detail");
-                }}
+                onSave={handleUpdateTransaction}
               />
             )}
 
@@ -675,12 +1433,13 @@ export default function Transaction() {
               <TransactionDetail
                 transaction={selectedTransaction}
                 onClose={() => {
-                  setPanelView("closed");
+                  setPanelView("entry");
                   setSelectedTransaction(null);
                 }}
                 onEdit={() => {
                   setPanelView("edit");
                 }}
+                onDelete={() => setIsDeleteConfirmOpen(true)}
               />
             )}
 
@@ -703,10 +1462,16 @@ export default function Transaction() {
                 manualEntry={{
                   transactionForm,
                   transactionErrors,
+
+                  categories,
+                  paymentMethods,
+                  transferAccounts,
+
                   onTransactionFormChange,
                   onToggleRecurring,
                   onTransactionSubmit,
                   onContinueEntry,
+                  onResetTransactionForm: handleResetTransactionForm,
                 }}
                 multipleEntry={{
                   multipleRows,
@@ -760,7 +1525,7 @@ export default function Transaction() {
         </main>
       </div>
 
-      <SubFooter />
+      {panelView === "closed" && <SubFooter />}
       <BottomTab />
       <Modal
         isOpen={isMultipleConfirmOpen}
@@ -772,6 +1537,31 @@ export default function Transaction() {
         cancelText="취소"
         onConfirm={handleConfirmMultipleSubmit}
         onCancel={() => setIsMultipleConfirmOpen(false)}
+      />
+      <Modal
+        isOpen={isDeleteConfirmOpen}
+        type="danger"
+        icon="error_outline"
+        title="삭제하시겠습니까?"
+        description="삭제한 내역은 복구할 수 없습니다."
+        confirmText="삭제하기"
+        cancelText="취소"
+        onCancel={() => setIsDeleteConfirmOpen(false)}
+        onConfirm={handleDeleteTransaction}
+      />
+      <Modal
+        isOpen={isDeleteSuccessOpen}
+        type="danger"
+        icon="delete_outline"
+        title="삭제되었습니다."
+        description="목록에서 변경된 내용을 확인하세요"
+        confirmText="확인"
+        onConfirm={() => {
+          setIsDeleteSuccessOpen(false);
+          setPanelView("entry");
+          setEntryMode("single");
+          setPanelView("entry");
+        }}
       />
 
       {toastMessage && (

@@ -263,3 +263,44 @@
   color: var(--color-white);
   background-color: var(--color-point);
 }
+
+.multipleDateCell {
+  position: relative;
+  width: 100%;
+  padding-bottom: 18px;
+}
+
+.multipleDateInput {
+  width: 100%;
+}
+
+.multipleTimePicker {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+.multipleTimeButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  color: var(--color-gray);
+  background: transparent;
+  cursor: pointer;
+  font-size: 11px;
+  line-height: 14px;
+}
+
+.multipleTimeButton :global(.material-icons) {
+  font-size: 14px;
+}
+
+.hiddenTimeInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
