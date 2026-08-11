@@ -1426,7 +1426,7 @@ export default function Transaction() {
               <TransactionDetail
                 transaction={selectedTransaction}
                 onClose={() => {
-                  setPanelView("closed");
+                  setPanelView("entry");
                   setSelectedTransaction(null);
                 }}
                 onEdit={() => {
