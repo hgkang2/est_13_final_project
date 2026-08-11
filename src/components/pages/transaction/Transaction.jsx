@@ -69,6 +69,7 @@ const formatTransaction = transaction => {
     id: transaction.id,
     date,
     time,
+    dateValue,
 
     type: transaction.transaction_type,
 
@@ -393,7 +394,10 @@ export default function Transaction() {
       type: copyTarget.type,
       amount: Math.abs(copyTarget.amount).toString(),
       category: copyTarget.categoryId,
+
       date: dateType === "today" ? today : copyTarget.dateValue,
+      time: dateType === "today" ? "" : copyTarget.time,
+
       paymentMethod: copyTarget.paymentMethodId,
       content: copyTarget.content === "-" ? "" : copyTarget.content,
       memo: "",

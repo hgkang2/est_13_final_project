@@ -283,7 +283,7 @@ export default function ManualEntryForm({
                     <input
                       type="date"
                       name="date"
-                      value={transactionForm.date}
+                      value={transactionForm.date ?? ""}
                       onChange={onTransactionFormChange}
                       aria-invalid={Boolean(transactionErrors.date)}
                     />
@@ -377,7 +377,7 @@ export default function ManualEntryForm({
                   <input
                     type="date"
                     name="date"
-                    value={transactionForm.date}
+                    value={transactionForm.date ?? ""}
                     onChange={onTransactionFormChange}
                     aria-invalid={Boolean(transactionErrors.date)}
                   />
