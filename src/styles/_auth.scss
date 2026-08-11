@@ -61,12 +61,13 @@ main {
   font-size: 38px;
   font-weight: 600;
   line-height: 1.25;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 }
 .intro p {
   font-size: 22px;
   line-height: 1.5;
   margin-bottom: 40px;
+  margin-bottom: 10px;
 }
 .button {
     width: 100%;
@@ -181,12 +182,12 @@ main {
     display: flex;
     align-items: center;
     gap: 20px;
+    margin-top: 0;
     margin-bottom: 28px;
     color: var(--color-light-gray);
     text-align: center;
 }
 .sns-title p {
-    margin: 0;
     white-space: nowrap;
     font-size: 16px;
     font-weight: 500;
