@@ -142,16 +142,6 @@ const initialAiTransactionForm = {
   receipt: null,
 };
 
-const mockAiResult = {
-  type: "expense",
-  amount: "4500",
-  category: "cafeSnack",
-  date: "2026-07-29",
-  paymentMethod: "creditCard",
-  content: "스타벅스 아메리카노",
-  memo: "점심 후 커피",
-};
-
 const createMultipleTransactionRow = id => ({
   id,
   date: "",
@@ -1152,23 +1142,44 @@ export default function Transaction() {
 
     const reader = new FileReader();
 
-    reader.onload = () => {
-      setAiPreview(reader.result);
+    reader.onload = async () => {
+      const imageDataUrl = reader.result;
+
+      setAiPreview(imageDataUrl);
+      setAiStatus("analyzing");
+
+      const { data, error } = await supabase.functions.invoke(
+        "analyze-receipt",
+        {
+          body: {
+            imageDataUrl,
+            transactionTypes: [
+              { value: "income", label: "수입" },
+              { value: "expense", label: "지출" },
+              { value: "transfer", label: "이체" },
+            ],
+            categories: categories.map(category => ({
+              name: category.name,
+              transactionType: category.transaction_type,
+            })),
+            paymentMethods: paymentMethods.map(method => method.name),
+          },
+        },
+      );
+
+      console.log("AI 요청 테스트 data:", data);
+      console.log("AI 요청 테스트 error:", error);
+
+      if (error) {
+        setAiStatus("idle");
+        setToastMessage("AI 분석 요청을 보내지 못했어요.");
+        return;
+      }
+
+      setAiStatus("idle");
     };
 
     reader.readAsDataURL(file);
-
-    setAiStatus("analyzing");
-
-    setTimeout(() => {
-      setAiTransactionForm(prevForm => ({
-        ...prevForm,
-        ...mockAiResult,
-        receipt: file,
-      }));
-
-      setAiStatus("success");
-    }, 1800);
   };
 
   const onAiReceiptChange = event => {
