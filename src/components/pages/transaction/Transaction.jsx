@@ -647,7 +647,7 @@ export default function Transaction() {
 
       is_recurring:
         transactionForm.type === "transfer"
-          ? transactionForm.isRecurring
+          ? Boolean(transactionForm.isRecurring)
           : false,
 
       recurring_day:
@@ -1011,14 +1011,13 @@ export default function Transaction() {
       // 이체가 아니게 변경되면 반복이체 정보 제거
       is_recurring:
         updatedForm.type === "transfer"
-          ? Boolean(selectedTransaction.isRecurring)
+          ? Boolean(updatedForm.isRecurring)
           : false,
 
       recurring_day:
-        updatedForm.type === "transfer" && selectedTransaction.isRecurring
-          ? selectedTransaction.recurringDay
+        updatedForm.type === "transfer" && updatedForm.isRecurring
+          ? Number(updatedForm.recurringDay)
           : null,
-
       updated_at: new Date().toISOString(),
     };
 

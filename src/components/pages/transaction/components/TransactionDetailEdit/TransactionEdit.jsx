@@ -31,13 +31,21 @@ export default function TransactionEdit({
       memo: transaction.memo ?? "",
       withdrawAccount: transaction.withdrawAccountId,
       depositAccount: transaction.depositAccountId,
-
+      isRecurring: transaction.isRecurring ?? false,
+      recurringDay: transaction.recurringDay?.toString() ?? "29",
       attachment: null, // 새로 선택한 파일
       removeAttachment: false, // 시존 영수증 삭제 여부
     });
   }, [transaction]);
 
   if (!transaction || !editForm) return null;
+
+  const handleToggleRecurring = () => {
+    setEditForm(prevForm => ({
+      ...prevForm,
+      isRecurring: !prevForm.isRecurring,
+    }));
+  };
 
   const handleChange = event => {
     const { name, value } = event.target;
@@ -126,9 +134,10 @@ export default function TransactionEdit({
       paymentMethod: type === "transfer" ? "" : prevForm.paymentMethod,
       withdrawAccount: type === "transfer" ? prevForm.withdrawAccount : "",
       depositAccount: type === "transfer" ? prevForm.depositAccount : "",
+      isRecurring: type === "transfer" ? prevForm.isRecurring : false,
     }));
   };
-
+  
   const handleSubmit = event => {
     event.preventDefault();
 
