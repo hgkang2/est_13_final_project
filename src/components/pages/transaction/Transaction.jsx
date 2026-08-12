@@ -26,6 +26,28 @@ const getToday = () => {
   return `${year}-${month}-${day}`;
 };
 
+const getCurrentMonthRange = () => {
+  const today = new Date();
+
+  const year = today.getFullYear();
+  const month = today.getMonth();
+
+  const startDate = [year, String(month + 1).padStart(2, "0"), "01"].join("-");
+
+  const lastDay = new Date(year, month + 1, 0).getDate();
+
+  const endDate = [
+    year,
+    String(month + 1).padStart(2, "0"),
+    String(lastDay).padStart(2, "0"),
+  ].join("-");
+
+  return {
+    startDate,
+    endDate,
+  };
+};
+
 const formatDateTime = value => {
   if (!value) return "-";
 
@@ -166,6 +188,7 @@ export default function Transaction() {
   const supabase = createClient();
 
   const [activeFilter, setActiveFilter] = useState("all");
+  const [dateRange, setDateRange] = useState(getCurrentMonthRange);
   const [panelView, setPanelView] = useState("entry");
   // "entry" | "recent" | "detail" | "edit" | "closed"
 
@@ -543,13 +566,20 @@ export default function Transaction() {
       (lastMonthSummary.income - lastMonthSummary.expense),
   };
 
-  const hasTransactionData = thisMonthTransactions.length > 0;
-
   const recentTransactions = transactions.slice(0, 6);
-  const visibleTransactions =
-    activeFilter === "all"
-      ? transactions
-      : transactions.filter(transaction => transaction.type === activeFilter);
+
+  const visibleTransactions = transactions.filter(transaction => {
+    const matchesType =
+      activeFilter === "all" || transaction.type === activeFilter;
+
+    const matchesDate =
+      transaction.dateValue >= dateRange.startDate &&
+      transaction.dateValue <= dateRange.endDate;
+
+    return matchesType && matchesDate;
+  });
+
+  const hasTransactionData = visibleTransactions.length > 0;
 
   const isAllSelected =
     visibleTransactions.length > 0 &&
@@ -582,6 +612,15 @@ export default function Transaction() {
         ...visibleTransactions.map(transaction => transaction.id),
       ]),
     ]);
+  };
+
+  const handleDateRangeChange = event => {
+    const { name, value } = event.target;
+
+    setDateRange(prevRange => ({
+      ...prevRange,
+      [name]: value,
+    }));
   };
 
   const handleResetTransactionForm = () => {
@@ -2061,6 +2100,8 @@ export default function Transaction() {
                 <TransactionToolbar
                   activeFilter={activeFilter}
                   onFilterChange={setActiveFilter}
+                  dateRange={dateRange}
+                  onDateRangeChange={handleDateRangeChange}
                 />
                 <TransactionList
                   hasTransactionData={hasTransactionData}
