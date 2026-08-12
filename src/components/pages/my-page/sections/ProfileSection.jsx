@@ -1,19 +1,20 @@
 import styles from "../MyPage.module.scss";
 
-const stats = [
-  { label: "진행중인 목표", value: "0개" },
-  { label: "이번 달 저축 금액", value: "0원" },
-  { label: "완료한 챌린지수", value: "0개" },
-];
-
-export default function ProfileSection() {
-  const nickname = "닉네임";
+export default function ProfileSection({ profile, activeGoalCount }) {
+  const nickname = profile.nickname || "회원";
   const dayCount = 0;
+  const stats = [
+    { label: "진행중인 목표", value: `${activeGoalCount}개` },
+    { label: "이번 달 저축 금액", value: "0원" },
+    { label: "완료한 챌린지수", value: "0개" },
+  ];
 
   return (
-    <section className={styles.profile}>
+    <div className={styles.profile}>
       <div className={styles.greeting}>
-        <div className={styles.profileImage} />
+        <div className={styles.profileImage}>
+          {profile.image && <img src={profile.image} alt="" />}
+        </div>
 
         <div className={styles.greetingText}>
           <p className="heading-s-plus">
@@ -41,6 +42,6 @@ export default function ProfileSection() {
           </div>
         ))}
       </div>
-    </section>
+    </div>
   );
 }

@@ -13,7 +13,7 @@ export default function MessageSection() {
   const message = messages[0];
 
   return (
-    <section className={styles.message}>
+    <div className={styles.message}>
       <p className="heading-s">
         “{message.first}
         <br />
@@ -22,6 +22,6 @@ export default function MessageSection() {
       </p>
 
       <img src={message.image} alt="" width={544} height={182} />
-    </section>
+    </div>
   );
 }
