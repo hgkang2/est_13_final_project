@@ -9,6 +9,16 @@ $mission-grid-mobile-breakpoint: 480px;
   max-width: 1920px;
   margin: 0 auto;
   min-height: calc(100vh - 86px);
+  position: relative;
+}
+
+/* 사이드바 우측의 메인 영역과 푸터를 감싸는 컨테이너 */
+.contentWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background-color: var(--color-white);
 }
 
 .main {
@@ -252,8 +262,6 @@ $mission-grid-mobile-breakpoint: 480px;
   .gridContainer {
     grid-template-columns: 1fr;
   }
-
-  /* missionGrid는 이 구간에서 4열 유지 (기획안 반영) */
 }
 
 @media (max-width: $mission-grid-mobile-breakpoint) {
