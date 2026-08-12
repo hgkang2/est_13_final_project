@@ -19,20 +19,22 @@ export default function TransactionList({
   onOpenDetail,
   recentlyAddedId,
 }) {
-  const selectedSummary = visibleTransactions
-    .filter(transaction => selectedIds.includes(transaction.id))
-    .reduce(
-      (summary, transaction) => {
-        summary[transaction.type] += transaction.amount;
+  const selectedTransactions = visibleTransactions.filter(transaction =>
+    selectedIds.includes(transaction.id),
+  );
 
-        return summary;
-      },
-      {
-        income: 0,
-        expense: 0,
-        transfer: 0,
-      },
-    );
+  const selectedSummary = selectedTransactions.reduce(
+    (summary, transaction) => {
+      summary[transaction.type] += transaction.amount;
+
+      return summary;
+    },
+    {
+      income: 0,
+      expense: 0,
+      transfer: 0,
+    },
+  );
 
   const [expandedId, setExpandedId] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -82,7 +84,7 @@ export default function TransactionList({
             </div>
           </div>
 
-          {selectedIds.length > 0 && (
+          {selectedTransactions.length > 0 && (
             <div className={styles.selectionBar}>
               <div className={styles.selectionBarInner}>
                 <div className={styles.selectionInfo}>
@@ -90,7 +92,7 @@ export default function TransactionList({
                     check_box
                   </span>
 
-                  <span>{selectedIds.length}건이 선택되었습니다.</span>
+                  <span>{selectedTransactions.length}건이 선택되었습니다.</span>
                 </div>
 
                 <div className={styles.selectionRight}>
