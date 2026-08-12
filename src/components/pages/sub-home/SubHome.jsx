@@ -20,7 +20,6 @@ import { useRouter } from "next/navigation";
 export default function SubHome() {
   // UI 개발용 상태값
   const hasSpendingData = true;
-  const hasSavingGoal = false;
   const hasChallenge = false;
   const hasJournal = false;
 
@@ -34,6 +33,7 @@ export default function SubHome() {
   const [spendingComparison, setSpendingComparison] = useState(null);
   const [previousMonthlySpendingDaily, setPreviousMonthlySpendingDaily] =
     useState([]);
+  const [savingGoal, setSavingGoal] = useState(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -108,6 +108,29 @@ export default function SubHome() {
         ...data,
         imageUrl,
       });
+    };
+
+    const fetchSavingGoal = async userId => {
+      const { data, error } = await supabase
+        .from("saving_goals")
+        .select(
+          "id, title, current_amount, target_amount, start_date, end_date",
+        )
+        .eq("user_id", userId)
+        .eq("status", "in_progress")
+        .gte("end_date", new Date().toISOString().slice(0, 10))
+        .order("end_date", { ascending: true })
+        .range(1, 1)
+        .maybeSingle();
+
+      if (error) {
+        console.error("서브홈 저축 목표 조회 실패:", error);
+        return;
+      }
+
+      console.log("서브홈 저축 목표:", data);
+
+      setSavingGoal(data);
     };
 
     const fetchMonthlySpending = async () => {
@@ -246,6 +269,7 @@ export default function SubHome() {
 
       fetchRecentTransactions(user.id);
       fetchGoal(user.id);
+      fetchSavingGoal(user.id);
       fetchMonthlySpending();
       fetchMonthlySpendingDaily();
       fetchPreviousMonthlySpendingDaily();
@@ -310,7 +334,10 @@ export default function SubHome() {
               </div>
 
               <div className={styles.statusRow}>
-                <SavingGoalCard hasSavingGoal={hasSavingGoal} />
+                <SavingGoalCard
+                  hasSavingGoal={Boolean(savingGoal)}
+                  savingGoal={savingGoal}
+                />
                 <ChallengeCard hasChallenge={hasChallenge} />
               </div>
 
