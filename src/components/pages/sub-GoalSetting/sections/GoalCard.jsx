@@ -219,7 +219,7 @@ export default function GoalCard({ goal, onEdit, onDelete }) {
 
       <div className={styles.goalSettingGoalContent}>
         <div className={styles.goalSettingGoalTitleRow}>
-          <h3>{goal.title}</h3>
+          <h2>{goal.title}</h2>
 
           <span
             className={`${styles.goalSettingGoalStatus} ${
