@@ -7,6 +7,7 @@ import {
   LineElement,
   Filler,
   Tooltip,
+  Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import styles from "../SubHome.module.scss";
@@ -18,24 +19,38 @@ ChartJS.register(
   LineElement,
   Filler,
   Tooltip,
+  Legend,
 );
 
 export default function SpendingSummaryCard({
   hasSpendingData,
   monthlySpending,
   monthlySpendingDaily,
+  previousMonthlySpendingDaily,
   spendingComparison,
 }) {
+  const hasPreviousSpendingData = previousMonthlySpendingDaily.some(
+    item => Number(item.cumulative_amount) > 0,
+  );
+
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: false,
+        display: hasPreviousSpendingData,
+        position: "top",
+        align: "end",
+        labels: {
+          boxWidth: 16,
+          boxHeight: 2,
+          usePointStyle: false,
+        },
       },
       tooltip: {
         callbacks: {
-          label: context => `${Number(context.raw).toLocaleString("ko-KR")}원`,
+          label: context =>
+            `${context.dataset.label}: ${Number(context.raw).toLocaleString("ko-KR")}원`,
         },
       },
     },
@@ -74,6 +89,7 @@ export default function SpendingSummaryCard({
     labels: chartLabels,
     datasets: [
       {
+        label: "이번 달",
         data: monthlySpendingDaily.map(item => Number(item.cumulative_amount)),
         borderColor: "#76C58A",
         backgroundColor: "rgba(118, 197, 138, 0.12)",
@@ -83,6 +99,25 @@ export default function SpendingSummaryCard({
         pointHoverRadius: 4,
         borderWidth: 2,
       },
+
+      ...(hasPreviousSpendingData
+        ? [
+            {
+              label: "지난달",
+              data: previousMonthlySpendingDaily.map(item =>
+                Number(item.cumulative_amount),
+              ),
+              borderColor: "#B8B8B8",
+              backgroundColor: "transparent",
+              fill: false,
+              tension: 0.35,
+              pointRadius: 0,
+              pointHoverRadius: 4,
+              borderWidth: 2,
+              borderDash: [5, 5],
+            },
+          ]
+        : []),
     ],
   };
 
@@ -171,11 +206,13 @@ export default function SpendingSummaryCard({
         }`}
       >
         {hasSpendingData ? (
-          <Line
-            data={chartData}
-            options={chartOptions}
-            aria-label="이번 달 누적 소비 추이 그래프"
-          />
+          <>
+            <Line
+              data={chartData}
+              options={chartOptions}
+              aria-label="이번 달과 지난달 누적 소비 추이 그래프"
+            />
+          </>
         ) : (
           <Image
             src="/images/common/spending-graph.png"

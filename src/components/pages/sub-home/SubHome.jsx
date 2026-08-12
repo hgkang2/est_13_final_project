@@ -32,6 +32,8 @@ export default function SubHome() {
   const [monthlySpending, setMonthlySpending] = useState(0);
   const [monthlySpendingDaily, setMonthlySpendingDaily] = useState([]);
   const [spendingComparison, setSpendingComparison] = useState(null);
+  const [previousMonthlySpendingDaily, setPreviousMonthlySpendingDaily] =
+    useState([]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -168,6 +170,36 @@ export default function SubHome() {
       setMonthlySpendingDaily(data ?? []);
     };
 
+    const fetchPreviousMonthlySpendingDaily = async () => {
+      const now = new Date();
+
+      const previousMonthStart = new Date(
+        now.getFullYear(),
+        now.getMonth() - 1,
+        1,
+      );
+
+      const previousMonthEnd = new Date(
+        now.getFullYear(),
+        now.getMonth() - 1,
+        now.getDate() + 1,
+      );
+
+      const { data, error } = await supabase.rpc("get_monthly_expense_daily", {
+        p_start_at: previousMonthStart.toISOString(),
+        p_end_at: previousMonthEnd.toISOString(),
+      });
+
+      if (error) {
+        console.error("지난달 일별 소비 조회 실패:", error);
+        return;
+      }
+
+      console.log("서브홈 지난달 일별 소비:", data);
+
+      setPreviousMonthlySpendingDaily(data ?? []);
+    };
+
     const fetchSpendingComparison = async () => {
       const now = new Date();
 
@@ -216,6 +248,7 @@ export default function SubHome() {
       fetchGoal(user.id);
       fetchMonthlySpending();
       fetchMonthlySpendingDaily();
+      fetchPreviousMonthlySpendingDaily();
       fetchSpendingComparison();
 
       const { data: profile, error: profileError } = await supabase
@@ -261,6 +294,7 @@ export default function SubHome() {
                   hasSpendingData={hasMonthlySpending}
                   monthlySpending={monthlySpending}
                   monthlySpendingDaily={monthlySpendingDaily}
+                  previousMonthlySpendingDaily={previousMonthlySpendingDaily}
                   spendingComparison={spendingComparison}
                 />
                 <AiCard hasSpendingData={hasSpendingData} />
