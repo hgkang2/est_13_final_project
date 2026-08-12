@@ -18,7 +18,7 @@ const heroSlides = [
       <>
         돈을 모으는 가장
         <br className={styles.mobileBr} />
-        <span className={styles.highlight}>즐거운</span> 방법, 모음
+        <span className={styles.highlight}> 즐거운</span> 방법, 모음
       </>
     ),
     description: (
@@ -78,7 +78,7 @@ const heroSlides = [
       <>
         매일 기록하고
         <br className={styles.mobileBr} />
-        <span className={styles.highlight}>보상을 모아</span> 보세요!
+        <span className={styles.highlight}> 보상을 모아</span> 보세요!
       </>
     ),
     description: (
