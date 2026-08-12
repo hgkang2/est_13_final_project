@@ -11,10 +11,10 @@ export default function TransactionItem({
   isIncome = false,
 }) {
   const categoryClassMap = {
-    cafe: styles.cafeCategory,
+    cafe_snack: styles.cafeCategory,
     salary: styles.salaryCategory,
     food: styles.foodCategory,
-    savings: styles.savingsCategory,
+    saving_transfer: styles.savingsCategory,
   };
 
   return (
