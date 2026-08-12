@@ -130,26 +130,53 @@ export default function TransactionDetail({
           </section>
 
           <section className={styles.detailField}>
-            <h3>날짜</h3>
+            <h3>
+              {transaction.type === "transfer" && transaction.isRecurring
+                ? "반복일"
+                : "날짜"}
+            </h3>
 
             <div className={styles.detailValueBox}>
               <strong>
-                {transaction.date}
+                {transaction.type === "transfer" && transaction.isRecurring
+                  ? `매월 ${transaction.recurringDay}일`
+                  : transaction.date}
+
                 {transaction.time ? ` ${transaction.time}` : ""}
               </strong>
             </div>
           </section>
         </div>
 
-        <section className={styles.detailField}>
-          <h3>결제수단</h3>
+        {transaction.type === "transfer" ? (
+          <div className={styles.detailFieldRow}>
+            <section className={styles.detailField}>
+              <h3>출금 계좌</h3>
 
-          <div
-            className={`${styles.detailValueBox} ${styles.detailPaymentBox}`}
-          >
-            <span>{transaction.paymentMethod}</span>
+              <div className={styles.detailValueBox}>
+                <span>{transaction.withdrawAccount || "-"}</span>
+              </div>
+            </section>
+
+            <section className={styles.detailField}>
+              <h3>입금 계좌</h3>
+
+              <div className={styles.detailValueBox}>
+                <span>{transaction.depositAccount || "-"}</span>
+              </div>
+            </section>
           </div>
-        </section>
+        ) : (
+          <section className={styles.detailField}>
+            <h3>결제수단</h3>
+
+            <div
+              className={`${styles.detailValueBox} ${styles.detailPaymentBox}`}
+            >
+              <span>{transaction.paymentMethod}</span>
+            </div>
+          </section>
+        )}
 
         <section className={styles.detailField}>
           <h3>내용</h3>

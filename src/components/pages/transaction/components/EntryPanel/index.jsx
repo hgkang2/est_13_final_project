@@ -24,6 +24,7 @@ export default function EntryPanel({
     onToggleRecurring,
     onTransactionSubmit,
     onContinueEntry,
+    onResetTransactionForm,
   } = manualEntry;
 
   const {
@@ -210,6 +211,7 @@ export default function EntryPanel({
               isTransfer={isTransfer}
               onTransactionFormChange={onTransactionFormChange}
               onToggleRecurring={onToggleRecurring}
+              onResetTransactionForm={onResetTransactionForm} 
             />
           ) : (
             <MultipleEntryForm

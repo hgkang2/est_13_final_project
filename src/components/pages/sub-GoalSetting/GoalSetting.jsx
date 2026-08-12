@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import BottomTab from "@/components/layout/BottomTab";
 import SubFooter from "@/components/layout/SubFooter";
+import { createClient } from "@/utils/supabase/client";
 import GoalEmpty from "./sections/GoalEmpty";
 import GoalList from "./sections/GoalList";
 import GoalForm from "./sections/GoalForm";
@@ -11,50 +12,103 @@ import styles from "./GoalSetting.module.scss";
 
 const GOAL_SETTING_FILTERS = ["전체", "진행 중", "달성 완료", "중단"];
 
-const GOAL_SETTING_MOCK_GOALS = [
-  {
-    id: 1,
-    dday: "D-7",
-    title: "여행 가즈아!",
-    status: "진행 중",
-    currentAmount: 900000,
-    targetAmount: 2000000,
-    progress: 45,
-    startDate: "2026-07-01",
-    targetDate: "2026-08-21",
-    memo: "여행을 위해 열심히 모아보자!",
-    imageUrl: "",
-    color: "red",
-  },
-  {
-    id: 2,
-    dday: "D-35",
-    title: "비상금 300만 원 모으기",
-    status: "진행 중",
-    currentAmount: 1950000,
-    targetAmount: 3000000,
-    progress: 65,
-    startDate: "2026-05-01",
-    targetDate: "2026-08-20",
-    memo: "예상치 못한 상황을 대비한 비상금",
-    imageUrl: "",
-    color: "yellow",
-  },
-  {
-    id: 3,
-    dday: "D-39",
-    title: "병원비",
-    status: "중단",
-    currentAmount: 100000,
-    targetAmount: 500000,
-    progress: 20,
-    startDate: "2026-06-01",
-    targetDate: "2026-08-24",
-    memo: "필요한 병원비 마련하기",
-    imageUrl: "",
-    color: "gray",
-  },
-];
+const GOAL_STATUS_TO_DB = {
+  "진행 중": "in_progress",
+  "달성 완료": "completed",
+  중단: "stopped",
+};
+
+const GOAL_STATUS_TO_UI = {
+  in_progress: "진행 중",
+  completed: "달성 완료",
+  stopped: "중단",
+};
+
+const supabase = createClient();
+const GOAL_IMAGE_BUCKET = "user-images";
+const GOAL_IMAGE_SIGNED_URL_TTL = 60 * 60;
+const GOAL_IMAGE_MAX_SIZE = 2 * 1024 * 1024;
+const GOAL_IMAGE_TYPES = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+};
+
+function mapGoalFromDatabase(goal) {
+  const imagePath = normalizeGoalImagePath(goal.image_path);
+
+  return {
+    id: goal.id,
+    title: goal.title,
+    status: GOAL_STATUS_TO_UI[goal.status] ?? "진행 중",
+    currentAmount: Number(goal.current_amount),
+    targetAmount: Number(goal.target_amount),
+    startDate: goal.start_date,
+    targetDate: goal.end_date,
+    memo: goal.memo ?? "",
+    imagePath,
+    imageUrl: goal.image_url ?? "",
+    imageName: imagePath?.split("/").pop() ?? "",
+    color: goal.status === "stopped" ? "gray" : "green",
+  };
+}
+
+function normalizeGoalImagePath(imagePath) {
+  if (!imagePath || typeof imagePath !== "string") {
+    return null;
+  }
+
+  const normalizedPath = imagePath
+    .trim()
+    .replace(/^\/+/, "")
+    .replace(new RegExp(`^${GOAL_IMAGE_BUCKET}/`), "");
+
+  if (
+    !normalizedPath ||
+    normalizedPath.startsWith("http://") ||
+    normalizedPath.startsWith("https://") ||
+    normalizedPath.startsWith("data:")
+  ) {
+    return null;
+  }
+
+  return normalizedPath;
+}
+
+async function addGoalImageUrls(goals, userId) {
+  return Promise.all(
+    goals.map(async (goal) => {
+      const imagePath = normalizeGoalImagePath(goal.image_path);
+      const userGoalFolder = `${userId}/goals/`;
+
+      if (!imagePath || !imagePath.startsWith(userGoalFolder)) {
+        if (goal.image_path) {
+          console.error("목표 이미지 경로가 사용자 폴더와 일치하지 않습니다:", {
+            imagePath: goal.image_path,
+            expectedFolder: userGoalFolder,
+          });
+        }
+
+        return goal;
+      }
+
+      const { data, error } = await supabase.storage
+        .from(GOAL_IMAGE_BUCKET)
+        .createSignedUrl(imagePath, GOAL_IMAGE_SIGNED_URL_TTL);
+
+      if (error) {
+        console.error("목표 이미지 URL 생성 실패:", error);
+        return goal;
+      }
+
+      return { ...goal, image_path: imagePath, image_url: data.signedUrl };
+    }),
+  );
+}
+
+function getGoalImagePath(userId, file) {
+  const extension = GOAL_IMAGE_TYPES[file.type];
+  return `${userId}/goals/${crypto.randomUUID()}.${extension}`;
+}
 
 export default function GoalSetting() {
   const [goalSettingActiveFilter, setGoalSettingActiveFilter] =
@@ -63,14 +117,62 @@ export default function GoalSetting() {
   // 실제 초기 화면
   const [goalSettingGoals, setGoalSettingGoals] = useState([]);
 
-  // 카드 디자인 확인용으로 사용할 때 위 코드를 주석 처리
-  // const [goalSettingGoals, setGoalSettingGoals] = useState(
-  //   GOAL_SETTING_MOCK_GOALS,
-  // );
+  const [goalSettingIsLoading, setGoalSettingIsLoading] = useState(true);
 
   const [goalSettingView, setGoalSettingView] = useState("list");
 
   const [goalSettingEditingGoal, setGoalSettingEditingGoal] = useState(null);
+
+  useEffect(() => {
+    let goalSettingIsMounted = true;
+
+    const fetchGoalSettingGoals = async () => {
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError) {
+        console.error("로그인 사용자 확인 실패:", userError);
+      }
+
+      if (!user || userError) {
+        if (goalSettingIsMounted) {
+          setGoalSettingGoals([]);
+          setGoalSettingIsLoading(false);
+        }
+
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("saving_goals")
+        .select(
+          "id, title, status, current_amount, target_amount, start_date, end_date, memo, image_path",
+        )
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("목표 목록 조회 실패:", error);
+      }
+
+      const goalsWithImageUrls = error
+        ? []
+        : await addGoalImageUrls(data ?? [], user.id);
+
+      if (goalSettingIsMounted) {
+        setGoalSettingGoals(goalsWithImageUrls.map(mapGoalFromDatabase));
+        setGoalSettingIsLoading(false);
+      }
+    };
+
+    fetchGoalSettingGoals();
+
+    return () => {
+      goalSettingIsMounted = false;
+    };
+  }, []);
 
   const goalSettingHasGoals = goalSettingGoals.length > 0;
 
@@ -95,30 +197,179 @@ export default function GoalSetting() {
     setGoalSettingView("edit");
   };
 
-  const handleGoalSettingDelete = (goalId) => {
+  const handleGoalSettingDelete = async (goalId) => {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (!user || userError) {
+      window.alert("로그인 정보를 확인할 수 없습니다.");
+      return;
+    }
+
+    const goalToDelete = goalSettingGoals.find((goal) => goal.id === goalId);
+
+    const { error } = await supabase
+      .from("saving_goals")
+      .delete()
+      .eq("id", goalId)
+      .eq("user_id", user.id);
+
+    if (error) {
+      console.error("목표 삭제 실패:", error);
+      window.alert("목표를 삭제하지 못했습니다. 다시 시도해주세요.");
+      return;
+    }
+
     setGoalSettingGoals((previousGoals) =>
       previousGoals.filter((goal) => goal.id !== goalId),
     );
+
+    if (goalToDelete?.imagePath) {
+      const { error: imageDeleteError } = await supabase.storage
+        .from(GOAL_IMAGE_BUCKET)
+        .remove([goalToDelete.imagePath]);
+
+      if (imageDeleteError) {
+        console.error("삭제된 목표의 이미지 정리 실패:", imageDeleteError);
+      }
+    }
   };
 
-  const handleGoalSettingSave = (goalSettingSavedGoal) => {
+  const handleGoalSettingSave = async (goalSettingSavedGoal) => {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (!user || userError) {
+      console.error("로그인 사용자 확인 실패:", userError);
+      window.alert("로그인 정보를 확인할 수 없습니다.");
+      return false;
+    }
+
+    const imageFile = goalSettingSavedGoal.imageFile;
+    let uploadedImagePath = null;
+
+    if (imageFile) {
+      if (!GOAL_IMAGE_TYPES[imageFile.type]) {
+        window.alert("JPG 또는 PNG 이미지 파일만 업로드할 수 있습니다.");
+        return false;
+      }
+
+      if (imageFile.size > GOAL_IMAGE_MAX_SIZE) {
+        window.alert("이미지는 최대 2MB까지 업로드할 수 있습니다.");
+        return false;
+      }
+
+      uploadedImagePath = getGoalImagePath(user.id, imageFile);
+
+      const { error: imageUploadError } = await supabase.storage
+        .from(GOAL_IMAGE_BUCKET)
+        .upload(uploadedImagePath, imageFile, {
+          cacheControl: "3600",
+          contentType: imageFile.type,
+          upsert: false,
+        });
+
+      if (imageUploadError) {
+        console.error("목표 이미지 업로드 실패:", imageUploadError);
+        window.alert("이미지를 업로드하지 못했습니다. 파일을 확인한 후 다시 시도해주세요.");
+        return false;
+      }
+    }
+
+    const goalSettingDatabaseValues = {
+      user_id: user.id,
+      title: goalSettingSavedGoal.title.trim(),
+      target_amount: goalSettingSavedGoal.targetAmount,
+      start_date: goalSettingSavedGoal.startDate,
+      end_date: goalSettingSavedGoal.targetDate,
+      status: GOAL_STATUS_TO_DB[goalSettingSavedGoal.status] ?? "in_progress",
+      memo: goalSettingSavedGoal.memo.trim() || null,
+      image_path: uploadedImagePath ?? goalSettingSavedGoal.imagePath ?? null,
+      updated_at: new Date().toISOString(),
+    };
+
+    let goalSettingSaveQuery;
+
+    if (goalSettingSavedGoal.id) {
+      goalSettingSaveQuery = supabase
+        .from("saving_goals")
+        .update(goalSettingDatabaseValues)
+        .eq("id", goalSettingSavedGoal.id)
+        .eq("user_id", user.id);
+    } else {
+      goalSettingSaveQuery = supabase.from("saving_goals").insert({
+        ...goalSettingDatabaseValues,
+        current_amount: 0,
+      });
+    }
+
+    const { data, error } = await goalSettingSaveQuery
+      .select(
+        "id, title, status, current_amount, target_amount, start_date, end_date, memo, image_path",
+      )
+      .single();
+
+    if (error) {
+      console.error("목표 저장 실패:", error);
+
+      if (uploadedImagePath) {
+        const { error: cleanupError } = await supabase.storage
+          .from(GOAL_IMAGE_BUCKET)
+          .remove([uploadedImagePath]);
+
+        if (cleanupError) {
+          console.error("DB 저장 실패 후 이미지 정리 실패:", cleanupError);
+        }
+      }
+
+      window.alert("목표를 저장하지 못했습니다. 다시 시도해주세요.");
+      return false;
+    }
+
+    const [savedGoalWithImageUrl] = await addGoalImageUrls([data], user.id);
+    const goalSettingSavedDatabaseGoal = mapGoalFromDatabase(
+      savedGoalWithImageUrl,
+    );
+
+    if (
+      uploadedImagePath &&
+      goalSettingSavedGoal.imagePath &&
+      uploadedImagePath !== goalSettingSavedGoal.imagePath
+    ) {
+      const { error: oldImageDeleteError } = await supabase.storage
+        .from(GOAL_IMAGE_BUCKET)
+        .remove([goalSettingSavedGoal.imagePath]);
+
+      if (oldImageDeleteError) {
+        console.error("기존 목표 이미지 정리 실패:", oldImageDeleteError);
+      }
+    }
+
     setGoalSettingGoals((previousGoals) => {
       const goalAlreadyExists = previousGoals.some(
-        (goal) => goal.id === goalSettingSavedGoal.id,
+        (goal) => goal.id === goalSettingSavedDatabaseGoal.id,
       );
 
       if (goalAlreadyExists) {
         return previousGoals.map((goal) =>
-          goal.id === goalSettingSavedGoal.id ? goalSettingSavedGoal : goal,
+          goal.id === goalSettingSavedDatabaseGoal.id
+            ? goalSettingSavedDatabaseGoal
+            : goal,
         );
       }
 
-      return [...previousGoals, goalSettingSavedGoal];
+      return [goalSettingSavedDatabaseGoal, ...previousGoals];
     });
 
     setGoalSettingEditingGoal(null);
     setGoalSettingActiveFilter("전체");
     setGoalSettingView("list");
+    window.alert(goalSettingSavedGoal.id ? "목표가 수정되었습니다." : "목표가 생성되었습니다.");
+    return true;
   };
 
   const goalSettingFormIsOpen =
@@ -190,15 +441,15 @@ export default function GoalSetting() {
                 })}
               </nav>
 
-              {!goalSettingHasGoals ? (
+              {!goalSettingIsLoading && !goalSettingHasGoals ? (
                 <GoalEmpty onCreate={handleGoalSettingOpenForm} />
-              ) : (
+              ) : !goalSettingIsLoading ? (
                 <GoalList
                   goals={goalSettingFilteredGoals}
                   onEdit={handleGoalSettingEdit}
                   onDelete={handleGoalSettingDelete}
                 />
-              )}
+              ) : null}
             </section>
           </main>
 
