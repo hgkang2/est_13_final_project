@@ -27,6 +27,7 @@ export default function MyPage() {
     notification: false,
     image: "",
   });
+  const [activeGoalCount, setActiveGoalCount] = useState(0);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -41,6 +42,14 @@ export default function MyPage() {
         .single();
 
       if (profileError) return setError("프로필을 불러오지 못했습니다.");
+
+      const { count } = await supabase
+        .from("saving_goals")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("status", "in_progress");
+
+      setActiveGoalCount(count ?? 0);
 
       setProfile({
         nickname: data.nickname ?? "",
@@ -97,7 +106,10 @@ export default function MyPage() {
           <main className={`container ${styles.main}`}>
             <h1 className={styles.srOnly}>마이페이지</h1>
 
-            <ProfileSection profile={profile} />
+            <ProfileSection
+              profile={profile}
+              activeGoalCount={activeGoalCount}
+            />
 
             <AccountSection
               profile={profile}
