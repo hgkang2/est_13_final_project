@@ -210,6 +210,12 @@ export default function Transaction() {
   const [copiedRecentId, setCopiedRecentId] = useState(null);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
+
+  const showToast = (message, type = "success") => {
+    setToastType(type);
+    setToastMessage(message);
+  };
+
   const [copyTarget, setCopyTarget] = useState(null);
   const [isCopyModalOpen, setIsCopyModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
@@ -908,7 +914,7 @@ export default function Transaction() {
       setRecentlyAddedId(null);
     }, 1800);
 
-    setToastMessage("소비 기록을 저장했어요.");
+    showToast("소비 기록을 저장했어요.");
     setTransactionForm(initialTransactionForm);
   };
 
@@ -1214,14 +1220,12 @@ export default function Transaction() {
     const maxSize = 5 * 1024 * 1024;
 
     if (!allowedTypes.includes(file.type)) {
-      setToastType("error");
-      setToastMessage("JPG, PNG, WEBP 이미지만 분석할 수 있어요.");
+      showToast("JPG, PNG, WEBP 이미지만 분석할 수 있어요.", "error");
       return;
     }
 
     if (file.size > maxSize) {
-      setToastType("error");
-      setToastMessage("이미지는 5MB 이하만 등록할 수 있어요.");
+      showToast("이미지는 5MB 이하만 등록할 수 있어요.", "error");
       return;
     }
 
@@ -1237,7 +1241,6 @@ export default function Transaction() {
 
       setAiPreview(imageDataUrl);
       setAiErrorMessage("");
-      setToastType("success");
       setAiStatus("analyzing");
 
       const { data, error } = await supabase.functions.invoke(
@@ -1385,8 +1388,7 @@ export default function Transaction() {
 
     if (userError || !user) {
       console.error("사용자 확인 실패:", userError);
-      setToastType("error");
-      setToastMessage("로그인 정보를 확인할 수 없어요.");
+      showToast("로그인 정보를 확인할 수 없어요.", "error");
       return;
     }
 
@@ -1487,15 +1489,13 @@ export default function Transaction() {
 
     if (insertError) {
       console.error("AI 소비 기록 저장 실패:", insertError);
-      setToastType("error");
-      setToastMessage("소비 기록을 저장하지 못했어요.");
+      showToast("소비 기록을 저장하지 못했어요.", "error");
       return;
     }
 
     if (!insertedTransaction) {
       console.error("AI 소비 기록 저장 결과가 반환되지 않았습니다.");
-      setToastType("error");
-      setToastMessage("소비 기록 저장 결과를 확인하지 못했어요.");
+      showToast("소비 기록 저장 결과를 확인하지 못했어요.", "error");
       return;
     }
 
@@ -1529,8 +1529,7 @@ export default function Transaction() {
           console.error("AI 거래 저장 롤백 실패:", rollbackTransactionError);
         }
 
-        setToastType("error");
-        setToastMessage("영수증 업로드에 실패해 거래 저장을 취소했어요.");
+        showToast("영수증 업로드에 실패해 거래 저장을 취소했어요.", "error");
         return;
       }
 
@@ -1566,8 +1565,10 @@ export default function Transaction() {
           console.error("AI 거래 저장 롤백 실패:", rollbackTransactionError);
         }
 
-        setToastType("error");
-        setToastMessage("영수증 정보를 저장하지 못해 거래 저장을 취소했어요.");
+        showToast(
+          "영수증 정보를 저장하지 못해 거래 저장을 취소했어요.",
+          "error",
+        );
         return;
       }
 
@@ -1588,8 +1589,7 @@ export default function Transaction() {
     }, 1800);
 
     // 9. AI 입력 상태 초기화
-    setToastType("success");
-    setToastMessage("AI 소비 기록을 저장했어요.");
+    showToast("AI 소비 기록을 저장했어요.");
 
     setAiTransactionForm(initialAiTransactionForm);
     setAiTransactionErrors({});
