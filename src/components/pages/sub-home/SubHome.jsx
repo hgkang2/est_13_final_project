@@ -29,6 +29,9 @@ export default function SubHome() {
   const hasRecentTransactions = recentTransactions.length > 0;
   const router = useRouter();
   const [goal, setGoal] = useState(null);
+  const [monthlySpending, setMonthlySpending] = useState(0);
+  const [monthlySpendingDaily, setMonthlySpendingDaily] = useState([]);
+  const [spendingComparison, setSpendingComparison] = useState(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -105,6 +108,99 @@ export default function SubHome() {
       });
     };
 
+    const fetchMonthlySpending = async () => {
+      const now = new Date();
+
+      const monthStart = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        1,
+      ).toISOString();
+
+      const nextMonthStart = new Date(
+        now.getFullYear(),
+        now.getMonth() + 1,
+        1,
+      ).toISOString();
+
+      const { data, error } = await supabase.rpc("get_monthly_expense_total", {
+        p_start_at: monthStart,
+        p_end_at: nextMonthStart,
+      });
+
+      if (error) {
+        console.error("이번 달 소비 합계 조회 실패:", error);
+        return;
+      }
+
+      console.log("서브홈 이번 달 소비 합계:", data);
+
+      setMonthlySpending(Number(data) || 0);
+    };
+
+    const fetchMonthlySpendingDaily = async () => {
+      const now = new Date();
+
+      const monthStart = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        1,
+      ).toISOString();
+
+      const nextMonthStart = new Date(
+        now.getFullYear(),
+        now.getMonth() + 1,
+        1,
+      ).toISOString();
+
+      const { data, error } = await supabase.rpc("get_monthly_expense_daily", {
+        p_start_at: monthStart,
+        p_end_at: nextMonthStart,
+      });
+
+      if (error) {
+        console.error("이번 달 일별 소비 조회 실패:", error);
+        return;
+      }
+
+      console.log("서브홈 이번 달 일별 소비:", data);
+
+      setMonthlySpendingDaily(data ?? []);
+    };
+
+    const fetchSpendingComparison = async () => {
+      const now = new Date();
+
+      const currentStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+      const previousStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+      const previousEnd = new Date(
+        now.getFullYear(),
+        now.getMonth() - 1,
+        now.getDate() + 1,
+      );
+
+      const { data, error } = await supabase.rpc(
+        "get_monthly_expense_comparison",
+        {
+          p_current_start: currentStart.toISOString(),
+          p_current_end: now.toISOString(),
+          p_previous_start: previousStart.toISOString(),
+          p_previous_end: previousEnd.toISOString(),
+        },
+      );
+
+      if (error) {
+        console.error("지난달 소비 비교 조회 실패:", error);
+        return;
+      }
+
+      console.log("서브홈 지난달 소비 비교:", data);
+
+      setSpendingComparison(data?.[0] ?? null);
+    };
+
     const fetchUserProfile = async () => {
       const {
         data: { user },
@@ -118,6 +214,9 @@ export default function SubHome() {
 
       fetchRecentTransactions(user.id);
       fetchGoal(user.id);
+      fetchMonthlySpending();
+      fetchMonthlySpendingDaily();
+      fetchSpendingComparison();
 
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
@@ -142,6 +241,8 @@ export default function SubHome() {
     router.push("/transaction");
   };
 
+  const hasMonthlySpending = monthlySpending > 0;
+
   return (
     <>
       <div className={styles.page}>
@@ -156,7 +257,12 @@ export default function SubHome() {
               </div>
 
               <div className={styles.summaryRow}>
-                <SpendingSummaryCard hasSpendingData={hasSpendingData} />
+                <SpendingSummaryCard
+                  hasSpendingData={hasMonthlySpending}
+                  monthlySpending={monthlySpending}
+                  monthlySpendingDaily={monthlySpendingDaily}
+                  spendingComparison={spendingComparison}
+                />
                 <AiCard hasSpendingData={hasSpendingData} />
               </div>
 

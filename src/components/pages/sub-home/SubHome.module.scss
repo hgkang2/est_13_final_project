@@ -534,6 +534,32 @@
   border: 1px solid var(--color-border-gray);
 }
 
+.summaryBadge_noPrevious {
+  color: var(--color-light-gray);
+  background-color: var(--color-dark-white);
+  border: 1px solid var(--color-border-gray);
+}
+
+.summaryBadge_good {
+  color: var(--color-success-text);
+  background-color: var(--color-primary);
+}
+
+.summaryBadge_similar {
+  color: var(--color-point);
+  background-color: var(--color-primary);
+}
+
+.summaryBadge_warning {
+  color: var(--color-warning-text);
+  background-color: var(--color-warning-background);
+}
+
+.summaryBadge_danger {
+  color: var(--color-danger-text);
+  background-color: var(--color-danger-background);
+}
+
 .spendingSummaryContent h2 {
   @include typo-card-head;
 
@@ -560,6 +586,7 @@
 .spendingChart {
   display: flex;
   min-width: 0;
+  min-height: 160px;
   flex: 1;
   align-self: stretch;
   align-items: center;
@@ -603,6 +630,8 @@
 
   .spendingChart {
     width: 100%;
+    height: 160px;
+    min-height: 160px;
     flex: none;
     justify-content: center;
   }
