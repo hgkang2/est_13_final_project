@@ -19,7 +19,6 @@ import { useRouter } from "next/navigation";
 
 export default function SubHome() {
   // UI 개발용 상태값
-  const hasGoal = false;
   const hasSpendingData = true;
   const hasSavingGoal = false;
   const hasChallenge = false;
@@ -29,6 +28,7 @@ export default function SubHome() {
   const [recentTransactions, setRecentTransactions] = useState([]);
   const hasRecentTransactions = recentTransactions.length > 0;
   const router = useRouter();
+  const [goal, setGoal] = useState(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -62,6 +62,49 @@ export default function SubHome() {
       setRecentTransactions(data ?? []);
     };
 
+    const fetchGoal = async userId => {
+      const { data, error } = await supabase
+        .from("saving_goals")
+        .select(
+          "id, title, current_amount, target_amount, start_date, end_date, image_path",
+        )
+        .eq("user_id", userId)
+        .eq("status", "in_progress")
+        .gte("end_date", new Date().toISOString().slice(0, 10))
+        .order("end_date", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) {
+        console.error("서브홈 목표 조회 실패:", error);
+        return;
+      }
+
+      if (!data) {
+        setGoal(null);
+        return;
+      }
+
+      let imageUrl = "";
+
+      if (data.image_path) {
+        const { data: imageData, error: imageError } = await supabase.storage
+          .from("user-images")
+          .createSignedUrl(data.image_path, 60 * 60);
+
+        if (imageError) {
+          console.error("목표 이미지 조회 실패:", imageError);
+        } else {
+          imageUrl = imageData.signedUrl;
+        }
+      }
+
+      setGoal({
+        ...data,
+        imageUrl,
+      });
+    };
+
     const fetchUserProfile = async () => {
       const {
         data: { user },
@@ -74,6 +117,7 @@ export default function SubHome() {
       }
 
       fetchRecentTransactions(user.id);
+      fetchGoal(user.id);
 
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
@@ -108,7 +152,7 @@ export default function SubHome() {
             <div className={styles.content}>
               <div className={styles.topRow}>
                 <GreetingSection userName={userName} />
-                <GoalCard hasGoal={hasGoal} />
+                <GoalCard hasGoal={Boolean(goal)} goal={goal} />
               </div>
 
               <div className={styles.summaryRow}>
@@ -119,7 +163,7 @@ export default function SubHome() {
               <div className={styles.missionRow}>
                 <MissionCard hasSpendingData={hasSpendingData} />
                 <RecentTransactionsCard
-                  hasSpendingData={recentTransactions.length > 0}
+                  hasSpendingData={hasRecentTransactions}
                   recentTransactions={recentTransactions}
                   onMoreClick={handleMoveToTransaction}
                 />

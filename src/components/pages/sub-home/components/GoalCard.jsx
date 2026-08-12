@@ -1,7 +1,74 @@
 import Image from "next/image";
 import styles from "../SubHome.module.scss";
 
-export default function GoalCard({ hasGoal }) {
+const GOAL_AHEAD_GAP = 5;
+const GOAL_ON_TRACK_GAP = -5;
+const GOAL_BEHIND_GAP = -15;
+
+function getPlannedProgress(startDate, endDate) {
+  if (!startDate || !endDate) return 0;
+
+  const start = new Date(`${startDate}T00:00:00`);
+  const end = new Date(`${endDate}T00:00:00`);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (today <= start) return 0;
+  if (today >= end) return 100;
+
+  const totalPeriod = end.getTime() - start.getTime();
+  const elapsedPeriod = today.getTime() - start.getTime();
+
+  if (totalPeriod <= 0) return 0;
+
+  return Math.round((elapsedPeriod / totalPeriod) * 100);
+}
+
+function getGoalProgressStatus(progress, plannedProgress) {
+  const progressGap = progress - plannedProgress;
+
+  if (progressGap >= GOAL_AHEAD_GAP) {
+    return "ahead";
+  }
+
+  if (progressGap >= GOAL_ON_TRACK_GAP) {
+    return "onTrack";
+  }
+
+  if (progressGap >= GOAL_BEHIND_GAP) {
+    return "slow";
+  }
+
+  return "behind";
+}
+
+export default function GoalCard({ hasGoal, goal }) {
+  const currentAmount = goal?.current_amount ?? 0;
+  const targetAmount = goal?.target_amount ?? 0;
+
+  const progress =
+    targetAmount > 0
+      ? Math.min(Math.round((currentAmount / targetAmount) * 100), 100)
+      : 0;
+
+  const remainingProgress = Math.max(100 - progress, 0);
+
+  const plannedProgress = hasGoal
+    ? getPlannedProgress(goal.start_date, goal.end_date)
+    : 0;
+
+  const progressStatus = hasGoal
+    ? getGoalProgressStatus(progress, plannedProgress)
+    : null;
+
+  const progressStatusMessage = {
+    ahead: "계획보다 앞서고 있어요",
+    onTrack: "계획대로 잘 진행하고 있어요",
+    slow: "계획보다 살짝 느린 속도예요",
+    behind: "목표 달성을 위해 조금 더 저축이 필요해요",
+  };
+
   return (
     <article className={styles.goalCard} aria-labelledby="goal-card-title">
       <div
@@ -17,7 +84,7 @@ export default function GoalCard({ hasGoal }) {
           <h2 id="goal-card-title">이번 달 목표 달성률</h2>
 
           <strong className={styles.goalPercent}>
-            {hasGoal ? "62%" : "--%"}
+            {hasGoal ? `${progress}%` : "--%"}
           </strong>
 
           <div className={styles.progressArea}>
@@ -27,29 +94,53 @@ export default function GoalCard({ hasGoal }) {
               aria-label="이번 달 목표 달성률"
               aria-valuemin="0"
               aria-valuemax="100"
-              aria-valuenow={hasGoal ? 62 : 0}
+              aria-valuenow={hasGoal ? progress : 0}
             >
               {hasGoal && (
                 <>
-                  <div className={styles.progressFill} />
+                  <div
+                    className={styles.progressFill}
+                    style={{ width: `${progress}%` }}
+                  />
 
-                  <span className={styles.todayMarker} aria-hidden="true" />
+                  <span
+                    className={styles.todayMarker}
+                    style={{ left: `${plannedProgress}%` }}
+                    aria-hidden="true"
+                  />
+
+                  <span
+                    className={styles.todayLabel}
+                    style={{ left: `${plannedProgress}%` }}
+                  >
+                    오늘 기준 {plannedProgress}%
+                  </span>
                 </>
               )}
             </div>
 
             {hasGoal && (
               <div className={styles.progressLabels}>
-                <span className={styles.currentLabel}>62% 달성</span>
-
-                <span className={styles.todayLabel}>오늘 기준 90%</span>
+                <span
+                  className={styles.currentLabel}
+                  style={{ left: `${progress}%` }}
+                >
+                  {progress}% 달성
+                </span>
               </div>
             )}
           </div>
 
           <p className={styles.goalAmount}>
-            <strong>{hasGoal ? "1,860,000원" : "--원"}</strong>
-            <span>{hasGoal ? "/ 3,000,000원" : "/ --원"}</span>
+            <strong>
+              {hasGoal ? `${currentAmount.toLocaleString("ko-KR")}원` : "--원"}
+            </strong>
+
+            <span>
+              {hasGoal
+                ? `/ ${targetAmount.toLocaleString("ko-KR")}원`
+                : "/ --원"}
+            </span>
           </p>
 
           {!hasGoal && (
@@ -60,9 +151,19 @@ export default function GoalCard({ hasGoal }) {
           )}
 
           {hasGoal && (
-            <p className={styles.warningBadge}>
-              <span className={styles.warningDot} aria-hidden="true" />
-              계획보다 살짝 느린 속도예요
+            <p
+              className={`${styles.warningBadge} ${
+                styles[`warningBadge_${progressStatus}`]
+              }`}
+            >
+              <span
+                className={`${styles.warningDot} ${
+                  styles[`warningDot_${progressStatus}`]
+                }`}
+                aria-hidden="true"
+              />
+
+              {progressStatusMessage[progressStatus]}
             </p>
           )}
         </div>
@@ -74,8 +175,8 @@ export default function GoalCard({ hasGoal }) {
 
               <Image
                 className={styles.goalImage}
-                src="/images/character/macbook.png"
-                alt="새싹 장식이 달린 맥북"
+                src={goal.imageUrl || "/images/character/macbook.png"}
+                alt=""
                 width={240}
                 height={200}
               />
@@ -83,11 +184,12 @@ export default function GoalCard({ hasGoal }) {
 
             <figcaption className={styles.goalCaption}>
               <p>
-                맥북까지 <strong className={styles.pointText}>62%</strong>{" "}
+                {goal.title}까지{" "}
+                <strong className={styles.pointText}>{progress}%</strong>{" "}
                 왔어요!
               </p>
 
-              <span>목표까지 38% 남았어요</span>
+              <span>목표까지 {remainingProgress}% 남았어요</span>
             </figcaption>
           </figure>
         )}

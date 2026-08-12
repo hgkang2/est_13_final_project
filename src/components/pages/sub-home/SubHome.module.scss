@@ -176,7 +176,6 @@
 .todayMarker {
   position: absolute;
   top: -3px;
-  left: 90%;
   width: 2px;
   height: 18px;
   background-color: var(--color-secondary);
@@ -198,14 +197,21 @@
 }
 
 .currentLabel {
-  left: 62%;
+  @include typo-body-xs;
+
+  position: absolute;
   color: var(--color-point);
+  white-space: nowrap;
   transform: translateX(-50%);
 }
 
 .todayLabel {
-  left: 90%;
+  @include typo-body-xs;
+
+  position: absolute;
+  bottom: calc(100% + 6px);
   color: var(--color-light-gray);
+  white-space: nowrap;
   transform: translateX(-50%);
 }
 
@@ -240,8 +246,6 @@
   align-items: center;
   gap: 8px;
   border-radius: 999px;
-  color: var(--color-warning-text);
-  background-color: var(--color-warning-background);
   white-space: nowrap;
 }
 
@@ -250,7 +254,35 @@
   height: 8px;
   flex-shrink: 0;
   border-radius: 50%;
+}
+
+.warningBadge_ahead,
+.warningBadge_onTrack {
+  color: var(--color-success-text);
+  background-color: var(--color-primary);
+}
+
+.warningDot_ahead,
+.warningDot_onTrack {
+  background-color: var(--color-success-dot);
+}
+
+.warningBadge_slow {
+  color: var(--color-warning-text);
+  background-color: var(--color-warning-background);
+}
+
+.warningDot_slow {
   background-color: var(--color-warning-dot);
+}
+
+.warningBadge_behind {
+  color: var(--color-danger-text);
+  background-color: var(--color-danger-background);
+}
+
+.warningDot_behind {
+  background-color: var(--color-danger-dot);
 }
 
 .goalVisual {
@@ -2017,4 +2049,74 @@
 
 .challengeCard:hover .currentChallengeIcon {
   transform: translateY(-3px) scale(1.08);
+}
+
+/* 카테고리 컬러 매핑 */
+
+/* Expense Categories */
+.food {
+  color: var(--color-expense-food);
+}
+
+.cafe_snack {
+  color: var(--color-expense-cafe_snack);
+}
+
+.transportation {
+  color: var(--color-expense-transportation);
+}
+
+.shopping {
+  color: var(--color-expense-shopping);
+}
+
+.subscription {
+  color: var(--color-expense-subscription);
+}
+
+.household_goods {
+  color: var(--color-expense-household_goods);
+}
+
+.medical {
+  color: var(--color-expense-medical);
+}
+
+.hobby {
+  color: var(--color-expense-hobby);
+}
+
+.education {
+  color: var(--color-expense-education);
+}
+
+/* Income Categories */
+.salary {
+  color: var(--color-income-salary);
+}
+
+.other_income {
+  color: var(--color-income-other_income);
+}
+
+.bonus {
+  color: var(--color-income-bonus);
+}
+
+.investment_income {
+  color: var(--color-income-investment_income);
+}
+
+.allowance {
+  color: var(--color-income-allowance);
+}
+
+.income_other {
+  color: var(--color-category-other);
+}
+
+/* Transfer Categories */
+
+.saving_transfer {
+  color: var(--color-transfer-savings);
 }
