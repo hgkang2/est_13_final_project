@@ -15,11 +15,9 @@ export default function EntryPanel({
   const {
     transactionForm,
     transactionErrors,
-
     categories,
     paymentMethods,
     transferAccounts,
-
     onTransactionFormChange,
     onToggleRecurring,
     onTransactionSubmit,
@@ -39,6 +37,7 @@ export default function EntryPanel({
 
   const {
     aiStatus,
+    aiErrorMessage,
     aiTransactionForm,
     aiTransactionErrors,
     aiPreview,
@@ -211,12 +210,15 @@ export default function EntryPanel({
               isTransfer={isTransfer}
               onTransactionFormChange={onTransactionFormChange}
               onToggleRecurring={onToggleRecurring}
-              onResetTransactionForm={onResetTransactionForm} 
+              onResetTransactionForm={onResetTransactionForm}
             />
           ) : (
             <MultipleEntryForm
               multipleRows={multipleRows}
               multipleRowStatus={multipleRowStatus}
+              categories={categories}
+              paymentMethods={paymentMethods}
+              transferAccounts={transferAccounts}
               onMultipleRowChange={onMultipleRowChange}
               onAddMultipleRow={onAddMultipleRow}
               onRemoveMultipleRow={onRemoveMultipleRow}
@@ -243,9 +245,13 @@ export default function EntryPanel({
       ) : (
         <AiEntryForm
           aiStatus={aiStatus}
+          aiErrorMessage={aiErrorMessage}
           aiTransactionForm={aiTransactionForm}
           aiTransactionErrors={aiTransactionErrors}
           aiPreview={aiPreview}
+          categories={categories}
+          paymentMethods={paymentMethods}
+          transferAccounts={transferAccounts}
           onAiFormChange={onAiFormChange}
           onAiReceiptChange={onAiReceiptChange}
           onAiDragOver={onAiDragOver}

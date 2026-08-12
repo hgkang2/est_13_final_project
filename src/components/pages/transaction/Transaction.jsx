@@ -26,6 +26,28 @@ const getToday = () => {
   return `${year}-${month}-${day}`;
 };
 
+const getCurrentMonthRange = () => {
+  const today = new Date();
+
+  const year = today.getFullYear();
+  const month = today.getMonth();
+
+  const startDate = [year, String(month + 1).padStart(2, "0"), "01"].join("-");
+
+  const lastDay = new Date(year, month + 1, 0).getDate();
+
+  const endDate = [
+    year,
+    String(month + 1).padStart(2, "0"),
+    String(lastDay).padStart(2, "0"),
+  ].join("-");
+
+  return {
+    startDate,
+    endDate,
+  };
+};
+
 const formatDateTime = value => {
   if (!value) return "-";
 
@@ -136,20 +158,13 @@ const initialAiTransactionForm = {
   amount: "",
   category: "",
   date: "",
+  time: "",
   paymentMethod: "",
   content: "",
   memo: "",
   receipt: null,
-};
-
-const mockAiResult = {
-  type: "expense",
-  amount: "4500",
-  category: "cafeSnack",
-  date: "2026-07-29",
-  paymentMethod: "creditCard",
-  content: "스타벅스 아메리카노",
-  memo: "점심 후 커피",
+  withdrawAccount: "",
+  depositAccount: "",
 };
 
 const createMultipleTransactionRow = id => ({
@@ -161,16 +176,19 @@ const createMultipleTransactionRow = id => ({
   content: "",
   amount: "",
   paymentMethod: "",
+  withdrawAccount: "",
+  depositAccount: "",
   memo: "",
 });
 
 export default function Transaction() {
   const [transactions, setTransactions] = useState([]);
-  const hasTransactionData = transactions.length > 0;
   const [isTransactionsLoading, setIsTransactionsLoading] = useState(true);
   const [recentlyAddedId, setRecentlyAddedId] = useState(null);
   const supabase = createClient();
+
   const [activeFilter, setActiveFilter] = useState("all");
+  const [dateRange, setDateRange] = useState(getCurrentMonthRange);
   const [panelView, setPanelView] = useState("entry");
   // "entry" | "recent" | "detail" | "edit" | "closed"
 
@@ -183,29 +201,44 @@ export default function Transaction() {
   );
 
   const [multipleRows, setMultipleRows] = useState([
-    {
-      id: 1,
-      date: "2026-07-29",
-      type: "expense",
-      category: "cafeSnack",
-      content: "스타벅스 아메리카노",
-      amount: "4500",
-      paymentMethod: "creditCard",
-      memo: "점심 후 커피",
-    },
+    createMultipleTransactionRow(1),
     createMultipleTransactionRow(2),
     createMultipleTransactionRow(3),
   ]);
 
   const [aiStatus, setAiStatus] = useState("idle");
+  const [aiErrorMessage, setAiErrorMessage] = useState("");
 
   const [aiTransactionForm, setAiTransactionForm] = useState(
     initialAiTransactionForm,
   );
 
+  const [aiTypeValues, setAiTypeValues] = useState({
+    income: {
+      category: "",
+      paymentMethod: "",
+    },
+    expense: {
+      category: "",
+      paymentMethod: "",
+    },
+    transfer: {
+      category: "",
+      withdrawAccount: "",
+      depositAccount: "",
+    },
+  });
+
   const [aiPreview, setAiPreview] = useState("");
   const [copiedRecentId, setCopiedRecentId] = useState(null);
   const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("success");
+
+  const showToast = (message, type = "success") => {
+    setToastType(type);
+    setToastMessage(message);
+  };
+
   const [copyTarget, setCopyTarget] = useState(null);
   const [isCopyModalOpen, setIsCopyModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
@@ -399,6 +432,10 @@ export default function Transaction() {
       time: dateType === "today" ? "" : copyTarget.time,
 
       paymentMethod: copyTarget.paymentMethodId,
+
+      withdrawAccount: copyTarget.withdrawAccountId,
+      depositAccount: copyTarget.depositAccountId,
+
       content: copyTarget.content === "-" ? "" : copyTarget.content,
       memo: "",
     }));
@@ -419,10 +456,18 @@ export default function Transaction() {
 
   const isTransfer = transactionForm.type === "transfer";
 
+  const isValidMultipleRow = row =>
+    row.date &&
+    row.type &&
+    row.category &&
+    row.amount &&
+    (row.type === "transfer"
+      ? row.withdrawAccount && row.depositAccount
+      : row.paymentMethod);
+
   const multipleRowStatus = multipleRows.reduce(
     (status, row) => {
-      const hasRequiredFields =
-        row.date && row.type && row.category && row.amount && row.paymentMethod;
+      const hasRequiredFields = isValidMultipleRow(row);
 
       const hasAnyValue = Object.entries(row).some(
         ([key, value]) => key !== "id" && value,
@@ -442,11 +487,99 @@ export default function Transaction() {
     },
   );
 
+  const now = new Date();
+
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
+
+  const thisMonthTransactions = transactions.filter(transaction => {
+    const transactionDate = new Date(transaction.dateValue);
+
+    return (
+      transactionDate.getFullYear() === currentYear &&
+      transactionDate.getMonth() === currentMonth
+    );
+  });
+
+  const lastMonthDate = new Date(currentYear, currentMonth - 1, 1);
+  const lastMonthYear = lastMonthDate.getFullYear();
+  const lastMonth = lastMonthDate.getMonth();
+
+  const lastMonthTransactions = transactions.filter(transaction => {
+    const transactionDate = new Date(transaction.dateValue);
+
+    return (
+      transactionDate.getFullYear() === lastMonthYear &&
+      transactionDate.getMonth() === lastMonth
+    );
+  });
+
+  const calculateSummary = transactionList => {
+    return transactionList.reduce(
+      (summary, transaction) => {
+        if (transaction.type === "income") {
+          summary.income += Math.abs(transaction.amount);
+          summary.incomeCount += 1;
+        }
+
+        if (transaction.type === "expense") {
+          summary.expense += Math.abs(transaction.amount);
+          summary.expenseCount += 1;
+        }
+
+        if (transaction.type === "transfer") {
+          summary.transferCount += 1;
+        }
+
+        return summary;
+      },
+      {
+        income: 0,
+        expense: 0,
+        incomeCount: 0,
+        expenseCount: 0,
+        transferCount: 0,
+      },
+    );
+  };
+
+  const thisMonthSummary = calculateSummary(thisMonthTransactions);
+  const lastMonthSummary = calculateSummary(lastMonthTransactions);
+
+  const summaryData = {
+    income: thisMonthSummary.income,
+    expense: thisMonthSummary.expense,
+
+    transactionCount: thisMonthTransactions.length,
+    incomeCount: thisMonthSummary.incomeCount,
+    expenseCount: thisMonthSummary.expenseCount,
+    transferCount: thisMonthSummary.transferCount,
+
+    balance: thisMonthSummary.income - thisMonthSummary.expense,
+
+    incomeChange: thisMonthSummary.income - lastMonthSummary.income,
+    expenseChange: thisMonthSummary.expense - lastMonthSummary.expense,
+
+    balanceChange:
+      thisMonthSummary.income -
+      thisMonthSummary.expense -
+      (lastMonthSummary.income - lastMonthSummary.expense),
+  };
+
   const recentTransactions = transactions.slice(0, 6);
-  const visibleTransactions =
-    activeFilter === "all"
-      ? transactions
-      : transactions.filter(transaction => transaction.type === activeFilter);
+
+  const visibleTransactions = transactions.filter(transaction => {
+    const matchesType =
+      activeFilter === "all" || transaction.type === activeFilter;
+
+    const matchesDate =
+      transaction.dateValue >= dateRange.startDate &&
+      transaction.dateValue <= dateRange.endDate;
+
+    return matchesType && matchesDate;
+  });
+
+  const hasTransactionData = visibleTransactions.length > 0;
 
   const isAllSelected =
     visibleTransactions.length > 0 &&
@@ -479,6 +612,15 @@ export default function Transaction() {
         ...visibleTransactions.map(transaction => transaction.id),
       ]),
     ]);
+  };
+
+  const handleDateRangeChange = event => {
+    const { name, value } = event.target;
+
+    setDateRange(prevRange => ({
+      ...prevRange,
+      [name]: value,
+    }));
   };
 
   const handleResetTransactionForm = () => {
@@ -811,7 +953,7 @@ export default function Transaction() {
       setRecentlyAddedId(null);
     }, 1800);
 
-    setToastMessage("소비 기록을 저장했어요.");
+    showToast("소비 기록을 저장했어요.");
     setTransactionForm(initialTransactionForm);
   };
 
@@ -823,14 +965,47 @@ export default function Transaction() {
     const { name, value } = event.target;
 
     setMultipleRows(prevRows =>
-      prevRows.map(row =>
-        row.id === id
-          ? {
+      prevRows.map(row => {
+        if (row.id !== id) {
+          return row;
+        }
+
+        // 이체 계좌 조합 선택
+        if (name === "transferRoute") {
+          if (!value) {
+            return {
               ...row,
-              [name]: value,
-            }
-          : row,
-      ),
+              withdrawAccount: "",
+              depositAccount: "",
+            };
+          }
+
+          const [withdrawAccount, depositAccount] = value.split("|");
+
+          return {
+            ...row,
+            withdrawAccount,
+            depositAccount,
+          };
+        }
+
+        // 거래구분 변경
+        if (name === "type") {
+          return {
+            ...row,
+            type: value,
+            category: "",
+            paymentMethod: "",
+            withdrawAccount: "",
+            depositAccount: "",
+          };
+        }
+
+        return {
+          ...row,
+          [name]: value,
+        };
+      }),
     );
   };
 
@@ -854,10 +1029,7 @@ export default function Transaction() {
   };
 
   const onMultipleSubmit = () => {
-    const validRows = multipleRows.filter(
-      row =>
-        row.date && row.type && row.category && row.amount && row.paymentMethod,
-    );
+    const validRows = multipleRows.filter(isValidMultipleRow);
 
     if (validRows.length === 0) {
       setToastMessage("저장할 수 있는 거래가 없어요.");
@@ -867,16 +1039,138 @@ export default function Transaction() {
     setIsMultipleConfirmOpen(true);
   };
 
-  const handleConfirmMultipleSubmit = () => {
-    const validRows = multipleRows.filter(
-      row =>
-        row.date && row.type && row.category && row.amount && row.paymentMethod,
-    );
+  const handleConfirmMultipleSubmit = async () => {
+    const validRows = multipleRows.filter(isValidMultipleRow);
 
-    console.log("다건 저장값", validRows);
+    if (validRows.length === 0) {
+      setIsMultipleConfirmOpen(false);
+      setToastMessage("저장할 수 있는 거래가 없어요.");
+      return;
+    }
+
+    // 1. 로그인 사용자 확인
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      console.error("사용자 확인 실패:", userError);
+      setIsMultipleConfirmOpen(false);
+      setToastMessage("로그인 정보를 확인할 수 없어요.");
+      return;
+    }
+
+    // 2. UI row → DB 저장 데이터 변환
+    const transactionData = validRows.map(row => {
+      const now = new Date();
+
+      const [hour, minute] = row.time
+        ? row.time.split(":").map(Number)
+        : [now.getHours(), now.getMinutes()];
+
+      const transactionDate = new Date(
+        Number(row.date.slice(0, 4)),
+        Number(row.date.slice(5, 7)) - 1,
+        Number(row.date.slice(8, 10)),
+        hour,
+        minute,
+        row.time ? 0 : now.getSeconds(),
+      );
+
+      return {
+        user_id: user.id,
+        transaction_type: row.type,
+        amount: Number(row.amount),
+        category_id: row.category,
+
+        payment_method_id: row.type === "transfer" ? null : row.paymentMethod,
+
+        withdraw_account_id:
+          row.type === "transfer" ? row.withdrawAccount : null,
+
+        deposit_account_id: row.type === "transfer" ? row.depositAccount : null,
+
+        content: row.content.trim() || null,
+        memo: row.memo.trim() || null,
+
+        transaction_at: transactionDate.toISOString(),
+
+        input_method: "manual",
+
+        is_recurring: false,
+        recurring_day: null,
+      };
+    });
+
+    // 3. 다건 INSERT
+    const { data: insertedTransactions, error: insertError } = await supabase
+      .from("transactions")
+      .insert(transactionData)
+      .select(
+        `
+        id,
+        transaction_type,
+        amount,
+        content,
+        memo,
+        transaction_at,
+        created_at,
+        updated_at,
+        is_recurring,
+        recurring_day,
+
+        category:categories (
+          id,
+          code,
+          name
+        ),
+
+        payment_method:payment_methods (
+          id,
+          code,
+          name
+        ),
+
+        withdraw_account:transfer_accounts!transactions_withdraw_account_id_fkey (
+          id,
+          code,
+          name
+        ),
+
+        deposit_account:transfer_accounts!transactions_deposit_account_id_fkey (
+          id,
+          code,
+          name
+        )
+      `,
+      );
+
+    if (insertError) {
+      console.error("다건 소비 기록 저장 실패:", insertError);
+      setIsMultipleConfirmOpen(false);
+      setToastMessage("소비 기록을 저장하지 못했어요.");
+      return;
+    }
+
+    // 4. DB 데이터 → 기존 UI 형식
+    const newTransactions = (insertedTransactions ?? []).map(formatTransaction);
+
+    // 5. 화면 즉시 반영
+    setTransactions(prevTransactions => [
+      ...newTransactions,
+      ...prevTransactions,
+    ]);
+
+    // 6. 입력창 초기화
+    setMultipleRows([
+      createMultipleTransactionRow(1),
+      createMultipleTransactionRow(2),
+      createMultipleTransactionRow(3),
+    ]);
 
     setIsMultipleConfirmOpen(false);
-    setToastMessage(`${validRows.length}건의 소비 기록을 저장했어요.`);
+    setToastMessage(`${newTransactions.length}건의 소비 기록을 저장했어요.`);
   };
 
   const onAiFormChange = event => {
@@ -887,14 +1181,92 @@ export default function Transaction() {
       [name]: "",
     }));
 
+    // 거래구분 변경
+    if (name === "type") {
+      const currentType = aiTransactionForm.type;
+
+      // 현재 타입의 값 저장
+      if (currentType) {
+        setAiTypeValues(prevValues => ({
+          ...prevValues,
+          [currentType]:
+            currentType === "transfer"
+              ? {
+                  category: aiTransactionForm.category,
+                  withdrawAccount: aiTransactionForm.withdrawAccount,
+                  depositAccount: aiTransactionForm.depositAccount,
+                }
+              : {
+                  category: aiTransactionForm.category,
+                  paymentMethod: aiTransactionForm.paymentMethod,
+                },
+        }));
+      }
+
+      const savedValues = aiTypeValues[value];
+
+      setAiTransactionForm(prevForm => {
+        if (value === "transfer") {
+          return {
+            ...prevForm,
+            type: value,
+            category: savedValues?.category ?? "",
+            paymentMethod: "",
+            withdrawAccount: savedValues?.withdrawAccount ?? "",
+            depositAccount: savedValues?.depositAccount ?? "",
+          };
+        }
+
+        return {
+          ...prevForm,
+          type: value,
+          category: savedValues?.category ?? "",
+          paymentMethod: savedValues?.paymentMethod ?? "",
+          withdrawAccount: "",
+          depositAccount: "",
+        };
+      });
+
+      return;
+    }
+
+    // 일반 필드 변경
     setAiTransactionForm(prevForm => ({
       ...prevForm,
       [name]: value,
     }));
-  };
 
+    // 타입별 필드 변경값도 같이 기억
+    if (
+      name === "category" ||
+      name === "paymentMethod" ||
+      name === "withdrawAccount" ||
+      name === "depositAccount"
+    ) {
+      setAiTypeValues(prevValues => ({
+        ...prevValues,
+        [aiTransactionForm.type]: {
+          ...prevValues[aiTransactionForm.type],
+          [name]: value,
+        },
+      }));
+    }
+  };
   const handleAiReceipt = file => {
     if (!file) return;
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    const maxSize = 5 * 1024 * 1024;
+
+    if (!allowedTypes.includes(file.type)) {
+      showToast("JPG, PNG, WEBP 이미지만 분석할 수 있어요.", "error");
+      return;
+    }
+
+    if (file.size > maxSize) {
+      showToast("이미지는 5MB 이하만 등록할 수 있어요.", "error");
+      return;
+    }
 
     setAiTransactionForm(prevForm => ({
       ...prevForm,
@@ -903,23 +1275,119 @@ export default function Transaction() {
 
     const reader = new FileReader();
 
-    reader.onload = () => {
-      setAiPreview(reader.result);
+    reader.onload = async () => {
+      const imageDataUrl = reader.result;
+
+      setAiPreview(imageDataUrl);
+      setAiErrorMessage("");
+      setAiStatus("analyzing");
+
+      const { data, error } = await supabase.functions.invoke(
+        "analyze-receipt",
+        {
+          body: {
+            imageDataUrl,
+            transactionTypes: [
+              { value: "income", label: "수입" },
+              { value: "expense", label: "지출" },
+              { value: "transfer", label: "이체" },
+            ],
+            categories: categories.map(category => ({
+              name: category.name,
+              transactionType: category.transaction_type,
+            })),
+            paymentMethods: paymentMethods.map(method => method.name),
+          },
+        },
+      );
+
+      console.log("AI 분석 data:", data);
+      console.log("AI 분석 error:", error);
+
+      if (error) {
+        setAiErrorMessage(
+          "AI 분석 요청 중 문제가 발생했습니다. 이미지를 다시 업로드해주세요.",
+        );
+        setAiStatus("error");
+        return;
+      }
+
+      if (!data?.success || !data?.data) {
+        let message = "거래 정보를 인식하지 못했어요.";
+
+        if (data?.reason === "not_transaction_evidence") {
+          message = "영수증 또는 거래내역 이미지를 확인할 수 없어요.";
+        }
+
+        if (data?.reason === "unreadable") {
+          message = "이미지의 거래 정보를 정확히 읽기 어려워요.";
+        }
+
+        if (data?.reason === "missing_critical_data") {
+          message = "최종 거래 금액을 확인할 수 없어요.";
+        }
+
+        if (data?.reason === "unsupported_currency") {
+          message = "현재는 원화(KRW) 거래 내역만 자동 인식할 수 있어요.";
+        }
+
+        setAiErrorMessage(message);
+        setAiStatus("error");
+        return;
+      }
+
+      const aiResult = data.data;
+
+      const matchedCategory = categories.find(
+        category =>
+          category.name === aiResult.category &&
+          category.transaction_type === aiResult.type,
+      );
+
+      const matchedPaymentMethod = paymentMethods.find(
+        method => method.name === aiResult.paymentMethod,
+      );
+
+      if (aiResult.type === "transfer") {
+        setAiTypeValues(prev => ({
+          ...prev,
+          transfer: {
+            ...prev.transfer,
+            category: matchedCategory?.id ?? "",
+          },
+        }));
+      } else {
+        setAiTypeValues(prev => ({
+          ...prev,
+          [aiResult.type]: {
+            category: matchedCategory?.id ?? "",
+            paymentMethod: matchedPaymentMethod?.id ?? "",
+          },
+        }));
+      }
+
+      setAiTransactionForm(prevForm => ({
+        ...prevForm,
+        type: aiResult.type ?? "",
+        amount:
+          aiResult.amount !== null && aiResult.amount !== undefined
+            ? String(aiResult.amount)
+            : "",
+        category: matchedCategory?.id ?? "",
+        date: aiResult.date ?? "",
+        time: aiResult.time ?? "",
+        paymentMethod:
+          aiResult.type === "transfer" ? "" : (matchedPaymentMethod?.id ?? ""),
+        content: aiResult.content ?? "",
+        memo: aiResult.memo ?? "",
+        receipt: prevForm.receipt,
+      }));
+
+      setAiTransactionErrors({});
+      setAiStatus("success");
     };
 
     reader.readAsDataURL(file);
-
-    setAiStatus("analyzing");
-
-    setTimeout(() => {
-      setAiTransactionForm(prevForm => ({
-        ...prevForm,
-        ...mockAiResult,
-        receipt: file,
-      }));
-
-      setAiStatus("success");
-    }, 1800);
   };
 
   const onAiReceiptChange = event => {
@@ -936,14 +1404,13 @@ export default function Transaction() {
     handleAiReceipt(event.dataTransfer.files?.[0]);
   };
 
-  const onAiTransactionSubmit = event => {
+  const onAiTransactionSubmit = async event => {
     event.preventDefault();
 
     if (aiStatus !== "success") return;
 
-    const errors = validateTransactionForm(aiTransactionForm, {
-      validateTransferAccounts: false,
-    });
+    // 1. 입력값 검증
+    const errors = validateTransactionForm(aiTransactionForm);
 
     if (Object.keys(errors).length > 0) {
       setAiTransactionErrors(errors);
@@ -951,7 +1418,239 @@ export default function Transaction() {
     }
 
     setAiTransactionErrors({});
-    console.log("AI 자동 인식 입력값", aiTransactionForm);
+
+    // 2. 로그인 사용자 확인
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      console.error("사용자 확인 실패:", userError);
+      showToast("로그인 정보를 확인할 수 없어요.", "error");
+      return;
+    }
+
+    const attachment = aiTransactionForm.receipt;
+
+    // 3. transaction_at 생성
+    const now = new Date();
+
+    const [hour, minute] = aiTransactionForm.time
+      ? aiTransactionForm.time.split(":").map(Number)
+      : [now.getHours(), now.getMinutes()];
+
+    const transactionDate = new Date(
+      Number(aiTransactionForm.date.slice(0, 4)),
+      Number(aiTransactionForm.date.slice(5, 7)) - 1,
+      Number(aiTransactionForm.date.slice(8, 10)),
+      hour,
+      minute,
+      aiTransactionForm.time ? 0 : now.getSeconds(),
+    );
+
+    // 4. DB 저장값 구성
+    const transactionData = {
+      user_id: user.id,
+      transaction_type: aiTransactionForm.type,
+      amount: Number(aiTransactionForm.amount),
+      category_id: aiTransactionForm.category,
+
+      payment_method_id:
+        aiTransactionForm.type === "transfer"
+          ? null
+          : aiTransactionForm.paymentMethod,
+
+      withdraw_account_id:
+        aiTransactionForm.type === "transfer"
+          ? aiTransactionForm.withdrawAccount
+          : null,
+
+      deposit_account_id:
+        aiTransactionForm.type === "transfer"
+          ? aiTransactionForm.depositAccount
+          : null,
+
+      content: aiTransactionForm.content.trim() || null,
+      memo: aiTransactionForm.memo.trim() || null,
+
+      transaction_at: transactionDate.toISOString(),
+
+      input_method: "ai",
+
+      is_recurring: false,
+      recurring_day: null,
+    };
+
+    // 5. 거래 저장
+    const { data: insertedTransaction, error: insertError } = await supabase
+      .from("transactions")
+      .insert(transactionData)
+      .select(
+        `
+        id,
+        transaction_type,
+        amount,
+        content,
+        memo,
+        transaction_at,
+        created_at,
+        updated_at,
+        is_recurring,
+        recurring_day,
+
+        category:categories (
+          id,
+          code,
+          name
+        ),
+
+        payment_method:payment_methods (
+          id,
+          code,
+          name
+        ),
+
+        withdraw_account:transfer_accounts!transactions_withdraw_account_id_fkey (
+          id,
+          code,
+          name
+        ),
+
+        deposit_account:transfer_accounts!transactions_deposit_account_id_fkey (
+          id,
+          code,
+          name
+        )
+      `,
+      )
+      .single();
+
+    if (insertError) {
+      console.error("AI 소비 기록 저장 실패:", insertError);
+      showToast("소비 기록을 저장하지 못했어요.", "error");
+      return;
+    }
+
+    if (!insertedTransaction) {
+      console.error("AI 소비 기록 저장 결과가 반환되지 않았습니다.");
+      showToast("소비 기록 저장 결과를 확인하지 못했어요.", "error");
+      return;
+    }
+
+    // 6. AI 분석에 사용한 영수증 이미지 저장
+    if (attachment) {
+      const extension =
+        attachment.name.split(".").pop()?.toLowerCase() || "jpg";
+
+      const safeFileName = `receipt-${Date.now()}.${extension}`;
+
+      const storagePath = `${user.id}/${insertedTransaction.id}/${safeFileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("transaction-attachments")
+        .upload(storagePath, attachment, {
+          contentType: attachment.type,
+          upsert: false,
+        });
+
+      // Storage 업로드 실패 → 거래 INSERT 롤백
+      if (uploadError) {
+        console.error("AI 영수증 Storage 업로드 실패:", uploadError);
+
+        const { error: rollbackTransactionError } = await supabase
+          .from("transactions")
+          .delete()
+          .eq("id", insertedTransaction.id)
+          .eq("user_id", user.id);
+
+        if (rollbackTransactionError) {
+          console.error("AI 거래 저장 롤백 실패:", rollbackTransactionError);
+        }
+
+        showToast("영수증 업로드에 실패해 거래 저장을 취소했어요.", "error");
+        return;
+      }
+
+      // 7. 첨부파일 DB 정보 저장
+      const { error: attachmentInsertError } = await supabase
+        .from("transaction_attachments")
+        .insert({
+          transaction_id: insertedTransaction.id,
+          storage_path: storagePath,
+          file_name: attachment.name,
+          mime_type: attachment.type,
+        });
+
+      // 첨부정보 저장 실패 → Storage + 거래 롤백
+      if (attachmentInsertError) {
+        console.error("AI 영수증 첨부정보 저장 실패:", attachmentInsertError);
+
+        const { error: storageRemoveError } = await supabase.storage
+          .from("transaction-attachments")
+          .remove([storagePath]);
+
+        if (storageRemoveError) {
+          console.error("AI 영수증 Storage 롤백 실패:", storageRemoveError);
+        }
+
+        const { error: rollbackTransactionError } = await supabase
+          .from("transactions")
+          .delete()
+          .eq("id", insertedTransaction.id)
+          .eq("user_id", user.id);
+
+        if (rollbackTransactionError) {
+          console.error("AI 거래 저장 롤백 실패:", rollbackTransactionError);
+        }
+
+        showToast(
+          "영수증 정보를 저장하지 못해 거래 저장을 취소했어요.",
+          "error",
+        );
+        return;
+      }
+
+      console.log("AI 영수증 저장 성공:", storagePath);
+    }
+
+    // 8. 저장 성공 → 화면 즉시 반영
+    console.log("AI 소비 기록 저장 성공:", insertedTransaction);
+
+    const newTransaction = formatTransaction(insertedTransaction);
+
+    setTransactions(prevTransactions => [newTransaction, ...prevTransactions]);
+
+    setRecentlyAddedId(insertedTransaction.id);
+
+    setTimeout(() => {
+      setRecentlyAddedId(null);
+    }, 1800);
+
+    // 9. AI 입력 상태 초기화
+    showToast("AI 소비 기록을 저장했어요.");
+
+    setAiTransactionForm(initialAiTransactionForm);
+    setAiTransactionErrors({});
+    setAiPreview("");
+    setAiErrorMessage("");
+    setAiStatus("idle");
+
+    setAiTypeValues({
+      income: {
+        category: "",
+        paymentMethod: "",
+      },
+      expense: {
+        category: "",
+        paymentMethod: "",
+      },
+      transfer: {
+        category: "",
+        withdrawAccount: "",
+        depositAccount: "",
+      },
+    });
   };
 
   const handleUpdateTransaction = async updatedForm => {
@@ -1393,11 +2092,16 @@ export default function Transaction() {
                 </p>
               </header>
 
-              <SummaryCards hasTransactionData={hasTransactionData} />
+              <SummaryCards
+                hasTransactionData={hasTransactionData}
+                summaryData={summaryData}
+              />
               <section className={styles.transactionSection}>
                 <TransactionToolbar
                   activeFilter={activeFilter}
                   onFilterChange={setActiveFilter}
+                  dateRange={dateRange}
+                  onDateRangeChange={handleDateRangeChange}
                 />
                 <TransactionList
                   hasTransactionData={hasTransactionData}
@@ -1484,6 +2188,7 @@ export default function Transaction() {
                 }}
                 aiEntry={{
                   aiStatus,
+                  aiErrorMessage,
                   aiTransactionForm,
                   aiTransactionErrors,
                   aiPreview,
@@ -1560,17 +2265,22 @@ export default function Transaction() {
           setIsDeleteSuccessOpen(false);
           setPanelView("entry");
           setEntryMode("single");
-          setPanelView("entry");
         }}
       />
 
       {toastMessage && (
-        <div className={styles.toast} role="status" aria-live="polite">
+        <div
+          className={`${styles.toast} ${
+            toastType === "error" ? styles.toastError : ""
+          }`}
+          role={toastType === "error" ? "alert" : "status"}
+          aria-live={toastType === "error" ? "assertive" : "polite"}
+        >
           <span
             className={`material-icons ${styles.toastIcon}`}
             aria-hidden="true"
           >
-            check_circle
+            {toastType === "error" ? "error" : "check_circle"}
           </span>
 
           <span>{toastMessage}</span>

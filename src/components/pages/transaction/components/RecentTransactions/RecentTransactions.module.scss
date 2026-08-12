@@ -284,3 +284,31 @@
 .viewAllRecentButton :global(.material-icons) {
   font-size: var(--icon-m-size);
 }
+
+@media (max-width: 1024px) {
+  .recentPanel {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    height: 100dvh;
+    padding: 16px;
+
+    overflow-y: auto;
+
+    border: 0;
+    border-radius: 0;
+    background-color: var(--color-white);
+  }
+
+  .viewAllRecentButton {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+
+    background-color: var(--color-primary);
+  }
+}

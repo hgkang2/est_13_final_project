@@ -7,7 +7,12 @@ const transactionFilters = [
   { id: "transfer", label: "이체" },
 ];
 
-export default function TransactionToolbar({ activeFilter, onFilterChange }) {
+export default function TransactionToolbar({
+  activeFilter,
+  onFilterChange,
+  dateRange,
+  onDateRangeChange,
+}) {
   return (
     <div className={styles.toolbar}>
       <div className={styles.typeFilters}>
@@ -26,13 +31,29 @@ export default function TransactionToolbar({ activeFilter, onFilterChange }) {
       </div>
 
       <div className={styles.mobileToolbarRow}>
-        <button type="button" className={styles.dateButton}>
-          <span>2026.07.01 - 2026.07.31</span>
+        <div className={styles.dateButton}>
+          <input
+            type="date"
+            name="startDate"
+            value={dateRange.startDate}
+            onChange={onDateRangeChange}
+            aria-label="조회 시작일"
+          />
+
+          <span>-</span>
+
+          <input
+            type="date"
+            name="endDate"
+            value={dateRange.endDate}
+            onChange={onDateRangeChange}
+            aria-label="조회 종료일"
+          />
 
           <span className="material-icons" aria-hidden="true">
             calendar_month
           </span>
-        </button>
+        </div>
 
         <div className={styles.toolbarActions}>
           <button type="button" className={styles.toolbarButton}>
