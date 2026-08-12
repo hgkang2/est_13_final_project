@@ -1144,29 +1144,29 @@ export default function Transaction() {
 
     // 거래구분 변경
     if (name === "type") {
+      const currentType = aiTransactionForm.type;
+
+      // 현재 타입의 값 저장
+      if (currentType) {
+        setAiTypeValues(prevValues => ({
+          ...prevValues,
+          [currentType]:
+            currentType === "transfer"
+              ? {
+                  category: aiTransactionForm.category,
+                  withdrawAccount: aiTransactionForm.withdrawAccount,
+                  depositAccount: aiTransactionForm.depositAccount,
+                }
+              : {
+                  category: aiTransactionForm.category,
+                  paymentMethod: aiTransactionForm.paymentMethod,
+                },
+        }));
+      }
+
+      const savedValues = aiTypeValues[value];
+
       setAiTransactionForm(prevForm => {
-        const currentType = prevForm.type;
-
-        // 지금 화면에서 사용 중이던 타입별 값 저장
-        if (currentType) {
-          setAiTypeValues(prevValues => ({
-            ...prevValues,
-            [currentType]:
-              currentType === "transfer"
-                ? {
-                    category: prevForm.category,
-                    withdrawAccount: prevForm.withdrawAccount,
-                    depositAccount: prevForm.depositAccount,
-                  }
-                : {
-                    category: prevForm.category,
-                    paymentMethod: prevForm.paymentMethod,
-                  },
-          }));
-        }
-
-        const savedValues = aiTypeValues[value];
-
         if (value === "transfer") {
           return {
             ...prevForm,
