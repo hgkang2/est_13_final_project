@@ -9,7 +9,7 @@
   z-index: 60;
   display: flex;
   width: 378px;
-  min-height: 100%;
+  // min-height: 100%;
   padding: 16px;
   border: 1px solid var(--color-border-gray);
   border-radius: 16px 0 0 16px;
@@ -115,9 +115,12 @@
 }
 
 .detailReceiptImageBox img {
-  width: 100px;
-  height: 120px;
-  object-fit: cover;
+  width: 160px;
+  max-width: 100%;
+  height: auto;
+  max-height: 240px;
+  object-fit: contain;
+  border-radius: 8px;
 }
 
 .detailFields {
@@ -601,4 +604,34 @@
   color: var(--color-light-gray);
   font-size: var(--icon-m-size);
   pointer-events: none;
+}
+
+@media (max-width: 1024px) {
+  .detailPanel {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    height: 100dvh;
+    min-height: 0;
+    padding: 16px;
+
+    overflow-y: auto;
+
+    border-radius: 0;
+    background-color: var(--color-white);
+  }
+
+  .detailActions,
+  .editActions {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+
+    padding: 12px 0;
+    background-color: var(--color-white);
+  }
 }

@@ -3,9 +3,13 @@ import styles from "./AiEntryForm.module.scss";
 
 export default function AiEntryForm({
   aiStatus,
+  aiErrorMessage,
   aiTransactionForm,
   aiTransactionErrors,
   aiPreview,
+  categories,
+  paymentMethods,
+  transferAccounts,
   onAiFormChange,
   onAiReceiptChange,
   onAiDragOver,
@@ -35,8 +39,9 @@ export default function AiEntryForm({
           >
             <input
               type="file"
-              accept="image/jpeg, image/png"
+              accept="image/jpeg, image/png, image/webp"
               onChange={onAiReceiptChange}
+              className={styles.hiddenFileInput}
             />
 
             <span
@@ -49,7 +54,7 @@ export default function AiEntryForm({
             <div className={styles.aiUploadText}>
               <strong>영수증 이미지를 드래그하거나 클릭하여 업로드</strong>
 
-              <span>JPG, PNG · 최대 2MB</span>
+              <span>JPG, PNG, WEBP · 최대 5MB</span>
             </div>
           </label>
         )}
@@ -70,6 +75,34 @@ export default function AiEntryForm({
               <span>잠시만 기다려 주세요</span>
             </div>
           </div>
+        )}
+
+        {aiStatus === "error" && (
+          <label
+            className={`${styles.aiRecognitionBox} ${styles.aiErrorBox}`}
+            onDragOver={onAiDragOver}
+            onDrop={onAiDrop}
+          >
+            <input
+              type="file"
+              accept="image/jpeg, image/png, image/webp"
+              onChange={onAiReceiptChange}
+              className={styles.hiddenFileInput}
+            />
+
+            <span
+              className={`material-icons ${styles.aiErrorIcon}`}
+              aria-hidden="true"
+            >
+              error_outline
+            </span>
+
+            <div className={styles.aiRecognitionMessage}>
+              <strong>이미지를 분석하지 못했습니다.</strong>
+              <span>{aiErrorMessage}</span>
+              <span>다른 이미지를 다시 업로드해주세요.</span>
+            </div>
+          </label>
         )}
 
         {aiStatus === "success" && (
@@ -252,17 +285,17 @@ export default function AiEntryForm({
                     : "카테고리 선택"}
                 </option>
 
-                <option value="salary">월급</option>
-                <option value="otherIncome">부수입</option>
-                <option value="food">식비</option>
-                <option value="cafeSnack">카페/간식</option>
-                <option value="transportation">교통</option>
-                <option value="shopping">쇼핑</option>
-                <option value="subscription">구독</option>
-                <option value="savings">저축</option>
-                <option value="other">기타</option>
+                {categories
+                  .filter(
+                    category =>
+                      category.transaction_type === aiTransactionForm.type,
+                  )
+                  .map(category => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
               </select>
-
               <span className="material-icons" aria-hidden="true">
                 keyboard_arrow_down
               </span>
@@ -345,51 +378,136 @@ export default function AiEntryForm({
           </label>
         </div>
 
-        <label className={styles.formField}>
-          <span className={styles.aiFormLabel}>
-            결제수단
-            {aiStatus === "success" && (
-              <span className={styles.requiredMark}> *</span>
-            )}
-          </span>
+        {aiTransactionForm.type === "transfer" ? (
+          <div className={styles.formFieldRow}>
+            <label className={styles.formField}>
+              <span className={styles.aiFormLabel}>
+                출금 계좌
+                {aiStatus === "success" && (
+                  <span className={styles.requiredMark}> *</span>
+                )}
+              </span>
 
-          <span
-            className={`${styles.selectBox} ${styles.aiPaymentSelectBox} ${
-              aiTransactionErrors.paymentMethod ? styles.errorField : ""
-            }`}
-          >
-            <select
-              name="paymentMethod"
-              value={aiTransactionForm.paymentMethod}
-              onChange={onAiFormChange}
-              disabled={aiStatus !== "success"}
-              aria-invalid={Boolean(aiTransactionErrors.paymentMethod)}
+              <span
+                className={`${styles.selectBox} ${
+                  aiTransactionErrors.withdrawAccount ? styles.errorField : ""
+                }`}
+              >
+                <select
+                  name="withdrawAccount"
+                  value={aiTransactionForm.withdrawAccount}
+                  onChange={onAiFormChange}
+                  disabled={aiStatus !== "success"}
+                  aria-invalid={Boolean(aiTransactionErrors.withdrawAccount)}
+                >
+                  <option value="">출금 계좌 선택</option>
+
+                  {transferAccounts.map(account => (
+                    <option key={account.id} value={account.id}>
+                      {account.name}
+                    </option>
+                  ))}
+                </select>
+
+                <span className="material-icons" aria-hidden="true">
+                  keyboard_arrow_down
+                </span>
+              </span>
+
+              {aiTransactionErrors.withdrawAccount && (
+                <span className={styles.errorMessage}>
+                  {aiTransactionErrors.withdrawAccount}
+                </span>
+              )}
+            </label>
+
+            <label className={styles.formField}>
+              <span className={styles.aiFormLabel}>
+                입금 계좌
+                {aiStatus === "success" && (
+                  <span className={styles.requiredMark}> *</span>
+                )}
+              </span>
+
+              <span
+                className={`${styles.selectBox} ${
+                  aiTransactionErrors.depositAccount ? styles.errorField : ""
+                }`}
+              >
+                <select
+                  name="depositAccount"
+                  value={aiTransactionForm.depositAccount}
+                  onChange={onAiFormChange}
+                  disabled={aiStatus !== "success"}
+                  aria-invalid={Boolean(aiTransactionErrors.depositAccount)}
+                >
+                  <option value="">입금 계좌 선택</option>
+
+                  {transferAccounts.map(account => (
+                    <option key={account.id} value={account.id}>
+                      {account.name}
+                    </option>
+                  ))}
+                </select>
+
+                <span className="material-icons" aria-hidden="true">
+                  keyboard_arrow_down
+                </span>
+              </span>
+
+              {aiTransactionErrors.depositAccount && (
+                <span className={styles.errorMessage}>
+                  {aiTransactionErrors.depositAccount}
+                </span>
+              )}
+            </label>
+          </div>
+        ) : (
+          <label className={styles.formField}>
+            <span className={styles.aiFormLabel}>
+              결제수단
+              {aiStatus === "success" && (
+                <span className={styles.requiredMark}> *</span>
+              )}
+            </span>
+
+            <span
+              className={`${styles.selectBox} ${styles.aiPaymentSelectBox} ${
+                aiTransactionErrors.paymentMethod ? styles.errorField : ""
+              }`}
             >
-              <option value="">
-                {aiStatus === "analyzing"
-                  ? "분석 중입니다..."
-                  : "결제수단 선택"}
-              </option>
+              <select
+                name="paymentMethod"
+                value={aiTransactionForm.paymentMethod}
+                onChange={onAiFormChange}
+                disabled={aiStatus !== "success"}
+                aria-invalid={Boolean(aiTransactionErrors.paymentMethod)}
+              >
+                <option value="">
+                  {aiStatus === "analyzing"
+                    ? "분석 중입니다..."
+                    : "결제수단 선택"}
+                </option>
 
-              <option value="creditCard">신용카드</option>
-              <option value="checkCard">체크카드</option>
-              <option value="accountTransfer">계좌이체</option>
-              <option value="cash">현금</option>
-              <option value="kakaoPay">카카오페이</option>
-              <option value="other">기타</option>
-            </select>
+                {paymentMethods.map(method => (
+                  <option key={method.id} value={method.id}>
+                    {method.name}
+                  </option>
+                ))}
+              </select>
 
-            <span className="material-icons" aria-hidden="true">
-              keyboard_arrow_down
+              <span className="material-icons" aria-hidden="true">
+                keyboard_arrow_down
+              </span>
             </span>
-          </span>
 
-          {aiTransactionErrors.paymentMethod && (
-            <span className={styles.errorMessage}>
-              {aiTransactionErrors.paymentMethod}
-            </span>
-          )}
-        </label>
+            {aiTransactionErrors.paymentMethod && (
+              <span className={styles.errorMessage}>
+                {aiTransactionErrors.paymentMethod}
+              </span>
+            )}
+          </label>
+        )}
 
         <label className={styles.formField}>
           <span className={styles.aiFormLabel}>내용</span>

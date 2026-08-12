@@ -19,22 +19,31 @@ export default function TransactionList({
   onOpenDetail,
   recentlyAddedId,
 }) {
-  const selectedSummary = visibleTransactions
-    .filter(transaction => selectedIds.includes(transaction.id))
-    .reduce(
-      (summary, transaction) => {
-        summary[transaction.type] += transaction.amount;
+  const selectedTransactions = visibleTransactions.filter(transaction =>
+    selectedIds.includes(transaction.id),
+  );
 
-        return summary;
-      },
-      {
-        income: 0,
-        expense: 0,
-        transfer: 0,
-      },
-    );
+  const selectedSummary = selectedTransactions.reduce(
+    (summary, transaction) => {
+      summary[transaction.type] += transaction.amount;
+
+      return summary;
+    },
+    {
+      income: 0,
+      expense: 0,
+      transfer: 0,
+    },
+  );
 
   const [expandedId, setExpandedId] = useState(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const INITIAL_VISIBLE_COUNT = 8;
+
+  const displayedTransactions = isExpanded
+    ? visibleTransactions
+    : visibleTransactions.slice(0, INITIAL_VISIBLE_COUNT);
 
   const handleToggleMemo = transactionId => {
     setExpandedId(prevId => (prevId === transactionId ? null : transactionId));
@@ -75,7 +84,7 @@ export default function TransactionList({
             </div>
           </div>
 
-          {selectedIds.length > 0 && (
+          {selectedTransactions.length > 0 && (
             <div className={styles.selectionBar}>
               <div className={styles.selectionBarInner}>
                 <div className={styles.selectionInfo}>
@@ -83,7 +92,7 @@ export default function TransactionList({
                     check_box
                   </span>
 
-                  <span>{selectedIds.length}건이 선택되었습니다.</span>
+                  <span>{selectedTransactions.length}건이 선택되었습니다.</span>
                 </div>
 
                 <div className={styles.selectionRight}>
@@ -131,13 +140,19 @@ export default function TransactionList({
             </div>
           )}
 
-          <ul className={styles.transactionList}>
-            {visibleTransactions.map(transaction => {
+          <ul
+            className={`${styles.transactionList} ${
+              isExpanded ? styles.expandedList : ""
+            }`}
+          >
+            {displayedTransactions.map(transaction => {
               const isSelected = selectedIds.includes(transaction.id);
 
               return (
                 <li
                   className={`${styles.transactionRow} ${
+                    isSelected ? styles.selectedRow : ""
+                  } ${
                     transaction.id === recentlyAddedId
                       ? styles.recentlyAdded
                       : ""
@@ -250,15 +265,21 @@ export default function TransactionList({
             })}
           </ul>
 
-          <div className={styles.loadMoreArea}>
-            <button type="button" className={styles.loadMoreButton}>
-              <span>더 많은 내역 보기</span>
+          {visibleTransactions.length > INITIAL_VISIBLE_COUNT && (
+            <div className={styles.loadMoreArea}>
+              <button
+                type="button"
+                className={styles.loadMoreButton}
+                onClick={() => setIsExpanded(prev => !prev)}
+              >
+                <span>{isExpanded ? "접기" : "더 많은 내역 보기"}</span>
 
-              <span className="material-icons" aria-hidden="true">
-                keyboard_arrow_down
-              </span>
-            </button>
-          </div>
+                <span className="material-icons" aria-hidden="true">
+                  {isExpanded ? "keyboard_arrow_up" : "keyboard_arrow_down"}
+                </span>
+              </button>
+            </div>
+          )}
         </>
       ) : (
         <TransactionEmpty />
