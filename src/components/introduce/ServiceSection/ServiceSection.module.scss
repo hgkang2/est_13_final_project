@@ -1,0 +1,445 @@
+$green: var(--color-point);
+$yellow: var(--color-secondary);
+$gray-green: var(--color-green-gray);
+
+$text: var(--color-text);
+$sub-text: var(--color-light-gray);
+$white: var(--color-white);
+
+.page {
+  color: $text;
+  background: $white;
+}
+
+.inner {
+  width: 100%;
+  max-width: 1272px;
+  margin: 0 auto;
+}
+
+.section {
+  width: 100%;
+  min-height: 800px;
+  padding: 110px 0;
+
+  scroll-margin-top: 80px;
+}
+
+/* ========================
+   COMMON
+======================== */
+
+.sectionTitle {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+
+  margin-bottom: 64px;
+
+  > span {
+    color: $green;
+  }
+
+  p {
+    margin-bottom: 6px;
+
+    color: $gray-green;
+
+    letter-spacing: 0.08em;
+  }
+
+  h1,
+  h2 {
+    margin: 0;
+
+    font-size: var(--heading-s-size);
+    line-height: var(--heading-s-line-height);
+  }
+}
+
+/* ========================
+   서비스 소개
+======================== */
+
+.serviceSection {
+  position: relative;
+  width: 100%;
+  height: auto;
+  background: linear-gradient(180deg, rgb(119 185 133 / 8%), rgb(119 185 133 / 2%));
+}
+
+.hero {
+  min-height: 390px;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+
+  margin-bottom: 60px;
+  padding: 50px 70px;
+
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba($green, 0.12);
+  border-radius: 32px;
+}
+
+.heroText {
+  line-height: var(--body-m-line-height);
+  h2 {
+    margin: 14px 0 20px;
+  }
+}
+
+.eyebrow {
+  color: var(--color-point);
+  font-size: var(--body-m-size);
+  font-weight: var(--font-weight-bold);
+}
+
+.description {
+  color: $sub-text;
+  line-height: 1.8;
+}
+
+.primaryButton {
+  margin-top: 28px;
+  padding: 14px 24px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: var(--color-point);
+  color: var(--color-white);
+
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+}
+
+.heroVisual {
+  display: flex;
+  justify-content: center;
+}
+
+.mockPhone {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+}
+
+.mockImage {
+  width: 320px;
+  height: auto;
+
+  filter: drop-shadow(0 20px 45px rgba(73, 113, 81, 0.18));
+
+  transition: transform 0.3s ease;
+}
+
+.mockImage:hover {
+  transform: translateY(-8px);
+}
+
+.progress {
+  overflow: hidden;
+
+  width: 100%;
+  height: 9px;
+
+  background: #edf1ed;
+  border-radius: 20px;
+
+  div {
+    width: 72%;
+    height: 100%;
+
+    background: $green;
+    border-radius: 20px;
+  }
+}
+
+.serviceGrid {
+  position: relative;
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+
+  width: 100%;
+}
+
+.serviceCard {
+  position: relative;
+  overflow: hidden;
+
+  min-height: 210px;
+  padding: 30px;
+
+  background: var(--color-white);
+  border: 1px solid rgba(119, 185, 133, 0.08);
+  border-radius: 20px;
+
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+
+  &::before {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 4px;
+
+    background: var(--color-point);
+
+    transform: scaleX(0);
+    transform-origin: left;
+
+    transition: transform 0.3s ease;
+  }
+
+  &:hover {
+    transform: translateY(-8px);
+
+    border-color: rgba(119, 185, 133, 0.3);
+
+    box-shadow: 0 5px 10px rgba(119, 185, 133, 0.15);
+  }
+
+  &:hover::before {
+    transform: scaleX(1);
+  }
+
+  h3 {
+    margin: 22px 0 10px;
+
+    transition: color 0.25s ease;
+  }
+
+  &:hover h3 {
+    color: var(--color-point);
+  }
+
+  p {
+    color: $sub-text;
+    line-height: 1.6;
+  }
+}
+
+.cardIcon {
+  transition:
+    transform 0.3s ease,
+    filter 0.3s ease;
+}
+
+.serviceCard:hover .cardIcon {
+  transform: rotate(-8deg) scale(1.12);
+
+  filter: drop-shadow(0 4px 5px rgba(119, 185, 133, 0.25));
+}
+
+/* ========================
+   TABLET - 768
+======================== */
+
+@media (max-width: 768px) {
+  .section {
+    min-height: auto;
+    padding: 80px 0;
+
+    scroll-margin-top: 100px;
+  }
+
+  .sectionTitle {
+    gap: 16px;
+    margin-bottom: 44px;
+
+    h1,
+    h2 {
+      font-size: var(--heading-m-size);
+      line-height: var(--heading-m-line-height);
+    }
+
+    p {
+      margin-bottom: 4px;
+    }
+  }
+
+  /* 서비스 소개 */
+
+  .hero {
+    min-height: auto;
+
+    grid-template-columns: 1fr;
+
+    gap: 48px;
+
+    margin-bottom: 40px;
+    padding: 40px;
+
+    border-radius: 24px;
+  }
+
+  .heroText {
+    text-align: center;
+
+    h2 {
+      margin: 12px 0 18px;
+    }
+  }
+
+  .description {
+    br {
+      display: none;
+    }
+  }
+
+  .primaryButton {
+    margin-top: 24px;
+  }
+
+  .heroVisual {
+    justify-content: center;
+  }
+
+  .mockImage {
+    width: 270px;
+  }
+  .serviceGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+
+  .serviceCard {
+    min-height: 190px;
+
+    padding: 26px;
+
+    h3 {
+      margin: 18px 0 8px;
+    }
+  }
+
+  .cardIcon {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* ========================
+   MOBILE - 390
+======================== */
+
+@media (max-width: 390px) {
+  .section {
+    padding: 64px 0;
+
+    scroll-margin-top: 90px;
+  }
+
+  .sectionTitle {
+    gap: 12px;
+    margin-bottom: 32px;
+
+    > span {
+      flex-shrink: 0;
+    }
+
+    h1,
+    h2 {
+      font-size: var(--body-l-size);
+      line-height: var(--body-l-line-height);
+    }
+
+    p {
+      font-size: 12px;
+      letter-spacing: 0.05em;
+    }
+  }
+
+  /* 서비스 소개 */
+
+  .hero {
+    gap: 36px;
+
+    margin-bottom: 32px;
+    padding: 28px 20px;
+
+    border-radius: 20px;
+  }
+
+  .heroText {
+    text-align: left;
+
+    h2 {
+      margin: 10px 0 16px;
+    }
+  }
+
+  .eyebrow {
+    font-size: 14px;
+  }
+
+  .description {
+    line-height: 1.7;
+  }
+
+  .primaryButton {
+    width: 100%;
+
+    margin-top: 20px;
+    padding: 13px 18px;
+  }
+
+  .mockImage {
+    width: 210px;
+  }
+  .progress {
+    height: 7px;
+  }
+
+  .serviceGrid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .serviceCard {
+    min-height: auto;
+
+    padding: 22px;
+
+    border-radius: 16px;
+
+    h3 {
+      margin: 16px 0 8px;
+    }
+
+    p {
+      line-height: 1.6;
+    }
+  }
+
+  .cardIcon {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .inner {
+    width: calc(100% - 48px);
+  }
+}
+
+@media (max-width: 390px) {
+  .inner {
+    width: calc(100% - 32px);
+  }
+}

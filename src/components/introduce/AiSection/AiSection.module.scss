@@ -1,0 +1,578 @@
+$green: var(--color-point);
+$yellow: var(--color-secondary);
+$gray-green: var(--color-green-gray);
+
+$text: var(--color-text);
+$sub-text: var(--color-light-gray);
+$white: var(--color-white);
+
+.page {
+  color: $text;
+  background: $white;
+}
+
+.inner {
+  width: 100%;
+  max-width: 1272px;
+  margin: 0 auto;
+}
+.section {
+  width: 100%;
+  min-height: 800px;
+  padding: 110px 0;
+
+  scroll-margin-top: 80px;
+}
+
+/* ========================
+   COMMON
+======================== */
+
+.sectionTitle {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+
+  margin-bottom: 64px;
+
+  > span {
+    color: $green;
+  }
+
+  p {
+    margin-bottom: 6px;
+
+    color: $gray-green;
+
+    letter-spacing: 0.08em;
+  }
+
+  h1,
+  h2 {
+    margin: 0;
+
+    font-size: var(--heading-s-size);
+    line-height: var(--heading-s-line-height);
+  }
+}
+
+/* ========================
+   모아 AI
+======================== */
+
+.aiSection {
+  position: relative;
+  overflow: hidden;
+
+  background: radial-gradient(circle at 85% 20%, rgba(253, 226, 145, 0.16), transparent 24%), rgba(119, 185, 133, 0.07);
+}
+
+.aiLayout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 40px;
+  align-items: stretch;
+}
+
+.aiMenu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  article {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+
+    padding: 24px;
+
+    background: var(--color-white);
+    border-radius: 16px;
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.025);
+
+    transition:
+      transform 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+
+    > span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+
+      border-radius: 12px;
+
+      background: rgba(119, 185, 133, 0.1);
+
+      color: $green;
+      font-weight: 800;
+    }
+
+    h3 {
+      margin-bottom: 8px;
+
+      transition: color 0.25s ease;
+    }
+
+    p {
+      color: var(--color-gray);
+      min-height: 3.2em;
+    }
+
+    &:hover {
+      transform: translateX(6px);
+
+      h3 {
+        color: $green;
+      }
+    }
+  }
+}
+
+.aiReport {
+  position: relative;
+  overflow: hidden;
+
+  padding: 34px;
+
+  background: var(--color-white);
+  border-radius: 24px;
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+
+  &::before {
+    content: "";
+
+    position: absolute;
+    top: -90px;
+    right: -70px;
+
+    width: 240px;
+    height: 240px;
+
+    border-radius: 50%;
+
+    background: rgba($yellow, 0.15);
+  }
+}
+
+.reportHeader {
+  position: relative;
+  z-index: 2;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  span {
+    color: $green;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  strong {
+    font-size: 24px;
+  }
+}
+
+.reportContent {
+  position: relative;
+  z-index: 2;
+
+  margin-top: 34px;
+
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  align-items: center;
+  gap: 30px;
+}
+
+.chart {
+  position: relative;
+
+  width: 220px;
+  height: 220px;
+
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: conic-gradient(#77b985 0 40%, #fde291 40% 65%, #8aa8c7 65% 82%, $gray-green 82% 100%);
+
+  box-shadow: 0 12px 26px rgba($green, 0.12);
+
+  transition: transform 0.3s ease;
+
+  &::after {
+    content: "";
+
+    position: absolute;
+
+    width: 130px;
+    height: 130px;
+
+    background: var(--color-white);
+    border-radius: 50%;
+  }
+
+  &:hover {
+    transform: rotate(4deg) scale(1.03);
+  }
+}
+
+.chartCenter {
+  position: relative;
+  z-index: 2;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+
+  span {
+    color: $sub-text;
+    font-size: 12px;
+  }
+
+  strong {
+    font-weight: 700;
+  }
+}
+
+.reportRight {
+  position: relative;
+
+  min-height: 250px;
+
+  display: flex;
+  align-items: flex-start;
+}
+
+.reportText {
+  position: relative;
+  z-index: 2;
+
+  width: 100%;
+
+  padding: 26px 26px 82px;
+
+  background: rgba($green, 0.07);
+  border-radius: 20px;
+  transform: translateX(-40px);
+
+  > span {
+    color: $green;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  h3 {
+    margin: 14px 0;
+
+    font-size: 24px;
+    line-height: 1.45;
+  }
+
+  p {
+    color: $sub-text;
+    line-height: 1.7;
+  }
+
+  &::after {
+    content: "";
+
+    position: absolute;
+    right: 72px;
+    bottom: -13px;
+
+    width: 28px;
+    height: 28px;
+
+    background: rgba($green, 0.07);
+
+    transform: rotate(45deg);
+  }
+}
+
+.moaCharacter {
+  position: absolute;
+  right: -10px;
+  bottom: -24px;
+
+  z-index: 3;
+
+  width: 150px;
+
+  filter: drop-shadow(0 10px 14px rgba(68, 93, 74, 0.14));
+
+  animation: moaFloating 2.8s ease-in-out infinite;
+
+  img {
+    display: block;
+
+    width: 100%;
+    height: auto;
+  }
+}
+
+@keyframes moaFloating {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+/* ========================
+   모아 AI TABLET - 768
+======================== */
+
+@media (max-width: 1028px) {
+  .aiLayout {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .aiMenu {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+
+    article {
+      flex-direction: column;
+      gap: 14px;
+
+      padding: 20px;
+
+      > span {
+        width: 38px;
+        height: 38px;
+
+        border-radius: 10px;
+      }
+
+      h3 {
+        margin-bottom: 6px;
+      }
+
+      p {
+        min-height: auto;
+        line-height: 1.6;
+      }
+
+      &:hover {
+        transform: translateY(-4px);
+      }
+    }
+  }
+
+  .aiReport {
+    padding: 30px;
+  }
+
+  .reportContent {
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 28px;
+
+    margin-top: 36px;
+  }
+
+  .chart {
+    width: 190px;
+    height: 190px;
+
+    &::after {
+      width: 112px;
+      height: 112px;
+    }
+  }
+
+  .reportRight {
+    min-height: 230px;
+  }
+
+  .reportText {
+    padding: 24px 24px 76px;
+
+    transform: translateX(0);
+
+    h3 {
+      font-size: 21px;
+    }
+  }
+
+  .moaCharacter {
+    right: -4px;
+    bottom: -20px;
+
+    width: 135px;
+  }
+}
+
+/* ========================
+   모아 AI MOBILE - 390
+======================== */
+
+@media (max-width: 390px) {
+  .aiSection {
+    background: radial-gradient(circle at 90% 10%, rgba($yellow, 0.14), transparent 20%), rgba($green, 0.06);
+  }
+
+  .aiLayout {
+    gap: 24px;
+  }
+
+  .aiMenu {
+    grid-template-columns: 1fr;
+    gap: 12px;
+
+    article {
+      flex-direction: row;
+      align-items: flex-start;
+
+      gap: 14px;
+      padding: 18px;
+
+      border-radius: 14px;
+
+      > span {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+      }
+
+      p {
+        line-height: 1.55;
+      }
+
+      &:hover {
+        transform: none;
+      }
+    }
+  }
+
+  .aiReport {
+    padding: 22px 18px 24px;
+
+    border-radius: 20px;
+
+    &::before {
+      top: -60px;
+      right: -55px;
+
+      width: 160px;
+      height: 160px;
+    }
+  }
+
+  .reportHeader {
+    gap: 6px;
+
+    span {
+      font-size: 12px;
+    }
+
+    strong {
+      font-size: 20px;
+    }
+  }
+
+  .reportContent {
+    grid-template-columns: 1fr;
+    gap: 30px;
+
+    margin-top: 30px;
+  }
+
+  .chart {
+    width: 170px;
+    height: 170px;
+
+    &::after {
+      width: 100px;
+      height: 100px;
+    }
+
+    &:hover {
+      transform: none;
+    }
+  }
+
+  .chartCenter {
+    span {
+      font-size: 11px;
+    }
+
+    strong {
+      font-size: 14px;
+    }
+  }
+
+  .reportRight {
+    min-height: 250px;
+  }
+
+  .reportText {
+    width: 100%;
+
+    padding: 22px 20px 92px;
+
+    border-radius: 18px;
+
+    transform: none;
+
+    > span {
+      font-size: 12px;
+    }
+
+    h3 {
+      margin: 12px 0;
+
+      font-size: 19px;
+      line-height: 1.45;
+    }
+
+    p {
+      line-height: 1.65;
+    }
+
+    &::after {
+      right: 56px;
+      bottom: -11px;
+
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .moaCharacter {
+    right: -2px;
+    bottom: -18px;
+
+    width: 125px;
+  }
+}
+
+@media (max-width: 768px) {
+  .inner {
+    width: calc(100% - 48px);
+  }
+}
+
+@media (max-width: 390px) {
+  .inner {
+    width: calc(100% - 32px);
+  }
+}
