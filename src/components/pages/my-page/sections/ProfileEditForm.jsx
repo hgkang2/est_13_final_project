@@ -18,6 +18,7 @@ export default function ProfileEditForm({ initialProfile, onClose, onSave }) {
   );
   const [error, setError] = useState("");
   const [showValidation, setShowValidation] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleReset = () => {
     setImage("");
@@ -46,10 +47,10 @@ export default function ProfileEditForm({ initialProfile, onClose, onSave }) {
   };
 
   const handlePhoneChange = (event) => {
-    setPhone(event.target.value.replace(/[^0-9]/g, ""));
+    setPhone(event.target.value.replace(/\D/g, "").slice(0, 11));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     setShowValidation(true);
 
@@ -59,16 +60,14 @@ export default function ProfileEditForm({ initialProfile, onClose, onSave }) {
     }
 
     setError("");
-    onSave({
-      ...initialProfile,
-      image,
-      nickname,
-      email,
-      phone,
-      password,
-      notification,
-      imageFile: fileInputRef.current?.files?.[0] ?? null,
-    });
+    setIsSaving(true);
+    try {
+      await onSave({ ...initialProfile, image, nickname, email, phone, password, notification });
+    } catch (saveError) {
+      setError(saveError.message || "저장하지 못했습니다.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -100,7 +99,7 @@ export default function ProfileEditForm({ initialProfile, onClose, onSave }) {
           <h3 className="caption-plus">이미지</h3>
           <div className={styles.editImageControl}>
             <div className={styles.editImagePreview}>
-              {image && <img src={image} alt="프로필 미리보기" />}
+              {image && <img src={image} alt="" />}
             </div>
             <input
               ref={fileInputRef}
@@ -141,8 +140,11 @@ export default function ProfileEditForm({ initialProfile, onClose, onSave }) {
             <input
               type="tel"
               inputMode="numeric"
+              maxLength={11}
+              pattern="010[0-9]{8}"
+              title="010으로 시작하는 휴대전화 번호 11자리를 입력해주세요."
               value={phone}
-              placeholder="숫자만 입력해주세요"
+              placeholder="01012345678"
               onChange={handlePhoneChange}
             />
           </label>
@@ -164,7 +166,6 @@ export default function ProfileEditForm({ initialProfile, onClose, onSave }) {
                 type={showPassword ? "text" : "password"}
                 value={password}
                 placeholder="새 비밀번호"
-                required
                 minLength={5}
                 pattern="(?=.*[a-z])(?=.*[^A-Za-z0-9]).{5,}"
                 title="5글자 이상이며 소문자와 특수기호를 포함해야 합니다."
@@ -195,7 +196,6 @@ export default function ProfileEditForm({ initialProfile, onClose, onSave }) {
                 type={showPasswordConfirm ? "text" : "password"}
                 value={passwordConfirm}
                 placeholder="새 비밀번호 확인"
-                required
                 onChange={(event) => setPasswordConfirm(event.target.value)}
               />
               <button
@@ -249,8 +249,8 @@ export default function ProfileEditForm({ initialProfile, onClose, onSave }) {
 
         {error && <p className={styles.editError}>{error}</p>}
 
-        <button type="submit" className={`${styles.editSaveButton} body-m`}>
-          저장하기
+        <button type="submit" disabled={isSaving} className={`${styles.editSaveButton} body-m`}>
+          {isSaving ? "저장 중..." : "저장하기"}
         </button>
       </form>
     </aside>

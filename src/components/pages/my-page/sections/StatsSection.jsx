@@ -26,17 +26,17 @@ const stats = [
 
 export default function StatsSection() {
   return (
-    <section className={styles.stats}>
+    <div className={styles.stats}>
       {stats.map((stat) => (
-        <article className={styles.statCard} key={stat.label}>
+        <div className={styles.statCard} key={stat.label}>
           <div className={styles.statText}>
             <p className="body-m-plus">{stat.label}</p>
             <strong className="heading-s">{stat.value}</strong>
           </div>
 
           <Image src={stat.image} alt="" width={140} height={140} />
-        </article>
+        </div>
       ))}
-    </section>
+    </div>
   );
 }
