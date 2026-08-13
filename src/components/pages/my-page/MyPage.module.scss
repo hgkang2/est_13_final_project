@@ -1,5 +1,15 @@
 @use "../../../styles/mixins" as *;
 
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .pageLayout {
   display: flex;
 }
@@ -65,8 +75,16 @@
   flex: 0 0 120px;
   width: 120px;
   height: 120px;
+  overflow: hidden;
   border-radius: 50%;
   background: var(--color-background-secondary);
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 }
 
 .greetingText {
@@ -144,6 +162,10 @@
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.accountLabelText {
+  @include typo-body-m;
 }
 
 .accountValue {
@@ -379,6 +401,11 @@
   .accountValue {
     flex: 1;
     text-align: center;
+  }
+
+  .accountValue,
+  .accountLabelText {
+    @include typo-body-s;
   }
 
   .accountList {

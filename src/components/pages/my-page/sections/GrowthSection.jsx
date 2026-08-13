@@ -31,10 +31,11 @@ export default function GrowthSection() {
       </div>
 
       <Image
-        src="/images/mypage/08-character-happy.png"
+        src="/images/mypage/08-character-happy-02.png"
         alt=""
         width={140}
         height={140}
+        loading="eager"
       />
     </section>
   );
