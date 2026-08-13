@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import {
   Chart as ChartJS,
@@ -45,6 +46,7 @@ const COLORS = [
 ];
 
 export default function Analysis() {
+  const router = useRouter();
   const supabase = createClient();
 
   const [totalExpense, setTotalExpense] = useState(0);
@@ -77,6 +79,10 @@ export default function Analysis() {
         beginAtZero: true,
       },
     },
+  };
+
+  const handleGoToSubChallenge = () => {
+    router.push("/sub-challenge");
   };
 
   useEffect(() => {
@@ -120,7 +126,6 @@ export default function Analysis() {
   }, [supabase]);
 
   const processAnalysisData = (txData, categoryMap) => {
-    // 1. 수입 제외 및 지출 데이터 필터링
     const allExpenses = txData.filter(tx => {
       const txType = String(tx.transaction_type || tx.type || "").toLowerCase();
       const txLabel = String(tx.typeLabel || "").toLowerCase();
@@ -148,7 +153,6 @@ export default function Analysis() {
       );
     });
 
-    // 2. 최근 3개월 키 생성 (현재 기준: 2026-06, 2026-07, 2026-08)
     const today = new Date();
     const targetMonthKeys = [];
     for (let i = 2; i >= 0; i--) {
@@ -158,7 +162,6 @@ export default function Analysis() {
       targetMonthKeys.push(`${yyyy}-${mm}`);
     }
 
-    // 3. 날짜 필드 우선순위에 transaction_at 추가
     const recent3MonthsExpenses = allExpenses.filter(tx => {
       const rawDate =
         tx.transaction_at ||
@@ -187,14 +190,12 @@ export default function Analysis() {
       return false;
     });
 
-    // 4. 총 지출액 계산
     const total = recent3MonthsExpenses.reduce(
       (acc, cur) => acc + Math.abs(Number(cur.amount || 0)),
       0,
     );
     setTotalExpense(total);
 
-    // 5. 카테고리별 통계 계산
     const categoryStatsMap = {};
     recent3MonthsExpenses.forEach(tx => {
       const catName =
@@ -221,7 +222,6 @@ export default function Analysis() {
     formattedCategoryData.sort((a, b) => b.amount - a.amount);
     setCategoryData(formattedCategoryData);
 
-    // 6. 월별 그래프 데이터 매핑
     const monthlyMap = {};
     targetMonthKeys.forEach(key => {
       monthlyMap[key] = 0;
@@ -312,7 +312,11 @@ export default function Analysis() {
                 </div>
                 <h3>분석할 기록이 없어요!</h3>
                 <p>소비 기록을 바탕으로 AI가 자산 관리를 도와드려요.</p>
-                <button type="button" className={styles.actionBtnPrimary}>
+                <button
+                  type="button"
+                  className={styles.actionBtnPrimary}
+                  onClick={handleGoToSubChallenge}
+                >
                   맞춤 미션 받기
                 </button>
               </div>
@@ -323,7 +327,11 @@ export default function Analysis() {
                     <h3>AI 분석 리포트</h3>
                     <span className={styles.aiDate}>(실시간 기준)</span>
                   </div>
-                  <button type="button" className={styles.actionBtnInline}>
+                  <button
+                    type="button"
+                    className={styles.actionBtnInline}
+                    onClick={handleGoToSubChallenge}
+                  >
                     맞춤 미션 받기
                   </button>
                 </div>
