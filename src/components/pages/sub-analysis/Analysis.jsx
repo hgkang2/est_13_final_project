@@ -55,6 +55,7 @@ export default function Analysis() {
   const [showAllRanking, setShowAllRanking] = useState(false);
 
   const [categoryData, setCategoryData] = useState([]);
+  const [currentMonthCategoryData, setCurrentMonthCategoryData] = useState([]); // [추가] 이번 달 카테고리별 지출 데이터
   const [lineChartData, setLineChartData] = useState({
     labels: [],
     datasets: [
@@ -196,6 +197,7 @@ export default function Analysis() {
     );
     setTotalExpense(total);
 
+    // 1. 최근 3개월 카테고리 통계 (도넛 차트용)
     const categoryStatsMap = {};
     recent3MonthsExpenses.forEach(tx => {
       const catName =
@@ -222,6 +224,7 @@ export default function Analysis() {
     formattedCategoryData.sort((a, b) => b.amount - a.amount);
     setCategoryData(formattedCategoryData);
 
+    // 월별 데이터 매핑
     const monthlyMap = {};
     targetMonthKeys.forEach(key => {
       monthlyMap[key] = 0;
@@ -235,6 +238,38 @@ export default function Analysis() {
 
     const currentKey = targetMonthKeys[targetMonthKeys.length - 1];
     setCurrentMonthExpense(monthlyMap[currentKey] || 0);
+
+    // [추가] 2. 이번 달(Current Month) 전용 카테고리 통계 (랭킹용)
+    const currentMonthStatsMap = {};
+    const currentMonthExpenses = recent3MonthsExpenses.filter(
+      tx => tx._monthKey === currentKey,
+    );
+    const currentTotal = currentMonthExpenses.reduce(
+      (acc, cur) => acc + Math.abs(Number(cur.amount || 0)),
+      0,
+    );
+
+    currentMonthExpenses.forEach(tx => {
+      const catName =
+        categoryMap[tx.category_id] || tx.category || tx.categoryName || "기타";
+      const amt = Math.abs(Number(tx.amount || 0));
+
+      if (!currentMonthStatsMap[catName]) currentMonthStatsMap[catName] = 0;
+      currentMonthStatsMap[catName] += amt;
+    });
+
+    const formattedCurrentMonthData = Object.keys(currentMonthStatsMap).map(
+      (name, index) => {
+        const amount = currentMonthStatsMap[name];
+        return {
+          name,
+          amount,
+          color: COLORS[index % COLORS.length],
+        };
+      },
+    );
+    formattedCurrentMonthData.sort((a, b) => b.amount - a.amount);
+    setCurrentMonthCategoryData(formattedCurrentMonthData);
 
     const lineLabels = targetMonthKeys.map(key => {
       const parts = key.split("-");
@@ -259,6 +294,8 @@ export default function Analysis() {
   };
 
   const hasExpense = categoryData.length > 0 && totalExpense > 0;
+  const hasCurrentMonthExpense =
+    currentMonthCategoryData.length > 0 && currentMonthExpense > 0;
   const hasLineData = totalExpense > 0;
 
   const doughnutData = {
@@ -494,10 +531,13 @@ export default function Analysis() {
               <h3>예산 대비 지출 랭킹</h3>
               <span className={styles.rankingDate}>2026.08</span>
             </div>
-            {hasExpense ? (
+            {hasCurrentMonthExpense ? (
               <div className={styles.rankingList}>
-                {categoryData
-                  .slice(0, showAllRanking ? categoryData.length : 3)
+                {currentMonthCategoryData
+                  .slice(
+                    0,
+                    showAllRanking ? currentMonthCategoryData.length : 3,
+                  )
                   .map((item, index) => {
                     const budget = 300000;
                     const percent = Math.min(
@@ -539,7 +579,7 @@ export default function Analysis() {
                 </p>
               </div>
             )}
-            {hasExpense && categoryData.length > 3 && (
+            {hasCurrentMonthExpense && currentMonthCategoryData.length > 3 && (
               <button
                 type="button"
                 className={styles.moreBtn}
