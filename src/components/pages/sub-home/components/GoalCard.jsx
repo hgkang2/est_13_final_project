@@ -175,7 +175,8 @@ export default function GoalCard({ hasGoal, goal }) {
 
               <Image
                 className={styles.goalImage}
-                src={goal.imageUrl || "/images/character/macbook.png"}
+                // src={goal.imageUrl || "/images/character/goal_image.png"}
+                src="/images/character/goal_image.png"
                 alt=""
                 width={240}
                 height={200}
