@@ -46,7 +46,7 @@ export default function RecentTransactionsCard({
       <header className={styles.recentHeader}>
         <h2 id="recent-card-title">최근 소비 내역</h2>
 
-        <MoreButton onClick={onMoreClick}>
+        <MoreButton href="/transaction">
           {hasSpendingData ? "더보기" : "소비 기록하기"}
         </MoreButton>
       </header>

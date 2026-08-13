@@ -100,19 +100,6 @@ export default function SavingGoalCard({ hasSavingGoal, savingGoal }) {
     goalNoticeStatus = "needMore";
   }
 
-  console.log({
-    currentAmount,
-    targetAmount,
-    dDay,
-    elapsedDays,
-    dailySavingAverage,
-    remainingAmount,
-    requiredDailySaving,
-    expectedRemainingDays,
-    delayDays,
-    aheadDays,
-  });
-
   return (
     <article
       className={styles.savingGoalCard}
@@ -122,7 +109,7 @@ export default function SavingGoalCard({ hasSavingGoal, savingGoal }) {
         <header className={styles.cardHeader}>
           <h2 id="saving-goal-title">저축 목표</h2>
 
-          <MoreButton>목표 관리로 이동</MoreButton>
+          <MoreButton href="/sub-goalsetting">목표 관리로 이동</MoreButton>
         </header>
 
         {hasSavingGoal ? (
