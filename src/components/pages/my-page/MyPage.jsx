@@ -29,6 +29,7 @@ export default function MyPage() {
   });
   const [activeGoalCount, setActiveGoalCount] = useState(0);
   const [monthlySavingAmount, setMonthlySavingAmount] = useState(0);
+  const [completedChallengeCount, setCompletedChallengeCount] = useState(0);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -68,6 +69,15 @@ export default function MyPage() {
       setMonthlySavingAmount(
         savings.reduce((total, item) => total + Number(item.amount), 0),
       );
+
+      const { count: completedCount, error: challengeError } = await supabase
+        .from("user_missions")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("status", "completed");
+
+      if (challengeError) return setError("챌린지 정보를 불러오지 못했습니다.");
+      setCompletedChallengeCount(completedCount ?? 0);
 
       setProfile({
         nickname: data.nickname ?? "",
@@ -128,6 +138,7 @@ export default function MyPage() {
               profile={profile}
               activeGoalCount={activeGoalCount}
               monthlySavingAmount={monthlySavingAmount}
+              completedChallengeCount={completedChallengeCount}
             />
 
             <AccountSection

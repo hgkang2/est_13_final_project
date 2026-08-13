@@ -4,6 +4,7 @@ export default function ProfileSection({
   profile,
   activeGoalCount,
   monthlySavingAmount,
+  completedChallengeCount,
 }) {
   const nickname = profile.nickname || "회원";
   const dayCount = 0;
@@ -13,7 +14,7 @@ export default function ProfileSection({
       label: "이번 달 저축 금액",
       value: `${monthlySavingAmount.toLocaleString("ko-KR")}원`,
     },
-    { label: "완료한 챌린지수", value: "0개" },
+    { label: "완료한 챌린지수", value: `${completedChallengeCount}개` },
   ];
 
   return (
