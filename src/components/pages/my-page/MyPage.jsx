@@ -31,6 +31,7 @@ export default function MyPage() {
   const [monthlySavingAmount, setMonthlySavingAmount] = useState(0);
   const [previousMonthlySavingAmount, setPreviousMonthlySavingAmount] = useState(0);
   const [monthlyExpense, setMonthlyExpense] = useState(0);
+  const [monthlyAiAnalysisCount, setMonthlyAiAnalysisCount] = useState(0);
   const [completedChallengeCount, setCompletedChallengeCount] = useState(0);
   const [error, setError] = useState("");
 
@@ -92,6 +93,17 @@ export default function MyPage() {
       setMonthlyExpense(
         expenses.reduce((sum, { amount }) => sum + Number(amount), 0),
       );
+
+      const { count: aiCount, error: aiError } = await supabase
+        .from("transactions")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("input_method", "ai")
+        .gte("created_at", start.toISOString())
+        .lt("created_at", end.toISOString());
+
+      if (aiError) return setError("AI 분석 횟수를 불러오지 못했습니다.");
+      setMonthlyAiAnalysisCount(aiCount ?? 0);
 
       const { count: completedCount, error: challengeError } = await supabase
         .from("user_missions")
@@ -173,7 +185,10 @@ export default function MyPage() {
               currentAmount={monthlySavingAmount}
               previousAmount={previousMonthlySavingAmount}
             />
-            <StatsSection monthlyExpense={monthlyExpense} />
+            <StatsSection
+              monthlyExpense={monthlyExpense}
+              monthlyAiAnalysisCount={monthlyAiAnalysisCount}
+            />
             <MessageSection />
             {error && <p role="alert">{error}</p>}
           </main>

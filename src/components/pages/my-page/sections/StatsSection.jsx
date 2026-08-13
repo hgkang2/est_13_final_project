@@ -1,7 +1,7 @@
 import Image from "next/image";
 import styles from "../MyPage.module.scss";
 
-export default function StatsSection({ monthlyExpense }) {
+export default function StatsSection({ monthlyExpense, monthlyAiAnalysisCount }) {
   const stats = [
     {
       label: "이번 달 총 지출",
@@ -10,7 +10,7 @@ export default function StatsSection({ monthlyExpense }) {
     },
     {
       label: "AI 분석 횟수",
-      value: "0번",
+      value: `${monthlyAiAnalysisCount}번`,
       image: "/images/mypage/02-report-analysis.png",
     },
     {
