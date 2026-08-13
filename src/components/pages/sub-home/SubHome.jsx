@@ -34,6 +34,7 @@ export default function SubHome() {
     useState([]);
   const [savingGoal, setSavingGoal] = useState(null);
   const [aiAnalysis, setAiAnalysis] = useState(null);
+  const [recommendedMission, setRecommendedMission] = useState(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -296,6 +297,7 @@ export default function SubHome() {
       console.log("서브홈 AI 소비 분석:", data);
 
       setAiAnalysis(data.analysis ?? null);
+      setRecommendedMission(data.recommendedMission ?? null);
     };
 
     const fetchUserProfile = async () => {
@@ -378,7 +380,10 @@ export default function SubHome() {
               </div>
 
               <div className={styles.missionRow}>
-                <MissionCard hasSpendingData={hasMonthlySpending} />
+                <MissionCard
+                  hasSpendingData={hasAiAnalysis}
+                  recommendedMission={recommendedMission}
+                />
                 <RecentTransactionsCard
                   hasSpendingData={hasRecentTransactions}
                   recentTransactions={recentTransactions}

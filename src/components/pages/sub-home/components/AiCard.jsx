@@ -54,7 +54,9 @@ export default function AiCard({
             </div>
           )}
 
-          <OutlineButton>
+          <OutlineButton
+            href={hasSpendingData ? "/sub-analysis" : "/transaction"}
+          >
             {hasSpendingData ? "AI 분석 자세히 보기" : "소비 기록하기"}
           </OutlineButton>
         </div>
