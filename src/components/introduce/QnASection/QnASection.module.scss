@@ -1,0 +1,280 @@
+$green: var(--color-point);
+$yellow: var(--color-secondary);
+$gray-green: var(--color-green-gray);
+
+$text: var(--color-text);
+$sub-text: var(--color-light-gray);
+$white: var(--color-white);
+
+.page {
+  color: $text;
+  background: $white;
+}
+
+.inner {
+  width: 100%;
+  max-width: 1272px;
+  margin: 0 auto;
+}
+
+/* ========================
+   COMMON
+======================== */
+
+.section {
+  width: 100%;
+  min-height: 800px;
+  padding: 110px 0;
+
+  scroll-margin-top: 80px;
+}
+.sectionTitle {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+
+  margin-bottom: 64px;
+
+  > span {
+    color: $green;
+  }
+
+  p {
+    margin-bottom: 6px;
+
+    color: $gray-green;
+
+    letter-spacing: 0.08em;
+  }
+
+  h1,
+  h2 {
+    margin: 0;
+
+    font-size: var(--heading-s-size);
+    line-height: var(--heading-s-line-height);
+  }
+}
+
+/* ========================
+   Q&A
+======================== */
+
+.qnaSection {
+  background: rgb(from var(--color-secondary) r g b / 20%);
+
+  .sectionTitle > span {
+    color: var(--color-warning-dot);
+  }
+}
+
+.qnaLayout {
+  display: grid;
+  grid-template-columns: 0.7fr 1.3fr;
+  gap: 100px;
+
+  > div:first-child {
+    h3 {
+      margin-bottom: 18px;
+
+      font-size: 30px;
+      line-height: 1.4;
+    }
+
+    p {
+      color: $sub-text;
+    }
+  }
+}
+
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.question {
+  overflow: hidden;
+
+  border-radius: 20px;
+
+  background: #fff;
+
+  transition: 0.25s;
+  box-shadow: 0 0 10px rgba(119, 185, 133, 0.12);
+
+  &:hover {
+    box-shadow: 0 5px 10px rgba(119, 185, 133, 0.12);
+    transform: translateY(-4px);
+  }
+
+  button {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    width: 100%;
+
+    padding: 24px 28px;
+
+    border: 0;
+    background: transparent;
+
+    cursor: pointer;
+
+    span {
+      color: #222;
+      text-align: left;
+    }
+
+    strong {
+      font-size: 28px;
+      font-weight: 400;
+      color: var(--color-point);
+
+      transition: transform 0.25s ease;
+    }
+  }
+}
+
+.answer {
+  padding: 20px 28px 28px;
+
+  color: var(--color-gray);
+  line-height: var(--body-m-line-height);
+
+  border-top: 1px solid #f1f3f2;
+
+  animation: fadeDown 0.25s ease;
+}
+
+.openIcon {
+  transform: rotate(45deg);
+}
+
+@keyframes fadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================
+   Q&A TABLET - 768
+======================== */
+
+@media (max-width: 768px) {
+  .qnaLayout {
+    grid-template-columns: 1fr;
+    gap: 40px;
+
+    > div:first-child {
+      h3 {
+        margin-bottom: 14px;
+
+        font-size: 26px;
+        line-height: 1.4;
+      }
+    }
+  }
+
+  .accordion {
+    gap: 14px;
+  }
+
+  .question {
+    border-radius: 18px;
+
+    button {
+      padding: 22px 24px;
+
+      strong {
+        font-size: 26px;
+      }
+    }
+  }
+
+  .answer {
+    padding: 18px 24px 24px;
+  }
+}
+
+/* ========================
+   Q&A MOBILE - 390
+======================== */
+
+@media (max-width: 390px) {
+  .qnaLayout {
+    gap: 28px;
+
+    > div:first-child {
+      h3 {
+        margin-bottom: 10px;
+
+        font-size: 22px;
+        line-height: 1.4;
+      }
+
+      p {
+        line-height: 1.6;
+      }
+    }
+  }
+
+  .accordion {
+    gap: 12px;
+  }
+
+  .question {
+    border-radius: 16px;
+
+    box-shadow: 0 0 8px rgba(119, 185, 133, 0.1);
+
+    &:hover {
+      transform: none;
+
+      box-shadow: 0 0 8px rgba(119, 185, 133, 0.1);
+    }
+
+    button {
+      gap: 16px;
+
+      padding: 18px 20px;
+
+      span {
+        flex: 1;
+        line-height: 1.5;
+      }
+
+      strong {
+        flex-shrink: 0;
+
+        font-size: 24px;
+      }
+    }
+  }
+
+  .answer {
+    padding: 16px 20px 20px;
+
+    line-height: 1.7;
+  }
+}
+
+@media (max-width: 768px) {
+  .inner {
+    width: calc(100% - 48px);
+  }
+}
+
+@media (max-width: 390px) {
+  .inner {
+    width: calc(100% - 32px);
+  }
+}

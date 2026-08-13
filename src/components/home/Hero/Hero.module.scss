@@ -29,13 +29,22 @@
 .swiper :global(.swiper-pagination-bullet) {
   width: 10px;
   height: 10px;
+
   background: var(--color-green-gray);
+
   opacity: 0.5;
+
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease,
+    background-color 0.25s ease;
 }
 
 .swiper :global(.swiper-pagination-bullet-active) {
   background: var(--color-point);
   opacity: 0.5;
+
+  transform: scale(1.35);
 }
 
 .slide {
@@ -57,9 +66,9 @@
 
   background: linear-gradient(
     45deg,
-    rgba(255, 255, 255, 0.9) 0%,
-    rgba(255, 255, 255, 0.7) 25%,
-    rgba(255, 255, 255, 0.3) 55%,
+    rgba(255, 255, 255, 0.9) 25%,
+    rgba(255, 255, 255, 0.7) 50%,
+    rgba(255, 255, 255, 0.3) 65%,
     rgba(255, 255, 255, 0) 80%
   );
 }
@@ -69,6 +78,19 @@
   top: -190px;
   z-index: 3;
   pointer-events: none;
+
+  animation: mascotFloat 3s ease-in-out infinite;
+}
+
+@keyframes mascotFloat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1deg);
+  }
+
+  50% {
+    transform: translateY(-10px) rotate(1deg);
+  }
 }
 
 .backgroundImage {
@@ -117,10 +139,58 @@
 
   font-size: clamp(var(--body-s-size), 3vw, var(--body-l-size));
   line-height: clamp(var(--body-s-line-height), 4vw, var(--body-l-line-height));
+
+  animation-delay: 0.15s;
 }
 
+.title,
+.description {
+  opacity: 0;
+  transform: translateY(18px);
+  animation: textFadeUp 0.8s ease forwards;
+}
+
+@keyframes textFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 .highlight {
+  position: relative;
   color: var(--color-point);
+}
+
+.highlight::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  bottom: -3px;
+
+  width: 100%;
+  height: 4px;
+
+  border-radius: 999px;
+
+  background: rgba(119, 185, 133, 0.22);
+
+  transform: scaleX(0);
+  transform-origin: left;
+
+  animation: highlightLine 0.7s 0.4s ease forwards;
+}
+
+@keyframes highlightLine {
+  to {
+    transform: scaleX(1);
+  }
 }
 
 .mobileBr {

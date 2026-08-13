@@ -1,0 +1,391 @@
+$green: var(--color-point);
+$yellow: var(--color-secondary);
+$gray-green: var(--color-green-gray);
+
+$text: var(--color-text);
+$sub-text: var(--color-light-gray);
+$white: var(--color-white);
+
+.page {
+  color: $text;
+  background: $white;
+}
+
+.inner {
+  width: 100%;
+  max-width: 1272px;
+  margin: 0 auto;
+}
+
+.section {
+  width: 100%;
+  min-height: 800px;
+  padding: 110px 0;
+
+  scroll-margin-top: 80px;
+}
+
+/* ========================
+   COMMON
+======================== */
+
+.sectionTitle {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+
+  margin-bottom: 64px;
+
+  > span {
+    color: $green;
+  }
+
+  p {
+    margin-bottom: 6px;
+
+    color: $gray-green;
+
+    letter-spacing: 0.08em;
+  }
+
+  h1,
+  h2 {
+    margin: 0;
+
+    font-size: var(--heading-s-size);
+    line-height: var(--heading-s-line-height);
+  }
+}
+
+/* ========================
+   모음 소식
+======================== */
+
+.newsSection {
+  background: rgba(253, 226, 145, 0.18);
+
+  .sectionTitle > span {
+    color: #e4b83d;
+  }
+}
+.newsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+
+  margin-bottom: 36px;
+
+  h3 {
+    margin-bottom: 10px;
+  }
+
+  p {
+    color: $sub-text;
+  }
+
+  button {
+    position: relative;
+
+    border: none;
+    background: none;
+
+    color: #b78d23;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+      color 0.25s ease,
+      transform 0.25s ease;
+
+    &:hover {
+      color: #8f6c16;
+      transform: translateX(4px);
+    }
+  }
+}
+
+.newsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.newsCard {
+  position: relative;
+  overflow: hidden;
+
+  padding: 30px;
+
+  background: var(--color-white);
+  border: 1px solid rgba(228, 184, 61, 0.12);
+  border-radius: 18px;
+
+  box-shadow: 0 6px 20px rgba(90, 73, 25, 0.05);
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+
+  &::before {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 4px;
+
+    background: #e4b83d;
+
+    transform: scaleX(0);
+    transform-origin: left;
+
+    transition: transform 0.3s ease;
+  }
+
+  &:hover {
+    transform: translateY(-8px);
+
+    border-color: rgba(228, 184, 61, 0.35);
+
+    box-shadow: 0 10px 20px rgba(90, 73, 25, 0.12);
+  }
+
+  &:hover::before {
+    transform: scaleX(1);
+  }
+
+  h3 {
+    margin: 28px 0 12px;
+
+    font-size: var(--body-l-size);
+
+    transition: color 0.25s ease;
+  }
+
+  &:hover h3 {
+    color: #b78d23;
+  }
+
+  > p {
+    min-height: 52px;
+
+    color: $sub-text;
+    line-height: 1.6;
+  }
+
+  > button {
+    margin-top: 28px;
+    padding: 0;
+
+    border: none;
+    background: none;
+
+    color: $green;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+      transform 0.25s ease,
+      color 0.25s ease;
+  }
+
+  &:hover > button {
+    transform: translateX(6px);
+  }
+}
+
+.newsMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  span {
+    padding: 5px 10px;
+
+    background: rgba(253, 226, 145, 0.45);
+    border-radius: 20px;
+
+    color: #a27d1c;
+    font-size: 12px;
+    font-weight: 700;
+
+    transition:
+      transform 0.25s ease,
+      background-color 0.25s ease;
+  }
+
+  time {
+    color: var(--color-light-gray);
+    font-size: var(--body-s-size);
+  }
+}
+
+.newsCard:hover .newsMeta span {
+  transform: translateY(-2px);
+
+  background: rgba(253, 226, 145, 0.72);
+}
+
+/* ========================
+   모음 소식 TABLET - 768
+======================== */
+
+@media (max-width: 768px) {
+  .newsHeader {
+    margin-bottom: 30px;
+
+    h3 {
+      margin-bottom: 8px;
+
+      font-size: var(--body-l-size);
+    }
+  }
+
+  .newsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+
+  .newsCard {
+    padding: 24px;
+
+    h3 {
+      margin: 22px 0 10px;
+
+      font-size: var(--body-xm-size);
+    }
+
+    > p {
+      min-height: auto;
+      line-height: var(--body-m-line-height);
+    }
+
+    > button {
+      margin-top: 22px;
+    }
+  }
+
+  .newsMeta {
+    span {
+      padding: 4px 9px;
+
+      font-size: 11px;
+    }
+
+    time {
+      font-size: 11px;
+    }
+  }
+}
+
+/* ========================
+   모음 소식 MOBILE - 390
+======================== */
+
+@media (max-width: 390px) {
+  .newsHeader {
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 16px;
+
+    margin-bottom: 24px;
+
+    h3 {
+      margin-bottom: 6px;
+
+      font-size: var(--body-xm-size);
+      line-height: var(--body-m-line-height);
+    }
+
+    p {
+      line-height: var(--body-m-line-height);
+    }
+
+    button {
+      padding: 0;
+
+      font-size: 14px;
+    }
+  }
+
+  .newsGrid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .newsCard {
+    padding: 20px;
+
+    border-radius: 16px;
+
+    h3 {
+      margin: 18px 0 8px;
+
+      font-size: 18px;
+      line-height: var(--body-m-line-height);
+    }
+
+    > p {
+      min-height: auto;
+
+      line-height: var(--body-m-line-height);
+    }
+
+    > button {
+      margin-top: 18px;
+
+      font-size: 14px;
+    }
+    &:hover {
+      transform: none;
+    }
+
+    &:hover > button {
+      transform: none;
+    }
+
+    &:hover .newsMeta span {
+      transform: none;
+    }
+  }
+
+  .newsHeader {
+    button {
+      &:hover {
+        transform: none;
+      }
+    }
+  }
+
+  .newsMeta {
+    align-items: center;
+
+    span {
+      padding: 4px 8px;
+
+      font-size: 11px;
+    }
+
+    time {
+      font-size: 11px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .inner {
+    width: calc(100% - 48px);
+  }
+}
+
+@media (max-width: 390px) {
+  .inner {
+    width: calc(100% - 32px);
+  }
+}
