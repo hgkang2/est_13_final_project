@@ -5,7 +5,7 @@ export const ALAN_CLIENT_ID = Deno.env.get("ALAN_CLIENT_ID");
 const ALAN_API_URL =
   "https://kdt-api-function.azurewebsites.net/api/v1/question";
 
-export const ANALYSIS_VERSION = "v1";
+export const ANALYSIS_VERSION = "v2";
 
 export type MissionCandidate = {
   id: string;
@@ -19,6 +19,7 @@ export type MissionCandidate = {
 };
 
 export type AlanAnalysisResult = {
+  homeSummary: string;
   summary: string;
   detail: string;
   insight: string;
@@ -35,6 +36,7 @@ export type AlanActionResult = {
 };
 
 export type AlanResult = {
+  homeSummary: string;
   summary: string;
   detail: string;
   insight: string;
@@ -82,6 +84,7 @@ export function validateAlanAnalysisResult(value: unknown): AlanAnalysisResult {
   const result = value as Record<string, unknown>;
 
   if (
+    typeof result.homeSummary !== "string" ||
     typeof result.summary !== "string" ||
     typeof result.detail !== "string" ||
     typeof result.insight !== "string"
@@ -90,6 +93,7 @@ export function validateAlanAnalysisResult(value: unknown): AlanAnalysisResult {
   }
 
   return {
+    homeSummary: result.homeSummary,
     summary: result.summary,
     detail: result.detail,
     insight: result.insight,

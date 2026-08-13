@@ -215,6 +215,7 @@ export default {
       analysis_type,
       period_start,
       period_end,
+      home_summary,
       summary,
       detail,
       insight,
@@ -269,6 +270,7 @@ export default {
           calculatedData,
 
           analysis: {
+            homeSummary: existingReport.home_summary ?? "",
             summary: existingReport.summary,
             detail: existingReport.detail ?? "",
             insight: existingReport.insight,
@@ -360,6 +362,7 @@ export default {
 9. JSON만 반환하세요.
 
 역할:
+homeSummary: 서브홈용 한 문장. 가장 눈에 띄는 소비 특징을 핵심 수치 1개와 함께 짧게 요약하세요. 비율 정보가 있으면 우선 활용하세요. topContentInHighestCategory가 의미 있는 경우 해당 거래 내용을 활용할 수 있습니다. 단순한 최고/최저 나열은 피하고 숫자는 1개만 사용하세요.
 summary:
 - categoryComparison=true이면 최고 지출 카테고리와 최저 지출 카테고리를 모두 언급하세요.
 - 각 카테고리의 금액을 사용하세요.
@@ -371,7 +374,7 @@ detail:
 insight: 위 숫자를 반복하지 말고 소비가 특정 영역에 집중/분산된 구조만 1문장으로 해석. 원인 추측과 행동 제안 금지.
 
 형식:
-{"summary":"","detail":"","insight":""}
+{"homeSummary":"","summary":"","detail":"","insight":""}
 
 DATA:${JSON.stringify(analysisData)}
 `.trim();
@@ -548,6 +551,7 @@ DATA:${JSON.stringify(actionData)}
 
       // 8. ALAN 두 응답 합치기
       const analysisResult: AlanResult = {
+        homeSummary: analysisPart.homeSummary.trim(),
         summary: analysisPart.summary,
         detail: analysisPart.detail,
         insight: analysisPart.insight,
@@ -578,9 +582,9 @@ DATA:${JSON.stringify(actionData)}
           period_end: periodEnd,
 
           data_fingerprint: dataFingerprint,
-
           calculated_data: calculatedData,
 
+          home_summary: analysisResult.homeSummary,
           summary: analysisResult.summary,
           detail: analysisResult.detail,
           insight: analysisResult.insight,
@@ -602,6 +606,7 @@ DATA:${JSON.stringify(actionData)}
               analysis_type,
               period_start,
               period_end,
+              home_summary,
               summary,
               insight,
               detail,
@@ -628,6 +633,7 @@ DATA:${JSON.stringify(actionData)}
         analysis_type,
         period_start,
         period_end,
+        home_summary, 
         summary,
         detail,
         insight,
@@ -665,6 +671,7 @@ DATA:${JSON.stringify(actionData)}
             reused: true,
             calculatedData,
             analysis: {
+              homeSummary: concurrentReport.home_summary ?? "",
               summary: concurrentReport.summary,
               detail: concurrentReport.detail ?? "",
               insight: concurrentReport.insight,

@@ -783,6 +783,13 @@
   word-break: keep-all;
 }
 
+.aiCardWarning {
+  background-color: var(--color-warning-background);
+
+  .aiMessage strong {
+    color: var(--color-warning-text);
+  }
+}
 @media (min-width: 769px) and (max-width: 1280px) {
   .spendingSummaryCard,
   .aiCard {

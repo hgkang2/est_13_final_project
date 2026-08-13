@@ -19,7 +19,6 @@ import { useRouter } from "next/navigation";
 
 export default function SubHome() {
   // UI 개발용 상태값
-  const hasSpendingData = true;
   const hasChallenge = false;
   const hasJournal = false;
 
@@ -34,6 +33,7 @@ export default function SubHome() {
   const [previousMonthlySpendingDaily, setPreviousMonthlySpendingDaily] =
     useState([]);
   const [savingGoal, setSavingGoal] = useState(null);
+  const [aiAnalysis, setAiAnalysis] = useState(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -256,6 +256,48 @@ export default function SubHome() {
       setSpendingComparison(data?.[0] ?? null);
     };
 
+    const fetchAiAnalysis = async () => {
+      const now = new Date();
+
+      const periodStart = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        1,
+      ).toLocaleDateString("sv-SE", {
+        timeZone: "Asia/Seoul",
+      });
+
+      const periodEnd = now.toLocaleDateString("sv-SE", {
+        timeZone: "Asia/Seoul",
+      });
+
+      const { data, error } = await supabase.functions.invoke(
+        "analyze-spending",
+        {
+          body: {
+            analysisType: "monthly",
+            periodStart,
+            periodEnd,
+          },
+        },
+      );
+
+      if (error) {
+        console.error("AI 소비 분석 조회 실패:", error);
+        return;
+      }
+
+      if (!data?.success) {
+        console.log("AI 소비 분석 미생성:", data);
+        setAiAnalysis(null);
+        return;
+      }
+
+      console.log("서브홈 AI 소비 분석:", data);
+
+      setAiAnalysis(data.analysis ?? null);
+    };
+
     const fetchUserProfile = async () => {
       const {
         data: { user },
@@ -274,6 +316,7 @@ export default function SubHome() {
       fetchMonthlySpendingDaily();
       fetchPreviousMonthlySpendingDaily();
       fetchSpendingComparison();
+      fetchAiAnalysis();
 
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
@@ -299,6 +342,12 @@ export default function SubHome() {
   };
 
   const hasMonthlySpending = monthlySpending > 0;
+  const hasAiAnalysis = Boolean(aiAnalysis);
+
+  const comparison = aiAnalysis?.calculatedData?.comparison;
+
+  const isOverspending =
+    comparison?.available === true && comparison?.expenseChangePercent >= 10;
 
   return (
     <>
@@ -321,11 +370,15 @@ export default function SubHome() {
                   previousMonthlySpendingDaily={previousMonthlySpendingDaily}
                   spendingComparison={spendingComparison}
                 />
-                <AiCard hasSpendingData={hasSpendingData} />
+                <AiCard
+                  hasSpendingData={hasAiAnalysis}
+                  aiAnalysis={aiAnalysis}
+                  isOverspending={isOverspending}
+                />
               </div>
 
               <div className={styles.missionRow}>
-                <MissionCard hasSpendingData={hasSpendingData} />
+                <MissionCard hasSpendingData={hasMonthlySpending} />
                 <RecentTransactionsCard
                   hasSpendingData={hasRecentTransactions}
                   recentTransactions={recentTransactions}

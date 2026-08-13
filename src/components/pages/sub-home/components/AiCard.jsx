@@ -2,16 +2,45 @@ import Image from "next/image";
 import styles from "../SubHome.module.scss";
 import OutlineButton from "./OutlineButton";
 
-export default function AiCard({ hasSpendingData }) {
+export default function AiCard({
+  hasSpendingData,
+  aiAnalysis,
+  isOverspending,
+}) {
+  const renderAiMessage = message => {
+    if (!message) return null;
+
+    const parts = message.split(/(\d+(?:\.\d+)?%)/g);
+
+    return parts.map((part, index) =>
+      /^\d+(?:\.\d+)?%$/.test(part) ? (
+        <strong key={index}>{part}</strong>
+      ) : (
+        part
+      ),
+    );
+  };
+
+  const aiImageSrc = !hasSpendingData
+    ? "/images/character/ai_empty_moa.png"
+    : isOverspending
+      ? "/images/character/poor_moa.png"
+      : "/images/character/ai_moa.png";
+
   return (
-    <article className={styles.aiCard} aria-labelledby="ai-card-title">
+    <article
+      className={`${styles.aiCard} ${
+        hasSpendingData && isOverspending ? styles.aiCardWarning : ""
+      }`}
+      aria-labelledby="ai-card-title"
+    >
       <div className={styles.aiContent}>
         <div className={styles.aiText}>
           <h2 id="ai-card-title">MO:UM AI 한마디</h2>
 
           {hasSpendingData ? (
             <p className={styles.aiMessage}>
-              이번 주 카페 소비가 지난주보다 <strong>23%</strong> 줄었어요!
+              {renderAiMessage(aiAnalysis?.homeSummary)}
             </p>
           ) : (
             <div className={styles.aiEmptyMessage}>
@@ -24,6 +53,7 @@ export default function AiCard({ hasSpendingData }) {
               </p>
             </div>
           )}
+
           <OutlineButton>
             {hasSpendingData ? "AI 분석 자세히 보기" : "소비 기록하기"}
           </OutlineButton>
@@ -31,12 +61,14 @@ export default function AiCard({ hasSpendingData }) {
 
         <div className={styles.aiImage}>
           <Image
-            src={
-              hasSpendingData
-                ? "/images/character/ai_moa.png"
-                : "/images/character/ai_empty_moa.png"
+            src={aiImageSrc}
+            alt={
+              !hasSpendingData
+                ? "첫 분석을 기다리는 AI 캐릭터"
+                : isOverspending
+                  ? "소비 증가를 걱정하는 AI 캐릭터"
+                  : "AI 캐릭터"
             }
-            alt={hasSpendingData ? "AI 캐릭터" : "첫 분석을 기다리는 AI 캐릭터"}
             width={247}
             height={247}
           />
