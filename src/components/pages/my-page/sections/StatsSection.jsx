@@ -1,7 +1,11 @@
 import Image from "next/image";
 import styles from "../MyPage.module.scss";
 
-export default function StatsSection({ monthlyExpense, monthlyAiAnalysisCount }) {
+export default function StatsSection({
+  monthlyExpense,
+  monthlyAiAnalysisCount,
+  averageGoalRate,
+}) {
   const stats = [
     {
       label: "이번 달 총 지출",
@@ -15,7 +19,7 @@ export default function StatsSection({ monthlyExpense, monthlyAiAnalysisCount })
     },
     {
       label: "평균 목표 달성률",
-      value: "0%",
+      value: `${averageGoalRate}%`,
       image: "/images/mypage/01-target.png",
     },
     {

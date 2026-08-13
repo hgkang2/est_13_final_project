@@ -32,6 +32,7 @@ export default function MyPage() {
   const [previousMonthlySavingAmount, setPreviousMonthlySavingAmount] = useState(0);
   const [monthlyExpense, setMonthlyExpense] = useState(0);
   const [monthlyAiAnalysisCount, setMonthlyAiAnalysisCount] = useState(0);
+  const [averageGoalRate, setAverageGoalRate] = useState(0);
   const [completedChallengeCount, setCompletedChallengeCount] = useState(0);
   const [error, setError] = useState("");
 
@@ -55,6 +56,26 @@ export default function MyPage() {
         .eq("status", "in_progress");
 
       setActiveGoalCount(count ?? 0);
+
+      const { data: goals, error: goalRateError } = await supabase
+        .from("saving_goals")
+        .select("current_amount, target_amount")
+        .eq("user_id", user.id)
+        .in("status", ["in_progress", "completed"]);
+
+      if (goalRateError) return setError("목표 달성률을 불러오지 못했습니다.");
+      const validGoals = goals.filter(({ target_amount }) => target_amount > 0);
+      setAverageGoalRate(
+        validGoals.length
+          ? Math.round(
+              validGoals.reduce(
+                (sum, { current_amount, target_amount }) =>
+                  sum + Math.min((current_amount / target_amount) * 100, 100),
+                0,
+              ) / validGoals.length,
+            )
+          : 0,
+      );
 
       const now = new Date();
       const start = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -188,6 +209,7 @@ export default function MyPage() {
             <StatsSection
               monthlyExpense={monthlyExpense}
               monthlyAiAnalysisCount={monthlyAiAnalysisCount}
+              averageGoalRate={averageGoalRate}
             />
             <MessageSection />
             {error && <p role="alert">{error}</p>}
