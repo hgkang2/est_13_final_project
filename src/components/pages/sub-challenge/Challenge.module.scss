@@ -327,3 +327,153 @@ $mission-grid-mobile-breakpoint: 480px;
     }
   }
 }
+
+/* ==========================
+   사이드 탭 (모달) 카테고리 필터 버튼 스타일
+   ========================== */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  display: flex;
+  justify-content: flex-end;
+  animation: fadeIn 0.2s ease;
+}
+
+.modalContent {
+  width: 500px;
+  height: 100%;
+  background-color: var(--color-white);
+  padding: 24px;
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  h2 {
+    font-size: 18px;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+  }
+
+  .closeBtn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--color-gray);
+  }
+}
+
+.categoryFilterGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border-gray, #eee);
+
+  .categoryFilterBtn {
+    padding: 12px 6px;
+    border-radius: 12px;
+    background-color: var(--color-dark-white, #f7f9f8);
+    border: 1px solid var(--color-border-gray, #e2e8f0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    color: var(--color-gray, #4a5568);
+    font-size: 13px;
+    font-weight: var(--font-weight-medium, 500);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: #edf2f7;
+    }
+
+    &.active {
+      background-color: var(--color-white);
+      border: 2px solid var(--color-point, #2f855a);
+      box-shadow: 0 4px 12px rgba(47, 133, 90, 0.15);
+      color: var(--color-point, #2f855a);
+      font-weight: var(--font-weight-bold, 700);
+    }
+  }
+}
+
+.modalMissionGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-content: start;
+
+  .modalMissionItemCard {
+    background: var(--color-white);
+    border: 1px solid var(--color-border-gray, #eee);
+    border-radius: 12px;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.01);
+
+    .modalMissionCardIcon {
+      width: 48px;
+      height: 48px;
+      background-color: var(--color-dark-white, #f7f9f8);
+      border-radius: 50%;
+      @include icon-l;
+      @include flex-center;
+      margin-bottom: 12px;
+      color: var(--color-text);
+    }
+
+    .modalMissionCardTitle {
+      @include typo-body-m-minus;
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: 16px;
+    }
+
+    .modalMissionCardBtn {
+      width: 100%;
+      background-color: var(--color-white);
+      color: var(--color-gray);
+      border: 1px solid var(--color-border-gray);
+      padding: 8px 0;
+      border-radius: 8px;
+      @include typo-body-s;
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      transition:
+        background-color 0.2s,
+        color 0.2s,
+        border-color 0.2s;
+
+      &:hover {
+        background-color: #77b985;
+        color: var(--color-white);
+        border-color: #77b985;
+      }
+    }
+  }
+}
+
+.emptyMessage {
+  grid-column: span 2;
+  text-align: center;
+  color: var(--color-light-gray, #888);
+  margin-top: 40px;
+}

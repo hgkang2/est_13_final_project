@@ -1,14 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Sidebar from "@/components/layout/Sidebar";
 import BottomTab from "@/components/layout/BottomTab";
 import SubFooter from "@/components/layout/SubFooter";
 import styles from "./Challenge.module.scss";
 import { createClient } from "@/utils/supabase/client";
 
-// 미션 제목에 맞는 Material Icon 매핑 딕셔너리
+// DB의 code 값 또는 title에 맞는 Material Icon 매핑 딕셔너리
 const missionIconMap = {
+  reduce_dining_out: "restaurant",
+  reduce_cafe: "local_cafe",
+  reduce_delivery: "two_wheeler",
+  save_transportation: "directions_bus",
+  organize_subscriptions: "subscriptions",
+  use_tumbler: "local_drink",
+  prevent_impulse_buying: "shopping_bag",
+  save_electricity: "flash_on",
+  daily_saving: "savings",
   "외식 줄이기": "restaurant",
   "카페 줄이기": "local_cafe",
   "배달 줄이기": "two_wheeler",
@@ -24,22 +34,58 @@ export default function Challenge() {
   const [missionTemplates, setMissionTemplates] = useState([]);
   const [aiMission, setAiMission] = useState(null);
   const [transactions, setTransactions] = useState([]);
+  const [hasChallenge, setHasChallenge] = useState(false);
+
+  // DB에서 불러올 카테고리 목록 상태
+  const [categories, setCategories] = useState([]);
+
+  // '더 보기' 사이드 탭 열림/닫힘 상태
+  const [isMoreModalOpen, setIsMoreModalOpen] = useState(false);
+
+  // 선택된 카테고리 code 상태 ("all"이 기본값)
+  const [selectedCategory, setSelectedCategory] = useState("all");
+
   const supabase = createClient();
 
   useEffect(() => {
     async function fetchData() {
-      // mission_templates 테이블 조회[cite: 1]
+      // 1. mission_templates 테이블 조회
       const { data: templates, error: templateError } = await supabase
         .from("mission_templates")
         .select("*");
 
       if (!templateError && templates && templates.length > 0) {
-        // 첫 번째 항목을 좌측 'AI 추천 미션'으로 지정하고, 나머지를 '다른 추천 미션'으로 분리
         setAiMission(templates[0]);
         setMissionTemplates(templates.slice(1));
+      } else if (templateError) {
+        console.error("미션 템플릿 조회 실패:", templateError.message);
       }
 
-      // transactions 테이블 조회[cite: 1]
+      // 2. categories 테이블 조회 (수입 관련 항목 제외 필터링)
+      const { data: catData, error: catError } = await supabase
+        .from("categories")
+        .select("*")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true });
+
+      if (!catError && catData) {
+        const excludedNames = [
+          "월급",
+          "부수입",
+          "상여",
+          "금융소득",
+          "용돈",
+          "기타",
+        ];
+        const filteredCategories = catData.filter(
+          cat => !excludedNames.includes(cat.name),
+        );
+        setCategories(filteredCategories);
+      } else if (catError) {
+        console.error("카테고리 조회 실패:", catError.message);
+      }
+
+      // 3. transactions 테이블 조회
       const { data: txData, error: txError } = await supabase
         .from("transactions")
         .select("*")
@@ -47,17 +93,31 @@ export default function Challenge() {
 
       if (!txError && txData) {
         setTransactions(txData);
+      } else if (txError) {
+        console.error("거래 내역 조회 실패:", txError.message);
       }
     }
 
     fetchData();
   }, [supabase]);
 
-  // 미션 선택 버튼 클릭 시 user_missions에 데이터 추가 (title 포함)[cite: 1]
+  const handleSwitchAiMission = selectedTemplate => {
+    if (!aiMission) return;
+
+    const updatedTemplates = missionTemplates.map(t =>
+      t.id === selectedTemplate.id ? aiMission : t,
+    );
+
+    setAiMission(selectedTemplate);
+    setMissionTemplates(updatedTemplates);
+    setIsMoreModalOpen(false);
+  };
+
   const handleSelectMission = async (templateId, templateTitle) => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
+
     if (!user) {
       alert("로그인이 필요합니다.");
       return;
@@ -76,8 +136,25 @@ export default function Challenge() {
       alert("미션 선택 중 오류가 발생했습니다.");
     } else {
       alert("미션이 시작되었습니다!");
+      setHasChallenge(true);
     }
   };
+
+  const weekDays = ["월", "화", "수", "목", "금", "토", "일"];
+  const challengeDays = [1, 2, 3, 4, 5, 6, 7];
+
+  // 메인 화면에는 상위 8개만 표시
+  const displayedTemplates = missionTemplates.slice(0, 8);
+
+  // 사이드 탭에서 선택된 카테고리(code)에 따라 미션 필터링
+  const filteredTemplates =
+    selectedCategory === "all"
+      ? missionTemplates
+      : missionTemplates.filter(
+          t =>
+            t.category === selectedCategory ||
+            t.category_code === selectedCategory,
+        );
 
   return (
     <div className={styles.pageLayout}>
@@ -101,7 +178,9 @@ export default function Challenge() {
                     <div className={styles.missionCardIcon}>
                       <span className="material-icons">
                         {aiMission
-                          ? missionIconMap[aiMission.title] || "restaurant"
+                          ? missionIconMap[aiMission.code] ||
+                            missionIconMap[aiMission.title] ||
+                            "restaurant"
                           : "restaurant"}
                       </span>
                     </div>
@@ -128,47 +207,113 @@ export default function Challenge() {
 
                 <section className={styles.card}>
                   <h3>7월 챌린지 진행 현황</h3>
-                  <div className={styles.statusBox}>
-                    {["월", "화", "수", "목", "금", "토", "일"].map(
-                      (day, index) => (
-                        <div key={index} className={styles.dayItem}>
-                          <div className={styles.dayBox}></div>
-                          <span className={styles.dayLabel}>{day}</span>
-                        </div>
-                      ),
-                    )}
+                  <div
+                    className={styles.challengeCalendar}
+                    style={{ marginTop: "16px" }}
+                  >
+                    <div
+                      className={styles.challengeDays}
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      {challengeDays.map((day, index) => {
+                        const weekday = weekDays[index];
+                        const isCompleted = hasChallenge && day < 7;
+                        const isCurrent = hasChallenge && day === 6;
+
+                        return (
+                          <div
+                            key={day}
+                            className={styles.challengeDay}
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                              gap: "6px",
+                            }}
+                          >
+                            <span
+                              style={{
+                                fontWeight: "bold",
+                                color: "#333",
+                                fontSize: "14px",
+                              }}
+                            >
+                              {weekday}
+                            </span>
+                            <div
+                              className={`${styles.challengeIcon} ${
+                                isCurrent ? styles.currentChallengeIcon : ""
+                              } ${!isCompleted ? styles.inactiveChallengeIcon : ""}`}
+                              style={{
+                                width: "36px",
+                                height: "36px",
+                                borderRadius: "50%",
+                                backgroundColor: "#f7f9f8",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                border: "1px solid #eee",
+                                opacity: !hasChallenge ? 0.4 : 1,
+                              }}
+                            >
+                              <Image
+                                src="/images/challenge/sprout.png"
+                                alt=""
+                                width={24}
+                                height={24}
+                                aria-hidden="true"
+                              />
+                            </div>
+                            <span style={{ fontSize: "12px", color: "#888" }}>
+                              {day}일차
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </section>
               </div>
 
-              {/* 우측 열: 다른 추천 미션 */}
+              {/* 우측 열: 다른 추천 미션 (최대 8개 제한) */}
               <div className={styles.rightColumn}>
                 <section className={styles.card}>
                   <div className={styles.cardHeader}>
                     <h3>다른 추천 미션</h3>
-                    <span className={styles.moreText}>더 보기 &gt;</span>
+                    <span
+                      className={styles.moreText}
+                      onClick={() => {
+                        setSelectedCategory("all");
+                        setIsMoreModalOpen(true);
+                      }}
+                      style={{ cursor: "pointer" }}
+                    >
+                      더 보기 &gt;
+                    </span>
                   </div>
                   <div className={styles.missionGrid}>
-                    {missionTemplates.map(template => {
-                      const title = template.title || template.name;
+                    {displayedTemplates.map(template => {
+                      const iconKey =
+                        missionIconMap[template.code] ||
+                        missionIconMap[template.title] ||
+                        "star";
                       return (
                         <div
                           key={template.id}
                           className={styles.missionItemCard}
                         >
                           <div className={styles.missionCardIcon}>
-                            <span className="material-icons">
-                              {missionIconMap[title] || "star"}
-                            </span>
+                            <span className="material-icons">{iconKey}</span>
                           </div>
                           <span className={styles.missionCardTitle}>
-                            {title}
+                            {template.title}
                           </span>
                           <button
                             className={styles.missionCardBtn}
-                            onClick={() =>
-                              handleSelectMission(template.id, title)
-                            }
+                            onClick={() => handleSwitchAiMission(template)}
                           >
                             미션 선택
                           </button>
@@ -189,11 +334,13 @@ export default function Challenge() {
                       transactions.map((tx, index) => (
                         <div key={index} className={styles.historyItemCard}>
                           <div className={styles.historyDate}>
-                            {tx.date || "8/04 (화)"}
+                            {tx.date ||
+                              tx.created_at?.slice(0, 10) ||
+                              "8/04 (화)"}
                           </div>
                           <div className={styles.historyAmount}>
-                            {tx.amount
-                              ? `${tx.amount.toLocaleString()}원`
+                            {tx.amount !== undefined && tx.amount !== null
+                              ? `${Number(tx.amount).toLocaleString()}원`
                               : "--원"}
                           </div>
                           <div className={styles.historyCharacterBox}>
@@ -218,6 +365,85 @@ export default function Challenge() {
         <SubFooter />
       </div>
       <BottomTab />
+
+      {/* '더 보기' 클릭 시 나타나는 사이드 탭 (SCSS 클래스 적용) */}
+      {isMoreModalOpen && (
+        <div
+          className={styles.modalOverlay}
+          onClick={() => setIsMoreModalOpen(false)}
+        >
+          <div
+            className={styles.modalContent}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* 탭 헤더 */}
+            <div className={styles.modalHeader}>
+              <h2>모든 추천 미션</h2>
+              <button
+                className={styles.closeBtn}
+                onClick={() => setIsMoreModalOpen(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* 카테고리 필터 버튼 그리드 영역 */}
+            <div className={styles.categoryFilterGrid}>
+              <button
+                className={`${styles.categoryFilterBtn} ${selectedCategory === "all" ? styles.active : ""}`}
+                onClick={() => setSelectedCategory("all")}
+              >
+                전체
+              </button>
+
+              {categories.map(cat => (
+                <button
+                  key={cat.id}
+                  className={`${styles.categoryFilterBtn} ${selectedCategory === cat.code ? styles.active : ""}`}
+                  onClick={() => setSelectedCategory(cat.code)}
+                >
+                  {cat.name}
+                </button>
+              ))}
+            </div>
+
+            {/* 필터링된 미션 목록 그리드 */}
+            <div className={styles.modalMissionGrid}>
+              {filteredTemplates.length > 0 ? (
+                filteredTemplates.map(template => {
+                  const iconKey =
+                    missionIconMap[template.code] ||
+                    missionIconMap[template.title] ||
+                    "star";
+                  return (
+                    <div
+                      key={template.id}
+                      className={styles.modalMissionItemCard}
+                    >
+                      <div className={styles.modalMissionCardIcon}>
+                        <span className="material-icons">{iconKey}</span>
+                      </div>
+                      <span className={styles.modalMissionCardTitle}>
+                        {template.title}
+                      </span>
+                      <button
+                        className={styles.modalMissionCardBtn}
+                        onClick={() => handleSwitchAiMission(template)}
+                      >
+                        미션 선택
+                      </button>
+                    </div>
+                  );
+                })
+              ) : (
+                <p className={styles.emptyMessage}>
+                  해당 카테고리의 미션이 없습니다.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
