@@ -1,30 +1,30 @@
 import Image from "next/image";
 import styles from "../MyPage.module.scss";
 
-const stats = [
-  {
-    label: "이번 달 총 지출",
-    value: "0원",
-    image: "/images/mypage/07-payment-receipt.png",
-  },
-  {
-    label: "AI 분석 횟수",
-    value: "0번",
-    image: "/images/mypage/02-report-analysis.png",
-  },
-  {
-    label: "평균 목표 달성률",
-    value: "0%",
-    image: "/images/mypage/01-target.png",
-  },
-  {
-    label: "이번 달 절약 랭킹",
-    value: "0위",
-    image: "/images/mypage/04-achievement.png",
-  },
-];
+export default function StatsSection({ monthlyExpense }) {
+  const stats = [
+    {
+      label: "이번 달 총 지출",
+      value: `${monthlyExpense.toLocaleString("ko-KR")}원`,
+      image: "/images/mypage/07-payment-receipt.png",
+    },
+    {
+      label: "AI 분석 횟수",
+      value: "0번",
+      image: "/images/mypage/02-report-analysis.png",
+    },
+    {
+      label: "평균 목표 달성률",
+      value: "0%",
+      image: "/images/mypage/01-target.png",
+    },
+    {
+      label: "이번 달 절약 랭킹",
+      value: "0위",
+      image: "/images/mypage/04-achievement.png",
+    },
+  ];
 
-export default function StatsSection() {
   return (
     <div className={styles.stats}>
       {stats.map((stat) => (

@@ -30,6 +30,7 @@ export default function MyPage() {
   const [activeGoalCount, setActiveGoalCount] = useState(0);
   const [monthlySavingAmount, setMonthlySavingAmount] = useState(0);
   const [previousMonthlySavingAmount, setPreviousMonthlySavingAmount] = useState(0);
+  const [monthlyExpense, setMonthlyExpense] = useState(0);
   const [completedChallengeCount, setCompletedChallengeCount] = useState(0);
   const [error, setError] = useState("");
 
@@ -78,6 +79,19 @@ export default function MyPage() {
 
       setMonthlySavingAmount(total(start, end));
       setPreviousMonthlySavingAmount(total(previousStart, start));
+
+      const { data: expenses, error: expenseError } = await supabase
+        .from("transactions")
+        .select("amount")
+        .eq("user_id", user.id)
+        .eq("transaction_type", "expense")
+        .gte("transaction_at", start.toISOString())
+        .lt("transaction_at", end.toISOString());
+
+      if (expenseError) return setError("지출 금액을 불러오지 못했습니다.");
+      setMonthlyExpense(
+        expenses.reduce((sum, { amount }) => sum + Number(amount), 0),
+      );
 
       const { count: completedCount, error: challengeError } = await supabase
         .from("user_missions")
@@ -159,7 +173,7 @@ export default function MyPage() {
               currentAmount={monthlySavingAmount}
               previousAmount={previousMonthlySavingAmount}
             />
-            <StatsSection />
+            <StatsSection monthlyExpense={monthlyExpense} />
             <MessageSection />
             {error && <p role="alert">{error}</p>}
           </main>
