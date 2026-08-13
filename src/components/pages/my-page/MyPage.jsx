@@ -28,6 +28,7 @@ export default function MyPage() {
     image: "",
   });
   const [activeGoalCount, setActiveGoalCount] = useState(0);
+  const [monthlySavingAmount, setMonthlySavingAmount] = useState(0);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -50,6 +51,23 @@ export default function MyPage() {
         .eq("status", "in_progress");
 
       setActiveGoalCount(count ?? 0);
+
+      const now = new Date();
+      const start = new Date(now.getFullYear(), now.getMonth(), 1);
+      const end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+      const { data: savings, error: savingsError } = await supabase
+        .from("transactions")
+        .select("amount, category:categories!inner(code)")
+        .eq("user_id", user.id)
+        .eq("transaction_type", "transfer")
+        .eq("category.code", "savings")
+        .gte("transaction_at", start.toISOString())
+        .lt("transaction_at", end.toISOString());
+
+      if (savingsError) return setError("저축 금액을 불러오지 못했습니다.");
+      setMonthlySavingAmount(
+        savings.reduce((total, item) => total + Number(item.amount), 0),
+      );
 
       setProfile({
         nickname: data.nickname ?? "",
@@ -109,6 +127,7 @@ export default function MyPage() {
             <ProfileSection
               profile={profile}
               activeGoalCount={activeGoalCount}
+              monthlySavingAmount={monthlySavingAmount}
             />
 
             <AccountSection

@@ -1,11 +1,18 @@
 import styles from "../MyPage.module.scss";
 
-export default function ProfileSection({ profile, activeGoalCount }) {
+export default function ProfileSection({
+  profile,
+  activeGoalCount,
+  monthlySavingAmount,
+}) {
   const nickname = profile.nickname || "회원";
   const dayCount = 0;
   const stats = [
     { label: "진행중인 목표", value: `${activeGoalCount}개` },
-    { label: "이번 달 저축 금액", value: "0원" },
+    {
+      label: "이번 달 저축 금액",
+      value: `${monthlySavingAmount.toLocaleString("ko-KR")}원`,
+    },
     { label: "완료한 챌린지수", value: "0개" },
   ];
 
