@@ -29,6 +29,7 @@ export default function MyPage() {
   });
   const [activeGoalCount, setActiveGoalCount] = useState(0);
   const [monthlySavingAmount, setMonthlySavingAmount] = useState(0);
+  const [previousMonthlySavingAmount, setPreviousMonthlySavingAmount] = useState(0);
   const [completedChallengeCount, setCompletedChallengeCount] = useState(0);
   const [error, setError] = useState("");
 
@@ -56,19 +57,27 @@ export default function MyPage() {
       const now = new Date();
       const start = new Date(now.getFullYear(), now.getMonth(), 1);
       const end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+      const previousStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
       const { data: savings, error: savingsError } = await supabase
         .from("transactions")
-        .select("amount, category:categories!inner(code)")
+        .select("amount, transaction_at, category:categories!inner(code)")
         .eq("user_id", user.id)
         .eq("transaction_type", "transfer")
         .eq("category.code", "savings")
-        .gte("transaction_at", start.toISOString())
+        .gte("transaction_at", previousStart.toISOString())
         .lt("transaction_at", end.toISOString());
 
       if (savingsError) return setError("저축 금액을 불러오지 못했습니다.");
-      setMonthlySavingAmount(
-        savings.reduce((total, item) => total + Number(item.amount), 0),
-      );
+      const total = (from, to) =>
+        savings
+          .filter(({ transaction_at }) => {
+            const date = new Date(transaction_at);
+            return date >= from && date < to;
+          })
+          .reduce((sum, { amount }) => sum + Number(amount), 0);
+
+      setMonthlySavingAmount(total(start, end));
+      setPreviousMonthlySavingAmount(total(previousStart, start));
 
       const { count: completedCount, error: challengeError } = await supabase
         .from("user_missions")
@@ -146,7 +155,10 @@ export default function MyPage() {
               onEdit={() => setIsEditOpen(true)}
             />
 
-            <GrowthSection />
+            <GrowthSection
+              currentAmount={monthlySavingAmount}
+              previousAmount={previousMonthlySavingAmount}
+            />
             <StatsSection />
             <MessageSection />
             {error && <p role="alert">{error}</p>}
