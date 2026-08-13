@@ -13,7 +13,7 @@ export function createAnalysisPrompt(analysisData: unknown) {
 9. JSON만 반환하세요.
 
 역할:
-homeSummary: 서브홈용 한 문장. 가장 눈에 띄는 소비 특징을 핵심 수치 1개와 함께 짧게 요약하세요. 비율 정보가 있으면 우선 활용하세요. topContentInHighestCategory가 의미 있는 경우 해당 거래 내용을 활용할 수 있습니다. 단순한 최고/최저 나열은 피하고 숫자는 1개만 사용하세요.
+homeSummary: 서브홈용 한 문장. highestExpenseCategory의 name과 sharePercent를 반드시 사용해 "{카테고리} 지출이 전체의 {비율}%를 차지했습니다." 형태로 작성하세요. 숫자는 sharePercent 1개만 사용하고 금액·거래내용은 사용하지 마세요.
 summary:
 - categoryComparison=true이면 최고 지출 카테고리와 최저 지출 카테고리를 모두 언급하세요.
 - 각 카테고리의 금액을 사용하세요.

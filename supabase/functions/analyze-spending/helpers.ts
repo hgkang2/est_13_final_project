@@ -5,7 +5,7 @@ export const ALAN_CLIENT_ID = Deno.env.get("ALAN_CLIENT_ID");
 const ALAN_API_URL =
   "https://kdt-api-function.azurewebsites.net/api/v1/question";
 
-export const ANALYSIS_VERSION = "v2";
+export const ANALYSIS_VERSION = "v3";
 
 export type MissionCandidate = {
   id: string;
@@ -90,6 +90,11 @@ export function validateAlanAnalysisResult(value: unknown): AlanAnalysisResult {
     typeof result.insight !== "string"
   ) {
     throw new Error("INVALID_ANALYSIS_RESPONSE");
+  }
+
+  // 서브홈 요약은 반드시 비율 정보를 포함해야 함
+  if (!/\d+(?:\.\d+)?%/.test(result.homeSummary)) {
+    throw new Error("INVALID_HOME_SUMMARY");
   }
 
   return {
