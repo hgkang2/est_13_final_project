@@ -20,6 +20,8 @@ import Sidebar from "@/components/layout/Sidebar";
 import BottomTab from "@/components/layout/BottomTab";
 import SubFooter from "@/components/layout/SubFooter";
 import styles from "./Analysis.module.scss";
+// ⚠️ 실제 경로에 맞게 조정하세요 (sub-home/services/subHomeService.js 기준)
+import { getAiAnalysis } from "../sub-home/services/subHomeService";
 
 ChartJS.register(
   CategoryScale,
@@ -45,6 +47,9 @@ const COLORS = [
   "#94a3b8",
 ];
 
+// AI 캐릭터 이미지 (단일 이미지로 통일)
+const AI_CHARACTER_SRC = "/images/character/moa analysis.png";
+
 export default function Analysis() {
   const router = useRouter();
   const supabase = createClient();
@@ -69,6 +74,12 @@ export default function Analysis() {
     ],
   });
 
+  // ── AI 분석 리포트 상태 ──
+  const [aiAnalysis, setAiAnalysis] = useState(null);
+  const [recommendedMission, setRecommendedMission] = useState(null);
+  const [isAiLoading, setIsAiLoading] = useState(true);
+  const [aiError, setAiError] = useState(null);
+
   const lineChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -83,7 +94,11 @@ export default function Analysis() {
   };
 
   const handleGoToSubChallenge = () => {
-    router.push("/sub-challenge");
+    router.push(
+      recommendedMission?.id
+        ? `/sub-challenge?mission=${recommendedMission.id}`
+        : "/sub-challenge",
+    );
   };
 
   useEffect(() => {
@@ -124,6 +139,32 @@ export default function Analysis() {
     }
 
     fetchAnalysisData();
+  }, [supabase]);
+
+  // ── AI 분석 리포트 별도 fetch (갱신 중일 때 로딩 화면 표시) ──
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchAi() {
+      setIsAiLoading(true);
+      setAiError(null);
+      try {
+        const data = await getAiAnalysis(supabase);
+        if (!isMounted) return;
+        setAiAnalysis(data?.analysis ?? null);
+        setRecommendedMission(data?.recommendedMission ?? null);
+      } catch (err) {
+        console.error("AI 분석 리포트 조회 실패:", err);
+        if (isMounted) setAiError("AI 분석 데이터를 불러오지 못했습니다.");
+      } finally {
+        if (isMounted) setIsAiLoading(false);
+      }
+    }
+
+    fetchAi();
+    return () => {
+      isMounted = false;
+    };
   }, [supabase]);
 
   const processAnalysisData = (txData, categoryMap) => {
@@ -292,6 +333,18 @@ export default function Analysis() {
   const hasCurrentMonthExpense =
     currentMonthCategoryData.length > 0 && currentMonthExpense > 0;
   const hasLineData = totalExpense > 0;
+  const hasAiAnalysis = Boolean(aiAnalysis);
+
+  const comparison = aiAnalysis?.calculatedData?.comparison;
+  const isOverspending =
+    comparison?.available === true && comparison?.expenseChangePercent >= 10;
+
+  // updatedAt 필드가 없을 경우를 대비해 오늘 날짜를 폴백으로 생성
+  const todayLabel = new Date().toLocaleDateString("ko-KR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
 
   const doughnutData = {
     labels: hasExpense ? categoryData.map(item => item.name) : ["데이터 없음"],
@@ -336,8 +389,35 @@ export default function Analysis() {
             </p>
           </div>
 
+          {/* ── AI 분석 리포트 카드 ── */}
           <section className={`${styles.card} ${styles.aiReportCard}`}>
-            {!hasExpense ? (
+            {isAiLoading ? (
+              <div
+                className={styles.analyzingWrap}
+                role="status"
+                aria-live="polite"
+              >
+                <div className={styles.analyzingCharacter}>
+                  <img
+                    src={AI_CHARACTER_SRC}
+                    alt="AI가 분석 중인 모아 캐릭터"
+                  />
+                </div>
+                <p className={styles.analyzingTitle}>
+                  AI가 소비 습관을 분석하고 있어요
+                </p>
+                <p className={styles.analyzingDesc}>
+                  조금만 기다려주세요, 곧 리포트가 준비돼요.
+                </p>
+                <div className={styles.analyzingBar}>
+                  <div className={styles.analyzingBarFill} />
+                </div>
+              </div>
+            ) : aiError ? (
+              <div className={styles.emptyAiReport}>
+                <p>{aiError}</p>
+              </div>
+            ) : !hasAiAnalysis ? (
               <div className={styles.emptyAiReport}>
                 <div className={styles.emptyIconBox}>
                   <span className="material-icons">assignment_add</span>
@@ -357,7 +437,9 @@ export default function Analysis() {
                 <div className={styles.cardHeader}>
                   <div className={styles.aiTitleGroup}>
                     <h3>AI 분석 리포트</h3>
-                    <span className={styles.aiDate}>(실시간 기준)</span>
+                    <span className={styles.aiDate}>
+                      ({aiAnalysis.updatedAt ?? todayLabel} 기준)
+                    </span>
                   </div>
                   <button
                     type="button"
@@ -367,11 +449,12 @@ export default function Analysis() {
                     맞춤 미션 받기
                   </button>
                 </div>
+
                 <div className={styles.aiReportBody}>
                   <div className={styles.characterArea}>
                     <div className={styles.characterBox}>
                       <img
-                        src="/images/character/moa analysis.png"
+                        src={AI_CHARACTER_SRC}
                         alt="AI 소비 분석 결과를 설명하는 모아 캐릭터"
                         className={styles.characterImage}
                         onError={e => {
@@ -380,21 +463,56 @@ export default function Analysis() {
                       />
                     </div>
                   </div>
+
                   <div className={styles.insightContentArea}>
                     <div className={styles.insightTop}>
                       <div className={styles.insightHeader}>
                         <span className="material-icons">analytics</span>
                         <h4>분석</h4>
                       </div>
-                      <p>
-                        <span className={styles.highlightRed}>
-                          {categoryData[0]?.name} 지출
-                        </span>
-                        이 가장 높습니다. 체계적인 관리가 필요해요.
-                      </p>
+                      <p>{aiAnalysis.summary}</p>
+                      {aiAnalysis.detail && (
+                        <p className={styles.insightSub}>{aiAnalysis.detail}</p>
+                      )}
+                      {aiAnalysis.insight && (
+                        <p className={styles.insightSub}>
+                          {aiAnalysis.insight}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
+
+                <div className={styles.aiReportGrid}>
+                  <div className={styles.aiReportGridItem}>
+                    <h5>
+                      <span className="material-icons">trending_up</span>
+                      예측
+                    </h5>
+                    <p>{aiAnalysis.prediction}</p>
+                  </div>
+                  <div className={styles.aiReportGridItem}>
+                    <h5>
+                      <span className="material-icons">directions_run</span>
+                      실행
+                    </h5>
+                    <p>{aiAnalysis.actionSuggestion}</p>
+                  </div>
+                  <div className={styles.aiReportGridItem}>
+                    <h5>
+                      <span className="material-icons">thumb_up</span>
+                      피드백
+                    </h5>
+                    <p>{aiAnalysis.feedback}</p>
+                  </div>
+                </div>
+
+                {aiAnalysis.mission_message && (
+                  <div className={styles.aiMissionBanner}>
+                    <span className="material-icons">campaign</span>
+                    <p>{aiAnalysis.mission_message}</p>
+                  </div>
+                )}
               </>
             )}
           </section>
