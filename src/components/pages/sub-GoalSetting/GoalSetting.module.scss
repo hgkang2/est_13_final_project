@@ -52,7 +52,7 @@
 .goalSettingPageHeader {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   width: 100%;
   gap: 35px;
   padding-bottom: 24px;
@@ -818,17 +818,19 @@
     grid-template-columns 0.2s ease;
   touch-action: pan-y;
 
-  &:hover {
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 
-    .goalSettingGoalDetails {
-      max-height: 80px;
-      margin-top: 8px;
-      opacity: 1;
-    }
+      .goalSettingGoalDetails {
+        max-height: 80px;
+        margin-top: 8px;
+        opacity: 1;
+      }
 
-    .goalSettingGoalDesktopActions {
-      display: flex;
+      .goalSettingGoalDesktopActions {
+        display: flex;
+      }
     }
   }
 }
@@ -1119,6 +1121,20 @@
 ======================================== */
 
 @include mobile {
+  .goalSettingPage {
+    overflow-x: hidden;
+  }
+
+  .goalSettingPageLayout,
+  .goalSettingContainer,
+  .goalSettingSection,
+  .goalSettingGoalListSection,
+  .goalSettingGoalList {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
   .goalSettingGoalListSection {
     align-items: stretch;
   }
@@ -1129,35 +1145,40 @@
     align-items: center;
     column-gap: 16px;
     row-gap: 8px;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
     overflow: hidden;
     padding: 4px 8px;
     border: 1px solid var(--color-border-gray);
     border-radius: 8px;
     box-shadow: none;
 
-    &:hover {
-      box-shadow: none;
-
-      .goalSettingGoalDetails {
-        max-height: 0;
-        margin-top: 0;
-        opacity: 0;
-      }
-
-      .goalSettingGoalDesktopActions {
-        display: none;
-      }
-    }
   }
 
   .goalSettingGoalImage {
+    grid-column: 2;
+    grid-row: 1;
     width: 50px;
     height: 50px;
   }
 
+  .goalSettingGoalDday {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
   .goalSettingGoalContent {
     grid-column: 1 / -1;
+    grid-row: 2;
     gap: 8px;
+    min-width: 0;
+  }
+
+  .goalSettingGoalTitleRow,
+  .goalSettingGoalProgressRow {
+    min-width: 0;
   }
 
   .goalSettingGoalTitleRow {
