@@ -243,7 +243,7 @@ export async function getUserProfile(supabase, userId) {
   return data ?? null;
 }
 
-// 이번 주 소비 데이터를 기반으로 그림일기 생성 및 조회
+// 이번 주 소비 데이터를 기반으로 그림일기 UI 데이터 생성
 export async function getWeeklyJournals(supabase, userId) {
   const now = new Date();
 
@@ -260,7 +260,8 @@ export async function getWeeklyJournals(supabase, userId) {
   // 이번 주 실제 지출 조회
   const { data: transactions, error: transactionError } = await supabase
     .from("transactions")
-    .select(`
+    .select(
+      `
       id,
       amount,
       content,
@@ -269,7 +270,8 @@ export async function getWeeklyJournals(supabase, userId) {
         code,
         name
       )
-    `)
+    `,
+    )
     .eq("user_id", userId)
     .eq("transaction_type", "expense")
     .gte("transaction_at", weekStart.toISOString())
@@ -283,10 +285,8 @@ export async function getWeeklyJournals(supabase, userId) {
 
   const weekdayNames = ["일", "월", "화", "수", "목", "금", "토"];
 
-  // 실제 소비가 있는 날짜만 journals 저장용 데이터 생성
-  const journalRows = [];
-
-  for (let index = 0; index < 7; index += 1) {
+  // 월~일 7칸 생성
+  const journals = Array.from({ length: 7 }, (_, index) => {
     const date = new Date(weekStart);
     date.setDate(weekStart.getDate() + index);
 
@@ -294,6 +294,7 @@ export async function getWeeklyJournals(supabase, userId) {
       timeZone: "Asia/Seoul",
     });
 
+    // 해당 날짜의 실제 소비
     const dailyTransactions = (transactions ?? []).filter(transaction => {
       const transactionDate = new Date(
         transaction.transaction_at,
@@ -304,100 +305,43 @@ export async function getWeeklyJournals(supabase, userId) {
       return transactionDate === dateKey;
     });
 
-    if (dailyTransactions.length === 0) continue;
+    // 소비가 있는 날짜
+    if (dailyTransactions.length > 0) {
+      const totalAmount = dailyTransactions.reduce(
+        (sum, transaction) => sum + Number(transaction.amount),
+        0,
+      );
 
-    const totalAmount = dailyTransactions.reduce(
-      (sum, transaction) => sum + Number(transaction.amount),
-      0,
-    );
+      // 그날 가장 큰 소비를 대표 소비로 사용
+      const representative = [...dailyTransactions].sort(
+        (a, b) => Number(b.amount) - Number(a.amount),
+      )[0];
 
-    // 그날 가장 큰 소비를 대표 소비로 사용
-    const representative = [...dailyTransactions].sort(
-      (a, b) => Number(b.amount) - Number(a.amount),
-    )[0];
+      const categoryCode = representative.category?.code;
 
-    const categoryCode = representative.category?.code;
+      // 카테고리 코드가 없는 경우 기본 이미지 사용
+      const imagePath = categoryCode
+        ? `journal/${categoryCode}.png`
+        : "journal/journal_empty.png";
 
-    if (!categoryCode) continue;
-
-    journalRows.push({
-      user_id: userId,
-      journal_date: dateKey,
-      amount: totalAmount,
-      image_path: `journal/${categoryCode}.png`,
-      content:
-        representative.content ||
-        representative.category?.name ||
-        "오늘의 소비 기록",
-    });
-  }
-
-  // 소비가 있었던 날짜의 그림일기 저장/갱신
-  if (journalRows.length > 0) {
-    const { error: journalError } = await supabase
-      .from("journals")
-      .upsert(journalRows, {
-        onConflict: "user_id,journal_date",
-      });
-
-    if (journalError) {
-      console.error("그림일기 저장 실패:", journalError);
-      return [];
-    }
-  }
-
-  // 이번 주 저장된 그림일기 조회
-  const { data: savedJournals, error: savedJournalError } = await supabase
-    .from("journals")
-    .select("id, journal_date, amount, image_path, content")
-    .eq("user_id", userId)
-    .gte(
-      "journal_date",
-      weekStart.toLocaleDateString("sv-SE", {
-        timeZone: "Asia/Seoul",
-      }),
-    )
-    .lt(
-      "journal_date",
-      weekEnd.toLocaleDateString("sv-SE", {
-        timeZone: "Asia/Seoul",
-      }),
-    )
-    .order("journal_date", { ascending: true });
-
-  if (savedJournalError) {
-    console.error("그림일기 조회 실패:", savedJournalError);
-    return [];
-  }
-
-  // 월~일 7칸 생성
-  const journals = Array.from({ length: 7 }, (_, index) => {
-    const date = new Date(weekStart);
-    date.setDate(weekStart.getDate() + index);
-
-    const dateKey = date.toLocaleDateString("sv-SE", {
-      timeZone: "Asia/Seoul",
-    });
-
-    const savedJournal = (savedJournals ?? []).find(
-      journal => journal.journal_date === dateKey,
-    );
-
-    if (savedJournal) {
       const { data: imageData } = supabase.storage
         .from("public-assets")
-        .getPublicUrl(savedJournal.image_path);
+        .getPublicUrl(imagePath);
 
       return {
-        id: savedJournal.id,
+        id: dateKey,
         date: `${date.getMonth() + 1}/${date.getDate()} (${weekdayNames[date.getDay()]})`,
-        amount: `-${Number(savedJournal.amount).toLocaleString()}원`,
+        amount: `-${totalAmount.toLocaleString()}원`,
         image: imageData.publicUrl,
-        content: savedJournal.content,
+        content:
+          representative.content ||
+          representative.category?.name ||
+          "오늘의 소비 기록",
         pending: false,
       };
     }
 
+    // 소비가 없는 날짜
     const { data: emptyImageData } = supabase.storage
       .from("public-assets")
       .getPublicUrl("journal/journal_empty.png");
@@ -407,8 +351,7 @@ export async function getWeeklyJournals(supabase, userId) {
       date: `${date.getMonth() + 1}/${date.getDate()} (${weekdayNames[date.getDay()]})`,
       amount: "--원",
       image: emptyImageData.publicUrl,
-      content:
-        date > now ? "오늘도 실천이 기대돼요!" : "소비 기록이 없어요.",
+      content: date > now ? "오늘도 실천이 기대돼요!" : "소비 기록이 없어요.",
       pending: true,
     };
   });
