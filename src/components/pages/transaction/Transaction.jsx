@@ -25,6 +25,7 @@ import {
   updateTransaction,
 } from "./services/transactionService";
 import {
+  analyzeReceipt,
   createReceiptAttachment,
   createReceiptSignedUrl,
   deleteReceiptAttachment,
@@ -1037,24 +1038,19 @@ export default function Transaction() {
       setAiErrorMessage("");
       setAiStatus("analyzing");
 
-      const { data, error } = await supabase.functions.invoke(
-        "analyze-receipt",
-        {
-          body: {
-            imageDataUrl,
-            transactionTypes: [
-              { value: "income", label: "수입" },
-              { value: "expense", label: "지출" },
-              { value: "transfer", label: "이체" },
-            ],
-            categories: categories.map(category => ({
-              name: category.name,
-              transactionType: category.transaction_type,
-            })),
-            paymentMethods: paymentMethods.map(method => method.name),
-          },
-        },
-      );
+      const { data, error } = await analyzeReceipt(supabase, {
+        imageDataUrl,
+        transactionTypes: [
+          { value: "income", label: "수입" },
+          { value: "expense", label: "지출" },
+          { value: "transfer", label: "이체" },
+        ],
+        categories: categories.map(category => ({
+          name: category.name,
+          transactionType: category.transaction_type,
+        })),
+        paymentMethods: paymentMethods.map(method => method.name),
+      });
 
       console.log("AI 분석 data:", data);
       console.log("AI 분석 error:", error);

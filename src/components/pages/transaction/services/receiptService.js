@@ -125,3 +125,10 @@ export const deleteReceiptAttachment = async (supabase, attachmentId) => {
     .delete()
     .eq("id", attachmentId);
 };
+
+// AI 영수증 분석 요청
+export const analyzeReceipt = async (supabase, analysisData) => {
+  return await supabase.functions.invoke("analyze-receipt", {
+    body: analysisData,
+  });
+};
