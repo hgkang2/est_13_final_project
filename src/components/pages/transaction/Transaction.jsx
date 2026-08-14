@@ -36,9 +36,15 @@ import {
 } from "./services/receiptService";
 import { useReceiptAnalysis } from "./hooks/useReceiptAnalysis";
 import {
+  initialAiTransactionForm,
   initialTransactionForm,
   useTransactionForm,
 } from "./hooks/useTransactionForm";
+
+import {
+  createMultipleTransactionRow,
+  useMultipleTransactionForm,
+} from "./hooks/useMultipleTransactionForm";
 
 const getToday = () => {
   const today = new Date();
@@ -72,34 +78,6 @@ const getCurrentMonthRange = () => {
   };
 };
 
-const initialAiTransactionForm = {
-  type: "",
-  amount: "",
-  category: "",
-  date: "",
-  time: "",
-  paymentMethod: "",
-  content: "",
-  memo: "",
-  receipt: null,
-  withdrawAccount: "",
-  depositAccount: "",
-};
-
-const createMultipleTransactionRow = id => ({
-  id,
-  date: "",
-  time: "",
-  type: "",
-  category: "",
-  content: "",
-  amount: "",
-  paymentMethod: "",
-  withdrawAccount: "",
-  depositAccount: "",
-  memo: "",
-});
-
 export default function Transaction() {
   const [transactions, setTransactions] = useState([]);
   const [isTransactionsLoading, setIsTransactionsLoading] = useState(true);
@@ -115,32 +93,6 @@ export default function Transaction() {
   const [entryTab, setEntryTab] = useState("manual");
   const [entryMode, setEntryMode] = useState("single");
 
-  const [multipleRows, setMultipleRows] = useState([
-    createMultipleTransactionRow(1),
-    createMultipleTransactionRow(2),
-    createMultipleTransactionRow(3),
-  ]);
-
-  const [aiTransactionForm, setAiTransactionForm] = useState(
-    initialAiTransactionForm,
-  );
-
-  const [aiTypeValues, setAiTypeValues] = useState({
-    income: {
-      category: "",
-      paymentMethod: "",
-    },
-    expense: {
-      category: "",
-      paymentMethod: "",
-    },
-    transfer: {
-      category: "",
-      withdrawAccount: "",
-      depositAccount: "",
-    },
-  });
-
   const [copiedRecentId, setCopiedRecentId] = useState(null);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
@@ -154,13 +106,40 @@ export default function Transaction() {
   const [isCopyModalOpen, setIsCopyModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [isMultipleConfirmOpen, setIsMultipleConfirmOpen] = useState(false);
-  const [aiTransactionErrors, setAiTransactionErrors] = useState({});
 
   const [categories, setCategories] = useState([]);
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [transferAccounts, setTransferAccounts] = useState([]);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [isDeleteSuccessOpen, setIsDeleteSuccessOpen] = useState(false);
+
+  const {
+    transactionForm,
+    setTransactionForm,
+    transactionErrors,
+    setTransactionErrors,
+    handleResetTransactionForm,
+    onTransactionFormChange,
+    onToggleRecurring,
+
+    aiTransactionForm,
+    setAiTransactionForm,
+    aiTransactionErrors,
+    setAiTransactionErrors,
+    aiTypeValues,
+    setAiTypeValues,
+    onAiFormChange,
+  } = useTransactionForm();
+
+  const {
+    multipleRows,
+    setMultipleRows,
+    isValidMultipleRow,
+    multipleRowStatus,
+    onMultipleRowChange,
+    onAddMultipleRow,
+    onRemoveMultipleRow,
+  } = useMultipleTransactionForm();
 
   const {
     aiStatus,
@@ -181,16 +160,6 @@ export default function Transaction() {
     setAiTypeValues,
     setAiTransactionErrors,
   });
-
-  const {
-    transactionForm,
-    setTransactionForm,
-    transactionErrors,
-    setTransactionErrors,
-    handleResetTransactionForm,
-    onTransactionFormChange,
-    onToggleRecurring,
-  } = useTransactionForm();
 
   useEffect(() => {
     const fetchTransactionOptions = async () => {
@@ -354,37 +323,6 @@ export default function Transaction() {
   };
 
   const isTransfer = transactionForm.type === "transfer";
-
-  const isValidMultipleRow = row =>
-    row.date &&
-    row.type &&
-    row.category &&
-    row.amount &&
-    (row.type === "transfer"
-      ? row.withdrawAccount && row.depositAccount
-      : row.paymentMethod);
-
-  const multipleRowStatus = multipleRows.reduce(
-    (status, row) => {
-      const hasRequiredFields = isValidMultipleRow(row);
-
-      const hasAnyValue = Object.entries(row).some(
-        ([key, value]) => key !== "id" && value,
-      );
-
-      if (hasRequiredFields) {
-        status.available += 1;
-      } else if (hasAnyValue) {
-        status.error += 1;
-      }
-
-      return status;
-    },
-    {
-      available: 0,
-      error: 0,
-    },
-  );
 
   const now = new Date();
 
@@ -714,69 +652,6 @@ export default function Transaction() {
     setTransactionForm(initialTransactionForm);
   };
 
-  const onMultipleRowChange = (id, event) => {
-    const { name, value } = event.target;
-
-    setMultipleRows(prevRows =>
-      prevRows.map(row => {
-        if (row.id !== id) {
-          return row;
-        }
-
-        // 이체 계좌 조합 선택
-        if (name === "transferRoute") {
-          if (!value) {
-            return {
-              ...row,
-              withdrawAccount: "",
-              depositAccount: "",
-            };
-          }
-
-          const [withdrawAccount, depositAccount] = value.split("|");
-
-          return {
-            ...row,
-            withdrawAccount,
-            depositAccount,
-          };
-        }
-
-        // 거래구분 변경
-        if (name === "type") {
-          return {
-            ...row,
-            type: value,
-            category: "",
-            paymentMethod: "",
-            withdrawAccount: "",
-            depositAccount: "",
-          };
-        }
-
-        return {
-          ...row,
-          [name]: value,
-        };
-      }),
-    );
-  };
-
-  const onAddMultipleRow = () => {
-    setMultipleRows(prevRows => {
-      const nextId =
-        prevRows.length === 0
-          ? 1
-          : Math.max(...prevRows.map(row => row.id)) + 1;
-
-      return [...prevRows, createMultipleTransactionRow(nextId)];
-    });
-  };
-
-  const onRemoveMultipleRow = id => {
-    setMultipleRows(prevRows => prevRows.filter(row => row.id !== id));
-  };
-
   const onCancelMultipleEntry = () => {
     setEntryMode("single");
   };
@@ -885,86 +760,6 @@ export default function Transaction() {
 
     setIsMultipleConfirmOpen(false);
     setToastMessage(`${newTransactions.length}건의 소비 기록을 저장했어요.`);
-  };
-
-  const onAiFormChange = event => {
-    const { name, value } = event.target;
-
-    setAiTransactionErrors(prevErrors => ({
-      ...prevErrors,
-      [name]: "",
-    }));
-
-    // 거래구분 변경
-    if (name === "type") {
-      const currentType = aiTransactionForm.type;
-
-      // 현재 타입의 값 저장
-      if (currentType) {
-        setAiTypeValues(prevValues => ({
-          ...prevValues,
-          [currentType]:
-            currentType === "transfer"
-              ? {
-                  category: aiTransactionForm.category,
-                  withdrawAccount: aiTransactionForm.withdrawAccount,
-                  depositAccount: aiTransactionForm.depositAccount,
-                }
-              : {
-                  category: aiTransactionForm.category,
-                  paymentMethod: aiTransactionForm.paymentMethod,
-                },
-        }));
-      }
-
-      const savedValues = aiTypeValues[value];
-
-      setAiTransactionForm(prevForm => {
-        if (value === "transfer") {
-          return {
-            ...prevForm,
-            type: value,
-            category: savedValues?.category ?? "",
-            paymentMethod: "",
-            withdrawAccount: savedValues?.withdrawAccount ?? "",
-            depositAccount: savedValues?.depositAccount ?? "",
-          };
-        }
-
-        return {
-          ...prevForm,
-          type: value,
-          category: savedValues?.category ?? "",
-          paymentMethod: savedValues?.paymentMethod ?? "",
-          withdrawAccount: "",
-          depositAccount: "",
-        };
-      });
-
-      return;
-    }
-
-    // 일반 필드 변경
-    setAiTransactionForm(prevForm => ({
-      ...prevForm,
-      [name]: value,
-    }));
-
-    // 타입별 필드 변경값도 같이 기억
-    if (
-      name === "category" ||
-      name === "paymentMethod" ||
-      name === "withdrawAccount" ||
-      name === "depositAccount"
-    ) {
-      setAiTypeValues(prevValues => ({
-        ...prevValues,
-        [aiTransactionForm.type]: {
-          ...prevValues[aiTransactionForm.type],
-          [name]: value,
-        },
-      }));
-    }
   };
 
   const onAiTransactionSubmit = async event => {
