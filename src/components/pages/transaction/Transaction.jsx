@@ -18,6 +18,7 @@ import Modal from "@/components/common/Modal";
 import { formatTransaction } from "./utils/transactionFormatter";
 import { validateTransactionForm } from "./utils/transactionValidator";
 import {
+  createMultipleTransactions,
   createTransaction,
   fetchTransactions,
   TRANSACTION_SELECT,
@@ -902,10 +903,9 @@ export default function Transaction() {
     });
 
     // 3. 다건 INSERT
-    const { data: insertedTransactions, error: insertError } = await supabase
-      .from("transactions")
-      .insert(transactionData)
-      .select(TRANSACTION_SELECT);
+    const { data: insertedTransactions, error: insertError } =
+      await createMultipleTransactions(supabase, transactionData);
+      
     if (insertError) {
       console.error("다건 소비 기록 저장 실패:", insertError);
       setIsMultipleConfirmOpen(false);

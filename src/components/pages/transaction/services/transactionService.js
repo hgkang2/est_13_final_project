@@ -53,3 +53,14 @@ export const createTransaction = async (supabase, transactionData) => {
     .select(TRANSACTION_SELECT)
     .single();
 };
+
+// 다건 거래 저장
+export const createMultipleTransactions = async (
+  supabase,
+  transactionData,
+) => {
+  return await supabase
+    .from("transactions")
+    .insert(transactionData)
+    .select(TRANSACTION_SELECT);
+};
