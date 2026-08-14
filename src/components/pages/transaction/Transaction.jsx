@@ -25,6 +25,7 @@ import {
   updateTransaction,
 } from "./services/transactionService";
 import {
+  createReceiptAttachment,
   createReceiptSignedUrl,
   fetchReceiptAttachment,
   removeReceiptFile,
@@ -1497,14 +1498,12 @@ export default function Transaction() {
         attachmentSaveError = error;
       } else {
         // 기존 첨부가 없으면 INSERT
-        const { error } = await supabase
-          .from("transaction_attachments")
-          .insert({
-            transaction_id: selectedTransaction.id,
-            storage_path: newStoragePath,
-            file_name: newAttachment.name,
-            mime_type: newAttachment.type,
-          });
+        const { error } = await createReceiptAttachment(
+          supabase,
+          selectedTransaction.id,
+          newStoragePath,
+          newAttachment,
+        );
 
         attachmentSaveError = error;
       }

@@ -25,14 +25,12 @@ export const saveReceiptAttachment = async (
     };
   }
 
-  const { error: attachmentInsertError } = await supabase
-    .from("transaction_attachments")
-    .insert({
-      transaction_id: transactionId,
-      storage_path: storagePath,
-      file_name: attachment.name,
-      mime_type: attachment.type,
-    });
+  const { error: attachmentInsertError } = await createReceiptAttachment(
+    supabase,
+    transactionId,
+    storagePath,
+    attachment,
+  );
 
   if (attachmentInsertError) {
     const { error: storageRemoveError } = await removeReceiptFile(
@@ -86,4 +84,19 @@ export const uploadReceiptFile = async (supabase, storagePath, attachment) => {
       contentType: attachment.type,
       upsert: false,
     });
+};
+
+// 영수증 첨부정보 저장
+export const createReceiptAttachment = async (
+  supabase,
+  transactionId,
+  storagePath,
+  attachment,
+) => {
+  return await supabase.from("transaction_attachments").insert({
+    transaction_id: transactionId,
+    storage_path: storagePath,
+    file_name: attachment.name,
+    mime_type: attachment.type,
+  });
 };
