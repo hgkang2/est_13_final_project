@@ -26,6 +26,7 @@ import {
 } from "./services/transactionService";
 import {
   createReceiptSignedUrl,
+  fetchReceiptAttachment,
   saveReceiptAttachment,
 } from "./services/receiptService";
 
@@ -1363,11 +1364,7 @@ export default function Transaction() {
     }
 
     const { data: existingAttachment, error: existingAttachmentError } =
-      await supabase
-        .from("transaction_attachments")
-        .select("id, storage_path, file_name, mime_type")
-        .eq("transaction_id", selectedTransaction.id)
-        .maybeSingle();
+      await fetchReceiptAttachment(supabase, selectedTransaction.id);
 
     if (existingAttachmentError) {
       console.error("기존 영수증 정보 조회 실패:", existingAttachmentError);
@@ -1619,11 +1616,8 @@ export default function Transaction() {
   };
 
   const handleOpenDetail = async transaction => {
-    const { data: attachmentData, error: attachmentError } = await supabase
-      .from("transaction_attachments")
-      .select("storage_path")
-      .eq("transaction_id", transaction.id)
-      .maybeSingle();
+    const { data: attachmentData, error: attachmentError } =
+      await fetchReceiptAttachment(supabase, transaction.id);
 
     if (attachmentError) {
       console.error("영수증 첨부정보 조회 실패:", attachmentError);
@@ -1669,11 +1663,8 @@ export default function Transaction() {
     }
 
     // 2. 첨부파일 정보 조회
-    const { data: attachmentData, error: attachmentError } = await supabase
-      .from("transaction_attachments")
-      .select("storage_path")
-      .eq("transaction_id", selectedTransaction.id)
-      .maybeSingle();
+    const { data: attachmentData, error: attachmentError } =
+      await fetchReceiptAttachment(supabase, selectedTransaction.id);
 
     if (attachmentError) {
       console.error("첨부파일 정보 조회 실패:", attachmentError);

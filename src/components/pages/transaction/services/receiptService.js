@@ -62,3 +62,12 @@ export const createReceiptSignedUrl = async (supabase, storagePath) => {
     .from("transaction-attachments")
     .createSignedUrl(storagePath, 60 * 10);
 };
+
+// 거래의 영수증 첨부정보 조회
+export const fetchReceiptAttachment = async (supabase, transactionId) => {
+  return await supabase
+    .from("transaction_attachments")
+    .select("id, storage_path, file_name, mime_type")
+    .eq("transaction_id", transactionId)
+    .maybeSingle();
+};
