@@ -36,10 +36,10 @@ export const saveReceiptAttachment = async (
     });
 
   if (attachmentInsertError) {
-    const { error: storageRemoveError } = await supabase.storage
-      .from("transaction-attachments")
-      .remove([storagePath]);
-
+    const { error: storageRemoveError } = await removeReceiptFile(
+      supabase,
+      storagePath,
+    );
     return {
       storagePath,
       uploadError: null,
@@ -70,4 +70,11 @@ export const fetchReceiptAttachment = async (supabase, transactionId) => {
     .select("id, storage_path, file_name, mime_type")
     .eq("transaction_id", transactionId)
     .maybeSingle();
+};
+
+// 영수증 Storage 파일 삭제
+export const removeReceiptFile = async (supabase, storagePath) => {
+  return await supabase.storage
+    .from("transaction-attachments")
+    .remove([storagePath]);
 };

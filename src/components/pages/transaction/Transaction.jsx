@@ -27,6 +27,7 @@ import {
 import {
   createReceiptSignedUrl,
   fetchReceiptAttachment,
+  removeReceiptFile,
   saveReceiptAttachment,
 } from "./services/receiptService";
 
@@ -1512,9 +1513,10 @@ export default function Transaction() {
       if (attachmentSaveError) {
         console.error("영수증 첨부정보 저장 실패:", attachmentSaveError);
 
-        const { error: rollbackStorageError } = await supabase.storage
-          .from("transaction-attachments")
-          .remove([newStoragePath]);
+        const { error: rollbackStorageError } = await removeReceiptFile(
+          supabase,
+          newStoragePath,
+        );
 
         if (rollbackStorageError) {
           console.error("새 영수증 Storage 롤백 실패:", rollbackStorageError);
@@ -1528,9 +1530,10 @@ export default function Transaction() {
         existingAttachment?.storage_path &&
         existingAttachment.storage_path !== newStoragePath
       ) {
-        const { error: oldStorageRemoveError } = await supabase.storage
-          .from("transaction-attachments")
-          .remove([existingAttachment.storage_path]);
+        const { error: oldStorageRemoveError } = await removeReceiptFile(
+          supabase,
+          existingAttachment.storage_path,
+        );
 
         if (oldStorageRemoveError) {
           console.error(
@@ -1569,9 +1572,10 @@ export default function Transaction() {
 
         // Storage 실제 파일 제거
         if (existingAttachment.storage_path) {
-          const { error: storageRemoveError } = await supabase.storage
-            .from("transaction-attachments")
-            .remove([existingAttachment.storage_path]);
+          const { error: storageRemoveError } = await removeReceiptFile(
+            supabase,
+            existingAttachment.storage_path,
+          );
 
           if (storageRemoveError) {
             // DB 연결은 이미 제거
@@ -1674,9 +1678,10 @@ export default function Transaction() {
 
     // 3. Storage 파일이 있으면 먼저 삭제
     if (attachmentData?.storage_path) {
-      const { error: storageDeleteError } = await supabase.storage
-        .from("transaction-attachments")
-        .remove([attachmentData.storage_path]);
+      const { error: storageDeleteError } = await removeReceiptFile(
+        supabase,
+        attachmentData.storage_path,
+      );
 
       if (storageDeleteError) {
         console.error("영수증 Storage 삭제 실패:", storageDeleteError);
