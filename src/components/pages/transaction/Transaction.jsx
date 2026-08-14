@@ -21,6 +21,7 @@ import {
   createMultipleTransactions,
   createTransaction,
   deleteTransaction,
+  fetchTransactionOptions,
   fetchTransactions,
   updateTransaction,
 } from "./services/transactionService";
@@ -162,30 +163,12 @@ export default function Transaction() {
   });
 
   useEffect(() => {
-    const fetchTransactionOptions = async () => {
+    const loadTransactionOptions = async () => {
       const [
         { data: categoryData, error: categoryError },
         { data: paymentMethodData, error: paymentMethodError },
         { data: transferAccountData, error: transferAccountError },
-      ] = await Promise.all([
-        supabase
-          .from("categories")
-          .select("id, code, name, transaction_type, sort_order")
-          .eq("is_active", true)
-          .order("sort_order"),
-
-        supabase
-          .from("payment_methods")
-          .select("id, code, name, sort_order")
-          .eq("is_active", true)
-          .order("sort_order"),
-
-        supabase
-          .from("transfer_accounts")
-          .select("id, code, name, sort_order")
-          .eq("is_active", true)
-          .order("sort_order"),
-      ]);
+      ] = await fetchTransactionOptions(supabase);
 
       if (categoryError) {
         console.error("카테고리 조회 실패:", categoryError);
@@ -207,7 +190,7 @@ export default function Transaction() {
       setTransferAccounts(transferAccountData ?? []);
     };
 
-    fetchTransactionOptions();
+    loadTransactionOptions();
   }, []);
 
   useEffect(() => {

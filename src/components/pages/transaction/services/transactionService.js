@@ -86,3 +86,26 @@ export const deleteTransaction = async (supabase, transactionId, userId) => {
     .eq("id", transactionId)
     .eq("user_id", userId);
 };
+
+// 거래 입력에 필요한 옵션 조회
+export const fetchTransactionOptions = async supabase => {
+  return await Promise.all([
+    supabase
+      .from("categories")
+      .select("id, code, name, transaction_type, sort_order")
+      .eq("is_active", true)
+      .order("sort_order"),
+
+    supabase
+      .from("payment_methods")
+      .select("id, code, name, sort_order")
+      .eq("is_active", true)
+      .order("sort_order"),
+
+    supabase
+      .from("transfer_accounts")
+      .select("id, code, name, sort_order")
+      .eq("is_active", true)
+      .order("sort_order"),
+  ]);
+};
