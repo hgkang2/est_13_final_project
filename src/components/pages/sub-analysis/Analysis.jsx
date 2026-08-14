@@ -55,7 +55,7 @@ export default function Analysis() {
   const [showAllRanking, setShowAllRanking] = useState(false);
 
   const [categoryData, setCategoryData] = useState([]);
-  const [currentMonthCategoryData, setCurrentMonthCategoryData] = useState([]); // [추가] 이번 달 카테고리별 지출 데이터
+  const [currentMonthCategoryData, setCurrentMonthCategoryData] = useState([]);
   const [lineChartData, setLineChartData] = useState({
     labels: [],
     datasets: [
@@ -163,33 +163,35 @@ export default function Analysis() {
       targetMonthKeys.push(`${yyyy}-${mm}`);
     }
 
-    const recent3MonthsExpenses = allExpenses.filter(tx => {
-      const rawDate =
-        tx.transaction_at ||
-        tx.date ||
-        tx.dateValue ||
-        tx.created_at ||
-        tx.createdAt ||
-        "";
-      const dateString = String(rawDate).trim();
+    const recent3MonthsExpenses = allExpenses
+      .map(tx => {
+        const rawDate =
+          tx.transaction_at ||
+          tx.date ||
+          tx.dateValue ||
+          tx.created_at ||
+          tx.createdAt ||
+          "";
+        const dateString = String(rawDate).trim();
 
-      const yearMatch = dateString.match(/20\d{2}/);
-      const monthMatch =
-        dateString.match(/[-./](\d{1,2})[-./]/) ||
-        dateString.match(/20\d{2}[-./](\d{1,2})/);
+        const yearMatch = dateString.match(/20\d{2}/);
+        const monthMatch =
+          dateString.match(/[-./](\d{1,2})[-./]/) ||
+          dateString.match(/20\d{2}[-./](\d{1,2})/);
 
-      if (yearMatch && monthMatch) {
-        const yyyy = yearMatch[0];
-        const mm = String(parseInt(monthMatch[1], 10)).padStart(2, "0");
-        const monthKey = `${yyyy}-${mm}`;
-
-        if (targetMonthKeys.includes(monthKey)) {
-          tx._monthKey = monthKey;
-          return true;
+        let monthKey = "";
+        if (yearMatch && monthMatch) {
+          const yyyy = yearMatch[0];
+          const mm = String(parseInt(monthMatch[1], 10)).padStart(2, "0");
+          monthKey = `${yyyy}-${mm}`;
         }
-      }
-      return false;
-    });
+
+        return {
+          ...tx,
+          _monthKey: monthKey,
+        };
+      })
+      .filter(tx => targetMonthKeys.includes(tx._monthKey));
 
     const total = recent3MonthsExpenses.reduce(
       (acc, cur) => acc + Math.abs(Number(cur.amount || 0)),
@@ -197,7 +199,6 @@ export default function Analysis() {
     );
     setTotalExpense(total);
 
-    // 1. 최근 3개월 카테고리 통계 (도넛 차트용)
     const categoryStatsMap = {};
     recent3MonthsExpenses.forEach(tx => {
       const catName =
@@ -224,7 +225,6 @@ export default function Analysis() {
     formattedCategoryData.sort((a, b) => b.amount - a.amount);
     setCategoryData(formattedCategoryData);
 
-    // 월별 데이터 매핑
     const monthlyMap = {};
     targetMonthKeys.forEach(key => {
       monthlyMap[key] = 0;
@@ -239,14 +239,9 @@ export default function Analysis() {
     const currentKey = targetMonthKeys[targetMonthKeys.length - 1];
     setCurrentMonthExpense(monthlyMap[currentKey] || 0);
 
-    // [추가] 2. 이번 달(Current Month) 전용 카테고리 통계 (랭킹용)
     const currentMonthStatsMap = {};
     const currentMonthExpenses = recent3MonthsExpenses.filter(
       tx => tx._monthKey === currentKey,
-    );
-    const currentTotal = currentMonthExpenses.reduce(
-      (acc, cur) => acc + Math.abs(Number(cur.amount || 0)),
-      0,
     );
 
     currentMonthExpenses.forEach(tx => {
@@ -380,7 +375,7 @@ export default function Analysis() {
                         alt="AI 소비 분석 결과를 설명하는 모아 캐릭터"
                         className={styles.characterImage}
                         onError={e => {
-                          e.target.style.display = "none";
+                          e.currentTarget.style.display = "none";
                         }}
                       />
                     </div>
@@ -493,8 +488,8 @@ export default function Analysis() {
                     </div>
                   </div>
                   <ul className={styles.categoryLegendList}>
-                    {categoryData.map((item, idx) => (
-                      <li key={idx}>
+                    {categoryData.map(item => (
+                      <li key={item.name}>
                         <div className={styles.legendLeft}>
                           <span
                             className={styles.dot}
@@ -546,7 +541,7 @@ export default function Analysis() {
                     );
 
                     return (
-                      <div className={styles.rankingItem} key={index}>
+                      <div className={styles.rankingItem} key={item.name}>
                         <span className={`${styles.rankBadge} ${styles.r1}`}>
                           {index + 1}
                         </span>
