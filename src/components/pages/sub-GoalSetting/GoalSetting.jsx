@@ -8,6 +8,7 @@ import { createClient } from "@/utils/supabase/client";
 import GoalEmpty from "./sections/GoalEmpty";
 import GoalList from "./sections/GoalList";
 import GoalForm from "./sections/GoalForm";
+import FocusGoalModal from "./sections/FocusGoalModal";
 import styles from "./GoalSetting.module.scss";
 
 const GOAL_SETTING_FILTERS = ["전체", "진행 중", "달성 완료", "중단"];
@@ -120,6 +121,9 @@ export default function GoalSetting() {
   const [goalSettingIsLoading, setGoalSettingIsLoading] = useState(true);
 
   const [goalSettingView, setGoalSettingView] = useState("list");
+
+  const [goalSettingFocusModalIsOpen, setGoalSettingFocusModalIsOpen] =
+    useState(false);
 
   const [goalSettingEditingGoal, setGoalSettingEditingGoal] = useState(null);
 
@@ -428,29 +432,46 @@ export default function GoalSetting() {
                 className={styles.goalSettingFilters}
                 aria-label="목표 상태 필터"
               >
-                {GOAL_SETTING_FILTERS.map((goalSettingFilter) => {
-                  const goalSettingIsActive =
-                    goalSettingActiveFilter === goalSettingFilter;
+                <div className={styles.goalSettingFilterGroup}>
+                  {GOAL_SETTING_FILTERS.map((goalSettingFilter) => {
+                    const goalSettingIsActive =
+                      goalSettingActiveFilter === goalSettingFilter;
 
-                  return (
-                    <button
-                      type="button"
-                      key={goalSettingFilter}
-                      className={`${styles.goalSettingFilterButton} ${
-                        goalSettingIsActive
-                          ? styles.goalSettingActiveFilter
-                          : ""
-                      }`}
-                      disabled={!goalSettingHasGoals}
-                      aria-pressed={goalSettingIsActive}
-                      onClick={() =>
-                        setGoalSettingActiveFilter(goalSettingFilter)
-                      }
-                    >
-                      {goalSettingFilter}
-                    </button>
-                  );
-                })}
+                    return (
+                      <button
+                        type="button"
+                        key={goalSettingFilter}
+                        className={`${styles.goalSettingFilterButton} ${
+                          goalSettingIsActive
+                            ? styles.goalSettingActiveFilter
+                            : ""
+                        }`}
+                        disabled={!goalSettingHasGoals}
+                        aria-pressed={goalSettingIsActive}
+                        onClick={() =>
+                          setGoalSettingActiveFilter(goalSettingFilter)
+                        }
+                      >
+                        {goalSettingFilter}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  type="button"
+                  className={`${styles.goalSettingFilterButton} ${styles.goalSettingFocusButton} ${
+                    goalSettingFocusModalIsOpen
+                      ? styles.goalSettingFocusButtonActive
+                      : ""
+                  }`}
+                  disabled={!goalSettingHasGoals}
+                  aria-haspopup="dialog"
+                  aria-expanded={goalSettingFocusModalIsOpen}
+                  onClick={() => setGoalSettingFocusModalIsOpen(true)}
+                >
+                  집중목표설정
+                </button>
               </nav>
 
               {!goalSettingIsLoading && !goalSettingHasGoals ? (
@@ -474,6 +495,27 @@ export default function GoalSetting() {
             />
           )}
         </div>
+
+        {goalSettingFocusModalIsOpen && (
+          <div
+            className={styles.focusGoalModalBackdrop}
+            onClick={() => setGoalSettingFocusModalIsOpen(false)}
+          >
+            <div
+              className={styles.focusGoalModalDialog}
+              role="dialog"
+              aria-modal="true"
+              aria-label="집중 목표 설정"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <FocusGoalModal
+                goals={goalSettingGoals}
+                onClose={() => setGoalSettingFocusModalIsOpen(false)}
+                onComplete={() => setGoalSettingFocusModalIsOpen(false)}
+              />
+            </div>
+          </div>
+        )}
 
         <SubFooter />
       </div>
