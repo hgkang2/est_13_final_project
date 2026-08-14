@@ -10,20 +10,13 @@ export default function TransactionItem({
   date,
   isIncome = false,
 }) {
-  const categoryClassMap = {
-    cafe: styles.cafeCategory,
-    salary: styles.salaryCategory,
-    food: styles.foodCategory,
-    savings: styles.savingsCategory,
-  };
-
   return (
     <li className={styles.transactionItem}>
       <Image src={imageSrc} alt="" width={40} height={40} aria-hidden="true" />
 
       <div className={styles.transactionInfo}>
         <strong>{title}</strong>
-        <span className={categoryClassMap[categoryType]}>{category}</span>
+        <span className={styles[categoryType]}>{category}</span>
       </div>
 
       <div className={styles.transactionAmount}>

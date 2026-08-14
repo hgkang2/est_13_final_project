@@ -378,8 +378,23 @@ ${paymentMethods.join(", ")}
         );
       }
 
-      const analysisResult = JSON.parse(outputText);
+      let analysisResult;
 
+      try {
+        analysisResult = JSON.parse(outputText);
+      } catch {
+        console.error("OpenAI 응답 JSON 파싱 실패:", outputText.slice(0, 2000));
+
+        return jsonResponse(
+          {
+            success: false,
+            reason: "invalid_ai_response",
+            message: "AI 분석 결과 형식을 확인할 수 없습니다.",
+          },
+          502,
+        );
+      }
+      
       // 8. Edge Function에서 추가 검증
 
       if (!analysisResult.isTransactionEvidence) {
@@ -432,6 +447,42 @@ ${paymentMethods.join(", ")}
           message: "최종 거래 금액을 확인할 수 없습니다.",
           data: null,
         });
+      }
+
+      // 8-1. AI가 허용되지 않은 거래구분/카테고리를 반환했는지 검증
+      if (!transactionTypeValues.includes(analysisResult.data.type)) {
+        return jsonResponse({
+          success: false,
+          isTransactionEvidence: true,
+          isReadable: true,
+          evidenceType: analysisResult.evidenceType ?? null,
+          reason: "invalid_transaction_type",
+          message: "인식된 거래 구분을 확인할 수 없습니다.",
+          data: null,
+        });
+      }
+
+      if (
+        !categoryValues.includes(
+          `${analysisResult.data.type}:${analysisResult.data.category}`,
+        )
+      ) {
+        return jsonResponse({
+          success: false,
+          isTransactionEvidence: true,
+          isReadable: true,
+          evidenceType: analysisResult.evidenceType ?? null,
+          reason: "invalid_category",
+          message: "인식된 카테고리를 확인할 수 없습니다.",
+          data: null,
+        });
+      }
+
+      if (
+        analysisResult.data.paymentMethod &&
+        !paymentMethods.includes(analysisResult.data.paymentMethod)
+      ) {
+        analysisResult.data.paymentMethod = null;
       }
 
       // 9. 최종 결과 반환

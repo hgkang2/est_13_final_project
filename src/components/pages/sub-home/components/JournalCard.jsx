@@ -3,7 +3,9 @@ import JournalSlider from "@/components/common/JournalSlider";
 import styles from "../SubHome.module.scss";
 import MoreButton from "./MoreButton";
 
-export default function JournalCard({ hasJournal }) {
+export default function JournalCard({ journals = [] }) {
+  const hasJournal = journals.some(journal => !journal.pending);
+
   return (
     <article
       className={styles.journalCard}
@@ -12,14 +14,14 @@ export default function JournalCard({ hasJournal }) {
       <div className={styles.journalInner}>
         <header className={styles.journalHeader}>
           <div className={styles.journalTitleGroup}>
-            <h2 id="journal-card-title">이번 주 소비 절약 그림일기</h2>
+            <h2 id="journal-card-title">이번 주 소비 그림일기</h2>
           </div>
 
           {hasJournal && <MoreButton>그림일기로 이동</MoreButton>}
         </header>
 
         {hasJournal ? (
-          <JournalSlider />
+          <JournalSlider journals={journals} />
         ) : (
           <div className={styles.journalEmpty}>
             <div className={styles.journalPreviewDeck} aria-hidden="true">
