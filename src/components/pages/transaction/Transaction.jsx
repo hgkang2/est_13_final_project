@@ -29,6 +29,7 @@ import {
   fetchReceiptAttachment,
   removeReceiptFile,
   saveReceiptAttachment,
+  uploadReceiptFile,
 } from "./services/receiptService";
 
 const getToday = () => {
@@ -1468,12 +1469,11 @@ export default function Transaction() {
       const newStoragePath = `${user.id}/${selectedTransaction.id}/${safeFileName}`;
 
       // 새 파일부터 업로드
-      const { error: uploadError } = await supabase.storage
-        .from("transaction-attachments")
-        .upload(newStoragePath, newAttachment, {
-          contentType: newAttachment.type,
-          upsert: false,
-        });
+      const { error: uploadError } = await uploadReceiptFile(
+        supabase,
+        newStoragePath,
+        newAttachment,
+      );
 
       if (uploadError) {
         console.error("새 영수증 업로드 실패:", uploadError);

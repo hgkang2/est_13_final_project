@@ -10,12 +10,11 @@ export const saveReceiptAttachment = async (
   const safeFileName = `receipt-${Date.now()}.${extension}`;
   const storagePath = `${userId}/${transactionId}/${safeFileName}`;
 
-  const { error: uploadError } = await supabase.storage
-    .from("transaction-attachments")
-    .upload(storagePath, attachment, {
-      contentType: attachment.type,
-      upsert: false,
-    });
+  const { error: uploadError } = await uploadReceiptFile(
+    supabase,
+    storagePath,
+    attachment,
+  );
 
   if (uploadError) {
     return {
@@ -77,4 +76,14 @@ export const removeReceiptFile = async (supabase, storagePath) => {
   return await supabase.storage
     .from("transaction-attachments")
     .remove([storagePath]);
+};
+
+// 영수증 Storage 파일 업로드
+export const uploadReceiptFile = async (supabase, storagePath, attachment) => {
+  return await supabase.storage
+    .from("transaction-attachments")
+    .upload(storagePath, attachment, {
+      contentType: attachment.type,
+      upsert: false,
+    });
 };
