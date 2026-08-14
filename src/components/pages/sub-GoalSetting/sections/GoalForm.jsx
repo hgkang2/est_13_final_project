@@ -38,6 +38,7 @@ export default function GoalForm({ initialGoal = null, onClose, onSave }) {
   const [goalFormIsSaving, setGoalFormIsSaving] = useState(false);
 
   const goalFormIsEditMode = Boolean(initialGoal);
+  const goalFormIsStopped = initialGoal?.status === "중단";
 
   const handleAmountAdd = (amount) => {
     setGoalFormAmount((previousAmount) =>
@@ -150,14 +151,14 @@ export default function GoalForm({ initialGoal = null, onClose, onSave }) {
     }
   };
 
-  const handleStopGoal = () => {
+  const handleToggleGoalStatus = () => {
     if (!initialGoal) {
       return;
     }
 
     onSave({
       ...initialGoal,
-      status: "중단",
+      status: goalFormIsStopped ? "진행 중" : "중단",
     });
   };
 
@@ -389,11 +390,11 @@ export default function GoalForm({ initialGoal = null, onClose, onSave }) {
           {goalFormIsEditMode && (
             <button
               type="button"
-              value="stop"
+              value={goalFormIsStopped ? "resume" : "stop"}
               disabled={goalFormIsSaving}
-              onClick={handleStopGoal}
+              onClick={handleToggleGoalStatus}
             >
-              중단
+              {goalFormIsStopped ? "재개" : "중단"}
             </button>
           )}
         </footer>

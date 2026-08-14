@@ -235,6 +235,8 @@ export default function GoalSetting() {
         console.error("삭제된 목표의 이미지 정리 실패:", imageDeleteError);
       }
     }
+
+    window.alert("목표가 삭제되었습니다.");
   };
 
   const handleGoalSettingSave = async (goalSettingSavedGoal) => {
@@ -365,10 +367,18 @@ export default function GoalSetting() {
       return [goalSettingSavedDatabaseGoal, ...previousGoals];
     });
 
+    const goalSettingWasJustStopped =
+      goalSettingSavedGoal.status === "중단" &&
+      goalSettingEditingGoal?.status !== "중단";
+
     setGoalSettingEditingGoal(null);
     setGoalSettingActiveFilter("전체");
     setGoalSettingView("list");
-    window.alert(goalSettingSavedGoal.id ? "목표가 수정되었습니다." : "목표가 생성되었습니다.");
+
+    if (goalSettingWasJustStopped) {
+      window.alert("목표가 중단되었습니다.");
+    }
+
     return true;
   };
 
