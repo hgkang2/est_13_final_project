@@ -1,10 +1,7 @@
 @use "../../../styles/mixins" as *;
 
-/* ========================================
-   Breakpoints (디자인 토큰 연동)
-======================================== */
-$breakpoint-tablet: 768px;
-$breakpoint-mobile: 390px;
+$sidebar-collapse-breakpoint: 1024px;
+$mission-grid-mobile-breakpoint: 480px;
 
 .pageLayout {
   display: flex;
@@ -12,6 +9,16 @@ $breakpoint-mobile: 390px;
   max-width: 1920px;
   margin: 0 auto;
   min-height: calc(100vh - 86px);
+  position: relative;
+}
+
+/* 사이드바 우측의 메인 영역과 푸터를 감싸는 컨테이너 */
+.contentWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background-color: var(--color-white);
 }
 
 .main {
@@ -49,6 +56,7 @@ $breakpoint-mobile: 390px;
   display: flex;
   flex-direction: column;
   gap: 24px;
+  min-width: 0;
 }
 
 /* 공통 카드 스타일 */
@@ -58,6 +66,7 @@ $breakpoint-mobile: 390px;
   padding: 24px;
   border: 1px solid var(--color-point);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  min-width: 0;
 
   .cardHeader {
     @include flex-between;
@@ -98,8 +107,15 @@ $breakpoint-mobile: 390px;
     height: 56px;
     background-color: var(--color-dark-white);
     border-radius: 50%;
+    overflow: hidden;
     @include flex-center;
     margin: 0 auto 12px auto;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
     span {
       @include icon-l;
@@ -157,29 +173,79 @@ $breakpoint-mobile: 390px;
     color: var(--color-white);
     border-color: #77b985;
   }
+
+  &.actionBtnDisabled {
+    background-color: var(--color-dark-white);
+    color: var(--color-light-gray);
+    border-color: var(--color-border-gray);
+    cursor: not-allowed;
+
+    &:hover {
+      background-color: var(--color-dark-white);
+      color: var(--color-light-gray);
+      border-color: var(--color-border-gray);
+    }
+  }
 }
 
-/* 7월 챌린지 진행 현황 요일별 스타일 추가 */
-.statusBox {
-  @include flex-between;
-  margin-top: 20px;
+/* 7월 챌린지 진행 현황 캘린더 스타일 추가 */
+.challengeCalendar {
+  margin-top: 16px;
 
-  .dayItem {
+  .challengeDays {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
+    justify-content: space-between;
 
-    .dayBox {
-      width: 38px;
-      height: 48px;
-      background-color: var(--color-dark-white);
-      border-radius: 8px;
-    }
+    .challengeDay {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
 
-    .dayLabel {
-      @include typo-body-s;
-      color: var(--color-light-gray);
+      span:first-child {
+        font-weight: bold;
+        color: #333;
+        font-size: 14px;
+      }
+
+      .challengeIcon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: #f7f9f8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #eee;
+        opacity: 0.4;
+        transition:
+          background-color 0.2s,
+          border-color 0.2s,
+          box-shadow 0.2s,
+          opacity 0.2s,
+          transform 0.2s;
+
+        &.currentChallengeIcon {
+          border-color: #77b985;
+          box-shadow: 0 0 0 2px rgba(119, 185, 133, 0.2);
+        }
+
+        &.inactiveChallengeIcon {
+          opacity: 0.4;
+        }
+
+        /*완료된 날 스탬프*/
+        &.completedChallengeIcon {
+          opacity: 1;
+          background-color: #eaf5ec;
+          border: 2px solid #77b985;
+        }
+      }
+
+      span:last-child {
+        font-size: 12px;
+        color: #888;
+      }
     }
   }
 }
@@ -207,9 +273,17 @@ $breakpoint-mobile: 390px;
       height: 48px;
       background-color: var(--color-dark-white);
       border-radius: 50%;
+      overflow: hidden;
       @include icon-l;
       @include flex-center;
       margin-bottom: 12px;
+      color: var(--color-text);
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
     }
 
     .missionCardTitle {
@@ -240,10 +314,10 @@ $breakpoint-mobile: 390px;
   }
 }
 
-/* 반응형 설정 (믹스인 적용) */
-@include tablet {
+@media (max-width: $sidebar-collapse-breakpoint) {
   .pageLayout {
     display: block;
+    padding-bottom: 69px;
   }
 
   .main {
@@ -253,7 +327,9 @@ $breakpoint-mobile: 390px;
   .gridContainer {
     grid-template-columns: 1fr;
   }
+}
 
+@media (max-width: $mission-grid-mobile-breakpoint) {
   .missionGrid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -261,6 +337,7 @@ $breakpoint-mobile: 390px;
 
 /* ==========================
    나의 소비 기록 카드 스타일
+   (7일 전체 표시, 날짜 → 금액 → 이미지 → 문구 순서)
    ========================== */
 .historyList {
   display: flex;
@@ -289,7 +366,7 @@ $breakpoint-mobile: 390px;
     .historyAmount {
       @include typo-body-m-minus;
       font-weight: var(--font-weight-bold);
-      color: var(--color-type-income);
+      color: var(--color-point, #2f855a);
       margin-bottom: 12px;
     }
 
@@ -302,10 +379,15 @@ $breakpoint-mobile: 390px;
       @include flex-center;
       overflow: hidden;
 
-      .characterPlaceholder {
+      img {
         width: 100%;
         height: 100%;
-        background: url("/path-to-character-image.png") center/cover no-repeat;
+        object-fit: cover;
+      }
+
+      &.historyCharacterBoxEmpty {
+        opacity: 0.55;
+        filter: grayscale(0.3);
       }
     }
 
@@ -313,6 +395,164 @@ $breakpoint-mobile: 390px;
       @include typo-table-category-nonpc;
       color: var(--color-gray);
       line-height: 1.3;
+      word-break: keep-all;
     }
   }
+}
+
+/* ==========================
+   사이드 탭 (모달) 카테고리 필터 버튼 스타일
+   ========================== */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  display: flex;
+  justify-content: flex-end;
+  animation: fadeIn 0.2s ease;
+}
+
+.modalContent {
+  width: 500px;
+  height: 100%;
+  background-color: var(--color-white);
+  padding: 24px;
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  h2 {
+    font-size: 18px;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+  }
+
+  .closeBtn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--color-gray);
+  }
+}
+
+.categoryFilterGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border-gray, #eee);
+
+  .categoryFilterBtn {
+    padding: 12px 6px;
+    border-radius: 12px;
+    background-color: var(--color-dark-white, #f7f9f8);
+    border: 1px solid var(--color-border-gray, #e2e8f0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    color: var(--color-gray, #4a5568);
+    font-size: 13px;
+    font-weight: var(--font-weight-medium, 500);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: #edf2f7;
+    }
+
+    &.active {
+      background-color: var(--color-white);
+      border: 2px solid var(--color-point, #2f855a);
+      box-shadow: 0 4px 12px rgba(47, 133, 90, 0.15);
+      color: var(--color-point, #2f855a);
+      font-weight: var(--font-weight-bold, 700);
+    }
+  }
+}
+
+.modalMissionGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-content: start;
+
+  .modalMissionItemCard {
+    background: var(--color-white);
+    border: 1px solid var(--color-border-gray, #eee);
+    border-radius: 12px;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.01);
+
+    .modalMissionCardIcon {
+      width: 48px;
+      height: 48px;
+      background-color: var(--color-dark-white, #f7f9f8);
+      border-radius: 50%;
+      overflow: hidden;
+      @include icon-l;
+      @include flex-center;
+      margin-bottom: 12px;
+      color: var(--color-text);
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    .modalMissionCardTitle {
+      @include typo-body-m-minus;
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: 16px;
+    }
+
+    .modalMissionCardBtn {
+      width: 100%;
+      background-color: var(--color-white);
+      color: var(--color-gray);
+      border: 1px solid var(--color-border-gray);
+      padding: 8px 0;
+      border-radius: 8px;
+      @include typo-body-s;
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      transition:
+        background-color 0.2s,
+        color 0.2s,
+        border-color 0.2s;
+
+      &:hover {
+        background-color: #77b985;
+        color: var(--color-white);
+        border-color: #77b985;
+      }
+    }
+  }
+}
+
+.emptyMessage {
+  grid-column: span 2;
+  text-align: center;
+  color: var(--color-light-gray, #888);
+  margin-top: 40px;
 }
