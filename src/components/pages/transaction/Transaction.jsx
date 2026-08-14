@@ -47,6 +47,8 @@ import {
   useMultipleTransactionForm,
 } from "./hooks/useMultipleTransactionForm";
 
+import { useTransactions } from "./hooks/useTransactions";
+
 const getToday = () => {
   const today = new Date();
 
@@ -80,10 +82,10 @@ const getCurrentMonthRange = () => {
 };
 
 export default function Transaction() {
-  const [transactions, setTransactions] = useState([]);
-  const [isTransactionsLoading, setIsTransactionsLoading] = useState(true);
   const [recentlyAddedId, setRecentlyAddedId] = useState(null);
   const supabase = createClient();
+  const { transactions, setTransactions, isTransactionsLoading } =
+    useTransactions(supabase);
 
   const [activeFilter, setActiveFilter] = useState("all");
   const [dateRange, setDateRange] = useState(getCurrentMonthRange);
@@ -219,43 +221,6 @@ export default function Transaction() {
     mediaQuery.addEventListener("change", handleChange);
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, [entryMode]);
-
-  useEffect(() => {
-    const loadTransactions = async () => {
-      setIsTransactionsLoading(true);
-
-      // 1. 로그인 사용자 확인
-      const {
-        data: { user },
-        error: userError,
-      } = await supabase.auth.getUser();
-
-      if (userError || !user) {
-        console.error("사용자 확인 실패:", userError);
-        setIsTransactionsLoading(false);
-        return;
-      }
-
-      // 2. 거래 목록 조회
-      const { data, error } = await fetchTransactions(supabase, user.id);
-
-      if (error) {
-        console.error("소비 기록 조회 실패:", error);
-        setIsTransactionsLoading(false);
-        return;
-      }
-
-      // 3. DB 데이터 → 현재 UI 형식으로 변환
-      const formattedTransactions = (data ?? []).map(formatTransaction);
-
-      setTransactions(formattedTransactions);
-      setIsTransactionsLoading(false);
-
-      console.log("소비 기록 조회 성공:", formattedTransactions);
-    };
-
-    loadTransactions();
-  }, []);
 
   const handleViewAllRecent = () => {
     console.log("최근 입력 전체 보기");
