@@ -55,3 +55,10 @@ export const saveReceiptAttachment = async (
     storageRemoveError: null,
   };
 };
+
+// 영수증 이미지 signed URL 생성
+export const createReceiptSignedUrl = async (supabase, storagePath) => {
+  return await supabase.storage
+    .from("transaction-attachments")
+    .createSignedUrl(storagePath, 60 * 10);
+};

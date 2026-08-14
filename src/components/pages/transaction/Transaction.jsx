@@ -24,7 +24,10 @@ import {
   fetchTransactions,
   updateTransaction,
 } from "./services/transactionService";
-import { saveReceiptAttachment } from "./services/receiptService";
+import {
+  createReceiptSignedUrl,
+  saveReceiptAttachment,
+} from "./services/receiptService";
 
 const getToday = () => {
   const today = new Date();
@@ -1542,9 +1545,7 @@ export default function Transaction() {
 
       // 새 영수증 상세화면용 signed URL 생성
       const { data: signedUrlData, error: signedUrlError } =
-        await supabase.storage
-          .from("transaction-attachments")
-          .createSignedUrl(newStoragePath, 60 * 10);
+        await createReceiptSignedUrl(supabase, newStoragePath);
 
       if (signedUrlError) {
         console.error("새 영수증 URL 생성 실패:", signedUrlError);
@@ -1632,9 +1633,7 @@ export default function Transaction() {
 
     if (attachmentData?.storage_path) {
       const { data: signedUrlData, error: signedUrlError } =
-        await supabase.storage
-          .from("transaction-attachments")
-          .createSignedUrl(attachmentData.storage_path, 60 * 10);
+        await createReceiptSignedUrl(supabase, attachmentData.storage_path);
 
       if (signedUrlError) {
         console.error("영수증 이미지 URL 생성 실패:", signedUrlError);
