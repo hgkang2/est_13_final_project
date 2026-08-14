@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import styles from "./TransactionDetailEdit.module.scss";
+import { validateTransactionForm } from "../../utils/transactionValidator";
 
 export default function TransactionEdit({
   transaction,
@@ -141,7 +142,7 @@ export default function TransactionEdit({
   const handleSubmit = event => {
     event.preventDefault();
 
-    const errors = validateEditForm(editForm);
+    const errors = validateTransactionForm(editForm);
 
     if (Object.keys(errors).length > 0) {
       setEditErrors(errors);

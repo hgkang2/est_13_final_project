@@ -15,6 +15,8 @@ import TransactionList from "./components/TransactionList";
 import CopyDateModal from "./components/CopyDateModal";
 import EntryPanel from "./components/EntryPanel";
 import Modal from "@/components/common/Modal";
+import { formatTransaction } from "./utils/transactionFormatter";
+import { validateTransactionForm } from "./utils/transactionValidator";
 
 const getToday = () => {
   const today = new Date();
@@ -45,94 +47,6 @@ const getCurrentMonthRange = () => {
   return {
     startDate,
     endDate,
-  };
-};
-
-const formatDateTime = value => {
-  if (!value) return "-";
-
-  const date = new Date(value);
-
-  const formattedDate = [
-    date.getFullYear(),
-    String(date.getMonth() + 1).padStart(2, "0"),
-    String(date.getDate()).padStart(2, "0"),
-  ].join(".");
-
-  const formattedTime = [
-    String(date.getHours()).padStart(2, "0"),
-    String(date.getMinutes()).padStart(2, "0"),
-  ].join(":");
-
-  return `${formattedDate} ${formattedTime}`;
-};
-
-const formatTransaction = transaction => {
-  const transactionDate = new Date(transaction.transaction_at);
-
-  const date = [
-    transactionDate.getFullYear(),
-    String(transactionDate.getMonth() + 1).padStart(2, "0"),
-    String(transactionDate.getDate()).padStart(2, "0"),
-  ].join(".");
-
-  const time = [
-    String(transactionDate.getHours()).padStart(2, "0"),
-    String(transactionDate.getMinutes()).padStart(2, "0"),
-  ].join(":");
-
-  const dateValue = [
-    transactionDate.getFullYear(),
-    String(transactionDate.getMonth() + 1).padStart(2, "0"),
-    String(transactionDate.getDate()).padStart(2, "0"),
-  ].join("-");
-
-  return {
-    id: transaction.id,
-    date,
-    time,
-    dateValue,
-
-    type: transaction.transaction_type,
-
-    typeLabel:
-      transaction.transaction_type === "income"
-        ? "수입"
-        : transaction.transaction_type === "expense"
-          ? "지출"
-          : "이체",
-
-    category: transaction.category?.name ?? "-",
-    categoryType: transaction.category?.code ?? "",
-    categoryId: transaction.category?.id ?? "",
-
-    content: transaction.content ?? "-",
-
-    amount:
-      transaction.transaction_type === "income"
-        ? transaction.amount
-        : -transaction.amount,
-
-    paymentMethod:
-      transaction.transaction_type === "transfer"
-        ? "계좌이체"
-        : (transaction.payment_method?.name ?? "-"),
-
-    paymentMethodId: transaction.payment_method?.id ?? "",
-
-    memo: transaction.memo ?? "",
-
-    withdrawAccount: transaction.withdraw_account?.name ?? null,
-    withdrawAccountId: transaction.withdraw_account?.id ?? "",
-
-    depositAccount: transaction.deposit_account?.name ?? null,
-    depositAccountId: transaction.deposit_account?.id ?? "",
-
-    isRecurring: transaction.is_recurring,
-    recurringDay: transaction.recurring_day,
-
-    createdAt: formatDateTime(transaction.created_at),
-    updatedAt: formatDateTime(transaction.updated_at),
   };
 };
 
@@ -671,46 +585,6 @@ export default function Transaction() {
       ...prevForm,
       isRecurring: !prevForm.isRecurring,
     }));
-  };
-
-  const validateTransactionForm = (
-    form,
-    { validateTransferAccounts = true } = {},
-  ) => {
-    const errors = {};
-
-    if (!form.amount) {
-      errors.amount = "금액을 입력해주세요.";
-    } else if (
-      !Number.isFinite(Number(form.amount)) ||
-      Number(form.amount) <= 0
-    ) {
-      errors.amount = "금액은 0보다 큰 숫자로 입력해주세요.";
-    }
-
-    if (!form.category) {
-      errors.category = "카테고리를 선택해주세요.";
-    }
-
-    if (!form.date) {
-      errors.date = "날짜를 선택해주세요.";
-    }
-
-    if (!form.paymentMethod && form.type !== "transfer") {
-      errors.paymentMethod = "결제수단을 선택해주세요.";
-    }
-
-    if (form.type === "transfer" && validateTransferAccounts) {
-      if (!form.withdrawAccount) {
-        errors.withdrawAccount = "출금 계좌를 선택해주세요.";
-      }
-
-      if (!form.depositAccount) {
-        errors.depositAccount = "입금 계좌를 선택해주세요.";
-      }
-    }
-
-    return errors;
   };
 
   const onTransactionSubmit = async event => {
