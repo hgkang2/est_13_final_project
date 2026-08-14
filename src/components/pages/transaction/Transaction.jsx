@@ -17,7 +17,10 @@ import EntryPanel from "./components/EntryPanel";
 import Modal from "@/components/common/Modal";
 import { formatTransaction } from "./utils/transactionFormatter";
 import { validateTransactionForm } from "./utils/transactionValidator";
-import { TRANSACTION_SELECT } from "./services/transactionService";
+import {
+  fetchTransactions,
+  TRANSACTION_SELECT,
+} from "./services/transactionService";
 
 const getToday = () => {
   const today = new Date();
@@ -244,7 +247,7 @@ export default function Transaction() {
   }, [entryMode]);
 
   useEffect(() => {
-    const fetchTransactions = async () => {
+    const loadTransactions = async () => {
       setIsTransactionsLoading(true);
 
       // 1. 로그인 사용자 확인
@@ -260,11 +263,7 @@ export default function Transaction() {
       }
 
       // 2. 거래 목록 조회
-      const { data, error } = await supabase
-        .from("transactions")
-        .select(TRANSACTION_SELECT)
-        .eq("user_id", user.id)
-        .order("transaction_at", { ascending: false });
+      const { data, error } = await fetchTransactions(supabase, user.id);
 
       if (error) {
         console.error("소비 기록 조회 실패:", error);
@@ -281,7 +280,7 @@ export default function Transaction() {
       console.log("소비 기록 조회 성공:", formattedTransactions);
     };
 
-    fetchTransactions();
+    loadTransactions();
   }, []);
 
   const handleViewAllRecent = () => {

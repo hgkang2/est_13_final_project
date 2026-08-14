@@ -35,3 +35,12 @@ export const TRANSACTION_SELECT = `
     name
   )
 `;
+
+// 사용자 거래 목록 조회
+export const fetchTransactions = async (supabase, userId) => {
+  return await supabase
+    .from("transactions")
+    .select(TRANSACTION_SELECT)
+    .eq("user_id", userId)
+    .order("transaction_at", { ascending: false });
+};
