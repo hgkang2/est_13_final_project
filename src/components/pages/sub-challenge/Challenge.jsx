@@ -7,34 +7,24 @@ import BottomTab from "@/components/layout/BottomTab";
 import SubFooter from "@/components/layout/SubFooter";
 import styles from "./Challenge.module.scss";
 import { createClient } from "@/utils/supabase/client";
-
-// DB의 code 값 또는 title에 맞는 Material Icon 매핑 딕셔너리
-const missionIconMap = {
-  reduce_dining_out: "restaurant",
-  reduce_cafe: "local_cafe",
-  reduce_delivery: "two_wheeler",
-  save_transportation: "directions_bus",
-  organize_subscriptions: "subscriptions",
-  use_tumbler: "local_drink",
-  prevent_impulse_buying: "shopping_bag",
-  save_electricity: "flash_on",
-  daily_saving: "savings",
-  "외식 줄이기": "restaurant",
-  "카페 줄이기": "local_cafe",
-  "배달 줄이기": "two_wheeler",
-  "교통비 절약": "directions_bus",
-  "구독 정리": "subscriptions",
-  "텀블러 사용": "local_drink",
-  "충동구매 방지": "shopping_bag",
-  "전기 절약": "flash_on",
-  저축하기: "savings",
-};
+import { getWeeklyJournals } from "../sub-home/services/subHomeService";
 
 export default function Challenge() {
   const [missionTemplates, setMissionTemplates] = useState([]);
   const [aiMission, setAiMission] = useState(null);
-  const [transactions, setTransactions] = useState([]);
   const [hasChallenge, setHasChallenge] = useState(false);
+  const [completedCount, setCompletedCount] = useState(0);
+
+  // 요일별 달성 상태 (월~일, 총 7개 boolean 배열)
+  const [weekStates, setWeekStates] = useState([
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
 
   // DB에서 불러올 카테고리 목록 상태
   const [categories, setCategories] = useState([]);
@@ -45,10 +35,17 @@ export default function Challenge() {
   // 선택된 카테고리 code 상태 ("all"이 기본값)
   const [selectedCategory, setSelectedCategory] = useState("all");
 
+  // 소비 일기(저널) 데이터 상태 - 월~일 7일치 전체
+  const [journals, setJournals] = useState([]);
+
   const supabase = createClient();
 
   useEffect(() => {
     async function fetchData() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       // 1. mission_templates 테이블 조회
       const { data: templates, error: templateError } = await supabase
         .from("mission_templates")
@@ -85,29 +82,83 @@ export default function Challenge() {
         console.error("카테고리 조회 실패:", catError.message);
       }
 
-      // 3. transactions 테이블 조회
-      const { data: txData, error: txError } = await supabase
-        .from("transactions")
-        .select("*")
-        .limit(4);
+      if (user) {
+        // 3. 사용자가 이미 시작한 미션 조회
+        const { data: userMissions, error: userMissionError } = await supabase
+          .from("user_missions")
+          .select("*")
+          .eq("user_id", user.id);
 
-      if (!txError && txData) {
-        setTransactions(txData);
-      } else if (txError) {
-        console.error("거래 내역 조회 실패:", txError.message);
+        if (!userMissionError && userMissions && userMissions.length > 0) {
+          setHasChallenge(true);
+          setCompletedCount(userMissions[0].completed_count || 0);
+        }
+
+        // 이번 주 월~일 날짜 구하기
+        const today = new Date();
+        const currentDayOfWeek = today.getDay();
+        const distanceToMonday =
+          currentDayOfWeek === 0 ? -6 : 1 - currentDayOfWeek;
+
+        const monday = new Date(today);
+        monday.setDate(today.getDate() + distanceToMonday);
+
+        const weekDates = [];
+        for (let i = 0; i < 7; i++) {
+          const d = new Date(monday);
+          d.setDate(monday.getDate() + i);
+          weekDates.push(d.toISOString().split("T")[0]);
+        }
+
+        // 4. 미션 기록 조회 (400 에러 방지를 위해 전체 컬럼 SELECT 후 클라이언트 측에서 필터링)
+        const { data: records, error: recordError } = await supabase
+          .from("mission_records")
+          .select("*")
+          .eq("user_id", user.id);
+
+        if (!recordError && records) {
+          const newWeekStates = weekDates.map(dateStr => {
+            return records.some(record => {
+              const recordDate =
+                record.completed_date ||
+                record.date ||
+                (record.created_at ? record.created_at.split("T")[0] : "");
+              return recordDate === dateStr;
+            });
+          });
+          setWeekStates(newWeekStates);
+        } else if (recordError) {
+          console.warn(
+            "미션 기록 조회 스킵 또는 테이블 확인 필요:",
+            recordError.message,
+          );
+        }
+
+        // 5. 주간 소비 일기 데이터 조회 (getWeeklyJournals 유틸 함수 활용, 월~일 7일치 전체)
+        const weeklyJournals = await getWeeklyJournals(supabase, user.id);
+        if (weeklyJournals) {
+          setJournals(weeklyJournals);
+        }
       }
     }
 
     fetchData();
   }, [supabase]);
 
+  const getMissionIconPath = template => {
+    let code = template?.category_code || template?.category;
+    if (!code) return "/images/category/food.png";
+    if (code === "saving_transfer") {
+      code = "savings";
+    }
+    return `/images/category/${code}.png`;
+  };
+
   const handleSwitchAiMission = selectedTemplate => {
     if (!aiMission) return;
-
     const updatedTemplates = missionTemplates.map(t =>
       t.id === selectedTemplate.id ? aiMission : t,
     );
-
     setAiMission(selectedTemplate);
     setMissionTemplates(updatedTemplates);
     setIsMoreModalOpen(false);
@@ -123,30 +174,36 @@ export default function Challenge() {
       return;
     }
 
+    const today = new Date();
+    const dateString = today.toISOString().split("T")[0];
+
     const { error } = await supabase.from("user_missions").insert([
       {
         user_id: user.id,
         mission_template_id: templateId,
         title: templateTitle,
+        start_date: dateString,
+        end_date: dateString,
+        status: "in_progress",
+        recommendation_source: "system",
+        completed_count: 0,
       },
     ]);
 
     if (error) {
       console.error("미션 선택 실패:", error.message);
-      alert("미션 선택 중 오류가 발생했습니다.");
+      alert("미션 선택 중 오류가 발생했습니다: " + error.message);
     } else {
       alert("미션이 시작되었습니다!");
       setHasChallenge(true);
+      setCompletedCount(0);
     }
   };
 
   const weekDays = ["월", "화", "수", "목", "금", "토", "일"];
   const challengeDays = [1, 2, 3, 4, 5, 6, 7];
-
-  // 메인 화면에는 상위 8개만 표시
   const displayedTemplates = missionTemplates.slice(0, 8);
 
-  // 사이드 탭에서 선택된 카테고리(code)에 따라 미션 필터링
   const filteredTemplates =
     selectedCategory === "all"
       ? missionTemplates
@@ -170,19 +227,21 @@ export default function Challenge() {
             </div>
 
             <div className={styles.gridContainer}>
-              {/* 좌측 열: AI 추천 미션 및 진행 현황 */}
               <div className={styles.leftColumn}>
                 <section className={styles.card}>
                   <div className={styles.aiBadge}>AI 추천 미션</div>
                   <div className={styles.missionContent}>
                     <div className={styles.missionCardIcon}>
-                      <span className="material-icons">
-                        {aiMission
-                          ? missionIconMap[aiMission.code] ||
-                            missionIconMap[aiMission.title] ||
-                            "restaurant"
-                          : "restaurant"}
-                      </span>
+                      <Image
+                        src={
+                          aiMission
+                            ? getMissionIconPath(aiMission)
+                            : "/images/category/food.png"
+                        }
+                        alt="미션 아이콘"
+                        width={28}
+                        height={28}
+                      />
                     </div>
                     <h3>{aiMission?.title || "외식 줄이기"}</h3>
                     <p>
@@ -191,22 +250,27 @@ export default function Challenge() {
                     </p>
                   </div>
                   <div className={styles.missionGoalRow}>
-                    <span className={styles.goalLabel}>이번 주 미션 목표</span>
-                    <span className={styles.goalStatus}>0/1회 달성</span>
+                    <span className={styles.goalLabel}>오늘의 미션 목표</span>
+                    <span className={styles.goalStatus}>
+                      {hasChallenge
+                        ? `${completedCount}/1회 달성 (진행 중)`
+                        : "0/1회 달성"}
+                    </span>
                   </div>
                   <button
-                    className={styles.actionBtn}
+                    className={`${styles.actionBtn} ${hasChallenge ? styles.actionBtnDisabled : ""}`}
                     onClick={() =>
                       aiMission &&
+                      !hasChallenge &&
                       handleSelectMission(aiMission.id, aiMission.title)
                     }
                   >
-                    미션 시작하기
+                    {hasChallenge ? "미션 진행 중" : "미션 시작하기"}
                   </button>
                 </section>
 
                 <section className={styles.card}>
-                  <h3>7월 챌린지 진행 현황</h3>
+                  <h3>주간 챌린지 진행 현황</h3>
                   <div
                     className={styles.challengeCalendar}
                     style={{ marginTop: "16px" }}
@@ -218,14 +282,13 @@ export default function Challenge() {
                         justifyContent: "space-between",
                       }}
                     >
-                      {challengeDays.map((day, index) => {
+                      {challengeDays.map((dayNum, index) => {
                         const weekday = weekDays[index];
-                        const isCompleted = hasChallenge && day < 7;
-                        const isCurrent = hasChallenge && day === 6;
+                        const isCompleted = weekStates[index];
 
                         return (
                           <div
-                            key={day}
+                            key={dayNum}
                             className={styles.challengeDay}
                             style={{
                               display: "flex",
@@ -245,8 +308,8 @@ export default function Challenge() {
                             </span>
                             <div
                               className={`${styles.challengeIcon} ${
-                                isCurrent ? styles.currentChallengeIcon : ""
-                              } ${!isCompleted ? styles.inactiveChallengeIcon : ""}`}
+                                !isCompleted ? styles.inactiveChallengeIcon : ""
+                              }`}
                               style={{
                                 width: "36px",
                                 height: "36px",
@@ -256,7 +319,7 @@ export default function Challenge() {
                                 alignItems: "center",
                                 justifyContent: "center",
                                 border: "1px solid #eee",
-                                opacity: !hasChallenge ? 0.4 : 1,
+                                opacity: !isCompleted ? 0.4 : 1,
                               }}
                             >
                               <Image
@@ -268,7 +331,7 @@ export default function Challenge() {
                               />
                             </div>
                             <span style={{ fontSize: "12px", color: "#888" }}>
-                              {day}일차
+                              {dayNum}일차
                             </span>
                           </div>
                         );
@@ -278,7 +341,6 @@ export default function Challenge() {
                 </section>
               </div>
 
-              {/* 우측 열: 다른 추천 미션 (최대 8개 제한) */}
               <div className={styles.rightColumn}>
                 <section className={styles.card}>
                   <div className={styles.cardHeader}>
@@ -296,17 +358,18 @@ export default function Challenge() {
                   </div>
                   <div className={styles.missionGrid}>
                     {displayedTemplates.map(template => {
-                      const iconKey =
-                        missionIconMap[template.code] ||
-                        missionIconMap[template.title] ||
-                        "star";
                       return (
                         <div
                           key={template.id}
                           className={styles.missionItemCard}
                         >
                           <div className={styles.missionCardIcon}>
-                            <span className="material-icons">{iconKey}</span>
+                            <Image
+                              src={getMissionIconPath(template)}
+                              alt={template.title}
+                              width={24}
+                              height={24}
+                            />
                           </div>
                           <span className={styles.missionCardTitle}>
                             {template.title}
@@ -323,39 +386,48 @@ export default function Challenge() {
                   </div>
                 </section>
 
-                {/* 나의 소비 기록 카드 */}
+                {/* 그림일기 스타일 그대로, 제목만 "나의 소비 기록"으로 유지한 카드 */}
                 <section className={styles.card}>
                   <div className={styles.cardHeader}>
                     <h3>나의 소비 기록</h3>
-                    <span className={styles.moreText}>기록 펼쳐보기 &gt;</span>
+                    <span
+                      className={styles.moreText}
+                      style={{ cursor: "pointer" }}
+                    >
+                      기록 더보기 &gt;
+                    </span>
                   </div>
+
                   <div className={styles.historyList}>
-                    {transactions.length > 0 ? (
-                      transactions.map((tx, index) => (
-                        <div key={index} className={styles.historyItemCard}>
-                          <div className={styles.historyDate}>
-                            {tx.date ||
-                              tx.created_at?.slice(0, 10) ||
-                              "8/04 (화)"}
-                          </div>
-                          <div className={styles.historyAmount}>
-                            {tx.amount !== undefined && tx.amount !== null
-                              ? `${Number(tx.amount).toLocaleString()}원`
-                              : "--원"}
-                          </div>
-                          <div className={styles.historyCharacterBox}>
-                            <div className={styles.characterPlaceholder}></div>
-                          </div>
-                          <div className={styles.historyMessage}>
-                            오늘도 실천이
-                            <br />
-                            기대돼요!
-                          </div>
+                    {journals.map(journal => (
+                      <div key={journal.id} className={styles.historyItemCard}>
+                        <span className={styles.historyDate}>
+                          {journal.date}
+                        </span>
+                        <span className={styles.historyAmount}>
+                          {journal.amount}
+                        </span>
+
+                        <div
+                          className={`${styles.historyCharacterBox} ${
+                            journal.pending
+                              ? styles.historyCharacterBoxEmpty
+                              : ""
+                          }`}
+                        >
+                          <Image
+                            src={journal.image}
+                            alt={journal.content}
+                            width={80}
+                            height={80}
+                          />
                         </div>
-                      ))
-                    ) : (
-                      <p>최근 소비 기록이 없습니다.</p>
-                    )}
+
+                        <p className={styles.historyMessage}>
+                          {journal.content}
+                        </p>
+                      </div>
+                    ))}
                   </div>
                 </section>
               </div>
@@ -366,7 +438,6 @@ export default function Challenge() {
       </div>
       <BottomTab />
 
-      {/* '더 보기' 클릭 시 나타나는 사이드 탭 (SCSS 클래스 적용) */}
       {isMoreModalOpen && (
         <div
           className={styles.modalOverlay}
@@ -376,7 +447,6 @@ export default function Challenge() {
             className={styles.modalContent}
             onClick={e => e.stopPropagation()}
           >
-            {/* 탭 헤더 */}
             <div className={styles.modalHeader}>
               <h2>모든 추천 미션</h2>
               <button
@@ -387,7 +457,6 @@ export default function Challenge() {
               </button>
             </div>
 
-            {/* 카테고리 필터 버튼 그리드 영역 */}
             <div className={styles.categoryFilterGrid}>
               <button
                 className={`${styles.categoryFilterBtn} ${selectedCategory === "all" ? styles.active : ""}`}
@@ -407,21 +476,21 @@ export default function Challenge() {
               ))}
             </div>
 
-            {/* 필터링된 미션 목록 그리드 */}
             <div className={styles.modalMissionGrid}>
               {filteredTemplates.length > 0 ? (
                 filteredTemplates.map(template => {
-                  const iconKey =
-                    missionIconMap[template.code] ||
-                    missionIconMap[template.title] ||
-                    "star";
                   return (
                     <div
                       key={template.id}
                       className={styles.modalMissionItemCard}
                     >
                       <div className={styles.modalMissionCardIcon}>
-                        <span className="material-icons">{iconKey}</span>
+                        <Image
+                          src={getMissionIconPath(template)}
+                          alt={template.title}
+                          width={24}
+                          height={24}
+                        />
                       </div>
                       <span className={styles.modalMissionCardTitle}>
                         {template.title}
