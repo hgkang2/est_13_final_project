@@ -18,6 +18,7 @@ import Modal from "@/components/common/Modal";
 import { formatTransaction } from "./utils/transactionFormatter";
 import { validateTransactionForm } from "./utils/transactionValidator";
 import {
+  createTransaction,
   fetchTransactions,
   TRANSACTION_SELECT,
 } from "./services/transactionService";
@@ -649,11 +650,8 @@ export default function Transaction() {
     };
 
     // 거래 저장
-    const { data: insertedTransaction, error: insertError } = await supabase
-      .from("transactions")
-      .insert(transactionData)
-      .select(TRANSACTION_SELECT)
-      .single();
+    const { data: insertedTransaction, error: insertError } =
+      await createTransaction(supabase, transactionData);
 
     // 저장 실패
     if (insertError) {

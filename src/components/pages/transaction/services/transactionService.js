@@ -44,3 +44,12 @@ export const fetchTransactions = async (supabase, userId) => {
     .eq("user_id", userId)
     .order("transaction_at", { ascending: false });
 };
+
+// 단건 거래 저장
+export const createTransaction = async (supabase, transactionData) => {
+  return await supabase
+    .from("transactions")
+    .insert(transactionData)
+    .select(TRANSACTION_SELECT)
+    .single();
+};
