@@ -1,309 +1,377 @@
-@use "../../../styles/mixins" as *;
-
-$breakpoint-tablet: 768px;
-$breakpoint-mobile: 390px;
-
+/* 페이지 전체 레이아웃 */
 .pageLayout {
   display: flex;
-  width: 100%;
-  min-height: calc(100vh - 86px);
-  background-color: var(--color-dark-white);
+  min-height: 100vh;
+  background-color: #f8fafc;
+}
+
+.contentWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .container {
-  flex: 1;
-  min-width: 0;
-  background-color: var(--color-white);
   padding: 32px 40px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    padding: 20px 16px;
+  }
 }
 
+/* 페이지 헤더 */
 .pageHeader {
+  margin-bottom: 24px;
+
   .title {
     font-size: 24px;
-    font-weight: var(--font-weight-bold);
-    color: var(--color-text);
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 4px;
   }
 
   .subtitle {
-    @include typo-caption;
-    color: var(--color-light-gray);
-    margin-top: 4px;
+    font-size: 14px;
+    color: #6b7280;
   }
 }
 
-/* 공통 카드 디자인 */
+/* 카드 공통 스타일 */
 .card {
-  background: var(--color-white);
+  background-color: #ffffff;
   border-radius: 16px;
+  border: 1px solid #e5e7eb;
   padding: 24px;
-  border: 1px solid var(--color-border-gray);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  box-sizing: border-box;
+}
 
-  .cardHeader {
-    @include flex-between;
-    margin-bottom: 16px;
+/* 상단 AI 분석 리포트 카드 */
+.aiReportCard {
+  margin-bottom: 24px;
+  overflow: hidden;
+}
 
-    h3 {
-      @include typo-card-head;
-      font-weight: var(--font-weight-semibold);
-      color: var(--color-text);
-    }
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
   }
 }
 
-/* AI 분석 리포트 카드 */
-.aiReportCard {
-  border-color: transparent;
-  background-color: #f9fcf8;
+.aiTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 
-  .aiTitleGroup {
+  .aiDate {
+    font-size: 13px;
+    color: #9ca3af;
+  }
+}
+
+.actionBtnInline {
+  background-color: #f0fdf4;
+  color: #10b981;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid #d1fae5;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #d1fae5;
+  }
+}
+
+.aiReportBody {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.characterArea {
+  flex-shrink: 0;
+
+  .characterBox {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #f8fafc;
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    overflow: hidden;
 
-    .aiDate {
-      @include typo-caption;
-      color: var(--color-light-gray);
+    .characterImage {
+      width: 80%;
+      height: 80%;
+      object-fit: contain;
     }
   }
+}
 
-  .actionBtnInline {
-    background-color: var(--color-white);
-    color: var(--color-point);
-    border: 1px solid var(--color-point);
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-weight: var(--font-weight-semibold);
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
+.insightContentArea {
+  flex: 1;
 
-    &:hover {
-      background-color: var(--color-point);
-      color: var(--color-white);
-    }
-  }
+  .insightTop {
+    margin-bottom: 16px;
 
-  .aiReportBody {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 32px;
-    align-items: center;
-
-    .characterArea {
-      .characterBox {
-        width: 100%;
-        aspect-ratio: 1;
-        background-color: transparent;
-        @include flex-center;
-        overflow: hidden;
-
-        .characterImage {
-          width: 100%;
-          height: 100%;
-          object-fit: contain;
-        }
-      }
-    }
-
-    .insightContentArea {
+    .insightHeader {
       display: flex;
-      flex-direction: column;
-      gap: 20px;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
 
-      .insightTop {
-        padding-bottom: 16px;
-        border-bottom: 1px solid var(--color-border-gray);
-
-        .insightHeader {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          margin-bottom: 8px;
-          @include icon(var(--icon-m-size));
-          color: var(--color-point);
-
-          h4 {
-            @include typo-body-m-semibold;
-            color: var(--color-text);
-          }
-        }
-
-        p {
-          @include typo-body-s;
-          color: var(--color-gray);
-          line-height: 1.5;
-
-          .highlightRed {
-            color: #ff5252;
-            font-weight: var(--font-weight-semibold);
-          }
-          .highlightYellow {
-            color: #fbc02d;
-            font-weight: var(--font-weight-semibold);
-          }
-        }
+      span {
+        color: #10b981;
+        font-size: 20px;
       }
 
-      .insightBottomGrid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
+      h4 {
+        font-size: 15px;
+        font-weight: 600;
+        color: #111827;
+      }
+    }
 
-        .insightSubItem {
-          position: relative;
+    p {
+      font-size: 14px;
+      color: #374151;
+      line-height: 1.5;
 
-          &:not(:last-child)::after {
-            content: "";
-            position: absolute;
-            right: -8px;
-            top: 10%;
-            height: 80%;
-            width: 1px;
-            background-color: var(--color-border-gray);
-          }
-
-          .insightHeader {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 8px;
-            @include icon(var(--icon-m-size));
-            color: var(--color-point);
-
-            h4 {
-              @include typo-body-m-semibold;
-              color: var(--color-text);
-            }
-          }
-
-          p {
-            @include typo-body-s;
-            color: var(--color-gray);
-            line-height: 1.4;
-
-            .highlightGreen {
-              color: var(--color-point);
-              font-weight: var(--font-weight-semibold);
-            }
-          }
-        }
+      .highlightRed {
+        color: #ef4444;
+        font-weight: 600;
       }
     }
   }
 }
 
-/* 4개 요약 그리드 */
+/* 데이터 없을 때의 상단 AI 리포트 영역 (Empty State) */
+.emptyAiReport {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+  text-align: center;
+
+  .emptyIconBox {
+    width: 56px;
+    height: 56px;
+    background-color: #f0fdf4;
+    color: #10b981;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+
+    span {
+      font-size: 28px;
+    }
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 6px;
+  }
+
+  p {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 16px;
+  }
+}
+
+.actionBtnPrimary {
+  background-color: #10b981;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 24px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #059669;
+  }
+}
+
+/* 상단 요약 카드 그리드 */
 .summaryGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
+  margin-bottom: 24px;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
 
   .card {
-    border-color: var(--color-point);
+    padding: 20px;
   }
 
   .summaryLabel {
-    @include typo-body-s;
-    color: var(--color-gray);
     display: block;
+    font-size: 13px;
+    color: #6b7280;
     margin-bottom: 8px;
   }
 
   .summaryValueGroup {
     display: flex;
     align-items: baseline;
-    gap: 4px;
-    margin-bottom: 4px;
+    gap: 2px;
+    margin-bottom: 6px;
 
     .summaryAmount {
-      font-size: 22px;
-      font-weight: var(--font-weight-bold);
-      color: var(--color-text);
+      font-size: 24px;
+      font-weight: 700;
+      color: #111827;
     }
 
     .unit {
-      @include typo-body-m;
-      color: var(--color-text);
+      font-size: 15px;
+      font-weight: 600;
+      color: #111827;
     }
   }
 
   .summarySubText {
-    @include typo-caption;
-    color: var(--color-light-gray);
+    font-size: 12px;
+    color: #9ca3af;
   }
 }
 
-/* 2단 그리드 (차트가 찌그러지지 않도록 min-width: 0 적용) */
+/* 하단 차트 그리드 컨테이너 */
 .gridContainer {
   display: grid;
-  grid-template-columns: 1.4fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 24px;
+  margin-bottom: 24px;
 
-  > .card {
-    min-width: 0;
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+
+  .selectBox {
+    font-size: 13px;
+    color: #6b7280;
+    border: 1px solid #e5e7eb;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background-color: #fff;
   }
 }
 
-/* 지출 추이 차트  */
+/* 차트 영역 */
 .lineChartArea {
+  height: 260px;
   position: relative;
-  width: 100%;
-  height: 340px;
+}
 
-  @include tablet {
-    height: 280px;
+.donutChartArea {
+  height: 200px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+
+  .donutCenterText {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+
+    span {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    strong {
+      font-size: 16px;
+      font-weight: 700;
+      color: #111827;
+    }
   }
 }
 
-/* 카테고리별 소비 비중 차트 영역 */
-.donutChartArea {
-  position: relative;
-  width: 100%;
-  height: 200px;
-}
-
-.donutCenterText {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  pointer-events: none;
+/* 데이터가 없을 때의 차트 영역 (Empty State) */
+.emptyChartArea {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 50px 20px;
+  text-align: center;
 
-  span {
-    font-size: 11px;
-    color: #64748b;
-    font-weight: 500;
-    margin-bottom: 2px;
+  .emptyChartIcon {
+    color: #10b981;
+    margin-bottom: 12px;
+
+    span {
+      font-size: 36px;
+    }
   }
 
-  strong {
-    font-size: 14px;
-    color: #0f172a;
-    font-weight: 700;
+  .emptyTitle {
+    font-size: 15px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 4px;
+  }
+
+  .emptyDesc {
+    font-size: 13px;
+    color: #9ca3af;
   }
 }
 
+/* 카테고리 범례 리스트 */
 .categoryLegendList {
   list-style: none;
-  padding: 0 20px;
-  margin-top: 16px;
+  padding: 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 
   li {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    font-size: 13px;
+    align-items: center;
+    font-size: 14px;
 
     .legendLeft {
       display: flex;
@@ -311,169 +379,119 @@ $breakpoint-mobile: 390px;
       gap: 8px;
 
       .dot {
-        width: 8px;
-        height: 8px;
+        width: 10px;
+        height: 10px;
         border-radius: 50%;
-        display: inline-block;
       }
 
       .legendName {
-        color: #334155;
+        color: #374151;
         font-weight: 500;
-        width: 35px;
       }
 
       .legendPercent {
-        color: #64748b;
-        font-weight: 600;
+        color: #9ca3af;
+        font-size: 13px;
       }
     }
 
     .price {
-      color: #64748b;
-      font-weight: 400;
+      font-weight: 600;
+      color: #111827;
     }
   }
 }
 
-/* 예산 대비 지출 랭킹 섹션 스타일 */
+/* 랭킹 섹션 */
 .rankingDate {
-  @include typo-caption;
-  color: var(--color-light-gray);
+  font-size: 13px;
+  color: #9ca3af;
 }
 
 .rankingList {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin-bottom: 20px;
-}
+  margin-bottom: 16px;
 
-.rankingItem {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  .rankBadge {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background-color: #fde291;
+  .rankingItem {
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-text);
+    gap: 12px;
 
-    &.r1 {
-      background-color: #fde291;
-      color: var(--color-text);
+    .rankBadge {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background-color: #f3f4f6;
+      color: #4b5563;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      &.r1 {
+        background-color: #fef3c7;
+        color: #d97706;
+      }
     }
-  }
 
-  .rankCategory {
-    @include typo-body-m-semibold;
-    color: var(--color-text);
-    min-width: 45px;
-  }
+    .rankCategory {
+      width: 80px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #374151;
+      flex-shrink: 0;
+    }
 
-  .progressBarWrapper {
-    flex: 1;
-    height: 8px;
-    background-color: var(--color-dark-white);
-    border-radius: 4px;
-    overflow: hidden;
-
-    .progressBar {
-      height: 100%;
-      background-color: var(--color-point);
+    .progressBarWrapper {
+      flex: 1;
+      height: 8px;
+      background-color: #f3f4f6;
       border-radius: 4px;
+      overflow: hidden;
+
+      .progressBar {
+        height: 100%;
+        background-color: #10b981;
+        border-radius: 4px;
+      }
     }
-  }
 
-  .rankPercent {
-    @include typo-body-s;
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-point);
-    min-width: 40px;
-    text-align: right;
-  }
+    .rankPercent {
+      width: 40px;
+      text-align: right;
+      font-size: 13px;
+      font-weight: 600;
+      color: #10b981;
+      flex-shrink: 0;
+    }
 
-  .rankAmount {
-    @include typo-caption;
-    color: var(--color-gray);
-    min-width: 120px;
-    text-align: right;
+    .rankAmount {
+      width: 100px;
+      text-align: right;
+      font-size: 13px;
+      color: #6b7280;
+      flex-shrink: 0;
+    }
   }
 }
 
-/* 더보기 버튼 */
 .moreBtn {
   width: 100%;
-  padding: 12px;
-  background-color: var(--color-white);
-  border: 1px solid var(--color-point);
+  padding: 10px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
-  color: var(--color-point);
-  @include typo-body-m-semibold;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4b5563;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  transition: all 0.2s ease-in-out;
+  transition: background-color 0.2s;
 
   &:hover {
-    background-color: var(--color-point);
-    color: var(--color-white);
-
-    &::after {
-      border-color: var(--color-white);
-    }
-  }
-
-  &::after {
-    content: "";
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    border-right: 2px solid var(--color-point);
-    border-bottom: 2px solid var(--color-point);
-    transform: rotate(45deg);
-    margin-top: -3px;
-    transition: border-color 0.2s ease-in-out;
-  }
-}
-
-/* 반응형 모바일 대응 */
-@include tablet {
-  .pageLayout {
-    display: block;
-  }
-
-  .container {
-    padding: 20px 16px;
-  }
-
-  .aiReportCard .aiReportBody {
-    grid-template-columns: 1fr;
-  }
-
-  .summaryGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .gridContainer {
-    grid-template-columns: 1fr;
-  }
-
-  .aiReportCard .insightContentArea .insightBottomGrid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-
-    .insightSubItem:not(:last-child)::after {
-      display: none;
-    }
+    background-color: #f3f4f6;
   }
 }
