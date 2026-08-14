@@ -61,7 +61,7 @@ export default function RegisterPage() {
       },
     });
     if (error) {
-      alert(error.message);
+      alert("회원가입에 실패했습니다. 입력 내용을 확인한 후 다시 시도해 주세요.");
       console.error(error);
       return;
     }
@@ -78,8 +78,9 @@ export default function RegisterPage() {
       },
     });
     if (error) {
-      console.error(error.message);
-    }
+  console.error(error.message);
+  alert("구글 로그인에 실패했습니다. 다시 시도해 주세요.");
+}
   };
   const handleKakaoLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
@@ -89,8 +90,9 @@ export default function RegisterPage() {
       },
     });
     if (error) {
-      console.error(error.message);
-    }
+  console.error(error.message);
+  alert("카카오 로그인에 실패했습니다. 다시 시도해 주세요.");
+}
   };
 
   return (
