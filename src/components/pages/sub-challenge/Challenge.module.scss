@@ -107,8 +107,15 @@ $mission-grid-mobile-breakpoint: 480px;
     height: 56px;
     background-color: var(--color-dark-white);
     border-radius: 50%;
+    overflow: hidden;
     @include flex-center;
     margin: 0 auto 12px auto;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
     span {
       @include icon-l;
@@ -210,6 +217,13 @@ $mission-grid-mobile-breakpoint: 480px;
         align-items: center;
         justify-content: center;
         border: 1px solid #eee;
+        opacity: 0.4;
+        transition:
+          background-color 0.2s,
+          border-color 0.2s,
+          box-shadow 0.2s,
+          opacity 0.2s,
+          transform 0.2s;
 
         &.currentChallengeIcon {
           border-color: #77b985;
@@ -218,6 +232,13 @@ $mission-grid-mobile-breakpoint: 480px;
 
         &.inactiveChallengeIcon {
           opacity: 0.4;
+        }
+
+        /*완료된 날 스탬프*/
+        &.completedChallengeIcon {
+          opacity: 1;
+          background-color: #eaf5ec;
+          border: 2px solid #77b985;
         }
       }
 
@@ -252,10 +273,17 @@ $mission-grid-mobile-breakpoint: 480px;
       height: 48px;
       background-color: var(--color-dark-white);
       border-radius: 50%;
+      overflow: hidden;
       @include icon-l;
       @include flex-center;
       margin-bottom: 12px;
       color: var(--color-text);
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
     }
 
     .missionCardTitle {
@@ -478,10 +506,17 @@ $mission-grid-mobile-breakpoint: 480px;
       height: 48px;
       background-color: var(--color-dark-white, #f7f9f8);
       border-radius: 50%;
+      overflow: hidden;
       @include icon-l;
       @include flex-center;
       margin-bottom: 12px;
       color: var(--color-text);
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
     }
 
     .modalMissionCardTitle {
