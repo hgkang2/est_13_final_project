@@ -111,7 +111,6 @@ export default function Challenge() {
         .from("mission_templates")
         .select("*");
 
-      // ✅ 전체 템플릿 목록을 별도로 보관 (나중에 진행중인 미션과 매칭하기 위함)
       let allTemplates = [];
 
       if (!templateError && templates && templates.length > 0) {
@@ -147,9 +146,7 @@ export default function Challenge() {
       }
 
       if (user) {
-        // 3. 사용자가 이미 시작한(진행중인) 미션 조회 - 카테고리 정보 함께 조인
-        //    status 필터 없이 우선 전체 조회 → 최신순으로 클라이언트에서 진행중 판단
-        //    (status 컬럼명/값이 실제 스키마와 다를 수 있어 원인 파악을 위해 전체 조회로 변경)
+        // 3. 사용자가 이미 시작한(진행중인) 미션 조회
         const { data: userMissions, error: userMissionError } = await supabase
           .from("user_missions")
           .select(
@@ -166,14 +163,9 @@ export default function Challenge() {
           .order("start_date", { ascending: false })
           .limit(5);
 
-        // 디버깅용 - 콘솔에서 실제 응답 확인 (원인 파악되면 삭제해도 됩니다)
-        console.log("userMissions 조회 결과:", userMissions, userMissionError);
-
         let currentMission = null;
 
         if (!userMissionError && userMissions && userMissions.length > 0) {
-          // status 값이 실제로 뭔지 모르므로, "completed_count가 0이거나 아직 안 끝난 것으로 보이는" 최신 미션을 진행중으로 간주
-          // → 정확한 필터링은 status 실제 값 확인 후 .eq("status", "실제값")으로 되돌려야 함
           currentMission =
             userMissions.find(m => m.status === "in_progress") ??
             userMissions[0];
@@ -196,7 +188,7 @@ export default function Challenge() {
           console.error("진행중인 미션 조회 실패:", userMissionError.message);
         }
 
-        // 이번 주 월~일 날짜 구하기
+        // 이번 주 월~일 날짜 범위 계산
         const today = new Date();
         const currentDayOfWeek = today.getDay();
         const distanceToMonday =
@@ -204,6 +196,11 @@ export default function Challenge() {
 
         const monday = new Date(today);
         monday.setDate(today.getDate() + distanceToMonday);
+        const mondayStr = monday.toISOString().split("T")[0];
+
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
+        const sundayStr = sunday.toISOString().split("T")[0];
 
         const weekDates = [];
         for (let i = 0; i < 7; i++) {
@@ -212,12 +209,14 @@ export default function Challenge() {
           weekDates.push(d.toISOString().split("T")[0]);
         }
 
-        // 4. 미션 기록 조회 (완료된 기록만)
+        // 4. 미션 기록 조회 (이번 주 기간 조건 추가하여 주 바뀔 때 자동 초기화)
         const { data: records, error: recordError } = await supabase
           .from("mission_records")
           .select("*")
           .eq("user_id", user.id)
-          .eq("is_completed", true);
+          .eq("is_completed", true)
+          .gte("record_date", mondayStr)
+          .lte("record_date", sundayStr);
 
         let newWeekStates = weekStates;
 
@@ -240,7 +239,7 @@ export default function Challenge() {
           );
         }
 
-        // 6. 주간 소비 일기 데이터 조회 (getWeeklyJournals 유틸 함수 활용, 월~일 7일치 전체)
+        // 6. 주간 소비 일기 데이터 조회
         const weeklyJournals = await getWeeklyJournals(supabase, user.id);
         if (weeklyJournals) {
           setJournals(weeklyJournals);
@@ -261,7 +260,6 @@ export default function Challenge() {
     return `/images/category/${code}.png`;
   };
 
-  // 다른 추천 미션의 "미션 선택" 클릭 → 진행중인 미션이 있으면 차단
   const handleSwitchAiMission = selectedTemplate => {
     if (hasChallenge) {
       alert(
@@ -318,8 +316,6 @@ export default function Challenge() {
       )
       .single();
 
-    console.log("미션 insert 결과:", inserted, error);
-
     if (error) {
       console.error("미션 선택 실패:", error.message);
       alert("미션 선택 중 오류가 발생했습니다: " + error.message);
@@ -329,13 +325,11 @@ export default function Challenge() {
       setCompletedCount(0);
       setActiveMission(inserted);
 
-      // 새로 시작한 미션 기준으로 오늘 완료 가능 여부 재확인
       const categoryCode = inserted?.mission_template?.category_code;
       await checkTodayEligibility(categoryCode, getTodayIndex(), weekStates);
     }
   };
 
-  // 미션 완료 처리
   const handleCompleteMission = async () => {
     const {
       data: { user },
@@ -347,7 +341,6 @@ export default function Challenge() {
       timeZone: "Asia/Seoul",
     });
 
-    // 미션 기록 추가
     const { error } = await supabase.from("mission_records").insert([
       {
         user_mission_id: activeMission.id,
@@ -365,7 +358,6 @@ export default function Challenge() {
 
     const newCompletedCount = completedCount + 1;
 
-    // user_missions의 completed_count 갱신
     const { error: updateError } = await supabase
       .from("user_missions")
       .update({ completed_count: newCompletedCount })
@@ -377,7 +369,6 @@ export default function Challenge() {
 
     setCompletedCount(newCompletedCount);
 
-    // 오늘 요일 스탬프 채우기
     const todayIndex = getTodayIndex();
     setWeekStates(prev => {
       const next = [...prev];
@@ -402,7 +393,6 @@ export default function Challenge() {
             t.category_code === selectedCategory,
         );
 
-  // 버튼 상태 계산
   const getButtonLabel = () => {
     if (!hasChallenge) return "미션 시작하기";
     if (isTodayCompleted) return "오늘 미션 완료 ✅";
@@ -410,11 +400,9 @@ export default function Challenge() {
     return "미션 진행 중";
   };
 
-  // 목표 달성 라인의 상태 텍스트 (완료 가능 / 불가능 여부 표시)
   const getGoalStatusText = () => {
     if (!hasChallenge) return "0/1회 달성";
     if (isTodayCompleted) return `${completedCount}/1회 달성 (오늘 완료)`;
-    //완료 가능한 상태면 완료했을 때의 값(+1)을 미리 보여줌
     if (canCompleteMission) return `${completedCount + 1}/1회 달성 (완료 가능)`;
     return `${completedCount}/1회 달성 (완료 불가 · 해당 카테고리 지출 있음)`;
   };
