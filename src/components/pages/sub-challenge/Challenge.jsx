@@ -182,8 +182,6 @@ export default function Challenge() {
           setActiveMission(currentMission);
           setCompletedCount(currentMission.completed_count || 0);
 
-          // ✅ 진행중인 미션에 해당하는 "완전한" 템플릿 정보를 찾아 aiMission으로 교체
-          //    (user_missions 조인 결과는 id/category_code/title만 있어 description 등이 없기 때문)
           const matchedTemplate = allTemplates.find(
             t => t.id === currentMission.mission_template_id,
           );
@@ -416,7 +414,7 @@ export default function Challenge() {
   const getGoalStatusText = () => {
     if (!hasChallenge) return "0/1회 달성";
     if (isTodayCompleted) return `${completedCount}/1회 달성 (오늘 완료)`;
-    // ✅ 완료 가능한 상태면 완료했을 때의 값(+1)을 미리 보여줌 → "1/1회 달성"
+    //완료 가능한 상태면 완료했을 때의 값(+1)을 미리 보여줌
     if (canCompleteMission) return `${completedCount + 1}/1회 달성 (완료 가능)`;
     return `${completedCount}/1회 달성 (완료 불가 · 해당 카테고리 지출 있음)`;
   };
@@ -597,7 +595,6 @@ export default function Challenge() {
                   </div>
                 </section>
 
-                {/* 그림일기 스타일 그대로, 제목만 "나의 소비 기록"으로 유지한 카드 */}
                 <section className={styles.card}>
                   <div className={styles.cardHeader}>
                     <h3>나의 소비 기록</h3>
