@@ -17,8 +17,7 @@ export default function LoginPage() {
       password,
     });
     if (error) {
-      //alert("이메일 또는 비밀번호가 올바르지 않습니다.");
-      alert(error.message);
+      alert("이메일 또는 비밀번호가 올바르지 않습니다.");
       console.error(error);
       return;
     }
@@ -32,9 +31,10 @@ export default function LoginPage() {
         redirectTo: `${window.location.origin}/auth/callback?next=/sub-home`,
       },
     });
-    if (error) {
-      console.error(error.message);
-    }
+   if (error) {
+  console.error(error.message);
+  alert("구글 로그인에 실패했습니다. 다시 시도해 주세요.");
+}
   };
   const handleKakaoLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
@@ -44,8 +44,9 @@ export default function LoginPage() {
       },
     });
     if (error) {
-      console.error(error.message);
-    }
+  console.error(error.message);
+  alert("카카오 로그인에 실패했습니다. 다시 시도해 주세요.");
+}
   };
 
   return (
