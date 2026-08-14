@@ -22,6 +22,7 @@ import {
   createTransaction,
   fetchTransactions,
   TRANSACTION_SELECT,
+  updateTransaction,
 } from "./services/transactionService";
 
 const getToday = () => {
@@ -905,7 +906,7 @@ export default function Transaction() {
     // 3. 다건 INSERT
     const { data: insertedTransactions, error: insertError } =
       await createMultipleTransactions(supabase, transactionData);
-      
+
     if (insertError) {
       console.error("다건 소비 기록 저장 실패:", insertError);
       setIsMultipleConfirmOpen(false);
@@ -1456,13 +1457,13 @@ export default function Transaction() {
     };
 
     // 4. 거래 수정
-    const { data: updatedTransaction, error: updateError } = await supabase
-      .from("transactions")
-      .update(updateData)
-      .eq("id", selectedTransaction.id)
-      .eq("user_id", user.id)
-      .select(TRANSACTION_SELECT)
-      .single();
+    const { data: updatedTransaction, error: updateError } =
+      await updateTransaction(
+        supabase,
+        selectedTransaction.id,
+        user.id,
+        updateData,
+      );
 
     // 5. 수정 실패
     if (updateError) {

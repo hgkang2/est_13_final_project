@@ -64,3 +64,19 @@ export const createMultipleTransactions = async (
     .insert(transactionData)
     .select(TRANSACTION_SELECT);
 };
+
+// 거래 수정
+export const updateTransaction = async (
+  supabase,
+  transactionId,
+  userId,
+  updateData,
+) => {
+  return await supabase
+    .from("transactions")
+    .update(updateData)
+    .eq("id", transactionId)
+    .eq("user_id", userId)
+    .select(TRANSACTION_SELECT)
+    .single();
+};
