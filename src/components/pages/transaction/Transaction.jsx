@@ -17,6 +17,7 @@ import EntryPanel from "./components/EntryPanel";
 import Modal from "@/components/common/Modal";
 import { formatTransaction } from "./utils/transactionFormatter";
 import { validateTransactionForm } from "./utils/transactionValidator";
+import { TRANSACTION_SELECT } from "./services/transactionService";
 
 const getToday = () => {
   const today = new Date();
@@ -261,44 +262,7 @@ export default function Transaction() {
       // 2. 거래 목록 조회
       const { data, error } = await supabase
         .from("transactions")
-        .select(
-          `
-        id,
-        transaction_type,
-        amount,
-        content,
-        memo,
-        transaction_at,
-        created_at,
-        updated_at,
-        is_recurring,
-        recurring_day,
-
-        category:categories (
-          id,
-          code,
-          name
-        ),
-
-        payment_method:payment_methods (
-          id,
-          code,
-          name
-        ),
-
-        withdraw_account:transfer_accounts!transactions_withdraw_account_id_fkey (
-          id,
-          code,
-          name
-        ),
-
-        deposit_account:transfer_accounts!transactions_deposit_account_id_fkey (
-          id,
-          code,
-          name
-        )
-      `,
-        )
+        .select(TRANSACTION_SELECT)
         .eq("user_id", user.id)
         .order("transaction_at", { ascending: false });
 
@@ -689,44 +653,7 @@ export default function Transaction() {
     const { data: insertedTransaction, error: insertError } = await supabase
       .from("transactions")
       .insert(transactionData)
-      .select(
-        `
-          id,
-          transaction_type,
-          amount,
-          content,
-          memo,
-          transaction_at,
-          created_at,
-          updated_at,
-          is_recurring,
-          recurring_day,
-
-          category:categories (
-            id,
-            code,
-            name
-          ),
-
-          payment_method:payment_methods (
-            id,
-            code,
-            name
-          ),
-
-          withdraw_account:transfer_accounts!transactions_withdraw_account_id_fkey (
-            id,
-            code,
-            name
-          ),
-
-          deposit_account:transfer_accounts!transactions_deposit_account_id_fkey (
-            id,
-            code,
-            name
-          )
-        `,
-      )
+      .select(TRANSACTION_SELECT)
       .single();
 
     // 저장 실패
@@ -981,45 +908,7 @@ export default function Transaction() {
     const { data: insertedTransactions, error: insertError } = await supabase
       .from("transactions")
       .insert(transactionData)
-      .select(
-        `
-        id,
-        transaction_type,
-        amount,
-        content,
-        memo,
-        transaction_at,
-        created_at,
-        updated_at,
-        is_recurring,
-        recurring_day,
-
-        category:categories (
-          id,
-          code,
-          name
-        ),
-
-        payment_method:payment_methods (
-          id,
-          code,
-          name
-        ),
-
-        withdraw_account:transfer_accounts!transactions_withdraw_account_id_fkey (
-          id,
-          code,
-          name
-        ),
-
-        deposit_account:transfer_accounts!transactions_deposit_account_id_fkey (
-          id,
-          code,
-          name
-        )
-      `,
-      );
-
+      .select(TRANSACTION_SELECT);
     if (insertError) {
       console.error("다건 소비 기록 저장 실패:", insertError);
       setIsMultipleConfirmOpen(false);
@@ -1360,46 +1249,8 @@ export default function Transaction() {
     const { data: insertedTransaction, error: insertError } = await supabase
       .from("transactions")
       .insert(transactionData)
-      .select(
-        `
-        id,
-        transaction_type,
-        amount,
-        content,
-        memo,
-        transaction_at,
-        created_at,
-        updated_at,
-        is_recurring,
-        recurring_day,
-
-        category:categories (
-          id,
-          code,
-          name
-        ),
-
-        payment_method:payment_methods (
-          id,
-          code,
-          name
-        ),
-
-        withdraw_account:transfer_accounts!transactions_withdraw_account_id_fkey (
-          id,
-          code,
-          name
-        ),
-
-        deposit_account:transfer_accounts!transactions_deposit_account_id_fkey (
-          id,
-          code,
-          name
-        )
-      `,
-      )
+      .select(TRANSACTION_SELECT)
       .single();
-
     if (insertError) {
       console.error("AI 소비 기록 저장 실패:", insertError);
       showToast("소비 기록을 저장하지 못했어요.", "error");
@@ -1613,44 +1464,7 @@ export default function Transaction() {
       .update(updateData)
       .eq("id", selectedTransaction.id)
       .eq("user_id", user.id)
-      .select(
-        `
-        id,
-        transaction_type,
-        amount,
-        content,
-        memo,
-        transaction_at,
-        created_at,
-        updated_at,
-        is_recurring,
-        recurring_day,
-
-        category:categories (
-          id,
-          code,
-          name
-        ),
-
-        payment_method:payment_methods (
-          id,
-          code,
-          name
-        ),
-
-        withdraw_account:transfer_accounts!transactions_withdraw_account_id_fkey (
-          id,
-          code,
-          name
-        ),
-
-        deposit_account:transfer_accounts!transactions_deposit_account_id_fkey (
-          id,
-          code,
-          name
-        )
-      `,
-      )
+      .select(TRANSACTION_SELECT)
       .single();
 
     // 5. 수정 실패
