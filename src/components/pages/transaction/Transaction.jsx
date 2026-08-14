@@ -27,6 +27,7 @@ import {
 import {
   createReceiptAttachment,
   createReceiptSignedUrl,
+  deleteReceiptAttachment,
   fetchReceiptAttachment,
   removeReceiptFile,
   saveReceiptAttachment,
@@ -1557,10 +1558,10 @@ export default function Transaction() {
     else if (updatedForm.removeAttachment) {
       if (existingAttachment) {
         // DB 연결 제거
-        const { error: attachmentDeleteError } = await supabase
-          .from("transaction_attachments")
-          .delete()
-          .eq("id", existingAttachment.id);
+        const { error: attachmentDeleteError } = await deleteReceiptAttachment(
+          supabase,
+          existingAttachment.id,
+        );
 
         if (attachmentDeleteError) {
           console.error("영수증 첨부정보 삭제 실패:", attachmentDeleteError);

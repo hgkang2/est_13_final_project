@@ -117,3 +117,11 @@ export const updateReceiptAttachment = async (
     })
     .eq("id", attachmentId);
 };
+
+// 영수증 첨부정보 삭제
+export const deleteReceiptAttachment = async (supabase, attachmentId) => {
+  return await supabase
+    .from("transaction_attachments")
+    .delete()
+    .eq("id", attachmentId);
+};
