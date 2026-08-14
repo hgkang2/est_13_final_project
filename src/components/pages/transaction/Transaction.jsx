@@ -20,8 +20,8 @@ import { validateTransactionForm } from "./utils/transactionValidator";
 import {
   createMultipleTransactions,
   createTransaction,
+  deleteTransaction,
   fetchTransactions,
-  TRANSACTION_SELECT,
   updateTransaction,
 } from "./services/transactionService";
 
@@ -1731,11 +1731,11 @@ export default function Transaction() {
     }
 
     // 4. 거래 삭제
-    const { error: deleteError } = await supabase
-      .from("transactions")
-      .delete()
-      .eq("id", selectedTransaction.id)
-      .eq("user_id", user.id);
+    const { error: deleteError } = await deleteTransaction(
+      supabase,
+      selectedTransaction.id,
+      user.id,
+    );
 
     if (deleteError) {
       console.error("소비 기록 삭제 실패:", deleteError);

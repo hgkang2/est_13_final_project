@@ -55,10 +55,7 @@ export const createTransaction = async (supabase, transactionData) => {
 };
 
 // 다건 거래 저장
-export const createMultipleTransactions = async (
-  supabase,
-  transactionData,
-) => {
+export const createMultipleTransactions = async (supabase, transactionData) => {
   return await supabase
     .from("transactions")
     .insert(transactionData)
@@ -79,4 +76,13 @@ export const updateTransaction = async (
     .eq("user_id", userId)
     .select(TRANSACTION_SELECT)
     .single();
+};
+
+// 거래 삭제
+export const deleteTransaction = async (supabase, transactionId, userId) => {
+  return await supabase
+    .from("transactions")
+    .delete()
+    .eq("id", transactionId)
+    .eq("user_id", userId);
 };
