@@ -426,7 +426,7 @@ entrypoint = "./functions/analyze-receipt/index.ts"
 
 [functions.analyze-spending]
 enabled = true
-verify_jwt = false
+verify_jwt = true
 import_map = "./functions/analyze-spending/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
