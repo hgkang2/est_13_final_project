@@ -31,8 +31,9 @@ export default function PasswordConfirmPage() {
       },
     });
     if (error) {
-      console.error(error.message);
-    }
+  console.error(error.message);
+  alert("구글 로그인에 실패했습니다. 다시 시도해 주세요.");
+}
   };
   const handleKakaoLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
@@ -41,9 +42,10 @@ export default function PasswordConfirmPage() {
         redirectTo: `${window.location.origin}/sub-home`,
       },
     });
-    if (error) {
-      console.error(error.message);
-    }
+     if (error) {
+  console.error(error.message);
+  alert("카카오 로그인에 실패했습니다. 다시 시도해 주세요.");
+}
   };
 
   return (
