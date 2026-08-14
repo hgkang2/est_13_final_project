@@ -9,7 +9,7 @@ export default function ChallengeCard({ hasChallenge }) {
         <header className={styles.cardHeader}>
           <h2 id="challenge-title">챌린지 현황</h2>
 
-          <MoreButton>챌린지로 이동</MoreButton>
+          <MoreButton href="/sub-challenge">챌린지로 이동</MoreButton>
         </header>
 
         <div className={styles.challengeBody}>
