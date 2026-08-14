@@ -100,3 +100,20 @@ export const createReceiptAttachment = async (
     mime_type: attachment.type,
   });
 };
+
+// 영수증 첨부정보 수정
+export const updateReceiptAttachment = async (
+  supabase,
+  attachmentId,
+  storagePath,
+  attachment,
+) => {
+  return await supabase
+    .from("transaction_attachments")
+    .update({
+      storage_path: storagePath,
+      file_name: attachment.name,
+      mime_type: attachment.type,
+    })
+    .eq("id", attachmentId);
+};

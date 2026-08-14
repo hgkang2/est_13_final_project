@@ -30,6 +30,7 @@ import {
   fetchReceiptAttachment,
   removeReceiptFile,
   saveReceiptAttachment,
+  updateReceiptAttachment,
   uploadReceiptFile,
 } from "./services/receiptService";
 
@@ -1486,14 +1487,12 @@ export default function Transaction() {
 
       // 기존 첨부가 있으면 metadata UPDATE
       if (existingAttachment) {
-        const { error } = await supabase
-          .from("transaction_attachments")
-          .update({
-            storage_path: newStoragePath,
-            file_name: newAttachment.name,
-            mime_type: newAttachment.type,
-          })
-          .eq("id", existingAttachment.id);
+        const { error } = await updateReceiptAttachment(
+          supabase,
+          existingAttachment.id,
+          newStoragePath,
+          newAttachment,
+        );
 
         attachmentSaveError = error;
       } else {
