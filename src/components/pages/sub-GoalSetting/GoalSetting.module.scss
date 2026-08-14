@@ -569,13 +569,21 @@
   opacity: 0;
 }
 
+.goalSettingImageControl {
+  width: 100%;
+  min-width: 0;
+  position: relative;
+}
+
 .goalSettingImageButton {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
   width: 100%;
+  min-width: 0;
   min-height: 40px;
+  box-sizing: border-box;
   padding: 12px;
   border: 1px solid var(--color-border-gray);
   border-radius: 8px;
@@ -586,22 +594,52 @@
   @include typo-caption;
 
   span:first-child {
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  span:last-child {
-    flex-shrink: 0;
-    color: var(--color-light-gray);
-
-    @include icon-m;
   }
 
   &:hover {
     border-color: var(--color-point);
   }
 }
+
+.goalSettingImageIcon {
+  flex-shrink: 0;
+  color: var(--color-light-gray);
+
+  @include icon-m;
+}
+
+.goalSettingImageButtonWithRemove {
+  padding-right: 48px;
+}
+
+.goalSettingImageRemoveButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0;
+  border: 0;
+  color: var(--color-light-gray);
+  background-color: transparent;
+  cursor: pointer;
+
+  span {
+    @include icon-m;
+  }
+
+  &:hover {
+    color: var(--color-type-expense);
+  }
+}
+
 
 /* ========================================
    메모 글자 수

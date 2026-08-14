@@ -31,6 +31,7 @@ export default function GoalForm({ initialGoal = null, onClose, onSave }) {
   );
 
   const [goalFormImage, setGoalFormImage] = useState(null);
+  const [goalFormImageRemoved, setGoalFormImageRemoved] = useState(false);
 
   const [goalFormMemo, setGoalFormMemo] = useState(initialGoal?.memo ?? "");
 
@@ -39,6 +40,13 @@ export default function GoalForm({ initialGoal = null, onClose, onSave }) {
 
   const goalFormIsEditMode = Boolean(initialGoal);
   const goalFormIsStopped = initialGoal?.status === "중단";
+  const goalFormHasImage = Boolean(
+    goalFormImage ||
+      (!goalFormImageRemoved &&
+        (initialGoal?.imagePath ||
+          initialGoal?.imageUrl ||
+          initialGoal?.imageName)),
+  );
 
   const handleAmountAdd = (amount) => {
     setGoalFormAmount((previousAmount) =>
@@ -69,21 +77,23 @@ export default function GoalForm({ initialGoal = null, onClose, onSave }) {
 
     setGoalFormError("");
     setGoalFormImage(selectedFile);
+    setGoalFormImageRemoved(false);
+  };
+
+  const handleImageRemove = () => {
+    setGoalFormImage(null);
+    setGoalFormImageRemoved(true);
+
+    if (goalFormFileInputRef.current) {
+      goalFormFileInputRef.current.value = "";
+    }
   };
 
   const resetGoalForm = () => {
-    setGoalFormName(initialGoal?.title ?? "");
-
-    setGoalFormAmount(
-      initialGoal?.targetAmount ? String(initialGoal.targetAmount) : "",
-    );
-
-    setGoalFormStartDate(initialGoal?.startDate?.replace(/\./g, "-") ?? "");
-
-    setGoalFormEndDate(initialGoal?.targetDate?.replace(/\./g, "-") ?? "");
-
+    setGoalFormName("");
     setGoalFormImage(null);
-    setGoalFormMemo(initialGoal?.memo ?? "");
+    setGoalFormImageRemoved(goalFormHasImage);
+    setGoalFormMemo("");
     setGoalFormError("");
 
     if (goalFormFileInputRef.current) {
@@ -132,11 +142,16 @@ export default function GoalForm({ initialGoal = null, onClose, onSave }) {
       startDate: goalFormStartDate,
       memo: goalFormMemo,
       imageFile: goalFormImage,
+      imageRemoved: goalFormImageRemoved,
       imagePath: initialGoal?.imagePath ?? null,
-      imageName: goalFormImage?.name ?? initialGoal?.imageName ?? "",
+      imageName: goalFormImageRemoved
+        ? ""
+        : (goalFormImage?.name ?? initialGoal?.imageName ?? ""),
       imageUrl: goalFormImage
         ? URL.createObjectURL(goalFormImage)
-        : (initialGoal?.imageUrl ?? ""),
+        : goalFormImageRemoved
+          ? ""
+          : (initialGoal?.imageUrl ?? ""),
       color: initialGoal?.color ?? "green",
     };
 
@@ -335,20 +350,44 @@ export default function GoalForm({ initialGoal = null, onClose, onSave }) {
               onChange={handleImageChange}
             />
 
-            <label
-              htmlFor="goalFormImage"
-              className={styles.goalSettingImageButton}
-            >
-              <span>
-                {goalFormImage?.name ||
-                  initialGoal?.imageName ||
-                  "JPG, PNG (최대 2MB) (선택)"}
-              </span>
+            <div className={styles.goalSettingImageControl}>
+              <label
+                htmlFor="goalFormImage"
+                className={`${styles.goalSettingImageButton} ${
+                  goalFormHasImage
+                    ? styles.goalSettingImageButtonWithRemove
+                    : ""
+                }`}
+              >
+                <span>
+                  {goalFormImage?.name ||
+                    (!goalFormImageRemoved && initialGoal?.imageName) ||
+                    "JPG, PNG (최대 2MB) (선택)"}
+                </span>
 
-              <span className="material-icons" aria-hidden="true">
-                photo_camera
-              </span>
-            </label>
+                {!goalFormHasImage && (
+                  <span
+                    className={`material-icons ${styles.goalSettingImageIcon}`}
+                    aria-hidden="true"
+                  >
+                    photo_camera
+                  </span>
+                )}
+              </label>
+
+              {goalFormHasImage && (
+                <button
+                  type="button"
+                  className={styles.goalSettingImageRemoveButton}
+                  aria-label="목표 이미지 삭제"
+                  onClick={handleImageRemove}
+                >
+                  <span className="material-icons" aria-hidden="true">
+                    delete
+                  </span>
+                </button>
+              )}
+            </div>
           </div>
 
           <label className={styles.goalSettingFormField}>

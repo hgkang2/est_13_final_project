@@ -290,7 +290,9 @@ export default function GoalSetting() {
       end_date: goalSettingSavedGoal.targetDate,
       status: GOAL_STATUS_TO_DB[goalSettingSavedGoal.status] ?? "in_progress",
       memo: goalSettingSavedGoal.memo.trim() || null,
-      image_path: uploadedImagePath ?? goalSettingSavedGoal.imagePath ?? null,
+      image_path: goalSettingSavedGoal.imageRemoved
+        ? null
+        : (uploadedImagePath ?? goalSettingSavedGoal.imagePath ?? null),
       updated_at: new Date().toISOString(),
     };
 
@@ -338,7 +340,7 @@ export default function GoalSetting() {
     );
 
     if (
-      uploadedImagePath &&
+      (uploadedImagePath || goalSettingSavedGoal.imageRemoved) &&
       goalSettingSavedGoal.imagePath &&
       uploadedImagePath !== goalSettingSavedGoal.imagePath
     ) {
