@@ -35,6 +35,10 @@ import {
   uploadReceiptFile,
 } from "./services/receiptService";
 import { useReceiptAnalysis } from "./hooks/useReceiptAnalysis";
+import {
+  initialTransactionForm,
+  useTransactionForm,
+} from "./hooks/useTransactionForm";
 
 const getToday = () => {
   const today = new Date();
@@ -66,23 +70,6 @@ const getCurrentMonthRange = () => {
     startDate,
     endDate,
   };
-};
-
-const initialTransactionForm = {
-  type: "income",
-  amount: "",
-  category: "",
-  date: getToday(),
-  time: "",
-  paymentMethod: "",
-  content: "",
-  memo: "",
-  attachment: null,
-
-  withdrawAccount: "",
-  depositAccount: "",
-  isRecurring: false,
-  recurringDay: "29",
 };
 
 const initialAiTransactionForm = {
@@ -128,10 +115,6 @@ export default function Transaction() {
   const [entryTab, setEntryTab] = useState("manual");
   const [entryMode, setEntryMode] = useState("single");
 
-  const [transactionForm, setTransactionForm] = useState(
-    initialTransactionForm,
-  );
-
   const [multipleRows, setMultipleRows] = useState([
     createMultipleTransactionRow(1),
     createMultipleTransactionRow(2),
@@ -171,7 +154,6 @@ export default function Transaction() {
   const [isCopyModalOpen, setIsCopyModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [isMultipleConfirmOpen, setIsMultipleConfirmOpen] = useState(false);
-  const [transactionErrors, setTransactionErrors] = useState({});
   const [aiTransactionErrors, setAiTransactionErrors] = useState({});
 
   const [categories, setCategories] = useState([]);
@@ -199,6 +181,16 @@ export default function Transaction() {
     setAiTypeValues,
     setAiTransactionErrors,
   });
+
+  const {
+    transactionForm,
+    setTransactionForm,
+    transactionErrors,
+    setTransactionErrors,
+    handleResetTransactionForm,
+    onTransactionFormChange,
+    onToggleRecurring,
+  } = useTransactionForm();
 
   useEffect(() => {
     const fetchTransactionOptions = async () => {
@@ -527,56 +519,6 @@ export default function Transaction() {
     setDateRange(prevRange => ({
       ...prevRange,
       [name]: value,
-    }));
-  };
-
-  const handleResetTransactionForm = () => {
-    setTransactionForm(prev => ({
-      ...initialTransactionForm,
-      type: prev.type,
-    }));
-
-    setTransactionErrors({});
-    setCopiedRecentId(null);
-  };
-
-  const onTransactionFormChange = event => {
-    const { name, value, files } = event.target;
-
-    setTransactionErrors(prevErrors => ({
-      ...prevErrors,
-      [name]: "",
-    }));
-    setTransactionForm(prevForm => {
-      const nextForm = {
-        ...prevForm,
-        [name]: files ? (files[0] ?? null) : value,
-      };
-
-      if (name === "type" && value !== "transfer") {
-        return {
-          ...nextForm,
-          withdrawAccount: "",
-          depositAccount: "",
-          isRecurring: false,
-        };
-      }
-
-      if (name === "type" && value === "transfer") {
-        return {
-          ...nextForm,
-          paymentMethod: "",
-        };
-      }
-
-      return nextForm;
-    });
-  };
-
-  const onToggleRecurring = () => {
-    setTransactionForm(prevForm => ({
-      ...prevForm,
-      isRecurring: !prevForm.isRecurring,
     }));
   };
 
@@ -1686,7 +1628,10 @@ export default function Transaction() {
                   onToggleRecurring,
                   onTransactionSubmit,
                   onContinueEntry,
-                  onResetTransactionForm: handleResetTransactionForm,
+                  onResetTransactionForm: () => {
+                    handleResetTransactionForm();
+                    setCopiedRecentId(null);
+                  },
                 }}
                 multipleEntry={{
                   multipleRows,
