@@ -382,12 +382,9 @@
 }
 
 .expandedList {
-  max-height: 610px;
-  overflow-y: auto;
-}
-
-.expandedList {
+  width: calc(100% + 6px);
   max-height: 620px;
+  margin-right: -6px;
   overflow-y: auto;
 
   // Firefox

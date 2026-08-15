@@ -44,16 +44,25 @@ export const fetchTransactions = async (
   userId,
   startDate,
   endDate,
+  transactionType,
+  from,
+  to,
 ) => {
   const { startAt, endAt } = createTransactionDateRange(startDate, endDate);
 
-  return await supabase
+  let query = supabase
     .from("transactions")
-    .select(TRANSACTION_SELECT)
+    .select(TRANSACTION_SELECT, { count: "exact" })
     .eq("user_id", userId)
     .gte("transaction_at", startAt)
     .lt("transaction_at", endAt)
     .order("transaction_at", { ascending: false });
+
+  if (transactionType !== "all") {
+    query = query.eq("transaction_type", transactionType);
+  }
+
+  return await query.range(from, to);
 };
 
 // 최근 거래 목록 조회

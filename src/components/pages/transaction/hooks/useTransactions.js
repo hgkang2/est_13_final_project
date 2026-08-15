@@ -29,9 +29,14 @@ const getCurrentMonthRange = () => {
   };
 };
 
+const INITIAL_TRANSACTION_COUNT = 8;
+const LOAD_MORE_COUNT = 20;
+
 // 사용자 거래 목록 조회와 상태 관리
 export const useTransactions = (supabase, showToast) => {
   const [transactions, setTransactions] = useState([]);
+  const [loadedTransactionCount, setLoadedTransactionCount] = useState(0);
+  const [transactionTotalCount, setTransactionTotalCount] = useState(0);
   const [monthlySummary, setMonthlySummary] = useState(null);
   const [isTransactionsLoading, setIsTransactionsLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState("all");
@@ -57,7 +62,11 @@ export const useTransactions = (supabase, showToast) => {
 
       // 2. 거래 목록 조회
       const [
-        { data: transactionData, error: transactionError },
+        {
+          data: transactionData,
+          error: transactionError,
+          count: transactionCount,
+        },
         { data: recentData, error: recentError },
       ] = await Promise.all([
         fetchTransactions(
@@ -65,6 +74,9 @@ export const useTransactions = (supabase, showToast) => {
           user.id,
           dateRange.startDate,
           dateRange.endDate,
+          activeFilter,
+          0,
+          INITIAL_TRANSACTION_COUNT - 1,
         ),
         fetchRecentTransactions(supabase, user.id),
       ]);
@@ -115,13 +127,16 @@ export const useTransactions = (supabase, showToast) => {
       //   setMonthlySummary(monthlySummaryData);
       //   console.log("소비 기록 요약 조회 성공:", monthlySummaryData);
       // }
+      setLoadedTransactionCount((transactionData ?? []).length);
+      setTransactionTotalCount(transactionCount ?? 0);
+
       setIsTransactionsLoading(false);
 
       console.log("소비 기록 조회 성공:", formattedTransactions);
     };
 
     loadTransactions();
-  }, [dateRange.startDate, dateRange.endDate]);
+  }, [dateRange.startDate, dateRange.endDate, activeFilter]);
 
   const refreshMonthlySummary = async () => {
     const { data, error } = await fetchTransactionMonthlySummary(supabase);
@@ -135,6 +150,49 @@ export const useTransactions = (supabase, showToast) => {
     setMonthlySummary(data);
 
     console.log("소비 기록 요약 조회 성공:", data);
+  };
+
+  const loadMoreTransactions = async () => {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      console.error("사용자 확인 실패:", userError);
+      showToast("로그인 정보를 확인할 수 없어요.", "error");
+      return;
+    }
+
+    const from = loadedTransactionCount;
+    const to = from + LOAD_MORE_COUNT - 1;
+
+    const { data, error, count } = await fetchTransactions(
+      supabase,
+      user.id,
+      dateRange.startDate,
+      dateRange.endDate,
+      activeFilter,
+      from,
+      to,
+    );
+
+    if (error) {
+      console.error("추가 소비 기록 조회 실패:", error);
+      showToast("추가 소비 기록을 불러오지 못했어요.", "error");
+      return;
+    }
+
+    const newTransactions = (data ?? []).map(formatTransaction);
+
+    setTransactions(prevTransactions => [
+      ...prevTransactions,
+      ...newTransactions,
+    ]);
+
+    setLoadedTransactionCount(prevCount => prevCount + newTransactions.length);
+
+    setTransactionTotalCount(count ?? transactionTotalCount);
   };
 
   useEffect(() => {
@@ -151,6 +209,8 @@ export const useTransactions = (supabase, showToast) => {
 
     return matchesType && matchesDate;
   });
+
+  const hasMoreTransactions = loadedTransactionCount < transactionTotalCount;
 
   const hasTransactionData = visibleTransactions.length > 0;
 
@@ -201,6 +261,8 @@ export const useTransactions = (supabase, showToast) => {
     setTransactions,
     monthlySummary,
     refreshMonthlySummary,
+    loadMoreTransactions,
+    hasMoreTransactions,
     isTransactionsLoading,
     activeFilter,
     setActiveFilter,

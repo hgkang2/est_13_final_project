@@ -44,6 +44,8 @@ export default function Transaction() {
     setTransactions,
     monthlySummary,
     refreshMonthlySummary,
+    loadMoreTransactions,
+    hasMoreTransactions,
     activeFilter,
     setActiveFilter,
     dateRange,
@@ -349,6 +351,8 @@ export default function Transaction() {
                   onToggleTransaction={handleToggleTransaction}
                   onClearSelection={() => setSelectedIds([])}
                   onOpenDetail={handleOpenDetail}
+                  onLoadMore={loadMoreTransactions}
+                  hasMoreTransactions={hasMoreTransactions}
                 />
               </section>
             </div>
