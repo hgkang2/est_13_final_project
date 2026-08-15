@@ -73,6 +73,22 @@ export const useTransactionActions = ({
   setRecentlyAddedId,
   showToast,
 }) => {
+  // 로그인 사용자 확인
+  const getCurrentUser = async () => {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      console.error("사용자 확인 실패:", userError);
+      showToast("로그인 정보를 확인할 수 없어요.", "error");
+      return null;
+    }
+
+    return user;
+  };
+
   // 저장 또는 수정한 거래를 잠시 강조
   const highlightTransaction = transactionId => {
     setRecentlyAddedId(transactionId);
@@ -124,16 +140,9 @@ export const useTransactionActions = ({
     setTransactionErrors({});
 
     // 로그인 사용자 확인
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
+    const user = await getCurrentUser();
 
-    if (userError || !user) {
-      console.error("사용자 확인 실패:", userError);
-      showToast("로그인 정보를 확인할 수 없어요.", "error");
-      return;
-    }
+    if (!user) return;
 
     const attachment = transactionForm.attachment;
 
@@ -251,16 +260,9 @@ export const useTransactionActions = ({
     }
 
     // 1. 로그인 사용자 확인
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
+    const user = await getCurrentUser();
 
-    if (userError || !user) {
-      console.error("사용자 확인 실패:", userError);
-      showToast("로그인 정보를 확인할 수 없어요.", "error");
-      return;
-    }
+    if (!user) return;
 
     const { data: existingAttachment, error: existingAttachmentError } =
       await fetchReceiptAttachment(supabase, selectedTransaction.id);
@@ -483,16 +485,9 @@ export const useTransactionActions = ({
     }
 
     // 1. 로그인 사용자 확인
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
+    const user = await getCurrentUser();
 
-    if (userError || !user) {
-      console.error("사용자 확인 실패:", userError);
-      showToast("로그인 정보를 확인할 수 없어요.", "error");
-      return;
-    }
+    if (!user) return;
 
     // 2. 거래 삭제 전 영수증 Storage 파일 정리
     const { attachmentError, storageDeleteError } =
@@ -553,15 +548,10 @@ export const useTransactionActions = ({
     }
 
     // 1. 로그인 사용자 확인
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
+    const user = await getCurrentUser();
 
-    if (userError || !user) {
-      console.error("사용자 확인 실패:", userError);
+    if (!user) {
       setIsMultipleConfirmOpen(false);
-      showToast("로그인 정보를 확인할 수 없어요.", "error");
       return;
     }
 
@@ -624,16 +614,9 @@ export const useTransactionActions = ({
     setAiTransactionErrors({});
 
     // 2. 로그인 사용자 확인
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
+    const user = await getCurrentUser();
 
-    if (userError || !user) {
-      console.error("사용자 확인 실패:", userError);
-      showToast("로그인 정보를 확인할 수 없어요.", "error");
-      return;
-    }
+    if (!user) return;
 
     const attachment = aiTransactionForm.receipt;
 
