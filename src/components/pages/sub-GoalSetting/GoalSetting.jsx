@@ -117,6 +117,7 @@ export default function GoalSetting() {
 
   // 실제 초기 화면
   const [goalSettingGoals, setGoalSettingGoals] = useState([]);
+  const [goalSettingFocusGoals, setGoalSettingFocusGoals] = useState([]);
 
   const [goalSettingIsLoading, setGoalSettingIsLoading] = useState(true);
 
@@ -470,7 +471,12 @@ export default function GoalSetting() {
                   aria-expanded={goalSettingFocusModalIsOpen}
                   onClick={() => setGoalSettingFocusModalIsOpen(true)}
                 >
-                  집중목표설정
+                  <span className={styles.goalSettingFocusDesktopLabel}>
+                    집중목표설정
+                  </span>
+                  <span className={styles.goalSettingFocusMobileLabel}>
+                    집중목표
+                  </span>
                 </button>
               </nav>
 
@@ -479,6 +485,7 @@ export default function GoalSetting() {
               ) : !goalSettingIsLoading ? (
                 <GoalList
                   goals={goalSettingFilteredGoals}
+                  focusGoals={goalSettingFocusGoals}
                   onEdit={handleGoalSettingEdit}
                   onDelete={handleGoalSettingDelete}
                 />
@@ -510,8 +517,12 @@ export default function GoalSetting() {
             >
               <FocusGoalModal
                 goals={goalSettingGoals}
+                initialSelectedGoals={goalSettingFocusGoals}
                 onClose={() => setGoalSettingFocusModalIsOpen(false)}
-                onComplete={() => setGoalSettingFocusModalIsOpen(false)}
+                onComplete={(selectedGoals) => {
+                  setGoalSettingFocusGoals(selectedGoals);
+                  setGoalSettingFocusModalIsOpen(false);
+                }}
               />
             </div>
           </div>
