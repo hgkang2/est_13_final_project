@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { fetchTransactions } from "../services/transactionService";
+import {
+  fetchTransactions,
+  fetchTransactionMonthlySummary,
+} from "../services/transactionService";
 import { formatTransaction } from "../utils/transactionFormatter";
 
 // 날짜 초기값
@@ -28,6 +31,7 @@ const getCurrentMonthRange = () => {
 // 사용자 거래 목록 조회와 상태 관리
 export const useTransactions = (supabase, showToast) => {
   const [transactions, setTransactions] = useState([]);
+  const [monthlySummary, setMonthlySummary] = useState(null);
   const [isTransactionsLoading, setIsTransactionsLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState("all");
   const [dateRange, setDateRange] = useState(getCurrentMonthRange);
@@ -64,6 +68,18 @@ export const useTransactions = (supabase, showToast) => {
       const formattedTransactions = (data ?? []).map(formatTransaction);
 
       setTransactions(formattedTransactions);
+
+      // 4. 이번 달 거래 요약 조회
+      const { data: monthlySummaryData, error: monthlySummaryError } =
+        await fetchTransactionMonthlySummary(supabase);
+
+      if (monthlySummaryError) {
+        console.error("소비 기록 요약 조회 실패:", monthlySummaryError);
+        showToast("소비 기록 요약을 불러오지 못했어요.", "error");
+      } else {
+        setMonthlySummary(monthlySummaryData);
+        console.log("소비 기록 요약 조회 성공:", monthlySummaryData);
+      }
       setIsTransactionsLoading(false);
 
       console.log("소비 기록 조회 성공:", formattedTransactions);
@@ -130,6 +146,7 @@ export const useTransactions = (supabase, showToast) => {
   return {
     transactions,
     setTransactions,
+    monthlySummary,
     isTransactionsLoading,
     activeFilter,
     setActiveFilter,

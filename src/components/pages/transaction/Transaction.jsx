@@ -42,6 +42,7 @@ export default function Transaction() {
   const {
     transactions,
     setTransactions,
+    monthlySummary,
     activeFilter,
     setActiveFilter,
     dateRange,
@@ -275,84 +276,19 @@ export default function Transaction() {
     showToast("거래 정보를 입력창에 복사했어요.");
   };
 
-  const now = new Date();
-
-  const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth();
-
-  const thisMonthTransactions = transactions.filter(transaction => {
-    const transactionDate = new Date(transaction.dateValue);
-
-    return (
-      transactionDate.getFullYear() === currentYear &&
-      transactionDate.getMonth() === currentMonth
-    );
-  });
-
-  const lastMonthDate = new Date(currentYear, currentMonth - 1, 1);
-  const lastMonthYear = lastMonthDate.getFullYear();
-  const lastMonth = lastMonthDate.getMonth();
-
-  const lastMonthTransactions = transactions.filter(transaction => {
-    const transactionDate = new Date(transaction.dateValue);
-
-    return (
-      transactionDate.getFullYear() === lastMonthYear &&
-      transactionDate.getMonth() === lastMonth
-    );
-  });
-
-  const calculateSummary = transactionList => {
-    return transactionList.reduce(
-      (summary, transaction) => {
-        if (transaction.type === "income") {
-          summary.income += Math.abs(transaction.amount);
-          summary.incomeCount += 1;
-        }
-
-        if (transaction.type === "expense") {
-          summary.expense += Math.abs(transaction.amount);
-          summary.expenseCount += 1;
-        }
-
-        if (transaction.type === "transfer") {
-          summary.transferCount += 1;
-        }
-
-        return summary;
-      },
-      {
-        income: 0,
-        expense: 0,
-        incomeCount: 0,
-        expenseCount: 0,
-        transferCount: 0,
-      },
-    );
+  const summaryData = monthlySummary ?? {
+    income: 0,
+    expense: 0,
+    transactionCount: 0,
+    incomeCount: 0,
+    expenseCount: 0,
+    transferCount: 0,
+    balance: 0,
+    incomeChange: 0,
+    expenseChange: 0,
+    balanceChange: 0,
   };
 
-  const thisMonthSummary = calculateSummary(thisMonthTransactions);
-  const lastMonthSummary = calculateSummary(lastMonthTransactions);
-
-  const summaryData = {
-    income: thisMonthSummary.income,
-    expense: thisMonthSummary.expense,
-
-    transactionCount: thisMonthTransactions.length,
-    incomeCount: thisMonthSummary.incomeCount,
-    expenseCount: thisMonthSummary.expenseCount,
-    transferCount: thisMonthSummary.transferCount,
-
-    balance: thisMonthSummary.income - thisMonthSummary.expense,
-
-    incomeChange: thisMonthSummary.income - lastMonthSummary.income,
-    expenseChange: thisMonthSummary.expense - lastMonthSummary.expense,
-
-    balanceChange:
-      thisMonthSummary.income -
-      thisMonthSummary.expense -
-      (lastMonthSummary.income - lastMonthSummary.expense),
-  };
   const recentTransactions = transactions.slice(0, 6);
 
   const onContinueEntry = () => {

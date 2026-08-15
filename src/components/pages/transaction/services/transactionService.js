@@ -45,6 +45,11 @@ export const fetchTransactions = async (supabase, userId) => {
     .order("transaction_at", { ascending: false });
 };
 
+// 이번 달 거래 요약 조회
+export const fetchTransactionMonthlySummary = async supabase => {
+  return await supabase.rpc("get_transaction_monthly_summary");
+};
+
 // 단건 거래 저장
 export const createTransaction = async (supabase, transactionData) => {
   return await supabase
