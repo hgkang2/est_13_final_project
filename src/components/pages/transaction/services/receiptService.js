@@ -248,6 +248,39 @@ export const removeReceiptAttachment = async (supabase, existingAttachment) => {
   };
 };
 
+// 거래 삭제 전 연결된 영수증 Storage 파일 정리
+export const removeTransactionReceiptFile = async (
+  supabase,
+  transactionId,
+) => {
+  const { data: attachmentData, error: attachmentError } =
+    await fetchReceiptAttachment(supabase, transactionId);
+
+  if (attachmentError) {
+    return {
+      attachmentError,
+      storageDeleteError: null,
+    };
+  }
+
+  if (!attachmentData?.storage_path) {
+    return {
+      attachmentError: null,
+      storageDeleteError: null,
+    };
+  }
+
+  const { error: storageDeleteError } = await removeReceiptFile(
+    supabase,
+    attachmentData.storage_path,
+  );
+
+  return {
+    attachmentError: null,
+    storageDeleteError,
+  };
+};
+
 // AI 영수증 분석 요청
 export const analyzeReceipt = async (supabase, analysisData) => {
   return await supabase.functions.invoke("analyze-receipt", {

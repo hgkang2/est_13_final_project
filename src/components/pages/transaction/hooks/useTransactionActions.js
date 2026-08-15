@@ -11,7 +11,7 @@ import {
   createReceiptSignedUrl,
   fetchReceiptAttachment,
   removeReceiptAttachment,
-  removeReceiptFile,
+  removeTransactionReceiptFile,
   replaceReceiptAttachment,
   saveReceiptAttachment,
 } from "../services/receiptService";
@@ -500,9 +500,9 @@ export const useTransactionActions = ({
       return;
     }
 
-    // 2. 첨부파일 정보 조회
-    const { data: attachmentData, error: attachmentError } =
-      await fetchReceiptAttachment(supabase, selectedTransaction.id);
+    // 2. 거래 삭제 전 영수증 Storage 파일 정리
+    const { attachmentError, storageDeleteError } =
+      await removeTransactionReceiptFile(supabase, selectedTransaction.id);
 
     if (attachmentError) {
       console.error("첨부파일 정보 조회 실패:", attachmentError);
@@ -510,21 +510,13 @@ export const useTransactionActions = ({
       return;
     }
 
-    // 3. Storage 파일이 있으면 먼저 삭제
-    if (attachmentData?.storage_path) {
-      const { error: storageDeleteError } = await removeReceiptFile(
-        supabase,
-        attachmentData.storage_path,
-      );
-
-      if (storageDeleteError) {
-        console.error("영수증 Storage 삭제 실패:", storageDeleteError);
-        setToastMessage("영수증 파일을 삭제하지 못했어요.");
-        return;
-      }
+    if (storageDeleteError) {
+      console.error("영수증 Storage 삭제 실패:", storageDeleteError);
+      setToastMessage("영수증 파일을 삭제하지 못했어요.");
+      return;
     }
 
-    // 4. 거래 삭제
+    // 3. 거래 삭제
     const { error: deleteError } = await deleteTransaction(
       supabase,
       selectedTransaction.id,
@@ -537,7 +529,7 @@ export const useTransactionActions = ({
       return;
     }
 
-    // 5. 화면에서 즉시 제거
+    // 4. 화면에서 즉시 제거
     setTransactions(prevTransactions =>
       prevTransactions.filter(
         transaction => transaction.id !== selectedTransaction.id,
