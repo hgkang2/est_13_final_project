@@ -31,6 +31,7 @@ export const useTransactions = supabase => {
   const [isTransactionsLoading, setIsTransactionsLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState("all");
   const [dateRange, setDateRange] = useState(getCurrentMonthRange);
+  const [selectedIds, setSelectedIds] = useState([]);
 
   useEffect(() => {
     const loadTransactions = async () => {
@@ -82,6 +83,39 @@ export const useTransactions = supabase => {
 
   const hasTransactionData = visibleTransactions.length > 0;
 
+  const isAllSelected =
+    visibleTransactions.length > 0 &&
+    visibleTransactions.every(transaction =>
+      selectedIds.includes(transaction.id),
+    );
+
+  const handleToggleTransaction = id => {
+    setSelectedIds(prevSelectedIds =>
+      prevSelectedIds.includes(id)
+        ? prevSelectedIds.filter(selectedId => selectedId !== id)
+        : [...prevSelectedIds, id],
+    );
+  };
+
+  const handleToggleAll = () => {
+    if (isAllSelected) {
+      const visibleIds = visibleTransactions.map(transaction => transaction.id);
+
+      setSelectedIds(prevSelectedIds =>
+        prevSelectedIds.filter(id => !visibleIds.includes(id)),
+      );
+
+      return;
+    }
+
+    setSelectedIds(prevSelectedIds => [
+      ...new Set([
+        ...prevSelectedIds,
+        ...visibleTransactions.map(transaction => transaction.id),
+      ]),
+    ]);
+  };
+
   const handleDateRangeChange = event => {
     const { name, value } = event.target;
 
@@ -101,5 +135,10 @@ export const useTransactions = supabase => {
     visibleTransactions,
     hasTransactionData,
     handleDateRangeChange,
+    selectedIds,
+    setSelectedIds,
+    isAllSelected,
+    handleToggleTransaction,
+    handleToggleAll,
   };
 };

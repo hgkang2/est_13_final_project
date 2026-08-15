@@ -72,12 +72,16 @@ export default function Transaction() {
     visibleTransactions,
     hasTransactionData,
     handleDateRangeChange,
+    selectedIds,
+    setSelectedIds,
+    isAllSelected,
+    handleToggleTransaction,
+    handleToggleAll,
   } = useTransactions(supabase);
 
   const [panelView, setPanelView] = useState("entry");
   // "entry" | "recent" | "detail" | "edit" | "closed"
 
-  const [selectedIds, setSelectedIds] = useState([]);
   const [entryTab, setEntryTab] = useState("manual");
   const [entryMode, setEntryMode] = useState("single");
 
@@ -334,39 +338,6 @@ export default function Transaction() {
       thisMonthSummary.income -
       thisMonthSummary.expense -
       (lastMonthSummary.income - lastMonthSummary.expense),
-  };
-
-  const isAllSelected =
-    visibleTransactions.length > 0 &&
-    visibleTransactions.every(transaction =>
-      selectedIds.includes(transaction.id),
-    );
-
-  const handleToggleTransaction = id => {
-    setSelectedIds(prevSelectedIds =>
-      prevSelectedIds.includes(id)
-        ? prevSelectedIds.filter(selectedId => selectedId !== id)
-        : [...prevSelectedIds, id],
-    );
-  };
-
-  const handleToggleAll = () => {
-    if (isAllSelected) {
-      const visibleIds = visibleTransactions.map(transaction => transaction.id);
-
-      setSelectedIds(prevSelectedIds =>
-        prevSelectedIds.filter(id => !visibleIds.includes(id)),
-      );
-
-      return;
-    }
-
-    setSelectedIds(prevSelectedIds => [
-      ...new Set([
-        ...prevSelectedIds,
-        ...visibleTransactions.map(transaction => transaction.id),
-      ]),
-    ]);
   };
 
   const onTransactionSubmit = async event => {
