@@ -38,3 +38,19 @@ export const validateTransactionForm = (
 
   return errors;
 };
+
+// 영수증 이미지 파일 형식과 크기 검증
+export const validateReceiptFile = file => {
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+  const maxSize = 5 * 1024 * 1024;
+
+  if (!allowedTypes.includes(file.type)) {
+    return "JPG, PNG, WEBP 이미지만 등록할 수 있어요.";
+  }
+
+  if (file.size > maxSize) {
+    return "영수증 이미지는 5MB 이하만 등록할 수 있어요.";
+  }
+
+  return null;
+};

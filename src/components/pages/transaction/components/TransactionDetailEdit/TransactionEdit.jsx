@@ -2,7 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import styles from "./TransactionDetailEdit.module.scss";
-import { validateTransactionForm } from "../../utils/transactionValidator";
+import {
+  validateReceiptFile,
+  validateTransactionForm,
+} from "../../utils/transactionValidator";
 import TransactionReceiptSection from "./TransactionReceiptSection";
 
 export default function TransactionEdit({
@@ -68,25 +71,15 @@ export default function TransactionEdit({
 
     if (!file) return;
 
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-    const maxSize = 5 * 1024 * 1024;
+    const receiptFileError = validateReceiptFile(file);
 
-    if (!allowedTypes.includes(file.type)) {
+    if (receiptFileError) {
       setEditErrors(prev => ({
         ...prev,
-        attachment: "JPG, PNG, WEBP 이미지만 등록할 수 있어요.",
+        attachment: receiptFileError,
       }));
       return;
     }
-
-    if (file.size > maxSize) {
-      setEditErrors(prev => ({
-        ...prev,
-        attachment: "영수증 이미지는 5MB 이하만 등록할 수 있어요.",
-      }));
-      return;
-    }
-
     setEditErrors(prev => ({
       ...prev,
       attachment: "",

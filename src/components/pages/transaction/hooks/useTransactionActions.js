@@ -1,4 +1,7 @@
-import { validateTransactionForm } from "../utils/transactionValidator";
+import {
+  validateReceiptFile,
+  validateTransactionForm,
+} from "../utils/transactionValidator";
 import { formatTransaction } from "../utils/transactionFormatter";
 import { createTransactionDate } from "../utils/transactionDate";
 import {
@@ -136,16 +139,10 @@ export const useTransactionActions = ({
     const attachment = transactionForm.attachment;
 
     if (attachment) {
-      const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-      const maxSize = 5 * 1024 * 1024; // 5MB
+      const receiptFileError = validateReceiptFile(attachment);
 
-      if (!allowedTypes.includes(attachment.type)) {
-        setToastMessage("영수증은 JPG, PNG, WEBP 이미지만 등록할 수 있어요.");
-        return;
-      }
-
-      if (attachment.size > maxSize) {
-        setToastMessage("영수증 이미지는 5MB 이하만 등록할 수 있어요.");
+      if (receiptFileError) {
+        setToastMessage(receiptFileError);
         return;
       }
     }
@@ -346,18 +343,13 @@ export const useTransactionActions = ({
     // 영수증 첨부 수정 처리
     // 새 영수증 선택 → 신규 첨부 또는 기존 첨부 교체
     if (newAttachment) {
-      const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-      const maxSize = 5 * 1024 * 1024;
+      const receiptFileError = validateReceiptFile(newAttachment);
 
-      if (!allowedTypes.includes(newAttachment.type)) {
-        setToastMessage("영수증은 JPG, PNG, WEBP 이미지만 등록할 수 있어요.");
+      if (receiptFileError) {
+        setToastMessage(receiptFileError);
         return;
       }
 
-      if (newAttachment.size > maxSize) {
-        setToastMessage("영수증 이미지는 5MB 이하만 등록할 수 있어요.");
-        return;
-      }
       const {
         newStoragePath,
         uploadError,

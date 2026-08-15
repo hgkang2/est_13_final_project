@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { analyzeReceipt } from "../services/receiptService";
+import { validateReceiptFile } from "../utils/transactionValidator";
 
 // AI 영수증 분석 상태와 처리
 export const useReceiptAnalysis = ({
@@ -18,16 +19,10 @@ export const useReceiptAnalysis = ({
   const handleAiReceipt = file => {
     if (!file) return;
 
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-    const maxSize = 5 * 1024 * 1024;
+    const receiptFileError = validateReceiptFile(file);
 
-    if (!allowedTypes.includes(file.type)) {
-      showToast("JPG, PNG, WEBP 이미지만 분석할 수 있어요.", "error");
-      return;
-    }
-
-    if (file.size > maxSize) {
-      showToast("이미지는 5MB 이하만 등록할 수 있어요.", "error");
+    if (receiptFileError) {
+      showToast(receiptFileError, "error");
       return;
     }
 
