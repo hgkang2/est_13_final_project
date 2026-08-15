@@ -82,6 +82,34 @@ export const useTransactionActions = ({
     }, 1800);
   };
 
+  // 영수증 저장 실패 시 함께 생성된 거래도 롤백
+  const saveReceiptWithRollback = async (userId, transactionId, attachment) => {
+    const receiptResult = await saveReceiptAttachment(
+      supabase,
+      userId,
+      transactionId,
+      attachment,
+    );
+
+    if (!receiptResult.uploadError && !receiptResult.attachmentInsertError) {
+      return {
+        ...receiptResult,
+        rollbackTransactionError: null,
+      };
+    }
+
+    const { error: rollbackTransactionError } = await deleteTransaction(
+      supabase,
+      transactionId,
+      userId,
+    );
+
+    return {
+      ...receiptResult,
+      rollbackTransactionError,
+    };
+  };
+
   const onTransactionSubmit = async event => {
     event.preventDefault();
 
@@ -171,8 +199,8 @@ export const useTransactionActions = ({
         uploadError,
         attachmentInsertError,
         storageRemoveError,
-      } = await saveReceiptAttachment(
-        supabase,
+        rollbackTransactionError,
+      } = await saveReceiptWithRollback(
         user.id,
         insertedTransaction.id,
         attachment,
@@ -180,13 +208,6 @@ export const useTransactionActions = ({
 
       if (uploadError) {
         console.error("영수증 Storage 업로드 실패:", uploadError);
-
-        // 영수증까지 포함해서 하나의 저장 작업으로 취급
-        const { error: rollbackTransactionError } = await deleteTransaction(
-          supabase,
-          insertedTransaction.id,
-          user.id,
-        );
 
         if (rollbackTransactionError) {
           console.error("거래 저장 롤백 실패:", rollbackTransactionError);
@@ -203,12 +224,6 @@ export const useTransactionActions = ({
           console.error("영수증 Storage 롤백 실패:", storageRemoveError);
         }
 
-        const { error: rollbackTransactionError } = await deleteTransaction(
-          supabase,
-          insertedTransaction.id,
-          user.id,
-        );
-
         if (rollbackTransactionError) {
           console.error("거래 저장 롤백 실패:", rollbackTransactionError);
         }
@@ -219,7 +234,6 @@ export const useTransactionActions = ({
 
       console.log("영수증 저장 성공:", storagePath);
     }
-
     // 저장 성공
     console.log("소비 기록 저장 성공:", insertedTransaction);
 
@@ -733,8 +747,8 @@ export const useTransactionActions = ({
         uploadError,
         attachmentInsertError,
         storageRemoveError,
-      } = await saveReceiptAttachment(
-        supabase,
+        rollbackTransactionError,
+      } = await saveReceiptWithRollback(
         user.id,
         insertedTransaction.id,
         attachment,
@@ -742,12 +756,6 @@ export const useTransactionActions = ({
 
       if (uploadError) {
         console.error("AI 영수증 Storage 업로드 실패:", uploadError);
-
-        const { error: rollbackTransactionError } = await deleteTransaction(
-          supabase,
-          insertedTransaction.id,
-          user.id,
-        );
 
         if (rollbackTransactionError) {
           console.error("AI 거래 저장 롤백 실패:", rollbackTransactionError);
@@ -763,12 +771,6 @@ export const useTransactionActions = ({
         if (storageRemoveError) {
           console.error("AI 영수증 Storage 롤백 실패:", storageRemoveError);
         }
-
-        const { error: rollbackTransactionError } = await deleteTransaction(
-          supabase,
-          insertedTransaction.id,
-          user.id,
-        );
 
         if (rollbackTransactionError) {
           console.error("AI 거래 저장 롤백 실패:", rollbackTransactionError);
