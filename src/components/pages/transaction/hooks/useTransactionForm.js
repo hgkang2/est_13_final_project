@@ -31,6 +31,22 @@ export const initialAiTransactionForm = {
   depositAccount: "",
 };
 
+export const initialAiTypeValues = {
+  income: {
+    category: "",
+    paymentMethod: "",
+  },
+  expense: {
+    category: "",
+    paymentMethod: "",
+  },
+  transfer: {
+    category: "",
+    withdrawAccount: "",
+    depositAccount: "",
+  },
+};
+
 // 단건 거래 입력 폼 상태와 변경 처리
 export const useTransactionForm = () => {
   const [transactionForm, setTransactionForm] = useState(
@@ -41,23 +57,8 @@ export const useTransactionForm = () => {
     initialAiTransactionForm,
   );
   const [aiTransactionErrors, setAiTransactionErrors] = useState({});
-
-  const [aiTypeValues, setAiTypeValues] = useState({
-    income: {
-      category: "",
-      paymentMethod: "",
-    },
-    expense: {
-      category: "",
-      paymentMethod: "",
-    },
-    transfer: {
-      category: "",
-      withdrawAccount: "",
-      depositAccount: "",
-    },
-  });
-
+  
+  const [aiTypeValues, setAiTypeValues] = useState(initialAiTypeValues);
   const handleResetTransactionForm = () => {
     setTransactionForm(prev => ({
       ...initialTransactionForm,

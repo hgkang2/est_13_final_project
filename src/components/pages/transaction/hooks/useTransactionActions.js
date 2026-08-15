@@ -20,6 +20,7 @@ import {
 } from "../services/receiptService";
 import {
   initialAiTransactionForm,
+  initialAiTypeValues,
   initialTransactionForm,
 } from "./useTransactionForm";
 import { createMultipleTransactionRow } from "./useMultipleTransactionForm";
@@ -714,22 +715,7 @@ export const useTransactionActions = ({
     setAiPreview("");
     setAiErrorMessage("");
     setAiStatus("idle");
-
-    setAiTypeValues({
-      income: {
-        category: "",
-        paymentMethod: "",
-      },
-      expense: {
-        category: "",
-        paymentMethod: "",
-      },
-      transfer: {
-        category: "",
-        withdrawAccount: "",
-        depositAccount: "",
-      },
-    });
+    setAiTypeValues(initialAiTypeValues);
   };
 
   return {
