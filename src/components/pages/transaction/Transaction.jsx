@@ -42,7 +42,6 @@ export default function Transaction() {
   const {
     transactions,
     setTransactions,
-    isTransactionsLoading,
     activeFilter,
     setActiveFilter,
     dateRange,
@@ -96,7 +95,6 @@ export default function Transaction() {
     setAiTransactionForm,
     aiTransactionErrors,
     setAiTransactionErrors,
-    aiTypeValues,
     setAiTypeValues,
     onAiFormChange,
   } = useTransactionForm();
@@ -281,8 +279,6 @@ export default function Transaction() {
 
     setToastMessage("거래 정보를 입력창에 복사했어요.");
   };
-
-  const isTransfer = transactionForm.type === "transfer";
 
   const now = new Date();
 
