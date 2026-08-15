@@ -6,7 +6,10 @@ import {
   deleteTransaction,
 } from "../services/transactionService";
 import { saveReceiptAttachment } from "../services/receiptService";
-import { initialTransactionForm } from "./useTransactionForm";
+import {
+  initialAiTransactionForm,
+  initialTransactionForm,
+} from "./useTransactionForm";
 import { createMultipleTransactionRow } from "./useMultipleTransactionForm";
 
 // 거래 저장/수정/삭제 처리
@@ -19,6 +22,14 @@ export const useTransactionActions = ({
   isValidMultipleRow,
   setMultipleRows,
   setIsMultipleConfirmOpen,
+  aiStatus,
+  aiTransactionForm,
+  setAiTransactionForm,
+  setAiTransactionErrors,
+  setAiTypeValues,
+  setAiPreview,
+  setAiErrorMessage,
+  setAiStatus,
   setTransactions,
   setRecentlyAddedId,
   setToastMessage,
@@ -308,8 +319,200 @@ export const useTransactionActions = ({
     setToastMessage(`${newTransactions.length}건의 소비 기록을 저장했어요.`);
   };
 
+  const onAiTransactionSubmit = async event => {
+    event.preventDefault();
+
+    if (aiStatus !== "success") return;
+
+    // 1. 입력값 검증
+    const errors = validateTransactionForm(aiTransactionForm);
+
+    if (Object.keys(errors).length > 0) {
+      setAiTransactionErrors(errors);
+      return;
+    }
+
+    setAiTransactionErrors({});
+
+    // 2. 로그인 사용자 확인
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      console.error("사용자 확인 실패:", userError);
+      showToast("로그인 정보를 확인할 수 없어요.", "error");
+      return;
+    }
+
+    const attachment = aiTransactionForm.receipt;
+
+    // 3. transaction_at 생성
+    const now = new Date();
+
+    const [hour, minute] = aiTransactionForm.time
+      ? aiTransactionForm.time.split(":").map(Number)
+      : [now.getHours(), now.getMinutes()];
+
+    const transactionDate = new Date(
+      Number(aiTransactionForm.date.slice(0, 4)),
+      Number(aiTransactionForm.date.slice(5, 7)) - 1,
+      Number(aiTransactionForm.date.slice(8, 10)),
+      hour,
+      minute,
+      aiTransactionForm.time ? 0 : now.getSeconds(),
+    );
+
+    // 4. DB 저장값 구성
+    const transactionData = {
+      user_id: user.id,
+      transaction_type: aiTransactionForm.type,
+      amount: Number(aiTransactionForm.amount),
+      category_id: aiTransactionForm.category,
+
+      payment_method_id:
+        aiTransactionForm.type === "transfer"
+          ? null
+          : aiTransactionForm.paymentMethod,
+
+      withdraw_account_id:
+        aiTransactionForm.type === "transfer"
+          ? aiTransactionForm.withdrawAccount
+          : null,
+
+      deposit_account_id:
+        aiTransactionForm.type === "transfer"
+          ? aiTransactionForm.depositAccount
+          : null,
+
+      content: aiTransactionForm.content.trim() || null,
+      memo: aiTransactionForm.memo.trim() || null,
+
+      transaction_at: transactionDate.toISOString(),
+
+      input_method: "ai",
+
+      is_recurring: false,
+      recurring_day: null,
+    };
+
+    // 5. 거래 저장
+    const { data: insertedTransaction, error: insertError } =
+      await createTransaction(supabase, transactionData);
+
+    if (insertError) {
+      console.error("AI 소비 기록 저장 실패:", insertError);
+      showToast("소비 기록을 저장하지 못했어요.", "error");
+      return;
+    }
+
+    if (!insertedTransaction) {
+      console.error("AI 소비 기록 저장 결과가 반환되지 않았습니다.");
+      showToast("소비 기록 저장 결과를 확인하지 못했어요.", "error");
+      return;
+    }
+
+    // 6. AI 분석에 사용한 영수증 이미지 저장
+    if (attachment) {
+      const {
+        storagePath,
+        uploadError,
+        attachmentInsertError,
+        storageRemoveError,
+      } = await saveReceiptAttachment(
+        supabase,
+        user.id,
+        insertedTransaction.id,
+        attachment,
+      );
+
+      if (uploadError) {
+        console.error("AI 영수증 Storage 업로드 실패:", uploadError);
+
+        const { error: rollbackTransactionError } = await deleteTransaction(
+          supabase,
+          insertedTransaction.id,
+          user.id,
+        );
+
+        if (rollbackTransactionError) {
+          console.error("AI 거래 저장 롤백 실패:", rollbackTransactionError);
+        }
+
+        showToast("영수증 업로드에 실패해 거래 저장을 취소했어요.", "error");
+        return;
+      }
+
+      if (attachmentInsertError) {
+        console.error("AI 영수증 첨부정보 저장 실패:", attachmentInsertError);
+
+        if (storageRemoveError) {
+          console.error("AI 영수증 Storage 롤백 실패:", storageRemoveError);
+        }
+
+        const { error: rollbackTransactionError } = await deleteTransaction(
+          supabase,
+          insertedTransaction.id,
+          user.id,
+        );
+
+        if (rollbackTransactionError) {
+          console.error("AI 거래 저장 롤백 실패:", rollbackTransactionError);
+        }
+
+        showToast(
+          "영수증 정보를 저장하지 못해 거래 저장을 취소했어요.",
+          "error",
+        );
+        return;
+      }
+
+      console.log("AI 영수증 저장 성공:", storagePath);
+    }
+
+    // 8. 저장 성공 → 화면 즉시 반영
+    console.log("AI 소비 기록 저장 성공:", insertedTransaction);
+
+    const newTransaction = formatTransaction(insertedTransaction);
+
+    setTransactions(prevTransactions => [newTransaction, ...prevTransactions]);
+
+    setRecentlyAddedId(insertedTransaction.id);
+
+    setTimeout(() => {
+      setRecentlyAddedId(null);
+    }, 1800);
+
+    // 9. AI 입력 상태 초기화
+    showToast("AI 소비 기록을 저장했어요.");
+
+    setAiTransactionForm(initialAiTransactionForm);
+    setAiTransactionErrors({});
+    setAiPreview("");
+    setAiErrorMessage("");
+    setAiStatus("idle");
+
+    setAiTypeValues({
+      income: {
+        category: "",
+        paymentMethod: "",
+      },
+      expense: {
+        category: "",
+        paymentMethod: "",
+      },
+      transfer: {
+        category: "",
+        withdrawAccount: "",
+        depositAccount: "",
+      },
+    });
+  };
+
   return {
     onTransactionSubmit,
     handleConfirmMultipleSubmit,
+    onAiTransactionSubmit,
   };
 };
