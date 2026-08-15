@@ -52,7 +52,7 @@
 .goalSettingPageHeader {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   width: 100%;
   gap: 35px;
   padding-bottom: 24px;
@@ -118,9 +118,23 @@
 .goalSettingFilters {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
   width: 100%;
-  padding: 16px 0;
+}
+
+.goalSettingFilterGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.goalSettingFocusButton {
+  color: var(--color-green-gray);
+}
+
+.goalSettingFocusButtonActive {
+  color: var(--color-point);
 }
 
 .goalSettingFilterButton {
@@ -254,7 +268,29 @@
   position: relative;
   z-index: 10;
   padding: 16px;
-  box-shadow: -6px 0 10px 0 rgba(0, 0, 0, 0.25);
+  box-shadow: -6px 0 10px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+@media (min-width: 769px) {
+  .goalSettingFormPanel {
+    align-self: flex-start;
+    position: sticky;
+    top: 56px;
+    animation: goalSettingFormSlideIn 0.3s ease-out;
+  }
+}
+
+@keyframes goalSettingFormSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .goalSettingForm {
@@ -547,13 +583,21 @@
   opacity: 0;
 }
 
+.goalSettingImageControl {
+  width: 100%;
+  min-width: 0;
+  position: relative;
+}
+
 .goalSettingImageButton {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
   width: 100%;
+  min-width: 0;
   min-height: 40px;
+  box-sizing: border-box;
   padding: 12px;
   border: 1px solid var(--color-border-gray);
   border-radius: 8px;
@@ -564,20 +608,50 @@
   @include typo-caption;
 
   span:first-child {
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  span:last-child {
-    flex-shrink: 0;
-    color: var(--color-light-gray);
+  &:hover {
+    border-color: var(--color-point);
+  }
+}
 
+.goalSettingImageIcon {
+  flex-shrink: 0;
+  color: var(--color-light-gray);
+
+  @include icon-m;
+}
+
+.goalSettingImageButtonWithRemove {
+  padding-right: 48px;
+}
+
+.goalSettingImageRemoveButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  top: 50%;
+  right: 0;
+  padding: 0;
+  border: 0;
+  color: var(--color-light-gray);
+  background-color: transparent;
+  cursor: pointer;
+  transform: translateY(-50%);
+
+  span {
     @include icon-m;
   }
 
   &:hover {
-    border-color: var(--color-point);
+    color: var(--color-type-expense);
   }
 }
 
@@ -719,11 +793,15 @@
   }
 
   .goalSettingFilters {
-    justify-content: center;
+    justify-content: space-between;
     gap: 8px;
     width: 100%;
-    padding: 8px;
     overflow: visible;
+  }
+
+  .goalSettingFilterGroup {
+    flex: 1;
+    min-width: 0;
   }
 
   .goalSettingFilterButton {
@@ -818,17 +896,19 @@
     grid-template-columns 0.2s ease;
   touch-action: pan-y;
 
-  &:hover {
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 
-    .goalSettingGoalDetails {
-      max-height: 80px;
-      margin-top: 8px;
-      opacity: 1;
-    }
+      .goalSettingGoalDetails {
+        max-height: 80px;
+        margin-top: 8px;
+        opacity: 1;
+      }
 
-    .goalSettingGoalDesktopActions {
-      display: flex;
+      .goalSettingGoalDesktopActions {
+        display: flex;
+      }
     }
   }
 }
@@ -1119,6 +1199,20 @@
 ======================================== */
 
 @include mobile {
+  .goalSettingPage {
+    overflow-x: hidden;
+  }
+
+  .goalSettingPageLayout,
+  .goalSettingContainer,
+  .goalSettingSection,
+  .goalSettingGoalListSection,
+  .goalSettingGoalList {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
   .goalSettingGoalListSection {
     align-items: stretch;
   }
@@ -1129,35 +1223,39 @@
     align-items: center;
     column-gap: 16px;
     row-gap: 8px;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
     overflow: hidden;
     padding: 4px 8px;
     border: 1px solid var(--color-border-gray);
     border-radius: 8px;
     box-shadow: none;
-
-    &:hover {
-      box-shadow: none;
-
-      .goalSettingGoalDetails {
-        max-height: 0;
-        margin-top: 0;
-        opacity: 0;
-      }
-
-      .goalSettingGoalDesktopActions {
-        display: none;
-      }
-    }
   }
 
   .goalSettingGoalImage {
+    grid-column: 2;
+    grid-row: 1;
     width: 50px;
     height: 50px;
   }
 
+  .goalSettingGoalDday {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
   .goalSettingGoalContent {
     grid-column: 1 / -1;
+    grid-row: 2;
     gap: 8px;
+    min-width: 0;
+  }
+
+  .goalSettingGoalTitleRow,
+  .goalSettingGoalProgressRow {
+    min-width: 0;
   }
 
   .goalSettingGoalTitleRow {
@@ -1240,5 +1338,283 @@
 
   .goalSettingMoreButton {
     align-self: center;
+  }
+}
+
+// 집중 목표창
+.focusGoalModalBackdrop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  padding: 24px;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.focusGoalModalDialog {
+  width: min(720px, 100%);
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+  border-radius: 8px;
+  background-color: var(--color-white);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0 auto;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.header {
+  position: relative;
+}
+
+.title {
+  @include typo-body-l-plus;
+  color: var(--color-text);
+}
+
+.closeButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-light-gray);
+  cursor: pointer;
+  @include icon-l;
+}
+
+.description {
+  color: var(--color-light-gray);
+  @include typo-body-m;
+
+  strong {
+    @include typo-body-m-plus;
+  }
+}
+
+.guide {
+  color: var(--color-light-gray);
+  @include typo-body-s;
+}
+
+.selectedSection {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sectionTitle {
+  color: var(--color-text);
+  @include typo-body-m-plus;
+}
+
+.rankArea {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding: 16px;
+  border: 0.5px solid var(--color-border-gray);
+  border-radius: 4px;
+  background: var(--color-memo-back);
+}
+
+.rankCard {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid;
+  border-radius: 8px;
+  background: var(--color-white);
+}
+
+.firstRank {
+  border-color: var(--color-secondary);
+
+  .rankBadge {
+    background: var(--color-secondary);
+  }
+}
+
+.secondRank {
+  border-color: var(--color-point);
+
+  .rankBadge {
+    background: var(--color-point);
+  }
+}
+
+.rankBadge {
+  padding: 2px 8px;
+  border-radius: 9999px;
+  color: var(--color-white);
+  @include typo-body-s-plus;
+}
+
+.rankGoal {
+  color: var(--color-green-gray);
+  @include typo-body-s-plus;
+}
+
+.selectedGoal {
+  color: var(--color-text);
+}
+
+.swapButton {
+  padding: 8px;
+  border: 0;
+  background: var(--color-white);
+  box-shadow: 0 0 7px rgb(0 0 0 / 25%);
+  color: var(--color-point);
+  cursor: pointer;
+  @include typo-body-s;
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.goalSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.goalHeading {
+  display: flex;
+  justify-content: space-between;
+}
+
+.selectedCount {
+  color: var(--color-text);
+  @include typo-body-s;
+}
+
+.goalList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.goalCard {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 8px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+  color: var(--color-text);
+  @include typo-body-m;
+}
+
+.checkbox {
+  width: 12px;
+  height: 12px;
+  margin: 0;
+  border: 1px solid var(--color-text);
+  border-radius: 2px;
+  background: var(--color-white);
+  appearance: none;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+
+  button {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--color-gray);
+    cursor: pointer;
+    @include typo-body-s-plus;
+  }
+}
+
+.buttonSection {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.completeButton,
+.cancelButton {
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  @include typo-body-s;
+}
+
+.completeButton {
+  border: 1px solid var(--color-point);
+  background: var(--color-point);
+  color: var(--color-white);
+}
+
+.cancelButton {
+  border: 1px solid var(--color-point);
+  background: var(--color-white);
+  color: var(--color-point);
+}
+
+@media (max-width: 390px) {
+  .container {
+    gap: 8px;
+    padding: 16px;
+  }
+
+  .title {
+    @include typo-card-label;
+  }
+
+  .description {
+    @include typo-body-s;
+
+    strong {
+      @include typo-body-s-plus;
+    }
+  }
+
+  .guide {
+    @include typo-body-xs;
+  }
+
+  .sectionTitle {
+    @include typo-body-s-plus;
+  }
+
+  .rankArea {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .rankCard {
+    width: 100%;
+    padding: 12px;
+  }
+
+  .swapButton {
+    padding: 8px;
+    @include typo-body-xs;
+  }
+
+  .goalSection {
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .selectedCount {
+    @include typo-body-xs;
   }
 }

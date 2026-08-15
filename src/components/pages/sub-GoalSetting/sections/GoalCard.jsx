@@ -1,9 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "../GoalSetting.module.scss";
 
-const DEFAULT_GOAL_IMAGE = "/images/category/savings.png";
+const DEFAULT_GOAL_IMAGE = "/images/goalsetting/cheering-character.png";
 
 const DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
 
@@ -132,10 +132,29 @@ function formatGoalDate(dateValue) {
 
 export default function GoalCard({ goal, onEdit, onDelete }) {
   const goalCardPointerStartX = useRef(0);
+  const goalCardRef = useRef(null);
 
   const [goalCardIsExpanded, setGoalCardIsExpanded] = useState(false);
 
   const [goalCardIsSwiped, setGoalCardIsSwiped] = useState(false);
+
+  useEffect(() => {
+    const handleOutsidePointerDown = (event) => {
+      if (
+        goalCardIsSwiped &&
+        goalCardRef.current &&
+        !goalCardRef.current.contains(event.target)
+      ) {
+        setGoalCardIsSwiped(false);
+      }
+    };
+
+    document.addEventListener("pointerdown", handleOutsidePointerDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handleOutsidePointerDown);
+    };
+  }, [goalCardIsSwiped]);
 
   const goalCardProgress = getGoalProgress(
     goal.currentAmount,
@@ -166,11 +185,17 @@ export default function GoalCard({ goal, onEdit, onDelete }) {
     const movedDistance = event.clientX - goalCardPointerStartX.current;
 
     if (movedDistance <= -40) {
+      setGoalCardIsExpanded(false);
       setGoalCardIsSwiped(true);
       return;
     }
 
     if (movedDistance >= 40) {
+      setGoalCardIsSwiped(false);
+      return;
+    }
+
+    if (goalCardIsSwiped) {
       setGoalCardIsSwiped(false);
       return;
     }
@@ -186,6 +211,7 @@ export default function GoalCard({ goal, onEdit, onDelete }) {
 
   return (
     <article
+      ref={goalCardRef}
       className={`${styles.goalSettingGoalCard} ${
         goalCardIsExpanded ? styles.goalSettingGoalCardExpanded : ""
       } ${goalCardIsSwiped ? styles.goalSettingGoalCardSwiped : ""}`}
