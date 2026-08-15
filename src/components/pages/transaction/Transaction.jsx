@@ -95,7 +95,7 @@ export default function Transaction() {
   // 2. 다건 폼 상태
   const {
     multipleRows,
-    setMultipleRows,
+    resetMultipleRows,
     isValidMultipleRow,
     multipleRowStatus,
     onMultipleRowChange,
@@ -141,9 +141,9 @@ export default function Transaction() {
 
     multipleRows,
     isValidMultipleRow,
-    setMultipleRows,
+    resetMultipleRows,
     setIsMultipleConfirmOpen,
-
+    
     aiStatus,
     aiTransactionForm,
     setAiTransactionForm,

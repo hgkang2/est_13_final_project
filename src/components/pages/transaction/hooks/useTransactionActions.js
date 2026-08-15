@@ -23,7 +23,6 @@ import {
   initialAiTypeValues,
   initialTransactionForm,
 } from "./useTransactionForm";
-import { createMultipleTransactionRow } from "./useMultipleTransactionForm";
 
 // 거래 입력 폼을 DB 공통 저장값으로 변환
 const createTransactionBaseData = (form, userId, transactionDate) => {
@@ -54,7 +53,7 @@ export const useTransactionActions = ({
   setTransactionErrors,
   multipleRows,
   isValidMultipleRow,
-  setMultipleRows,
+  resetMultipleRows,
   setIsMultipleConfirmOpen,
   aiStatus,
   aiTransactionForm,
@@ -589,11 +588,7 @@ export const useTransactionActions = ({
     ]);
 
     // 6. 입력창 초기화
-    setMultipleRows([
-      createMultipleTransactionRow(1),
-      createMultipleTransactionRow(2),
-      createMultipleTransactionRow(3),
-    ]);
+    resetMultipleRows();
 
     setIsMultipleConfirmOpen(false);
     showToast(`${newTransactions.length}건의 소비 기록을 저장했어요.`);

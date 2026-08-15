@@ -14,13 +14,16 @@ export const createMultipleTransactionRow = id => ({
   memo: "",
 });
 
+// 다건 거래 입력 초기 행 생성
+const createInitialMultipleRows = () => [
+  createMultipleTransactionRow(1),
+  createMultipleTransactionRow(2),
+  createMultipleTransactionRow(3),
+];
+
 // 다건 거래 입력 행 상태와 변경 처리
 export const useMultipleTransactionForm = () => {
-  const [multipleRows, setMultipleRows] = useState([
-    createMultipleTransactionRow(1),
-    createMultipleTransactionRow(2),
-    createMultipleTransactionRow(3),
-  ]);
+  const [multipleRows, setMultipleRows] = useState(createInitialMultipleRows);
 
   const isValidMultipleRow = row =>
     row.date &&
@@ -116,9 +119,13 @@ export const useMultipleTransactionForm = () => {
     setMultipleRows(prevRows => prevRows.filter(row => row.id !== id));
   };
 
+  const resetMultipleRows = () => {
+    setMultipleRows(createInitialMultipleRows());
+  };
+
   return {
     multipleRows,
-    setMultipleRows,
+    resetMultipleRows,
     isValidMultipleRow,
     multipleRowStatus,
     onMultipleRowChange,
