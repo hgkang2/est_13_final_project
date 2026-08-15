@@ -9,6 +9,7 @@ import {
   createTransaction,
   deleteTransaction,
   updateTransaction,
+  refreshSpendingAnalysisIfNeeded,
 } from "../services/transactionService";
 import {
   createReceiptSignedUrl,
@@ -254,6 +255,9 @@ export const useTransactionActions = ({
     setTransactionForm(initialTransactionForm);
 
     await refreshMonthlySummary();
+    if (insertedTransaction.transaction_type === "expense") {
+      await refreshSpendingAnalysisIfNeeded(supabase, user.id);
+    }
   };
 
   const handleUpdateTransaction = async updatedForm => {
@@ -601,6 +605,14 @@ export const useTransactionActions = ({
     showToast(`${newTransactions.length}건의 소비 기록을 저장했어요.`);
 
     await refreshMonthlySummary();
+
+    if (
+      (insertedTransactions ?? []).some(
+        transaction => transaction.transaction_type === "expense",
+      )
+    ) {
+      await refreshSpendingAnalysisIfNeeded(supabase, user.id);
+    }
   };
 
   const onAiTransactionSubmit = async event => {
@@ -722,6 +734,10 @@ export const useTransactionActions = ({
     setAiTypeValues(initialAiTypeValues);
 
     await refreshMonthlySummary();
+
+    if (insertedTransaction.transaction_type === "expense") {
+      await refreshSpendingAnalysisIfNeeded(supabase, user.id);
+    }
   };
 
   return {

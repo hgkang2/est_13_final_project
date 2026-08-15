@@ -80,6 +80,82 @@ export const fetchTransactionMonthlySummary = async supabase => {
   return await supabase.rpc("get_transaction_monthly_summary");
 };
 
+// 새 지출 7건 누적 시 이번 달 소비 분석 갱신
+export const refreshSpendingAnalysisIfNeeded = async (supabase, userId) => {
+  const today = new Date().toLocaleDateString("sv-SE", {
+    timeZone: "Asia/Seoul",
+  });
+
+  const periodStart = `${today.slice(0, 7)}-01`;
+  const periodEnd = today;
+
+  // 이번 달 가장 최근 완료 분석 조회
+  const { data: latestReport, error: reportError } = await supabase
+    .from("analysis_reports")
+    .select("id, created_at")
+    .eq("user_id", userId)
+    .eq("analysis_type", "monthly")
+    .eq("period_start", periodStart)
+    .eq("status", "completed")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (reportError) {
+    console.error("최근 소비 분석 조회 실패:", reportError);
+    return;
+  }
+
+  const { startAt, endAt } = createTransactionDateRange(periodStart, periodEnd);
+
+  let expenseCountQuery = supabase
+    .from("transactions")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .eq("transaction_type", "expense")
+    .gte("transaction_at", startAt)
+    .lt("transaction_at", endAt);
+
+  // 기존 분석이 있으면 그 분석 이후 새로 저장된 지출만 계산
+  if (latestReport?.created_at) {
+    expenseCountQuery = expenseCountQuery.gt(
+      "created_at",
+      latestReport.created_at,
+    );
+  }
+
+  const { count, error: countError } = await expenseCountQuery;
+
+  if (countError) {
+    console.error("소비 분석 갱신 건수 확인 실패:", countError);
+    return;
+  }
+
+  if ((count ?? 0) < 7) {
+    return;
+  }
+
+  const { data, error } = await supabase.functions.invoke("analyze-spending", {
+    body: {
+      analysisType: "monthly",
+      periodStart,
+      periodEnd,
+    },
+  });
+
+  if (error) {
+    console.error("소비 분석 갱신 실패:", error);
+    return;
+  }
+
+  if (!data?.success) {
+    console.error("소비 분석 갱신 결과 확인 실패:", data);
+    return;
+  }
+
+  console.log("소비 분석 갱신 완료:", data);
+};
+
 // 단건 거래 저장
 export const createTransaction = async (supabase, transactionData) => {
   return await supabase
