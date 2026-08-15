@@ -2,10 +2,35 @@ import { useEffect, useState } from "react";
 import { fetchTransactions } from "../services/transactionService";
 import { formatTransaction } from "../utils/transactionFormatter";
 
+// 날짜 초기값
+const getCurrentMonthRange = () => {
+  const today = new Date();
+
+  const year = today.getFullYear();
+  const month = today.getMonth();
+
+  const startDate = [year, String(month + 1).padStart(2, "0"), "01"].join("-");
+
+  const lastDay = new Date(year, month + 1, 0).getDate();
+
+  const endDate = [
+    year,
+    String(month + 1).padStart(2, "0"),
+    String(lastDay).padStart(2, "0"),
+  ].join("-");
+
+  return {
+    startDate,
+    endDate,
+  };
+};
+
 // 사용자 거래 목록 조회와 상태 관리
 export const useTransactions = supabase => {
   const [transactions, setTransactions] = useState([]);
   const [isTransactionsLoading, setIsTransactionsLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [dateRange, setDateRange] = useState(getCurrentMonthRange);
 
   useEffect(() => {
     const loadTransactions = async () => {
@@ -44,9 +69,37 @@ export const useTransactions = supabase => {
     loadTransactions();
   }, []);
 
+  const visibleTransactions = transactions.filter(transaction => {
+    const matchesType =
+      activeFilter === "all" || transaction.type === activeFilter;
+
+    const matchesDate =
+      transaction.dateValue >= dateRange.startDate &&
+      transaction.dateValue <= dateRange.endDate;
+
+    return matchesType && matchesDate;
+  });
+
+  const hasTransactionData = visibleTransactions.length > 0;
+
+  const handleDateRangeChange = event => {
+    const { name, value } = event.target;
+
+    setDateRange(prevRange => ({
+      ...prevRange,
+      [name]: value,
+    }));
+  };
+
   return {
     transactions,
     setTransactions,
     isTransactionsLoading,
+    activeFilter,
+    setActiveFilter,
+    dateRange,
+    visibleTransactions,
+    hasTransactionData,
+    handleDateRangeChange,
   };
 };

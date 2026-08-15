@@ -59,36 +59,21 @@ const getToday = () => {
   return `${year}-${month}-${day}`;
 };
 
-const getCurrentMonthRange = () => {
-  const today = new Date();
-
-  const year = today.getFullYear();
-  const month = today.getMonth();
-
-  const startDate = [year, String(month + 1).padStart(2, "0"), "01"].join("-");
-
-  const lastDay = new Date(year, month + 1, 0).getDate();
-
-  const endDate = [
-    year,
-    String(month + 1).padStart(2, "0"),
-    String(lastDay).padStart(2, "0"),
-  ].join("-");
-
-  return {
-    startDate,
-    endDate,
-  };
-};
-
 export default function Transaction() {
   const [recentlyAddedId, setRecentlyAddedId] = useState(null);
   const supabase = createClient();
-  const { transactions, setTransactions, isTransactionsLoading } =
-    useTransactions(supabase);
+  const {
+    transactions,
+    setTransactions,
+    isTransactionsLoading,
+    activeFilter,
+    setActiveFilter,
+    dateRange,
+    visibleTransactions,
+    hasTransactionData,
+    handleDateRangeChange,
+  } = useTransactions(supabase);
 
-  const [activeFilter, setActiveFilter] = useState("all");
-  const [dateRange, setDateRange] = useState(getCurrentMonthRange);
   const [panelView, setPanelView] = useState("entry");
   // "entry" | "recent" | "detail" | "edit" | "closed"
 
@@ -351,21 +336,6 @@ export default function Transaction() {
       (lastMonthSummary.income - lastMonthSummary.expense),
   };
 
-  const recentTransactions = transactions.slice(0, 6);
-
-  const visibleTransactions = transactions.filter(transaction => {
-    const matchesType =
-      activeFilter === "all" || transaction.type === activeFilter;
-
-    const matchesDate =
-      transaction.dateValue >= dateRange.startDate &&
-      transaction.dateValue <= dateRange.endDate;
-
-    return matchesType && matchesDate;
-  });
-
-  const hasTransactionData = visibleTransactions.length > 0;
-
   const isAllSelected =
     visibleTransactions.length > 0 &&
     visibleTransactions.every(transaction =>
@@ -397,15 +367,6 @@ export default function Transaction() {
         ...visibleTransactions.map(transaction => transaction.id),
       ]),
     ]);
-  };
-
-  const handleDateRangeChange = event => {
-    const { name, value } = event.target;
-
-    setDateRange(prevRange => ({
-      ...prevRange,
-      [name]: value,
-    }));
   };
 
   const onTransactionSubmit = async event => {
