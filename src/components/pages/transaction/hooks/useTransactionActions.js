@@ -1,5 +1,6 @@
 import { validateTransactionForm } from "../utils/transactionValidator";
 import { formatTransaction } from "../utils/transactionFormatter";
+import { createTransactionDate } from "../utils/transactionDate";
 import {
   createMultipleTransactions,
   createTransaction,
@@ -94,19 +95,9 @@ export const useTransactionActions = ({
     }
 
     // transaction_at 생성
-    const now = new Date();
-
-    const [hour, minute] = transactionForm.time
-      ? transactionForm.time.split(":").map(Number)
-      : [now.getHours(), now.getMinutes()];
-
-    const transactionDate = new Date(
-      Number(transactionForm.date.slice(0, 4)),
-      Number(transactionForm.date.slice(5, 7)) - 1,
-      Number(transactionForm.date.slice(8, 10)),
-      hour,
-      minute,
-      transactionForm.time ? 0 : now.getSeconds(),
+    const transactionDate = createTransactionDate(
+      transactionForm.date,
+      transactionForm.time,
     );
 
     // DB 저장값 구성
@@ -635,20 +626,7 @@ export const useTransactionActions = ({
 
     // 2. UI row → DB 저장 데이터 변환
     const transactionData = validRows.map(row => {
-      const now = new Date();
-
-      const [hour, minute] = row.time
-        ? row.time.split(":").map(Number)
-        : [now.getHours(), now.getMinutes()];
-
-      const transactionDate = new Date(
-        Number(row.date.slice(0, 4)),
-        Number(row.date.slice(5, 7)) - 1,
-        Number(row.date.slice(8, 10)),
-        hour,
-        minute,
-        row.time ? 0 : now.getSeconds(),
-      );
+      const transactionDate = createTransactionDate(row.date, row.time);
 
       return {
         user_id: user.id,
@@ -736,19 +714,9 @@ export const useTransactionActions = ({
     const attachment = aiTransactionForm.receipt;
 
     // 3. transaction_at 생성
-    const now = new Date();
-
-    const [hour, minute] = aiTransactionForm.time
-      ? aiTransactionForm.time.split(":").map(Number)
-      : [now.getHours(), now.getMinutes()];
-
-    const transactionDate = new Date(
-      Number(aiTransactionForm.date.slice(0, 4)),
-      Number(aiTransactionForm.date.slice(5, 7)) - 1,
-      Number(aiTransactionForm.date.slice(8, 10)),
-      hour,
-      minute,
-      aiTransactionForm.time ? 0 : now.getSeconds(),
+    const transactionDate = createTransactionDate(
+      aiTransactionForm.date,
+      aiTransactionForm.time,
     );
 
     // 4. DB 저장값 구성
