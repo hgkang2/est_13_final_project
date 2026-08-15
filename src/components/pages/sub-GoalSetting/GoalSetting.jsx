@@ -49,6 +49,7 @@ function mapGoalFromDatabase(goal) {
     imagePath,
     imageUrl: goal.image_url ?? "",
     imageName: imagePath?.split("/").pop() ?? "",
+    focusOrder: goal.focus_order,
     color: goal.status === "stopped" ? "gray" : "green",
   };
 }
@@ -117,7 +118,6 @@ export default function GoalSetting() {
 
   // 실제 초기 화면
   const [goalSettingGoals, setGoalSettingGoals] = useState([]);
-  const [goalSettingFocusGoals, setGoalSettingFocusGoals] = useState([]);
 
   const [goalSettingIsLoading, setGoalSettingIsLoading] = useState(true);
 
@@ -153,7 +153,7 @@ export default function GoalSetting() {
       const { data, error } = await supabase
         .from("saving_goals")
         .select(
-          "id, title, status, current_amount, target_amount, start_date, end_date, memo, image_path",
+          "id, title, status, current_amount, target_amount, start_date, end_date, memo, image_path, focus_order",
         )
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
@@ -181,6 +181,14 @@ export default function GoalSetting() {
 
   const goalSettingHasGoals = goalSettingGoals.length > 0;
 
+  const goalSettingFocusGoals = goalSettingGoals
+    .filter((goal) => goal.focusOrder)
+    .sort((firstGoal, secondGoal) => firstGoal.focusOrder - secondGoal.focusOrder);
+
+  const goalSettingInProgressGoals = goalSettingGoals.filter(
+    (goal) => goal.status === "진행 중",
+  );
+
   const goalSettingFilteredGoals = goalSettingGoals.filter(
     (goalSettingGoal) =>
       goalSettingActiveFilter === "전체" ||
@@ -195,6 +203,66 @@ export default function GoalSetting() {
   const handleGoalSettingCloseForm = () => {
     setGoalSettingEditingGoal(null);
     setGoalSettingView("list");
+  };
+
+  const handleGoalSettingFocusSave = async (selectedGoals) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      window.alert("로그인 정보를 확인할 수 없습니다.");
+      return;
+    }
+
+    const { error: clearError } = await supabase
+      .from("saving_goals")
+      .update({ focus_order: null })
+      .eq("user_id", user.id)
+      .not("focus_order", "is", null);
+
+    const results = clearError
+      ? []
+      : await Promise.all(
+          selectedGoals.map((goal, index) =>
+            supabase
+              .from("saving_goals")
+              .update({ focus_order: index + 1 })
+              .eq("id", goal.id)
+              .eq("user_id", user.id)
+              .eq("status", "in_progress"),
+          ),
+        );
+
+    const saveError =
+      clearError ?? results.find((result) => result.error)?.error;
+    const { data: focusOrders, error: readError } = await supabase
+      .from("saving_goals")
+      .select("id, focus_order")
+      .eq("user_id", user.id);
+
+    if (!readError) {
+      const focusOrderById = new Map(
+        focusOrders.map((goal) => [goal.id, goal.focus_order]),
+      );
+
+      setGoalSettingGoals((previousGoals) =>
+        previousGoals.map((goal) => ({
+          ...goal,
+          focusOrder: focusOrderById.get(goal.id) ?? null,
+        })),
+      );
+    }
+
+    const error = saveError ?? readError;
+
+    if (error) {
+      console.error("집중 목표 저장 실패:", error);
+      window.alert("집중 목표를 저장하지 못했습니다. 다시 시도해주세요.");
+      return;
+    }
+
+    setGoalSettingFocusModalIsOpen(false);
   };
 
   const handleGoalSettingEdit = (goal) => {
@@ -294,6 +362,10 @@ export default function GoalSetting() {
       start_date: goalSettingSavedGoal.startDate,
       end_date: goalSettingSavedGoal.targetDate,
       status: GOAL_STATUS_TO_DB[goalSettingSavedGoal.status] ?? "in_progress",
+      focus_order:
+        goalSettingSavedGoal.status === "진행 중"
+          ? (goalSettingEditingGoal?.focusOrder ?? null)
+          : null,
       memo: goalSettingSavedGoal.memo.trim() || null,
       image_path: goalSettingSavedGoal.imageRemoved
         ? null
@@ -318,7 +390,7 @@ export default function GoalSetting() {
 
     const { data, error } = await goalSettingSaveQuery
       .select(
-        "id, title, status, current_amount, target_amount, start_date, end_date, memo, image_path",
+        "id, title, status, current_amount, target_amount, start_date, end_date, memo, image_path, focus_order",
       )
       .single();
 
@@ -466,7 +538,7 @@ export default function GoalSetting() {
                       ? styles.goalSettingFocusButtonActive
                       : ""
                   }`}
-                  disabled={!goalSettingHasGoals}
+                  disabled={goalSettingInProgressGoals.length === 0}
                   aria-haspopup="dialog"
                   aria-expanded={goalSettingFocusModalIsOpen}
                   onClick={() => setGoalSettingFocusModalIsOpen(true)}
@@ -516,13 +588,10 @@ export default function GoalSetting() {
               onClick={(event) => event.stopPropagation()}
             >
               <FocusGoalModal
-                goals={goalSettingGoals}
+                goals={goalSettingInProgressGoals}
                 initialSelectedGoals={goalSettingFocusGoals}
                 onClose={() => setGoalSettingFocusModalIsOpen(false)}
-                onComplete={(selectedGoals) => {
-                  setGoalSettingFocusGoals(selectedGoals);
-                  setGoalSettingFocusModalIsOpen(false);
-                }}
+                onComplete={handleGoalSettingFocusSave}
               />
             </div>
           </div>
