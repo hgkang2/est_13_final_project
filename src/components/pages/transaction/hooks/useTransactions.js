@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   fetchTransactions,
+  fetchRecentTransactions,
   fetchTransactionMonthlySummary,
 } from "../services/transactionService";
 import { formatTransaction } from "../utils/transactionFormatter";
@@ -55,37 +56,89 @@ export const useTransactions = (supabase, showToast) => {
       }
 
       // 2. 거래 목록 조회
-      const { data, error } = await fetchTransactions(supabase, user.id);
+      const [
+        { data: transactionData, error: transactionError },
+        { data: recentData, error: recentError },
+      ] = await Promise.all([
+        fetchTransactions(
+          supabase,
+          user.id,
+          dateRange.startDate,
+          dateRange.endDate,
+        ),
+        fetchRecentTransactions(supabase, user.id),
+      ]);
 
-      if (error) {
-        console.error("소비 기록 조회 실패:", error);
+      if (transactionError) {
+        console.error("소비 기록 조회 실패:", transactionError);
         showToast("소비 기록을 불러오지 못했어요.", "error");
         setIsTransactionsLoading(false);
         return;
       }
 
-      // 3. DB 데이터 → 현재 UI 형식으로 변환
-      const formattedTransactions = (data ?? []).map(formatTransaction);
+      if (recentError) {
+        console.error("최근 소비 기록 조회 실패:", recentError);
+        showToast("최근 소비 기록을 불러오지 못했어요.", "error");
+        setIsTransactionsLoading(false);
+        return;
+      }
+
+      // 3. 기간 거래 + 최근 거래 중복 제거
+      const transactionMap = new Map();
+
+      (transactionData ?? []).forEach(transaction => {
+        transactionMap.set(transaction.id, transaction);
+      });
+
+      (recentData ?? []).forEach(transaction => {
+        transactionMap.set(transaction.id, transaction);
+      });
+
+      const formattedTransactions = [...transactionMap.values()]
+        .sort(
+          (a, b) =>
+            new Date(b.transaction_at).getTime() -
+            new Date(a.transaction_at).getTime(),
+        )
+        .map(formatTransaction);
 
       setTransactions(formattedTransactions);
 
       // 4. 이번 달 거래 요약 조회
-      const { data: monthlySummaryData, error: monthlySummaryError } =
-        await fetchTransactionMonthlySummary(supabase);
+      // const { data: monthlySummaryData, error: monthlySummaryError } =
+      //   await fetchTransactionMonthlySummary(supabase);
 
-      if (monthlySummaryError) {
-        console.error("소비 기록 요약 조회 실패:", monthlySummaryError);
-        showToast("소비 기록 요약을 불러오지 못했어요.", "error");
-      } else {
-        setMonthlySummary(monthlySummaryData);
-        console.log("소비 기록 요약 조회 성공:", monthlySummaryData);
-      }
+      // if (monthlySummaryError) {
+      //   console.error("소비 기록 요약 조회 실패:", monthlySummaryError);
+      //   showToast("소비 기록 요약을 불러오지 못했어요.", "error");
+      // } else {
+      //   setMonthlySummary(monthlySummaryData);
+      //   console.log("소비 기록 요약 조회 성공:", monthlySummaryData);
+      // }
       setIsTransactionsLoading(false);
 
       console.log("소비 기록 조회 성공:", formattedTransactions);
     };
 
     loadTransactions();
+  }, [dateRange.startDate, dateRange.endDate]);
+
+  useEffect(() => {
+    const loadMonthlySummary = async () => {
+      const { data, error } = await fetchTransactionMonthlySummary(supabase);
+
+      if (error) {
+        console.error("소비 기록 요약 조회 실패:", error);
+        showToast("소비 기록 요약을 불러오지 못했어요.", "error");
+        return;
+      }
+
+      setMonthlySummary(data);
+
+      console.log("소비 기록 요약 조회 성공:", data);
+    };
+
+    loadMonthlySummary();
   }, []);
 
   const visibleTransactions = transactions.filter(transaction => {

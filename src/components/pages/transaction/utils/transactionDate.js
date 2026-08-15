@@ -26,3 +26,16 @@ export const createTransactionDate = (date, time) => {
     time ? 0 : now.getSeconds(),
   );
 };
+
+// 거래 조회 날짜 범위 생성
+export const createTransactionDateRange = (startDate, endDate) => {
+  const startAt = new Date(`${startDate}T00:00:00+09:00`);
+
+  const endAt = new Date(`${endDate}T00:00:00+09:00`);
+  endAt.setUTCDate(endAt.getUTCDate() + 1);
+
+  return {
+    startAt: startAt.toISOString(),
+    endAt: endAt.toISOString(),
+  };
+};

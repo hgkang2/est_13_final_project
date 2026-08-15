@@ -1,3 +1,5 @@
+import { createTransactionDateRange } from "../utils/transactionDate";
+
 // 거래 조회 시 공통으로 사용하는 필드
 export const TRANSACTION_SELECT = `
   id,
@@ -37,12 +39,31 @@ export const TRANSACTION_SELECT = `
 `;
 
 // 사용자 거래 목록 조회
-export const fetchTransactions = async (supabase, userId) => {
+export const fetchTransactions = async (
+  supabase,
+  userId,
+  startDate,
+  endDate,
+) => {
+  const { startAt, endAt } = createTransactionDateRange(startDate, endDate);
+
   return await supabase
     .from("transactions")
     .select(TRANSACTION_SELECT)
     .eq("user_id", userId)
+    .gte("transaction_at", startAt)
+    .lt("transaction_at", endAt)
     .order("transaction_at", { ascending: false });
+};
+
+// 최근 거래 목록 조회
+export const fetchRecentTransactions = async (supabase, userId) => {
+  return await supabase
+    .from("transactions")
+    .select(TRANSACTION_SELECT)
+    .eq("user_id", userId)
+    .order("transaction_at", { ascending: false })
+    .limit(6);
 };
 
 // 이번 달 거래 요약 조회
