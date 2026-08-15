@@ -1,3 +1,11 @@
+// 영수증 Storage 저장 경로 생성
+const createReceiptStoragePath = (userId, transactionId, attachment) => {
+  const extension = attachment.name.split(".").pop()?.toLowerCase() || "jpg";
+  const safeFileName = `receipt-${Date.now()}.${extension}`;
+
+  return `${userId}/${transactionId}/${safeFileName}`;
+};
+
 // 새 영수증 파일과 첨부정보 저장
 export const saveReceiptAttachment = async (
   supabase,
@@ -5,10 +13,11 @@ export const saveReceiptAttachment = async (
   transactionId,
   attachment,
 ) => {
-  const extension = attachment.name.split(".").pop()?.toLowerCase() || "jpg";
-
-  const safeFileName = `receipt-${Date.now()}.${extension}`;
-  const storagePath = `${userId}/${transactionId}/${safeFileName}`;
+  const storagePath = createReceiptStoragePath(
+    userId,
+    transactionId,
+    attachment,
+  );
 
   const { error: uploadError } = await uploadReceiptFile(
     supabase,
@@ -61,10 +70,11 @@ export const replaceReceiptAttachment = async (
   attachment,
   existingAttachment,
 ) => {
-  const extension = attachment.name.split(".").pop()?.toLowerCase() || "jpg";
-
-  const safeFileName = `receipt-${Date.now()}.${extension}`;
-  const newStoragePath = `${userId}/${transactionId}/${safeFileName}`;
+  const newStoragePath = createReceiptStoragePath(
+    userId,
+    transactionId,
+    attachment,
+  );
 
   const { error: uploadError } = await uploadReceiptFile(
     supabase,
@@ -249,10 +259,7 @@ export const removeReceiptAttachment = async (supabase, existingAttachment) => {
 };
 
 // 거래 삭제 전 연결된 영수증 Storage 파일 정리
-export const removeTransactionReceiptFile = async (
-  supabase,
-  transactionId,
-) => {
+export const removeTransactionReceiptFile = async (supabase, transactionId) => {
   const { data: attachmentData, error: attachmentError } =
     await fetchReceiptAttachment(supabase, transactionId);
 
