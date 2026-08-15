@@ -53,6 +53,97 @@ export const saveReceiptAttachment = async (
   };
 };
 
+// 수정 화면에서 새 영수증을 저장하거나 기존 영수증 교체
+export const replaceReceiptAttachment = async (
+  supabase,
+  userId,
+  transactionId,
+  attachment,
+  existingAttachment,
+) => {
+  const extension = attachment.name.split(".").pop()?.toLowerCase() || "jpg";
+
+  const safeFileName = `receipt-${Date.now()}.${extension}`;
+  const newStoragePath = `${userId}/${transactionId}/${safeFileName}`;
+
+  const { error: uploadError } = await uploadReceiptFile(
+    supabase,
+    newStoragePath,
+    attachment,
+  );
+
+  if (uploadError) {
+    return {
+      newStoragePath,
+      uploadError,
+      attachmentSaveError: null,
+      rollbackStorageError: null,
+      oldStorageRemoveError: null,
+    };
+  }
+
+  let attachmentSaveError = null;
+
+  if (existingAttachment) {
+    const { error } = await updateReceiptAttachment(
+      supabase,
+      existingAttachment.id,
+      newStoragePath,
+      attachment,
+    );
+
+    attachmentSaveError = error;
+  } else {
+    const { error } = await createReceiptAttachment(
+      supabase,
+      transactionId,
+      newStoragePath,
+      attachment,
+    );
+
+    attachmentSaveError = error;
+  }
+
+  // 첨부정보 저장 실패 시 새 Storage 파일 롤백
+  if (attachmentSaveError) {
+    const { error: rollbackStorageError } = await removeReceiptFile(
+      supabase,
+      newStoragePath,
+    );
+
+    return {
+      newStoragePath,
+      uploadError: null,
+      attachmentSaveError,
+      rollbackStorageError,
+      oldStorageRemoveError: null,
+    };
+  }
+
+  let oldStorageRemoveError = null;
+
+  // 교체가 끝난 뒤 기존 Storage 파일 정리
+  if (
+    existingAttachment?.storage_path &&
+    existingAttachment.storage_path !== newStoragePath
+  ) {
+    const { error } = await removeReceiptFile(
+      supabase,
+      existingAttachment.storage_path,
+    );
+
+    oldStorageRemoveError = error;
+  }
+
+  return {
+    newStoragePath,
+    uploadError: null,
+    attachmentSaveError: null,
+    rollbackStorageError: null,
+    oldStorageRemoveError,
+  };
+};
+
 // 영수증 이미지 signed URL 생성
 export const createReceiptSignedUrl = async (supabase, storagePath) => {
   return await supabase.storage
