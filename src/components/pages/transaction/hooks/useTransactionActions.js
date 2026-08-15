@@ -43,6 +43,9 @@ export const useTransactionActions = ({
   selectedTransaction,
   setSelectedTransaction,
   setPanelView,
+  setSelectedIds,
+  setIsDeleteConfirmOpen,
+  setIsDeleteSuccessOpen,
   setTransactions,
   setRecentlyAddedId,
   setToastMessage,
@@ -504,6 +507,109 @@ export const useTransactionActions = ({
     console.log("소비 기록 수정 성공:", updatedTransaction);
   };
 
+  const handleOpenDetail = async transaction => {
+    const { data: attachmentData, error: attachmentError } =
+      await fetchReceiptAttachment(supabase, transaction.id);
+
+    if (attachmentError) {
+      console.error("영수증 첨부정보 조회 실패:", attachmentError);
+    }
+
+    let receiptImage = null;
+
+    if (attachmentData?.storage_path) {
+      const { data: signedUrlData, error: signedUrlError } =
+        await createReceiptSignedUrl(supabase, attachmentData.storage_path);
+
+      if (signedUrlError) {
+        console.error("영수증 이미지 URL 생성 실패:", signedUrlError);
+      } else {
+        receiptImage = signedUrlData.signedUrl;
+      }
+    }
+
+    setSelectedTransaction({
+      ...transaction,
+      receiptImage,
+    });
+
+    setPanelView("detail");
+  };
+
+  const handleDeleteTransaction = async () => {
+    if (!selectedTransaction) {
+      setToastMessage("삭제할 거래 정보를 확인할 수 없어요.");
+      return;
+    }
+
+    // 1. 로그인 사용자 확인
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      console.error("사용자 확인 실패:", userError);
+      setToastMessage("로그인 정보를 확인할 수 없어요.");
+      return;
+    }
+
+    // 2. 첨부파일 정보 조회
+    const { data: attachmentData, error: attachmentError } =
+      await fetchReceiptAttachment(supabase, selectedTransaction.id);
+
+    if (attachmentError) {
+      console.error("첨부파일 정보 조회 실패:", attachmentError);
+      setToastMessage("첨부파일 정보를 확인하지 못했어요.");
+      return;
+    }
+
+    // 3. Storage 파일이 있으면 먼저 삭제
+    if (attachmentData?.storage_path) {
+      const { error: storageDeleteError } = await removeReceiptFile(
+        supabase,
+        attachmentData.storage_path,
+      );
+
+      if (storageDeleteError) {
+        console.error("영수증 Storage 삭제 실패:", storageDeleteError);
+        setToastMessage("영수증 파일을 삭제하지 못했어요.");
+        return;
+      }
+    }
+
+    // 4. 거래 삭제
+    const { error: deleteError } = await deleteTransaction(
+      supabase,
+      selectedTransaction.id,
+      user.id,
+    );
+
+    if (deleteError) {
+      console.error("소비 기록 삭제 실패:", deleteError);
+      setToastMessage("소비 기록을 삭제하지 못했어요.");
+      return;
+    }
+
+    // 5. 화면에서 즉시 제거
+    setTransactions(prevTransactions =>
+      prevTransactions.filter(
+        transaction => transaction.id !== selectedTransaction.id,
+      ),
+    );
+
+    // 체크된 상태였다면 같이 제거
+    setSelectedIds(prevSelectedIds =>
+      prevSelectedIds.filter(id => id !== selectedTransaction.id),
+    );
+
+    setSelectedTransaction(null);
+    setPanelView("closed");
+
+    setIsDeleteConfirmOpen(false);
+    setIsDeleteSuccessOpen(true);
+  };
+
   // 다건 저장 함수
   const handleConfirmMultipleSubmit = async () => {
     const validRows = multipleRows.filter(isValidMultipleRow);
@@ -796,5 +902,7 @@ export const useTransactionActions = ({
     handleConfirmMultipleSubmit,
     onAiTransactionSubmit,
     handleUpdateTransaction,
+    handleOpenDetail,
+    handleDeleteTransaction,
   };
 };
