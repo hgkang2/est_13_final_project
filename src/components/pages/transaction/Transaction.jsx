@@ -358,6 +358,7 @@ export default function Transaction() {
       thisMonthSummary.expense -
       (lastMonthSummary.income - lastMonthSummary.expense),
   };
+  const recentTransactions = transactions.slice(0, 6);
 
   const onContinueEntry = () => {
     setTransactionForm(initialTransactionForm);
