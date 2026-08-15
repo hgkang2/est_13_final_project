@@ -73,6 +73,15 @@ export const useTransactionActions = ({
   setToastMessage,
   showToast,
 }) => {
+  // 저장 또는 수정한 거래를 잠시 강조
+  const highlightTransaction = transactionId => {
+    setRecentlyAddedId(transactionId);
+
+    setTimeout(() => {
+      setRecentlyAddedId(null);
+    }, 1800);
+  };
+
   const onTransactionSubmit = async event => {
     event.preventDefault();
 
@@ -218,11 +227,7 @@ export const useTransactionActions = ({
 
     setTransactions(prevTransactions => [newTransaction, ...prevTransactions]);
 
-    setRecentlyAddedId(insertedTransaction.id);
-
-    setTimeout(() => {
-      setRecentlyAddedId(null);
-    }, 1800);
+    highlightTransaction(insertedTransaction.id);
 
     showToast("소비 기록을 저장했어요.");
     setTransactionForm(initialTransactionForm);
@@ -326,7 +331,7 @@ export const useTransactionActions = ({
       return;
     }
 
-    //영수증 첨부 수정 처리
+    // 영수증 첨부 수정 처리
     // 새 영수증 선택 → 신규 첨부 또는 기존 첨부 교체
     if (newAttachment) {
       const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
@@ -477,11 +482,7 @@ export const useTransactionActions = ({
       ),
     );
 
-    setRecentlyAddedId(formattedTransaction.id);
-
-    setTimeout(() => {
-      setRecentlyAddedId(null);
-    }, 1800);
+    highlightTransaction(formattedTransaction.id);
 
     // 8. 상세도 즉시 수정
     setSelectedTransaction({
@@ -790,11 +791,7 @@ export const useTransactionActions = ({
 
     setTransactions(prevTransactions => [newTransaction, ...prevTransactions]);
 
-    setRecentlyAddedId(insertedTransaction.id);
-
-    setTimeout(() => {
-      setRecentlyAddedId(null);
-    }, 1800);
+    highlightTransaction(insertedTransaction.id);
 
     // 9. AI 입력 상태 초기화
     showToast("AI 소비 기록을 저장했어요.");
