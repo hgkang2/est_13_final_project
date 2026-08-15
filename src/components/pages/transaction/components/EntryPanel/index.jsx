@@ -5,19 +5,18 @@ import AiEntryForm from "./AiEntryForm";
 
 export default function EntryPanel({
   entryState,
+  options,
   manualEntry,
   multipleEntry,
   aiEntry,
   panelActions,
 }) {
   const { entryTab, entryMode } = entryState;
+  const { categories, paymentMethods, transferAccounts } = options;
 
   const {
     transactionForm,
     transactionErrors,
-    categories,
-    paymentMethods,
-    transferAccounts,
     onTransactionFormChange,
     onToggleRecurring,
     onTransactionSubmit,

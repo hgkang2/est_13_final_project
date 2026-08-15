@@ -201,7 +201,6 @@ export const useTransactionForm = () => {
     setAiTransactionForm,
     aiTransactionErrors,
     setAiTransactionErrors,
-    aiTypeValues,
     setAiTypeValues,
     onAiFormChange,
   };

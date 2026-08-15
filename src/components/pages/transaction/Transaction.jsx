@@ -143,7 +143,7 @@ export default function Transaction() {
     isValidMultipleRow,
     resetMultipleRows,
     setIsMultipleConfirmOpen,
-    
+
     aiStatus,
     aiTransactionForm,
     setAiTransactionForm,
@@ -461,14 +461,14 @@ export default function Transaction() {
                   entryTab,
                   entryMode,
                 }}
-                manualEntry={{
-                  transactionForm,
-                  transactionErrors,
-
+                options={{
                   categories,
                   paymentMethods,
                   transferAccounts,
-
+                }}
+                manualEntry={{
+                  transactionForm,
+                  transactionErrors,
                   onTransactionFormChange,
                   onToggleRecurring,
                   onTransactionSubmit,

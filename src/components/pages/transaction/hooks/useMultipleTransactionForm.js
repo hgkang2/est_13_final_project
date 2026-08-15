@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export const createMultipleTransactionRow = id => ({
+const createMultipleTransactionRow = id => ({
   id,
   date: "",
   time: "",
