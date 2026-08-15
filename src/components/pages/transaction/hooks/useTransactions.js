@@ -123,22 +123,22 @@ export const useTransactions = (supabase, showToast) => {
     loadTransactions();
   }, [dateRange.startDate, dateRange.endDate]);
 
+  const refreshMonthlySummary = async () => {
+    const { data, error } = await fetchTransactionMonthlySummary(supabase);
+
+    if (error) {
+      console.error("소비 기록 요약 조회 실패:", error);
+      showToast("소비 기록 요약을 불러오지 못했어요.", "error");
+      return;
+    }
+
+    setMonthlySummary(data);
+
+    console.log("소비 기록 요약 조회 성공:", data);
+  };
+
   useEffect(() => {
-    const loadMonthlySummary = async () => {
-      const { data, error } = await fetchTransactionMonthlySummary(supabase);
-
-      if (error) {
-        console.error("소비 기록 요약 조회 실패:", error);
-        showToast("소비 기록 요약을 불러오지 못했어요.", "error");
-        return;
-      }
-
-      setMonthlySummary(data);
-
-      console.log("소비 기록 요약 조회 성공:", data);
-    };
-
-    loadMonthlySummary();
+    refreshMonthlySummary();
   }, []);
 
   const visibleTransactions = transactions.filter(transaction => {
@@ -200,6 +200,7 @@ export const useTransactions = (supabase, showToast) => {
     transactions,
     setTransactions,
     monthlySummary,
+    refreshMonthlySummary,
     isTransactionsLoading,
     activeFilter,
     setActiveFilter,

@@ -43,6 +43,7 @@ export default function Transaction() {
     transactions,
     setTransactions,
     monthlySummary,
+    refreshMonthlySummary,
     activeFilter,
     setActiveFilter,
     dateRange,
@@ -163,6 +164,7 @@ export default function Transaction() {
     setIsDeleteSuccessOpen,
 
     setTransactions,
+    refreshMonthlySummary,
     setRecentlyAddedId,
     showToast,
   });

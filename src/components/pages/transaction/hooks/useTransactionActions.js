@@ -70,6 +70,7 @@ export const useTransactionActions = ({
   setIsDeleteConfirmOpen,
   setIsDeleteSuccessOpen,
   setTransactions,
+  refreshMonthlySummary,
   setRecentlyAddedId,
   showToast,
 }) => {
@@ -251,6 +252,8 @@ export const useTransactionActions = ({
 
     showToast("소비 기록을 저장했어요.");
     setTransactionForm(initialTransactionForm);
+
+    await refreshMonthlySummary();
   };
 
   const handleUpdateTransaction = async updatedForm => {
@@ -446,6 +449,8 @@ export const useTransactionActions = ({
     setPanelView("detail");
     showToast("소비 기록을 수정했어요.");
 
+    await refreshMonthlySummary();
+
     console.log("소비 기록 수정 성공:", updatedTransaction);
   };
 
@@ -535,6 +540,8 @@ export const useTransactionActions = ({
 
     setIsDeleteConfirmOpen(false);
     setIsDeleteSuccessOpen(true);
+
+    await refreshMonthlySummary();
   };
 
   // 다건 저장 함수
@@ -592,6 +599,8 @@ export const useTransactionActions = ({
 
     setIsMultipleConfirmOpen(false);
     showToast(`${newTransactions.length}건의 소비 기록을 저장했어요.`);
+
+    await refreshMonthlySummary();
   };
 
   const onAiTransactionSubmit = async event => {
@@ -711,6 +720,8 @@ export const useTransactionActions = ({
     setAiErrorMessage("");
     setAiStatus("idle");
     setAiTypeValues(initialAiTypeValues);
+
+    await refreshMonthlySummary();
   };
 
   return {
