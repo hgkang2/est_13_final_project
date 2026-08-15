@@ -4,10 +4,33 @@ import Link from "next/link";
 import { createClient } from "../../utils/supabase/client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Toast from "../../components/common/Toast";
 
 export default function RegisterPage() {
   const router = useRouter();
   const supabase = createClient();
+
+  const [toast, setToast] = useState({
+  isOpen: false,
+  type: "success",
+  message: "",
+});
+
+const [fieldErrors, setFieldErrors] = useState({
+  email: "",
+  email: "",
+  password: "",
+  passwordConfirm: "",
+  agreements: "",
+});
+
+const showToast = (message, type = "success") => {
+  setToast({
+    isOpen: true,
+    type,
+    message,
+  });
+};
   const [agreements, setAgreements] = useState({
     terms: false,
     privacy: false,
@@ -30,46 +53,138 @@ export default function RegisterPage() {
     }));
   };
 
-  const handleRegister = async e => {
-    e.preventDefault();
+ const handleRegister = async (e) => {
+  e.preventDefault();
 
-    const formData = new FormData(e.currentTarget);
+  const formData = new FormData(e.currentTarget);
 
-    const name = formData.get("name");
-    const email = formData.get("email");
-    const password = formData.get("password");
-    const passwordConfirm = formData.get("passwordConfirm");
+  const name = formData.get("name")?.toString().trim();
+  const email = formData.get("email")?.toString().trim();
+  const password = formData.get("password")?.toString();
+  const passwordConfirm = formData
+    .get("passwordConfirm")
+    ?.toString();
 
-    if (password !== passwordConfirm) {
-      alert("비밀번호가 일치하지 않습니다.");
-      return;
-    }
-    if (!agreements.terms || !agreements.privacy) {
-      alert("필수 약관에 동의해주세요.");
-      return;
-    }
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          name,
-          terms_agreed: agreements.terms,
-          privacy_agreed: agreements.privacy,
-          marketing_agreed: agreements.marketing,
-        },
-      },
-    });
-    if (error) {
-      alert("회원가입에 실패했습니다. 입력 내용을 확인한 후 다시 시도해 주세요.");
-      console.error(error);
-      return;
-    }
-    alert(
-      "회원가입이 완료되었습니다.입력하신 이메일로 인증 메일을 발송했습니다.이메일 인증 후 로그인해주세요.",
-    );
-    router.push("/login");
+  const errors = {
+    name: "",
+    email: "",
+    password: "",
+    passwordConfirm: "",
+    agreements: "",
   };
+
+  if (!name) {
+    errors.name = "이름을 입력해 주세요.";
+  }
+
+  if (!email) {
+    errors.email = "이메일을 입력해 주세요.";
+  } else {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailPattern.test(email)) {
+      errors.email = "올바른 이메일 형식을 입력해 주세요.";
+    }
+  }
+
+  if (!password) {
+    errors.password = "비밀번호를 입력해 주세요.";
+  } else if (password.length < 6) {
+    errors.password = "비밀번호는 6자 이상 입력해 주세요.";
+  }
+
+  if (!passwordConfirm) {
+    errors.passwordConfirm = "비밀번호를 다시 입력해 주세요.";
+  } else if (password !== passwordConfirm) {
+    errors.passwordConfirm = "비밀번호가 일치하지 않습니다.";
+  }
+
+  if (!agreements.terms || !agreements.privacy) {
+    errors.agreements = "필수 약관에 동의해 주세요.";
+  }
+
+  const errorOrder = [
+  "name",
+  "email",
+  "password",
+  "passwordConfirm",
+  "agreements",
+];
+
+const firstErrorKey = errorOrder.find((key) => errors[key]);
+
+if (firstErrorKey) {
+  setFieldErrors({
+    name: "",
+    email: "",
+    password: "",
+    passwordConfirm: "",
+    agreements: "",
+    [firstErrorKey]: errors[firstErrorKey],
+  });
+
+  return;
+}
+
+  setFieldErrors({
+    name: "",
+    email: "",
+    password: "",
+    passwordConfirm: "",
+    agreements: "",
+  });
+
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        name,
+        terms_agreed: agreements.terms,
+        privacy_agreed: agreements.privacy,
+        marketing_agreed: agreements.marketing,
+      },
+    },
+  });
+
+  if (error) {
+    console.error(error);
+
+    const errorMessage = error.message?.toLowerCase() || "";
+
+    if (errorMessage.includes("already registered")) {
+      setFieldErrors((previous) => ({
+        ...previous,
+        email: "이미 가입된 이메일입니다.",
+      }));
+      return;
+    }
+
+    if (errorMessage.includes("password")) {
+      setFieldErrors((previous) => ({
+        ...previous,
+        password: "사용할 수 없는 비밀번호입니다.",
+      }));
+      return;
+    }
+
+    showToast(
+      "회원가입에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+      "error"
+    );
+    return;
+  }
+
+  showToast(
+    "회원가입이 완료되었습니다. 이메일을 확인해 주세요.",
+    "success"
+  );
+
+  setTimeout(() => {
+    router.push("/login");
+  }, 2000);
+};
+   
   const handleGoogleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -79,7 +194,7 @@ export default function RegisterPage() {
     });
     if (error) {
   console.error(error.message);
-  alert("구글 로그인에 실패했습니다. 다시 시도해 주세요.");
+  showToast("구글 로그인에 실패했습니다. 다시 시도해 주세요.", "error");
 }
   };
   const handleKakaoLogin = async () => {
@@ -91,7 +206,7 @@ export default function RegisterPage() {
     });
     if (error) {
   console.error(error.message);
-  alert("카카오 로그인에 실패했습니다. 다시 시도해 주세요.");
+  showToast("카카오 로그인에 실패했습니다. 다시 시도해 주세요.", "error");
 }
   };
 
@@ -123,46 +238,115 @@ export default function RegisterPage() {
             </Link>
           </nav>
 
-          <form className="form" onSubmit={handleRegister}>
-            <div className="input">
+          <form className="form" onSubmit={handleRegister} noValidate>
+            <div className="input input-with-error">
               <label htmlFor="name">이름</label>
               <input
                 id="name"
                 name="name"
                 type="text"
                 placeholder="이름을 입력하세요"
+                aria-invalid={Boolean(fieldErrors.name)}
+                aria-describedby={fieldErrors.name ? "register-name-error" : undefined}
+                onChange={() =>
+                setFieldErrors((previous) => ({
+                ...previous,
+                name: "",
+      }))
+    }
               />
+              {fieldErrors.name && (
+              <div id="register-name-error" className="error-bubble" role="alert">
+               <span className="material-icons" aria-hidden="true">
+                 error
+              </span>
+               {fieldErrors.name}
+             </div>
+            )}
             </div>
-            <div className="input">
+            <div className="input input-with-error">
               <label htmlFor="email">이메일</label>
               <input
                 id="email"
                 name="email"
                 type="email"
                 placeholder="이메일을 입력하세요"
+                aria-invalid={Boolean(fieldErrors.email)}
+                aria-describedby={fieldErrors.email ? "register-email-error" : undefined}
+                onChange={() =>
+                setFieldErrors((previous) => ({
+                ...previous,
+                email: "",
+            }))
+            }
               />
+               {fieldErrors.email && (
+              <div id="register-name-error" className="error-bubble" role="alert">
+               <span className="material-icons" aria-hidden="true">
+                 error
+              </span>
+               {fieldErrors.email}
+             </div>
+            )}
+
             </div>
 
-            <div className="input">
+            <div className="input input-with-error">
               <label htmlFor="password">비밀번호</label>
               <input
                 id="password"
                 name="password"
                 type="password"
                 placeholder="비밀번호를 입력하세요"
-              />
+                aria-invalid={Boolean(fieldErrors.password)}
+                aria-describedby={fieldErrors.password ? "register-password-error" : undefined}
+                onChange={() =>
+                setFieldErrors((previous) => ({
+                ...previous,
+                 password: "",
+              }))
+             }
+           />
+
+             {fieldErrors.password && (
+            <div id="register-password-error" className="error-bubble" role="alert">
+            <span className="material-icons" aria-hidden="true">
+              error
+           </span>
+              {fieldErrors.password}
+           </div>
+          )}
+              
             </div>
-            <div className="input">
+            <div className="input input-with-error">
               <label htmlFor="passwordConfirm">비밀번호 확인</label>
               <input
                 id="passwordConfirm"
                 name="passwordConfirm"
                 type="password"
                 placeholder="비밀번호를 다시 입력하세요"
-              />
+                aria-invalid={Boolean(fieldErrors.passwordConfirm)}
+                aria-describedby={fieldErrors.passwordConfirm ? "register-passwordConfirm-error" : undefined}
+                onChange={() =>
+                setFieldErrors((previous) => ({
+                ...previous,
+                passwordConfirm: "",
+              }))
+             }
+           />
+
+                {fieldErrors.passwordConfirm && (
+             <div id="register-passwordConfirm-error" className="error-bubble" role="alert">
+               <span className="material-icons" aria-hidden="true">
+                  error
+               </span>
+             {fieldErrors.passwordConfirm}
+            </div>
+            )}
+              
             </div>
 
-            <div className="terms">
+            <div className="terms input-with-error">
               <label className="termItem">
                 <input
                   type="checkbox"
@@ -177,7 +361,7 @@ export default function RegisterPage() {
                   name="terms"
                   checked={agreements.terms}
                   onChange={handleAgreementChange}
-                  required
+                  
                 />
                 <span>[필수] 이용약관에 동의합니다</span>
               </label>
@@ -187,7 +371,7 @@ export default function RegisterPage() {
                   name="privacy"
                   checked={agreements.privacy}
                   onChange={handleAgreementChange}
-                  required
+                  
                 />
                 <span>[필수] 개인정보 처리방침에 동의합니다</span>
               </label>
@@ -200,6 +384,18 @@ export default function RegisterPage() {
                 />
                 <span>[선택] 마케팅 정보 수신에 동의합니다</span>
               </label>
+              {fieldErrors.agreements && (
+             <div
+                 id="register-agreements-error"
+                 className="error-bubble"
+                 role="alert"
+                 >
+               <span className="material-icons" aria-hidden="true">
+                   error
+              </span>
+                {fieldErrors.agreements}
+              </div>
+             )}
             </div>
 
             <button className="button" type="submit">
@@ -236,6 +432,17 @@ export default function RegisterPage() {
           <img src="/images/auth/image.png" alt="MO:UM 목표 저축 캐릭터" />
         </div>
       </section>
+      <Toast
+  isOpen={toast.isOpen}
+  type={toast.type}
+  message={toast.message}
+  onClose={() =>
+    setToast((previous) => ({
+      ...previous,
+      isOpen: false,
+    }))
+  }
+/>
     </main>
   );
 }
