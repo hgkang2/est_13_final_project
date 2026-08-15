@@ -23,6 +23,27 @@ import {
 } from "./useTransactionForm";
 import { createMultipleTransactionRow } from "./useMultipleTransactionForm";
 
+// 거래 입력 폼을 DB 공통 저장값으로 변환
+const createTransactionBaseData = (form, userId, transactionDate) => {
+  return {
+    user_id: userId,
+    transaction_type: form.type,
+    amount: Number(form.amount),
+    category_id: form.category,
+
+    payment_method_id: form.type === "transfer" ? null : form.paymentMethod,
+
+    withdraw_account_id: form.type === "transfer" ? form.withdrawAccount : null,
+
+    deposit_account_id: form.type === "transfer" ? form.depositAccount : null,
+
+    content: form.content.trim() || null,
+    memo: form.memo.trim() || null,
+
+    transaction_at: transactionDate.toISOString(),
+  };
+};
+
 // 거래 저장/수정/삭제 처리
 export const useTransactionActions = ({
   supabase,
@@ -102,30 +123,7 @@ export const useTransactionActions = ({
 
     // DB 저장값 구성
     const transactionData = {
-      user_id: user.id,
-      transaction_type: transactionForm.type,
-      amount: Number(transactionForm.amount),
-      category_id: transactionForm.category,
-
-      payment_method_id:
-        transactionForm.type === "transfer"
-          ? null
-          : transactionForm.paymentMethod,
-
-      withdraw_account_id:
-        transactionForm.type === "transfer"
-          ? transactionForm.withdrawAccount
-          : null,
-
-      deposit_account_id:
-        transactionForm.type === "transfer"
-          ? transactionForm.depositAccount
-          : null,
-
-      content: transactionForm.content.trim() || null,
-      memo: transactionForm.memo.trim() || null,
-
-      transaction_at: transactionDate.toISOString(),
+      ...createTransactionBaseData(transactionForm, user.id, transactionDate),
 
       input_method: "manual",
 
@@ -627,27 +625,10 @@ export const useTransactionActions = ({
     // 2. UI row → DB 저장 데이터 변환
     const transactionData = validRows.map(row => {
       const transactionDate = createTransactionDate(row.date, row.time);
-
       return {
-        user_id: user.id,
-        transaction_type: row.type,
-        amount: Number(row.amount),
-        category_id: row.category,
-
-        payment_method_id: row.type === "transfer" ? null : row.paymentMethod,
-
-        withdraw_account_id:
-          row.type === "transfer" ? row.withdrawAccount : null,
-
-        deposit_account_id: row.type === "transfer" ? row.depositAccount : null,
-
-        content: row.content.trim() || null,
-        memo: row.memo.trim() || null,
-
-        transaction_at: transactionDate.toISOString(),
+        ...createTransactionBaseData(row, user.id, transactionDate),
 
         input_method: "manual",
-
         is_recurring: false,
         recurring_day: null,
       };
@@ -721,33 +702,9 @@ export const useTransactionActions = ({
 
     // 4. DB 저장값 구성
     const transactionData = {
-      user_id: user.id,
-      transaction_type: aiTransactionForm.type,
-      amount: Number(aiTransactionForm.amount),
-      category_id: aiTransactionForm.category,
-
-      payment_method_id:
-        aiTransactionForm.type === "transfer"
-          ? null
-          : aiTransactionForm.paymentMethod,
-
-      withdraw_account_id:
-        aiTransactionForm.type === "transfer"
-          ? aiTransactionForm.withdrawAccount
-          : null,
-
-      deposit_account_id:
-        aiTransactionForm.type === "transfer"
-          ? aiTransactionForm.depositAccount
-          : null,
-
-      content: aiTransactionForm.content.trim() || null,
-      memo: aiTransactionForm.memo.trim() || null,
-
-      transaction_at: transactionDate.toISOString(),
+      ...createTransactionBaseData(aiTransactionForm, user.id, transactionDate),
 
       input_method: "ai",
-
       is_recurring: false,
       recurring_day: null,
     };
