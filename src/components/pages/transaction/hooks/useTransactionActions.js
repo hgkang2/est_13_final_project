@@ -9,8 +9,8 @@ import {
 } from "../services/transactionService";
 import {
   createReceiptSignedUrl,
-  deleteReceiptAttachment,
   fetchReceiptAttachment,
+  removeReceiptAttachment,
   removeReceiptFile,
   replaceReceiptAttachment,
   saveReceiptAttachment,
@@ -407,11 +407,8 @@ export const useTransactionActions = ({
     // 새 파일은 X "첨부 삭제"를 선택 경우
     else if (updatedForm.removeAttachment) {
       if (existingAttachment) {
-        // DB 연결 제거
-        const { error: attachmentDeleteError } = await deleteReceiptAttachment(
-          supabase,
-          existingAttachment.id,
-        );
+        const { attachmentDeleteError, storageRemoveError } =
+          await removeReceiptAttachment(supabase, existingAttachment);
 
         if (attachmentDeleteError) {
           console.error("영수증 첨부정보 삭제 실패:", attachmentDeleteError);
@@ -419,18 +416,10 @@ export const useTransactionActions = ({
           return;
         }
 
-        // Storage 실제 파일 제거
-        if (existingAttachment.storage_path) {
-          const { error: storageRemoveError } = await removeReceiptFile(
-            supabase,
-            existingAttachment.storage_path,
-          );
-
-          if (storageRemoveError) {
-            // DB 연결은 이미 제거
-            // Storage에 파일만 남는 cleanup 문제 -> 사용자 수정은 유지.
-            console.error("영수증 Storage 삭제 실패:", storageRemoveError);
-          }
+        if (storageRemoveError) {
+          // DB 연결은 이미 제거
+          // Storage에 파일만 남는 cleanup 문제 -> 사용자 수정은 유지.
+          console.error("영수증 Storage 삭제 실패:", storageRemoveError);
         }
       }
 

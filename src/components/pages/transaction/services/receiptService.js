@@ -217,6 +217,37 @@ export const deleteReceiptAttachment = async (supabase, attachmentId) => {
     .eq("id", attachmentId);
 };
 
+// 수정 화면에서 기존 영수증 첨부정보와 Storage 파일 삭제
+export const removeReceiptAttachment = async (supabase, existingAttachment) => {
+  const { error: attachmentDeleteError } = await deleteReceiptAttachment(
+    supabase,
+    existingAttachment.id,
+  );
+
+  if (attachmentDeleteError) {
+    return {
+      attachmentDeleteError,
+      storageRemoveError: null,
+    };
+  }
+
+  let storageRemoveError = null;
+
+  if (existingAttachment.storage_path) {
+    const { error } = await removeReceiptFile(
+      supabase,
+      existingAttachment.storage_path,
+    );
+
+    storageRemoveError = error;
+  }
+
+  return {
+    attachmentDeleteError: null,
+    storageRemoveError,
+  };
+};
+
 // AI 영수증 분석 요청
 export const analyzeReceipt = async (supabase, analysisData) => {
   return await supabase.functions.invoke("analyze-receipt", {
