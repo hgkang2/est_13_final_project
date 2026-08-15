@@ -26,7 +26,7 @@ const getCurrentMonthRange = () => {
 };
 
 // 사용자 거래 목록 조회와 상태 관리
-export const useTransactions = supabase => {
+export const useTransactions = (supabase, showToast) => {
   const [transactions, setTransactions] = useState([]);
   const [isTransactionsLoading, setIsTransactionsLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState("all");
@@ -45,6 +45,7 @@ export const useTransactions = supabase => {
 
       if (userError || !user) {
         console.error("사용자 확인 실패:", userError);
+        showToast("로그인 정보를 확인할 수 없어요.", "error");
         setIsTransactionsLoading(false);
         return;
       }
@@ -54,6 +55,7 @@ export const useTransactions = supabase => {
 
       if (error) {
         console.error("소비 기록 조회 실패:", error);
+        showToast("소비 기록을 불러오지 못했어요.", "error");
         setIsTransactionsLoading(false);
         return;
       }

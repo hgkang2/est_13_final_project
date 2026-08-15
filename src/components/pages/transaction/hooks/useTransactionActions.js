@@ -71,7 +71,6 @@ export const useTransactionActions = ({
   setIsDeleteSuccessOpen,
   setTransactions,
   setRecentlyAddedId,
-  setToastMessage,
   showToast,
 }) => {
   // 저장 또는 수정한 거래를 잠시 강조
@@ -132,7 +131,7 @@ export const useTransactionActions = ({
 
     if (userError || !user) {
       console.error("사용자 확인 실패:", userError);
-      setToastMessage("로그인 정보를 확인할 수 없어요.");
+      showToast("로그인 정보를 확인할 수 없어요.", "error");
       return;
     }
 
@@ -142,7 +141,7 @@ export const useTransactionActions = ({
       const receiptFileError = validateReceiptFile(attachment);
 
       if (receiptFileError) {
-        setToastMessage(receiptFileError);
+        showToast(receiptFileError, "error");
         return;
       }
     }
@@ -177,13 +176,13 @@ export const useTransactionActions = ({
     // 저장 실패
     if (insertError) {
       console.error("소비 기록 저장 실패:", insertError);
-      setToastMessage("소비 기록을 저장하지 못했어요.");
+      showToast("소비 기록을 저장하지 못했어요.", "error");
       return;
     }
 
     if (!insertedTransaction) {
       console.error("저장 결과가 반환되지 않았습니다.");
-      setToastMessage("소비 기록 저장 결과를 확인하지 못했어요.");
+      showToast("소비 기록 저장 결과를 확인하지 못했어요.", "error");
       return;
     }
 
@@ -208,7 +207,7 @@ export const useTransactionActions = ({
           console.error("거래 저장 롤백 실패:", rollbackTransactionError);
         }
 
-        setToastMessage("영수증 업로드에 실패해 거래 저장을 취소했어요.");
+        showToast("영수증 업로드에 실패해 거래 저장을 취소했어요.", "error");
         return;
       }
 
@@ -223,7 +222,10 @@ export const useTransactionActions = ({
           console.error("거래 저장 롤백 실패:", rollbackTransactionError);
         }
 
-        setToastMessage("영수증 정보를 저장하지 못해 거래 저장을 취소했어요.");
+        showToast(
+          "영수증 정보를 저장하지 못해 거래 저장을 취소했어요.",
+          "error",
+        );
         return;
       }
 
@@ -244,7 +246,7 @@ export const useTransactionActions = ({
 
   const handleUpdateTransaction = async updatedForm => {
     if (!selectedTransaction) {
-      setToastMessage("수정할 거래 정보를 확인할 수 없어요.");
+      showToast("수정할 거래 정보를 확인할 수 없어요.", "error");
       return;
     }
 
@@ -256,7 +258,7 @@ export const useTransactionActions = ({
 
     if (userError || !user) {
       console.error("사용자 확인 실패:", userError);
-      setToastMessage("로그인 정보를 확인할 수 없어요.");
+      showToast("로그인 정보를 확인할 수 없어요.", "error");
       return;
     }
 
@@ -265,7 +267,7 @@ export const useTransactionActions = ({
 
     if (existingAttachmentError) {
       console.error("기존 영수증 정보 조회 실패:", existingAttachmentError);
-      setToastMessage("기존 영수증 정보를 확인하지 못했어요.");
+      showToast("기존 영수증 정보를 확인하지 못했어요.", "error");
       return;
     }
 
@@ -281,7 +283,7 @@ export const useTransactionActions = ({
     const transactionDate = new Date(year, month - 1, day, hour, minute, 0);
 
     if (Number.isNaN(transactionDate.getTime())) {
-      setToastMessage("거래 날짜를 확인해주세요.");
+      showToast("거래 날짜를 확인해주세요.", "error");
       return;
     }
 
@@ -330,13 +332,13 @@ export const useTransactionActions = ({
     // 5. 수정 실패
     if (updateError) {
       console.error("소비 기록 수정 실패:", updateError);
-      setToastMessage("소비 기록을 수정하지 못했어요.");
+      showToast("소비 기록을 수정하지 못했어요.", "error");
       return;
     }
 
     if (!updatedTransaction) {
       console.error("수정 결과가 반환되지 않았습니다.");
-      setToastMessage("수정된 소비 기록을 확인하지 못했어요.");
+      showToast("수정된 소비 기록을 확인하지 못했어요.", "error");
       return;
     }
 
@@ -346,7 +348,7 @@ export const useTransactionActions = ({
       const receiptFileError = validateReceiptFile(newAttachment);
 
       if (receiptFileError) {
-        setToastMessage(receiptFileError);
+        showToast(receiptFileError, "error");
         return;
       }
 
@@ -366,7 +368,7 @@ export const useTransactionActions = ({
 
       if (uploadError) {
         console.error("새 영수증 업로드 실패:", uploadError);
-        setToastMessage("새 영수증을 업로드하지 못했어요.");
+        showToast("새 영수증을 업로드하지 못했어요.", "error");
         return;
       }
 
@@ -377,7 +379,7 @@ export const useTransactionActions = ({
           console.error("새 영수증 Storage 롤백 실패:", rollbackStorageError);
         }
 
-        setToastMessage("영수증 정보를 수정하지 못했어요.");
+        showToast("영수증 정보를 수정하지 못했어요.", "error");
         return;
       }
 
@@ -404,7 +406,7 @@ export const useTransactionActions = ({
 
         if (attachmentDeleteError) {
           console.error("영수증 첨부정보 삭제 실패:", attachmentDeleteError);
-          setToastMessage("영수증 정보를 삭제하지 못했어요.");
+          showToast("영수증 정보를 삭제하지 못했어요.", "error");
           return;
         }
 
@@ -440,7 +442,7 @@ export const useTransactionActions = ({
 
     // 9. 상세화면으로 복귀
     setPanelView("detail");
-    setToastMessage("소비 기록을 수정했어요.");
+    showToast("소비 기록을 수정했어요.");
 
     console.log("소비 기록 수정 성공:", updatedTransaction);
   };
@@ -476,7 +478,7 @@ export const useTransactionActions = ({
 
   const handleDeleteTransaction = async () => {
     if (!selectedTransaction) {
-      setToastMessage("삭제할 거래 정보를 확인할 수 없어요.");
+      showToast("삭제할 거래 정보를 확인할 수 없어요.", "error");
       return;
     }
 
@@ -488,7 +490,7 @@ export const useTransactionActions = ({
 
     if (userError || !user) {
       console.error("사용자 확인 실패:", userError);
-      setToastMessage("로그인 정보를 확인할 수 없어요.");
+      showToast("로그인 정보를 확인할 수 없어요.", "error");
       return;
     }
 
@@ -498,13 +500,13 @@ export const useTransactionActions = ({
 
     if (attachmentError) {
       console.error("첨부파일 정보 조회 실패:", attachmentError);
-      setToastMessage("첨부파일 정보를 확인하지 못했어요.");
+      showToast("첨부파일 정보를 확인하지 못했어요.", "error");
       return;
     }
 
     if (storageDeleteError) {
       console.error("영수증 Storage 삭제 실패:", storageDeleteError);
-      setToastMessage("영수증 파일을 삭제하지 못했어요.");
+      showToast("영수증 파일을 삭제하지 못했어요.", "error");
       return;
     }
 
@@ -517,7 +519,7 @@ export const useTransactionActions = ({
 
     if (deleteError) {
       console.error("소비 기록 삭제 실패:", deleteError);
-      setToastMessage("소비 기록을 삭제하지 못했어요.");
+      showToast("소비 기록을 삭제하지 못했어요.", "error");
       return;
     }
 
@@ -546,7 +548,7 @@ export const useTransactionActions = ({
 
     if (validRows.length === 0) {
       setIsMultipleConfirmOpen(false);
-      setToastMessage("저장할 수 있는 거래가 없어요.");
+      showToast("저장할 수 있는 거래가 없어요.", "error");
       return;
     }
 
@@ -559,7 +561,7 @@ export const useTransactionActions = ({
     if (userError || !user) {
       console.error("사용자 확인 실패:", userError);
       setIsMultipleConfirmOpen(false);
-      setToastMessage("로그인 정보를 확인할 수 없어요.");
+      showToast("로그인 정보를 확인할 수 없어요.", "error");
       return;
     }
 
@@ -582,7 +584,7 @@ export const useTransactionActions = ({
     if (insertError) {
       console.error("다건 소비 기록 저장 실패:", insertError);
       setIsMultipleConfirmOpen(false);
-      setToastMessage("소비 기록을 저장하지 못했어요.");
+      showToast("소비 기록을 저장하지 못했어요.", "error");
       return;
     }
 
@@ -603,7 +605,7 @@ export const useTransactionActions = ({
     ]);
 
     setIsMultipleConfirmOpen(false);
-    setToastMessage(`${newTransactions.length}건의 소비 기록을 저장했어요.`);
+    showToast(`${newTransactions.length}건의 소비 기록을 저장했어요.`);
   };
 
   const onAiTransactionSubmit = async event => {

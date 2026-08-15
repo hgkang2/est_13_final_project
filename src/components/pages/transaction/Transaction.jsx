@@ -30,6 +30,15 @@ import { getToday } from "./utils/transactionDate";
 export default function Transaction() {
   const [recentlyAddedId, setRecentlyAddedId] = useState(null);
   const supabase = createClient();
+
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("success");
+
+  const showToast = (message, type = "success") => {
+    setToastType(type);
+    setToastMessage(message);
+  };
+
   const {
     transactions,
     setTransactions,
@@ -44,7 +53,7 @@ export default function Transaction() {
     isAllSelected,
     handleToggleTransaction,
     handleToggleAll,
-  } = useTransactions(supabase);
+  } = useTransactions(supabase, showToast);
 
   const [panelView, setPanelView] = useState("entry");
   // "entry" | "recent" | "detail" | "edit" | "closed"
@@ -53,13 +62,6 @@ export default function Transaction() {
   const [entryMode, setEntryMode] = useState("single");
 
   const [copiedRecentId, setCopiedRecentId] = useState(null);
-  const [toastMessage, setToastMessage] = useState("");
-  const [toastType, setToastType] = useState("success");
-
-  const showToast = (message, type = "success") => {
-    setToastType(type);
-    setToastMessage(message);
-  };
 
   const [copyTarget, setCopyTarget] = useState(null);
   const [isCopyModalOpen, setIsCopyModalOpen] = useState(false);
@@ -161,7 +163,6 @@ export default function Transaction() {
 
     setTransactions,
     setRecentlyAddedId,
-    setToastMessage,
     showToast,
   });
 
@@ -175,16 +176,19 @@ export default function Transaction() {
 
       if (categoryError) {
         console.error("카테고리 조회 실패:", categoryError);
+        showToast("카테고리를 불러오지 못했어요.", "error");
         return;
       }
 
       if (paymentMethodError) {
         console.error("결제수단 조회 실패:", paymentMethodError);
+        showToast("결제수단을 불러오지 못했어요.", "error");
         return;
       }
 
       if (transferAccountError) {
         console.error("이체 계좌 조회 실패:", transferAccountError);
+        showToast("이체 계좌를 불러오지 못했어요.", "error");
         return;
       }
 
@@ -212,7 +216,7 @@ export default function Transaction() {
     const handleChange = event => {
       if (event.matches && entryMode === "multiple") {
         setEntryMode("single");
-        setToastMessage(
+        showToast(
           "화면이 좁아져 단건 입력으로 전환했어요. 작성 중인 다건 입력 내용은 유지돼요.",
         );
       }
@@ -268,7 +272,7 @@ export default function Transaction() {
     setIsCopyModalOpen(false);
     setCopyTarget(null);
 
-    setToastMessage("거래 정보를 입력창에 복사했어요.");
+    showToast("거래 정보를 입력창에 복사했어요.");
   };
 
   const now = new Date();
@@ -363,7 +367,7 @@ export default function Transaction() {
     const validRows = multipleRows.filter(isValidMultipleRow);
 
     if (validRows.length === 0) {
-      setToastMessage("저장할 수 있는 거래가 없어요.");
+      showToast("저장할 수 있는 거래가 없어요.", "error");
       return;
     }
 
