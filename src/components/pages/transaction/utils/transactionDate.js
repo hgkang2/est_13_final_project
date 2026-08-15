@@ -1,3 +1,14 @@
+// 오늘 날짜를 YYYY-MM-DD 형식으로 반환
+export const getToday = () => {
+  const today = new Date();
+
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
+
 // 거래 입력 날짜와 시간을 DB 저장용 Date 객체로 변환
 export const createTransactionDate = (date, time) => {
   const now = new Date();

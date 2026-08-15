@@ -25,16 +25,7 @@ import {
 import { useMultipleTransactionForm } from "./hooks/useMultipleTransactionForm";
 import { useTransactions } from "./hooks/useTransactions";
 import { useTransactionActions } from "./hooks/useTransactionActions";
-
-const getToday = () => {
-  const today = new Date();
-
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, "0");
-  const day = String(today.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
-};
+import { getToday } from "./utils/transactionDate";
 
 export default function Transaction() {
   const [recentlyAddedId, setRecentlyAddedId] = useState(null);
