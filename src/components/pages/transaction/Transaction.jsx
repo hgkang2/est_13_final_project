@@ -18,11 +18,9 @@ import Modal from "@/components/common/Modal";
 import { formatTransaction } from "./utils/transactionFormatter";
 import { validateTransactionForm } from "./utils/transactionValidator";
 import {
-  createMultipleTransactions,
   createTransaction,
   deleteTransaction,
   fetchTransactionOptions,
-  fetchTransactions,
   updateTransaction,
 } from "./services/transactionService";
 import {
@@ -43,7 +41,6 @@ import {
 } from "./hooks/useTransactionForm";
 
 import {
-  createMultipleTransactionRow,
   useMultipleTransactionForm,
 } from "./hooks/useMultipleTransactionForm";
 import { useTransactions } from "./hooks/useTransactions";
@@ -123,17 +120,6 @@ export default function Transaction() {
     onAiFormChange,
   } = useTransactionForm();
 
-  const { onTransactionSubmit } = useTransactionActions({
-    supabase,
-    transactionForm,
-    setTransactionForm,
-    setTransactionErrors,
-    setTransactions,
-    setRecentlyAddedId,
-    setToastMessage,
-    showToast,
-  });
-
   const {
     multipleRows,
     setMultipleRows,
@@ -143,6 +129,24 @@ export default function Transaction() {
     onAddMultipleRow,
     onRemoveMultipleRow,
   } = useMultipleTransactionForm();
+
+const {
+  onTransactionSubmit,
+  handleConfirmMultipleSubmit,
+} = useTransactionActions({
+  supabase,
+  transactionForm,
+  setTransactionForm,
+  setTransactionErrors,
+  multipleRows,
+  isValidMultipleRow,
+  setMultipleRows,
+  setIsMultipleConfirmOpen,
+  setTransactions,
+  setRecentlyAddedId,
+  setToastMessage,
+  showToast,
+});
 
   const {
     aiStatus,
@@ -368,101 +372,6 @@ export default function Transaction() {
     }
 
     setIsMultipleConfirmOpen(true);
-  };
-
-  const handleConfirmMultipleSubmit = async () => {
-    const validRows = multipleRows.filter(isValidMultipleRow);
-
-    if (validRows.length === 0) {
-      setIsMultipleConfirmOpen(false);
-      setToastMessage("저장할 수 있는 거래가 없어요.");
-      return;
-    }
-
-    // 1. 로그인 사용자 확인
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
-
-    if (userError || !user) {
-      console.error("사용자 확인 실패:", userError);
-      setIsMultipleConfirmOpen(false);
-      setToastMessage("로그인 정보를 확인할 수 없어요.");
-      return;
-    }
-
-    // 2. UI row → DB 저장 데이터 변환
-    const transactionData = validRows.map(row => {
-      const now = new Date();
-
-      const [hour, minute] = row.time
-        ? row.time.split(":").map(Number)
-        : [now.getHours(), now.getMinutes()];
-
-      const transactionDate = new Date(
-        Number(row.date.slice(0, 4)),
-        Number(row.date.slice(5, 7)) - 1,
-        Number(row.date.slice(8, 10)),
-        hour,
-        minute,
-        row.time ? 0 : now.getSeconds(),
-      );
-
-      return {
-        user_id: user.id,
-        transaction_type: row.type,
-        amount: Number(row.amount),
-        category_id: row.category,
-
-        payment_method_id: row.type === "transfer" ? null : row.paymentMethod,
-
-        withdraw_account_id:
-          row.type === "transfer" ? row.withdrawAccount : null,
-
-        deposit_account_id: row.type === "transfer" ? row.depositAccount : null,
-
-        content: row.content.trim() || null,
-        memo: row.memo.trim() || null,
-
-        transaction_at: transactionDate.toISOString(),
-
-        input_method: "manual",
-
-        is_recurring: false,
-        recurring_day: null,
-      };
-    });
-
-    // 3. 다건 INSERT
-    const { data: insertedTransactions, error: insertError } =
-      await createMultipleTransactions(supabase, transactionData);
-
-    if (insertError) {
-      console.error("다건 소비 기록 저장 실패:", insertError);
-      setIsMultipleConfirmOpen(false);
-      setToastMessage("소비 기록을 저장하지 못했어요.");
-      return;
-    }
-
-    // 4. DB 데이터 → 기존 UI 형식
-    const newTransactions = (insertedTransactions ?? []).map(formatTransaction);
-
-    // 5. 화면 즉시 반영
-    setTransactions(prevTransactions => [
-      ...newTransactions,
-      ...prevTransactions,
-    ]);
-
-    // 6. 입력창 초기화
-    setMultipleRows([
-      createMultipleTransactionRow(1),
-      createMultipleTransactionRow(2),
-      createMultipleTransactionRow(3),
-    ]);
-
-    setIsMultipleConfirmOpen(false);
-    setToastMessage(`${newTransactions.length}건의 소비 기록을 저장했어요.`);
   };
 
   const onAiTransactionSubmit = async event => {
