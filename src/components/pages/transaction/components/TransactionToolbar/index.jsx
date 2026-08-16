@@ -12,6 +12,8 @@ export default function TransactionToolbar({
   onFilterChange,
   dateRange,
   onDateRangeChange,
+  isCurrentMonthRange,
+  onMoveToCurrentMonth,
 }) {
   return (
     <div className={styles.toolbar}>
@@ -50,9 +52,23 @@ export default function TransactionToolbar({
             aria-label="조회 종료일"
           />
 
-          <span className="material-icons" aria-hidden="true">
-            calendar_month
-          </span>
+          {isCurrentMonthRange ? (
+            <span className="material-icons" aria-hidden="true">
+              calendar_month
+            </span>
+          ) : (
+            <button
+              type="button"
+              className={styles.currentMonthButton}
+              onClick={onMoveToCurrentMonth}
+              aria-label="이번 달 보기"
+              title="이번 달 보기"
+            >
+              <span className="material-icons" aria-hidden="true">
+                restart_alt
+              </span>
+            </button>
+          )}
         </div>
 
         <div className={styles.toolbarActions}>

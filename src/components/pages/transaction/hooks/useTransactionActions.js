@@ -3,7 +3,7 @@ import {
   validateTransactionForm,
 } from "../utils/transactionValidator";
 import { formatTransaction } from "../utils/transactionFormatter";
-import { createTransactionDate } from "../utils/transactionDate";
+import { createTransactionDate, getToday } from "../utils/transactionDate";
 import {
   createMultipleTransactions,
   createTransaction,
@@ -75,6 +75,7 @@ export const useTransactionActions = ({
   refreshMonthlySummary,
   setRecentlyAddedId,
   showToast,
+  onTransactionSaved,
 }) => {
   // 로그인 사용자 확인
   const getCurrentUser = async () => {
@@ -245,18 +246,31 @@ export const useTransactionActions = ({
     }
     // 저장 성공
     console.log("소비 기록 저장 성공:", insertedTransaction);
-
     const newTransaction = formatTransaction(insertedTransaction);
 
-    setTransactions(prevTransactions => [newTransaction, ...prevTransactions]);
+    const isTodayTransaction = newTransaction.dateValue === getToday();
 
-    highlightTransaction(insertedTransaction.id);
+    // 오늘 거래는 실제 정렬 위치가 최신이므로 즉시 표시
+    if (isTodayTransaction) {
+      setTransactions(prevTransactions => [
+        newTransaction,
+        ...prevTransactions,
+      ]);
+
+      highlightTransaction(insertedTransaction.id);
+    }
 
     showToast("소비 기록을 저장했어요.");
     setTransactionForm(initialTransactionForm);
 
-    await refreshTransactions();
+    const refreshedTransactions = await refreshTransactions();
     await refreshMonthlySummary();
+
+    onTransactionSaved?.(
+      newTransaction,
+      refreshedTransactions,
+      "소비 기록을 저장했어요.",
+    );
     if (insertedTransaction.transaction_type === "expense") {
       await refreshSpendingAnalysisIfNeeded(supabase, user.id);
     }
@@ -724,9 +738,16 @@ export const useTransactionActions = ({
 
     const newTransaction = formatTransaction(insertedTransaction);
 
-    setTransactions(prevTransactions => [newTransaction, ...prevTransactions]);
+    const isTodayTransaction = newTransaction.dateValue === getToday();
 
-    highlightTransaction(insertedTransaction.id);
+    if (isTodayTransaction) {
+      setTransactions(prevTransactions => [
+        newTransaction,
+        ...prevTransactions,
+      ]);
+
+      highlightTransaction(insertedTransaction.id);
+    }
 
     // 9. AI 입력 상태 초기화
     showToast("AI 소비 기록을 저장했어요.");
@@ -738,8 +759,14 @@ export const useTransactionActions = ({
     setAiStatus("idle");
     setAiTypeValues(initialAiTypeValues);
 
-    await refreshTransactions();
+    const refreshedTransactions = await refreshTransactions();
     await refreshMonthlySummary();
+
+    onTransactionSaved?.(
+      newTransaction,
+      refreshedTransactions,
+      "AI 소비 기록을 저장했어요.",
+    );
 
     if (insertedTransaction.transaction_type === "expense") {
       await refreshSpendingAnalysisIfNeeded(supabase, user.id);

@@ -33,10 +33,13 @@ export default function Transaction() {
 
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
+  const [toastAction, setToastAction] = useState(null);
+  const [scrollTargetId, setScrollTargetId] = useState(null);
 
-  const showToast = (message, type = "success") => {
+  const showToast = (message, type = "success", action = null) => {
     setToastType(type);
     setToastMessage(message);
+    setToastAction(action);
   };
 
   const {
@@ -52,12 +55,61 @@ export default function Transaction() {
     dateRange,
     visibleTransactions,
     hasTransactionData,
+    isCurrentMonthRange,
     handleDateRangeChange,
+    handleMoveToDate,
+    handleMoveToCurrentMonth,
     selectedIds,
     setSelectedIds,
     handleToggleTransaction,
     handleToggleAll,
   } = useTransactions(supabase, showToast);
+
+  // 저장한 거래 위치로 이동
+  const focusSavedTransaction = transactionId => {
+    setScrollTargetId(transactionId);
+    setRecentlyAddedId(transactionId);
+
+    setTimeout(() => {
+      setScrollTargetId(currentId =>
+        currentId === transactionId ? null : currentId,
+      );
+
+      setRecentlyAddedId(currentId =>
+        currentId === transactionId ? null : currentId,
+      );
+    }, 1800);
+  };
+
+  // 저장 후 현재 목록에서 확인 가능한지에 따라 안내
+  const handleSavedTransaction = (
+    transaction,
+    refreshedTransactions,
+    successMessage,
+  ) => {
+    const isLoaded = (refreshedTransactions ?? []).some(
+      item => item.id === transaction.id,
+    );
+
+    // 현재 로드된 목록 안에 있으면 실제 위치로 바로 이동
+    if (isLoaded) {
+      focusSavedTransaction(transaction.id);
+      return;
+    }
+
+    const [, month, day] = transaction.dateValue.split("-");
+
+    // 현재 목록에서 바로 볼 수 없으면 해당 날짜 보기 제공
+    showToast(successMessage, "success", {
+      label: `${Number(month)}월 ${Number(day)}일 기록 보기`,
+      onClick: () => {
+        focusSavedTransaction(transaction.id);
+        handleMoveToDate(transaction.dateValue);
+
+        showToast(`${Number(month)}월 ${Number(day)}일 기록을 보고 있어요.`);
+      },
+    });
+  };
 
   const [panelView, setPanelView] = useState("entry");
   // "entry" | "recent" | "detail" | "edit" | "closed"
@@ -170,6 +222,7 @@ export default function Transaction() {
     refreshMonthlySummary,
     setRecentlyAddedId,
     showToast,
+    onTransactionSaved: handleSavedTransaction,
   });
 
   useEffect(() => {
@@ -209,12 +262,16 @@ export default function Transaction() {
   useEffect(() => {
     if (!toastMessage) return;
 
-    const timer = setTimeout(() => {
-      setToastMessage("");
-    }, 2000);
+    const timer = setTimeout(
+      () => {
+        setToastMessage("");
+        setToastAction(null);
+      },
+      toastAction ? 5000 : 2000,
+    );
 
     return () => clearTimeout(timer);
-  }, [toastMessage]);
+  }, [toastMessage, toastAction]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 1024px)");
@@ -341,11 +398,14 @@ export default function Transaction() {
                   onFilterChange={setActiveFilter}
                   dateRange={dateRange}
                   onDateRangeChange={handleDateRangeChange}
+                  isCurrentMonthRange={isCurrentMonthRange}
+                  onMoveToCurrentMonth={handleMoveToCurrentMonth}
                 />
                 <TransactionList
                   hasTransactionData={hasTransactionData}
                   visibleTransactions={visibleTransactions}
                   recentlyAddedId={recentlyAddedId}
+                  scrollTargetId={scrollTargetId}
                   selectedIds={selectedIds}
                   onToggleAll={handleToggleAll}
                   onToggleTransaction={handleToggleTransaction}
@@ -527,6 +587,15 @@ export default function Transaction() {
           </span>
 
           <span>{toastMessage}</span>
+          {toastAction && (
+            <button
+              type="button"
+              className={styles.toastAction}
+              onClick={() => toastAction.onClick?.()}
+            >
+              {toastAction.label}
+            </button>
+          )}
         </div>
       )}
     </>

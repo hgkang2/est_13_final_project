@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./TransactionList.module.scss";
 import TransactionEmpty from "../TransactionEmpty";
 
@@ -17,11 +17,13 @@ export default function TransactionList({
   onClearSelection,
   onOpenDetail,
   recentlyAddedId,
+  scrollTargetId,
   onLoadMore,
   hasMoreTransactions,
 }) {
   const [expandedId, setExpandedId] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
+  const lastScrolledIdRef = useRef(null);
 
   const INITIAL_VISIBLE_COUNT = 8;
 
@@ -67,6 +69,44 @@ export default function TransactionList({
 
     setIsExpanded(true);
   };
+
+  useEffect(() => {
+    if (!scrollTargetId) {
+      lastScrolledIdRef.current = null;
+      return;
+    }
+
+    if (lastScrolledIdRef.current === scrollTargetId) return;
+
+    const targetIndex = visibleTransactions.findIndex(
+      transaction => transaction.id === scrollTargetId,
+    );
+
+    if (targetIndex === -1) return;
+
+    // 접힌 8개보다 아래에 있으면 먼저 목록 펼치기
+    if (targetIndex >= INITIAL_VISIBLE_COUNT && !isExpanded) {
+      setIsExpanded(true);
+      return;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      const targetRow = document.querySelector(
+        `[data-transaction-id="${scrollTargetId}"]`,
+      );
+
+      if (!targetRow) return;
+
+      targetRow.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+
+      lastScrolledIdRef.current = scrollTargetId;
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [scrollTargetId, visibleTransactions, isExpanded]);
 
   const handleToggleMemo = transactionId => {
     setExpandedId(prevId => (prevId === transactionId ? null : transactionId));
@@ -183,6 +223,7 @@ export default function TransactionList({
                       : ""
                   }`}
                   key={transaction.id}
+                  data-transaction-id={transaction.id}
                   onClick={() => onOpenDetail(transaction)}
                 >
                   <button

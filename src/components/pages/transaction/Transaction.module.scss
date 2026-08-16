@@ -145,6 +145,29 @@
   color: var(--color-danger-dot);
 }
 
+.toastAction {
+  flex-shrink: 0;
+  padding: 0;
+  border: 0;
+
+  color: var(--color-point);
+  background-color: transparent;
+
+  font: inherit;
+  font-weight: var(--font-weight-bold);
+
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.toastAction:hover {
+  text-decoration: underline;
+}
+
+.toastError .toastAction {
+  color: var(--color-danger-text);
+}
+
 @keyframes toast-in {
   from {
     opacity: 0;

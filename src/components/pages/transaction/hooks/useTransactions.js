@@ -200,6 +200,8 @@ export const useTransactions = (supabase, showToast) => {
     setTransactions(formattedTransactions);
     setLoadedTransactionCount((transactionData ?? []).length);
     setTransactionTotalCount(transactionCount ?? 0);
+
+    return formattedTransactions;
   };
 
   const loadMoreTransactions = async () => {
@@ -256,6 +258,12 @@ export const useTransactions = (supabase, showToast) => {
 
   const hasTransactionData = visibleTransactions.length > 0;
 
+  const currentMonthRange = getCurrentMonthRange();
+
+  const isCurrentMonthRange =
+    dateRange.startDate === currentMonthRange.startDate &&
+    dateRange.endDate === currentMonthRange.endDate;
+
   const handleToggleTransaction = id => {
     setSelectedIds(prevSelectedIds =>
       prevSelectedIds.includes(id)
@@ -291,6 +299,24 @@ export const useTransactions = (supabase, showToast) => {
     }));
   };
 
+  // 저장한 거래 날짜만 보기
+  const handleMoveToDate = dateValue => {
+    if (!dateValue) return;
+
+    setSelectedIds([]);
+
+    setDateRange({
+      startDate: dateValue,
+      endDate: dateValue,
+    });
+  };
+
+  // 이번 달 전체로 돌아오기
+  const handleMoveToCurrentMonth = () => {
+    setSelectedIds([]);
+    setDateRange(getCurrentMonthRange());
+  };
+
   return {
     transactions,
     setTransactions,
@@ -305,7 +331,10 @@ export const useTransactions = (supabase, showToast) => {
     dateRange,
     visibleTransactions,
     hasTransactionData,
+    isCurrentMonthRange,
     handleDateRangeChange,
+    handleMoveToDate,
+    handleMoveToCurrentMonth,
     selectedIds,
     setSelectedIds,
     handleToggleTransaction,
