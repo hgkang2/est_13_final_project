@@ -276,6 +276,11 @@
   color: var(--color-text);
 }
 
+.rankingPending {
+  @include typo-body-l;
+  color: var(--color-light-gray);
+}
+
 /* 메시지 카드 */
 
 .message {
