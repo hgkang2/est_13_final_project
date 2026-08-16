@@ -382,10 +382,14 @@
 }
 
 .expandedList {
-  width: calc(100% + 6px);
+  --expanded-scrollbar-width: 6px;
+
+  width: 100%;
   max-height: 620px;
-  margin-right: -6px;
+  overflow-x: hidden;
   overflow-y: auto;
+
+  scrollbar-gutter: stable;
 
   // Firefox
   scrollbar-width: thin;
@@ -393,7 +397,7 @@
 
   // Chrome / Edge / Safari
   &::-webkit-scrollbar {
-    width: 6px;
+    width: var(--expanded-scrollbar-width);
   }
 
   &::-webkit-scrollbar-track {
@@ -408,6 +412,10 @@
   &::-webkit-scrollbar-thumb:hover {
     background-color: var(--color-gray);
   }
+}
+
+.expandedList .transactionRow {
+  width: calc(100% + var(--expanded-scrollbar-width));
 }
 
 @container (max-width: 1200px) {
@@ -752,6 +760,7 @@
   }
 
   .transactionRow .contentGroup .contentCell {
+    display: block;
     overflow: hidden;
     font-size: 12px;
     line-height: 18px;
