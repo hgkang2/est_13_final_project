@@ -44,17 +44,17 @@
 
 /* 오류 */
 .error .icon {
-  color: var(--color-error, #ef4444);
+  color: var(--color-danger-dot);
 }
 
 /* 경고 */
 .warning .icon {
-  color: var(--color-warning, #f59e0b);
+  color: var(--color-warning-dot);
 }
 
 /* 안내 */
 .info .icon {
-  color: var(--color-info, #3b82f6);
+  color: var(--color-point);
 }
 
 @keyframes toast-in {
