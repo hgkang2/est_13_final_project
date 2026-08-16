@@ -93,7 +93,7 @@ export default function useSubHomeData() {
         // 소비기록 연동 후 분석 갱신 시점을 소비기록 저장 시점으로 변경 예정
         setIsAiLoading(true);
         try {
-          const aiData = await getAiAnalysis(supabase);
+          const aiData = await getAiAnalysis(supabase, user.id);
           if (!isMounted) return;
           setAiAnalysis(aiData.analysis);
           setRecommendedMission(aiData.recommendedMission);
