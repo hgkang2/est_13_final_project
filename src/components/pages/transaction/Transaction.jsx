@@ -52,6 +52,8 @@ export default function Transaction() {
     isTransactionsLoading,
     activeFilter,
     setActiveFilter,
+    detailFilters,
+    handleDetailFilterApply,
     dateRange,
     visibleTransactions,
     hasTransactionData,
@@ -401,6 +403,10 @@ export default function Transaction() {
                   onDateRangeChange={handleDateRangeChange}
                   isCurrentMonthRange={isCurrentMonthRange}
                   onMoveToCurrentMonth={handleMoveToCurrentMonth}
+                  categories={categories}
+                  paymentMethods={paymentMethods}
+                  detailFilters={detailFilters}
+                  onDetailFilterApply={handleDetailFilterApply}
                 />
                 <TransactionList
                   isLoading={isTransactionsLoading}

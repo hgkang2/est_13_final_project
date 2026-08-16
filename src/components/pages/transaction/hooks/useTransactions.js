@@ -44,6 +44,12 @@ export const useTransactions = (supabase, showToast) => {
   const [activeFilter, setActiveFilter] = useState("all");
   const [dateRange, setDateRange] = useState(getCurrentMonthRange);
   const [selectedIds, setSelectedIds] = useState([]);
+  const [detailFilters, setDetailFilters] = useState({
+    category: "",
+    paymentMethod: "",
+    hasReceipt: false,
+    keyword: "",
+  });
 
   // 로그인 사용자 확인
   const getCurrentUser = async () => {
@@ -89,6 +95,7 @@ export const useTransactions = (supabase, showToast) => {
           activeFilter,
           0,
           INITIAL_TRANSACTION_COUNT - 1,
+          detailFilters,
         ),
         fetchRecentTransactions(supabase, user.id),
       ]);
@@ -139,7 +146,7 @@ export const useTransactions = (supabase, showToast) => {
     };
 
     loadTransactions();
-  }, [dateRange.startDate, dateRange.endDate, activeFilter]);
+  }, [dateRange.startDate, dateRange.endDate, activeFilter, detailFilters]);
 
   const refreshMonthlySummary = async () => {
     const { data, error } = await fetchTransactionMonthlySummary(supabase);
@@ -201,6 +208,7 @@ export const useTransactions = (supabase, showToast) => {
       activeFilter,
       0,
       refreshCount - 1,
+      detailFilters,
     );
 
     if (transactionError) {
@@ -235,6 +243,7 @@ export const useTransactions = (supabase, showToast) => {
       activeFilter,
       from,
       to,
+      detailFilters,
     );
 
     if (error) {
@@ -353,6 +362,17 @@ export const useTransactions = (supabase, showToast) => {
     setDateRange(getCurrentMonthRange());
   };
 
+  const handleDetailFilterApply = nextFilters => {
+    setSelectedIds([]);
+
+    setDetailFilters({
+      category: nextFilters.category ?? "",
+      paymentMethod: nextFilters.paymentMethod ?? "",
+      hasReceipt: Boolean(nextFilters.hasReceipt),
+      keyword: nextFilters.keyword?.trim() ?? "",
+    });
+  };
+
   return {
     transactions,
     setTransactions,
@@ -367,6 +387,8 @@ export const useTransactions = (supabase, showToast) => {
     isTransactionsLoading,
     activeFilter,
     setActiveFilter,
+    detailFilters,
+    handleDetailFilterApply,
     dateRange,
     visibleTransactions,
     hasTransactionData,

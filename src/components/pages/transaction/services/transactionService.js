@@ -47,12 +47,28 @@ export const fetchTransactions = async (
   transactionType,
   from,
   to,
+  detailFilters = {},
 ) => {
   const { startAt, endAt } = createTransactionDateRange(startDate, endDate);
 
+  const {
+    category = "",
+    paymentMethod = "",
+    hasReceipt = false,
+    keyword = "",
+  } = detailFilters;
+
+  const selectFields = hasReceipt
+    ? `${TRANSACTION_SELECT},
+    receipt_attachment:transaction_attachments!inner (
+      id
+    )
+  `
+    : TRANSACTION_SELECT;
+
   let query = supabase
     .from("transactions")
-    .select(TRANSACTION_SELECT, { count: "exact" })
+    .select(selectFields, { count: "exact" })
     .eq("user_id", userId)
     .gte("transaction_at", startAt)
     .lt("transaction_at", endAt)
@@ -60,6 +76,22 @@ export const fetchTransactions = async (
 
   if (transactionType !== "all") {
     query = query.eq("transaction_type", transactionType);
+  }
+
+  if (category) {
+    query = query.eq("category_id", category);
+  }
+
+  if (paymentMethod) {
+    query = query.eq("payment_method_id", paymentMethod);
+  }
+
+  const trimmedKeyword = keyword.trim();
+
+  if (trimmedKeyword) {
+    query = query.or(
+      `content.ilike.%${trimmedKeyword}%,memo.ilike.%${trimmedKeyword}%`,
+    );
   }
 
   return await query.range(from, to);

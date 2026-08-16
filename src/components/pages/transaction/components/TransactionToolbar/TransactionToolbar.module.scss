@@ -107,6 +107,209 @@
   font-weight: var(--font-weight-bold);
 }
 
+.filterAction {
+  position: relative;
+}
+
+.filterButtonOpen {
+  border-color: var(--color-point);
+  color: var(--color-point);
+}
+
+.detailFilterPanel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 50;
+
+  display: flex;
+  width: 320px;
+  padding: 16px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 12px;
+  flex-direction: column;
+  gap: 16px;
+
+  background-color: var(--color-white);
+  box-shadow: 0 8px 24px rgb(6 7 14 / 12%);
+}
+
+.detailFilterHeader {
+  display: flex;
+  min-height: 32px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.detailFilterHeader strong {
+  color: var(--color-text);
+
+  @include typo-caption-plus;
+}
+
+.detailFilterClose {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--color-light-gray);
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.detailFilterClose :global(.material-icons) {
+  font-size: var(--icon-m-size);
+}
+
+.detailFilterFields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detailFilterField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.detailFilterField > span {
+  color: var(--color-gray);
+
+  @include typo-body-s-plus;
+}
+
+.detailFilterField select,
+.detailSearchBox {
+  width: 100%;
+  height: 40px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+  background-color: var(--color-white);
+}
+
+.detailFilterField select {
+  padding: 0 12px;
+  outline: 0;
+  color: var(--color-gray);
+  cursor: pointer;
+
+  @include typo-body-m-minus;
+}
+
+.detailFilterField select:focus,
+.detailSearchBox:focus-within {
+  border-color: var(--color-point);
+}
+
+.receiptOnlyOption {
+  display: flex;
+  min-height: 32px;
+  align-items: center;
+  gap: 8px;
+
+  color: var(--color-gray);
+  cursor: pointer;
+
+  @include typo-body-m-minus;
+}
+
+.receiptOnlyOption input {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 2px;
+  appearance: none;
+  background-color: var(--color-white);
+  cursor: pointer;
+}
+
+.receiptOnlyOption input:checked {
+  border-color: var(--color-point);
+  background-color: var(--color-point);
+}
+
+.receiptOnlyOption input:checked::after {
+  position: absolute;
+  left: 4px;
+  top: 2px;
+  width: 4px;
+  height: 8px;
+  border: solid var(--color-white);
+  border-width: 0 2px 2px 0;
+  content: "";
+  transform: rotate(45deg);
+}
+
+.detailSearchBox {
+  display: flex;
+  padding: 0 12px;
+  align-items: center;
+  gap: 8px;
+}
+
+.detailSearchBox input {
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  flex: 1;
+
+  color: var(--color-text);
+  background-color: transparent;
+
+  @include typo-body-m-minus;
+}
+
+.detailSearchBox input::placeholder {
+  color: var(--color-light-gray);
+}
+
+.detailSearchBox :global(.material-icons) {
+  flex-shrink: 0;
+  color: var(--color-light-gray);
+  font-size: var(--icon-m-size);
+}
+
+.detailFilterActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.detailFilterReset,
+.detailFilterApply {
+  display: flex;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  @include typo-caption-plus;
+}
+
+.detailFilterReset {
+  border: 1px solid var(--color-border-gray);
+  color: var(--color-gray);
+  background-color: var(--color-white);
+}
+
+.detailFilterApply {
+  border: 1px solid var(--color-point);
+  color: var(--color-white);
+  background-color: var(--color-point);
+}
+
 .dateButton input[type="date"]::-webkit-calendar-picker-indicator {
   position: absolute;
   inset: 0;
@@ -245,9 +448,22 @@
   }
 
   .mobileToolbarRow {
+    position: relative;
     display: flex;
     width: 100%;
     align-items: center;
+  }
+  .filterAction {
+    position: static;
+  }
+
+  .detailFilterPanel {
+    left: 0;
+    right: 0;
+    top: calc(100% + 8px);
+
+    width: auto;
+    box-sizing: border-box;
   }
 
   .toolbarActions {
