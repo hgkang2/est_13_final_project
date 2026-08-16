@@ -70,6 +70,7 @@ export const useTransactionActions = ({
   setSelectedIds,
   setIsDeleteConfirmOpen,
   setIsDeleteSuccessOpen,
+  setIsSelectedDeleteSuccessOpen,
   setTransactions,
   refreshTransactions,
   refreshRecentTransactions,
@@ -570,6 +571,100 @@ export const useTransactionActions = ({
     await refreshMonthlySummary();
   };
 
+  // 선택 거래 삭제
+  const handleDeleteSelectedTransactions = async transactionIds => {
+    if (!transactionIds?.length) {
+      showToast("삭제할 거래를 선택해주세요.", "error");
+      return;
+    }
+
+    // 1. 로그인 사용자 확인
+    const user = await getCurrentUser();
+
+    if (!user) return;
+
+    const deletedIds = [];
+    const failedIds = [];
+
+    // 2. 선택 거래별 영수증 정리 후 거래 삭제
+    for (const transactionId of transactionIds) {
+      const { attachmentError, storageDeleteError } =
+        await removeTransactionReceiptFile(supabase, transactionId);
+
+      if (attachmentError) {
+        console.error(
+          "선택 거래 첨부파일 정보 조회 실패:",
+          transactionId,
+          attachmentError,
+        );
+
+        failedIds.push(transactionId);
+        continue;
+      }
+
+      if (storageDeleteError) {
+        console.error(
+          "선택 거래 영수증 Storage 삭제 실패:",
+          transactionId,
+          storageDeleteError,
+        );
+
+        failedIds.push(transactionId);
+        continue;
+      }
+
+      const { error: deleteError } = await deleteTransaction(
+        supabase,
+        transactionId,
+        user.id,
+      );
+
+      if (deleteError) {
+        console.error("선택 거래 삭제 실패:", transactionId, deleteError);
+        failedIds.push(transactionId);
+        continue;
+      }
+
+      deletedIds.push(transactionId);
+    }
+
+    // 3. 삭제 성공 거래 화면에서 제거
+    if (deletedIds.length > 0) {
+      setTransactions(prevTransactions =>
+        prevTransactions.filter(
+          transaction => !deletedIds.includes(transaction.id),
+        ),
+      );
+
+      setSelectedIds(prevSelectedIds =>
+        prevSelectedIds.filter(id => !deletedIds.includes(id)),
+      );
+
+      await refreshTransactions();
+      await refreshRecentTransactions();
+      await refreshMonthlySummary();
+    }
+
+    // 4. 결과 안내
+    if (failedIds.length > 0) {
+      if (deletedIds.length > 0) {
+        showToast(
+          `${deletedIds.length}건을 삭제했고, ${failedIds.length}건은 삭제하지 못했어요.`,
+          "error",
+        );
+        return;
+      }
+
+      showToast(
+        `${failedIds.length}건의 소비 기록을 삭제하지 못했어요.`,
+        "error",
+      );
+      return;
+    }
+
+    setIsSelectedDeleteSuccessOpen(true);
+  };
+
   // 다건 저장 함수
   const handleConfirmMultipleSubmit = async () => {
     const validRows = multipleRows.filter(isValidMultipleRow);
@@ -786,5 +881,6 @@ export const useTransactionActions = ({
     handleUpdateTransaction,
     handleOpenDetail,
     handleDeleteTransaction,
+    handleDeleteSelectedTransactions,
   };
 };

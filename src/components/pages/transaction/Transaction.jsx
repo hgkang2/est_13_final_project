@@ -129,6 +129,9 @@ export default function Transaction() {
   const [transferAccounts, setTransferAccounts] = useState([]);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [isDeleteSuccessOpen, setIsDeleteSuccessOpen] = useState(false);
+  const [selectedDeleteIds, setSelectedDeleteIds] = useState([]);
+  const [isSelectedDeleteSuccessOpen, setIsSelectedDeleteSuccessOpen] =
+    useState(false);
 
   // 1. 단건 + AI 폼 상태
   const {
@@ -188,6 +191,7 @@ export default function Transaction() {
     handleUpdateTransaction,
     handleOpenDetail,
     handleDeleteTransaction,
+    handleDeleteSelectedTransactions,
   } = useTransactionActions({
     supabase,
 
@@ -216,6 +220,7 @@ export default function Transaction() {
     setSelectedIds,
     setIsDeleteConfirmOpen,
     setIsDeleteSuccessOpen,
+    setIsSelectedDeleteSuccessOpen,
 
     setTransactions,
     refreshTransactions,
@@ -407,6 +412,7 @@ export default function Transaction() {
                   onToggleAll={handleToggleAll}
                   onToggleTransaction={handleToggleTransaction}
                   onClearSelection={() => setSelectedIds([])}
+                  onDeleteSelected={setSelectedDeleteIds}
                   onOpenDetail={handleOpenDetail}
                   onLoadMore={loadMoreTransactions}
                   hasMoreTransactions={hasMoreTransactions}
@@ -543,6 +549,20 @@ export default function Transaction() {
         onCancel={() => setIsMultipleConfirmOpen(false)}
       />
       <Modal
+        isOpen={selectedDeleteIds.length > 0}
+        type="danger"
+        icon="error_outline"
+        title={`${selectedDeleteIds.length}건을 삭제하시겠습니까?`}
+        description="삭제한 내역은 복구할 수 없습니다."
+        confirmText="삭제하기"
+        cancelText="취소"
+        onCancel={() => setSelectedDeleteIds([])}
+        onConfirm={async () => {
+          await handleDeleteSelectedTransactions(selectedDeleteIds);
+          setSelectedDeleteIds([]);
+        }}
+      />
+      <Modal
         isOpen={isDeleteConfirmOpen}
         type="danger"
         icon="error_outline"
@@ -565,6 +585,15 @@ export default function Transaction() {
           setPanelView("entry");
           setEntryMode("single");
         }}
+      />
+      <Modal
+        isOpen={isSelectedDeleteSuccessOpen}
+        type="danger"
+        icon="delete_outline"
+        title="삭제되었습니다."
+        description="선택한 소비 기록이 삭제되었습니다."
+        confirmText="확인"
+        onConfirm={() => setIsSelectedDeleteSuccessOpen(false)}
       />
 
       {toastMessage && (

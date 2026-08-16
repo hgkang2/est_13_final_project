@@ -16,6 +16,7 @@ export default function TransactionList({
   onToggleAll,
   onToggleTransaction,
   onClearSelection,
+  onDeleteSelected,
   onOpenDetail,
   recentlyAddedId,
   scrollTargetId,
@@ -248,7 +249,17 @@ export default function TransactionList({
                   </div>
 
                   <div className={styles.selectionActions}>
-                    <button type="button" aria-label="선택 거래 삭제">
+                    <button
+                      type="button"
+                      aria-label="선택 거래 삭제"
+                      onClick={() =>
+                        onDeleteSelected(
+                          selectedTransactions.map(
+                            transaction => transaction.id,
+                          ),
+                        )
+                      }
+                    >
                       <span
                         className="material-icons-outlined"
                         aria-hidden="true"
