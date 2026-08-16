@@ -44,6 +44,7 @@ export default function Transaction() {
     setTransactions,
     monthlySummary,
     refreshMonthlySummary,
+    refreshTransactions,
     loadMoreTransactions,
     hasMoreTransactions,
     activeFilter,
@@ -166,6 +167,7 @@ export default function Transaction() {
     setIsDeleteSuccessOpen,
 
     setTransactions,
+    refreshTransactions,
     refreshMonthlySummary,
     setRecentlyAddedId,
     showToast,

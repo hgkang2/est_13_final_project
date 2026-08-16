@@ -43,19 +43,29 @@ export const useTransactions = (supabase, showToast) => {
   const [dateRange, setDateRange] = useState(getCurrentMonthRange);
   const [selectedIds, setSelectedIds] = useState([]);
 
+  // 로그인 사용자 확인
+  const getCurrentUser = async () => {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      console.error("사용자 확인 실패:", userError);
+      showToast("로그인 정보를 확인할 수 없어요.", "error");
+      return null;
+    }
+
+    return user;
+  };
+
   useEffect(() => {
     const loadTransactions = async () => {
       setIsTransactionsLoading(true);
-
       // 1. 로그인 사용자 확인
-      const {
-        data: { user },
-        error: userError,
-      } = await supabase.auth.getUser();
+      const user = await getCurrentUser();
 
-      if (userError || !user) {
-        console.error("사용자 확인 실패:", userError);
-        showToast("로그인 정보를 확인할 수 없어요.", "error");
+      if (!user) {
         setIsTransactionsLoading(false);
         return;
       }
@@ -152,18 +162,50 @@ export const useTransactions = (supabase, showToast) => {
     console.log("소비 기록 요약 조회 성공:", data);
   };
 
-  const loadMoreTransactions = async () => {
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
+  // CRUD 후 현재까지 불러온 거래 목록 다시 맞추기
+  const refreshTransactions = async () => {
+    const user = await getCurrentUser();
 
-    if (userError || !user) {
-      console.error("사용자 확인 실패:", userError);
-      showToast("로그인 정보를 확인할 수 없어요.", "error");
+    if (!user) return;
+
+    const refreshCount = Math.max(
+      loadedTransactionCount,
+      INITIAL_TRANSACTION_COUNT,
+    );
+
+    const {
+      data: transactionData,
+      error: transactionError,
+      count: transactionCount,
+    } = await fetchTransactions(
+      supabase,
+      user.id,
+      dateRange.startDate,
+      dateRange.endDate,
+      activeFilter,
+      0,
+      refreshCount - 1,
+    );
+
+    if (transactionError) {
+      console.error("거래 목록 새로고침 실패:", transactionError);
+      showToast("거래 목록을 새로고침하지 못했어요.", "error");
       return;
     }
 
+    const formattedTransactions = (transactionData ?? []).map(
+      formatTransaction,
+    );
+
+    setTransactions(formattedTransactions);
+    setLoadedTransactionCount((transactionData ?? []).length);
+    setTransactionTotalCount(transactionCount ?? 0);
+  };
+
+  const loadMoreTransactions = async () => {
+    const user = await getCurrentUser();
+
+    if (!user) return;
     const from = loadedTransactionCount;
     const to = from + LOAD_MORE_COUNT - 1;
 
@@ -261,6 +303,7 @@ export const useTransactions = (supabase, showToast) => {
     setTransactions,
     monthlySummary,
     refreshMonthlySummary,
+    refreshTransactions,
     loadMoreTransactions,
     hasMoreTransactions,
     isTransactionsLoading,

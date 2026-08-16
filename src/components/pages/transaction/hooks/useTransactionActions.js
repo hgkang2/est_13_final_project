@@ -71,6 +71,7 @@ export const useTransactionActions = ({
   setIsDeleteConfirmOpen,
   setIsDeleteSuccessOpen,
   setTransactions,
+  refreshTransactions,
   refreshMonthlySummary,
   setRecentlyAddedId,
   showToast,
@@ -254,6 +255,7 @@ export const useTransactionActions = ({
     showToast("소비 기록을 저장했어요.");
     setTransactionForm(initialTransactionForm);
 
+    await refreshTransactions();
     await refreshMonthlySummary();
     if (insertedTransaction.transaction_type === "expense") {
       await refreshSpendingAnalysisIfNeeded(supabase, user.id);
@@ -453,6 +455,7 @@ export const useTransactionActions = ({
     setPanelView("detail");
     showToast("소비 기록을 수정했어요.");
 
+    await refreshTransactions();
     await refreshMonthlySummary();
 
     console.log("소비 기록 수정 성공:", updatedTransaction);
@@ -545,6 +548,7 @@ export const useTransactionActions = ({
     setIsDeleteConfirmOpen(false);
     setIsDeleteSuccessOpen(true);
 
+    await refreshTransactions();
     await refreshMonthlySummary();
   };
 
@@ -604,6 +608,7 @@ export const useTransactionActions = ({
     setIsMultipleConfirmOpen(false);
     showToast(`${newTransactions.length}건의 소비 기록을 저장했어요.`);
 
+    await refreshTransactions();
     await refreshMonthlySummary();
 
     if (
@@ -733,6 +738,7 @@ export const useTransactionActions = ({
     setAiStatus("idle");
     setAiTypeValues(initialAiTypeValues);
 
+    await refreshTransactions();
     await refreshMonthlySummary();
 
     if (insertedTransaction.transaction_type === "expense") {
