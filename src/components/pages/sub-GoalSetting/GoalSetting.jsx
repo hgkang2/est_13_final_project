@@ -8,6 +8,7 @@ import { createClient } from "@/utils/supabase/client";
 import GoalEmpty from "./sections/GoalEmpty";
 import GoalList from "./sections/GoalList";
 import GoalForm from "./sections/GoalForm";
+import FocusGoalModal from "./sections/FocusGoalModal";
 import styles from "./GoalSetting.module.scss";
 
 const GOAL_SETTING_FILTERS = ["전체", "진행 중", "달성 완료", "중단"];
@@ -120,6 +121,9 @@ export default function GoalSetting() {
   const [goalSettingIsLoading, setGoalSettingIsLoading] = useState(true);
 
   const [goalSettingView, setGoalSettingView] = useState("list");
+
+  const [goalSettingFocusModalIsOpen, setGoalSettingFocusModalIsOpen] =
+    useState(false);
 
   const [goalSettingEditingGoal, setGoalSettingEditingGoal] = useState(null);
 
@@ -235,6 +239,8 @@ export default function GoalSetting() {
         console.error("삭제된 목표의 이미지 정리 실패:", imageDeleteError);
       }
     }
+
+    window.alert("목표가 삭제되었습니다.");
   };
 
   const handleGoalSettingSave = async (goalSettingSavedGoal) => {
@@ -292,7 +298,9 @@ export default function GoalSetting() {
       status,
       ...(status !== "in_progress" && { focus_order: null }),
       memo: goalSettingSavedGoal.memo.trim() || null,
-      image_path: uploadedImagePath ?? goalSettingSavedGoal.imagePath ?? null,
+      image_path: goalSettingSavedGoal.imageRemoved
+        ? null
+        : (uploadedImagePath ?? goalSettingSavedGoal.imagePath ?? null),
       updated_at: new Date().toISOString(),
     };
 
@@ -340,7 +348,7 @@ export default function GoalSetting() {
     );
 
     if (
-      uploadedImagePath &&
+      (uploadedImagePath || goalSettingSavedGoal.imageRemoved) &&
       goalSettingSavedGoal.imagePath &&
       uploadedImagePath !== goalSettingSavedGoal.imagePath
     ) {
@@ -369,10 +377,18 @@ export default function GoalSetting() {
       return [goalSettingSavedDatabaseGoal, ...previousGoals];
     });
 
+    const goalSettingWasJustStopped =
+      goalSettingSavedGoal.status === "중단" &&
+      goalSettingEditingGoal?.status !== "중단";
+
     setGoalSettingEditingGoal(null);
     setGoalSettingActiveFilter("전체");
     setGoalSettingView("list");
-    window.alert(goalSettingSavedGoal.id ? "목표가 수정되었습니다." : "목표가 생성되었습니다.");
+
+    if (goalSettingWasJustStopped) {
+      window.alert("목표가 중단되었습니다.");
+    }
+
     return true;
   };
 
@@ -420,29 +436,46 @@ export default function GoalSetting() {
                 className={styles.goalSettingFilters}
                 aria-label="목표 상태 필터"
               >
-                {GOAL_SETTING_FILTERS.map((goalSettingFilter) => {
-                  const goalSettingIsActive =
-                    goalSettingActiveFilter === goalSettingFilter;
+                <div className={styles.goalSettingFilterGroup}>
+                  {GOAL_SETTING_FILTERS.map((goalSettingFilter) => {
+                    const goalSettingIsActive =
+                      goalSettingActiveFilter === goalSettingFilter;
 
-                  return (
-                    <button
-                      type="button"
-                      key={goalSettingFilter}
-                      className={`${styles.goalSettingFilterButton} ${
-                        goalSettingIsActive
-                          ? styles.goalSettingActiveFilter
-                          : ""
-                      }`}
-                      disabled={!goalSettingHasGoals}
-                      aria-pressed={goalSettingIsActive}
-                      onClick={() =>
-                        setGoalSettingActiveFilter(goalSettingFilter)
-                      }
-                    >
-                      {goalSettingFilter}
-                    </button>
-                  );
-                })}
+                    return (
+                      <button
+                        type="button"
+                        key={goalSettingFilter}
+                        className={`${styles.goalSettingFilterButton} ${
+                          goalSettingIsActive
+                            ? styles.goalSettingActiveFilter
+                            : ""
+                        }`}
+                        disabled={!goalSettingHasGoals}
+                        aria-pressed={goalSettingIsActive}
+                        onClick={() =>
+                          setGoalSettingActiveFilter(goalSettingFilter)
+                        }
+                      >
+                        {goalSettingFilter}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  type="button"
+                  className={`${styles.goalSettingFilterButton} ${styles.goalSettingFocusButton} ${
+                    goalSettingFocusModalIsOpen
+                      ? styles.goalSettingFocusButtonActive
+                      : ""
+                  }`}
+                  disabled={!goalSettingHasGoals}
+                  aria-haspopup="dialog"
+                  aria-expanded={goalSettingFocusModalIsOpen}
+                  onClick={() => setGoalSettingFocusModalIsOpen(true)}
+                >
+                  집중목표설정
+                </button>
               </nav>
 
               {!goalSettingIsLoading && !goalSettingHasGoals ? (
@@ -466,6 +499,27 @@ export default function GoalSetting() {
             />
           )}
         </div>
+
+        {goalSettingFocusModalIsOpen && (
+          <div
+            className={styles.focusGoalModalBackdrop}
+            onClick={() => setGoalSettingFocusModalIsOpen(false)}
+          >
+            <div
+              className={styles.focusGoalModalDialog}
+              role="dialog"
+              aria-modal="true"
+              aria-label="집중 목표 설정"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <FocusGoalModal
+                goals={goalSettingGoals}
+                onClose={() => setGoalSettingFocusModalIsOpen(false)}
+                onComplete={() => setGoalSettingFocusModalIsOpen(false)}
+              />
+            </div>
+          </div>
+        )}
 
         <SubFooter />
       </div>

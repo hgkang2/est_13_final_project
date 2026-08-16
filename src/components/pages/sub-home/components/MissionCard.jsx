@@ -2,7 +2,9 @@ import Image from "next/image";
 import styles from "../SubHome.module.scss";
 import OutlineButton from "./OutlineButton";
 
-export default function MissionCard({ hasSpendingData }) {
+export default function MissionCard({ hasSpendingData, recommendedMission }) {
+  const hasMission = hasSpendingData && Boolean(recommendedMission?.title);
+
   return (
     <article
       className={styles.missionCard}
@@ -21,13 +23,13 @@ export default function MissionCard({ hasSpendingData }) {
 
             <h2 id="mission-card-title">오늘의 미션</h2>
           </header>
+
           <div className={styles.missionDescription}>
-            {hasSpendingData ? (
+            {hasMission ? (
               <>
                 <p className={styles.missionMessage}>
-                  편의점 지출 <strong>5,000원</strong> 이하로 유지해보세요!
+                  {recommendedMission.title}
                 </p>
-
                 <p className={styles.missionSubText}>
                   오늘 미션을 완료하고 새싹을 키워보세요. 🌱
                 </p>
@@ -46,21 +48,22 @@ export default function MissionCard({ hasSpendingData }) {
               </>
             )}
           </div>
-          <OutlineButton>
-            {hasSpendingData ? "미션 자세히 보기" : "소비 기록하기"}
-          </OutlineButton>{" "}
+
+          <OutlineButton href={hasMission ? "/sub-challenge" : "/transaction"}>
+            {hasMission ? "미션 자세히 보기" : "소비 기록하기"}
+          </OutlineButton>
         </div>
 
         <div className={styles.missionImage}>
           <Image
-            className={!hasSpendingData ? styles.emptyMissionCharacter : ""}
+            className={!hasMission ? styles.emptyMissionCharacter : ""}
             src={
-              hasSpendingData
+              hasMission
                 ? "/images/character/mission_moa.png"
                 : "/images/character/mission_empty_moa.png"
             }
             alt={
-              hasSpendingData
+              hasMission
                 ? "오늘의 미션을 안내하는 모아 캐릭터"
                 : "기록을 시작하도록 안내하는 모아 캐릭터"
             }
