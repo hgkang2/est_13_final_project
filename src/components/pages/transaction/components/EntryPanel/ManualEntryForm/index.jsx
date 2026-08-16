@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./ManualEntryForm.module.scss";
 
 export default function ManualEntryForm({
@@ -13,9 +13,27 @@ export default function ManualEntryForm({
   onResetTransactionForm,
 }) {
   const timeInputRef = useRef(null);
+  const receiptPreviewDialogRef = useRef(null);
+  const [attachmentPreview, setAttachmentPreview] = useState("");
+
   const filteredCategories = categories.filter(
     category => category.transaction_type === transactionForm.type,
   );
+
+  useEffect(() => {
+    if (!transactionForm.attachment) {
+      setAttachmentPreview("");
+      return;
+    }
+
+    const previewUrl = URL.createObjectURL(transactionForm.attachment);
+
+    setAttachmentPreview(previewUrl);
+
+    return () => {
+      URL.revokeObjectURL(previewUrl);
+    };
+  }, [transactionForm.attachment]);
 
   return (
     <>
@@ -569,12 +587,31 @@ export default function ManualEntryForm({
             onChange={onTransactionFormChange}
           />
 
-          <span
-            className={`material-icons ${styles.attachmentIcon}`}
-            aria-hidden="true"
-          >
-            add_photo_alternate
-          </span>
+          {attachmentPreview ? (
+            <button
+              type="button"
+              className={styles.attachmentPreviewButton}
+              onClick={event => {
+                event.preventDefault();
+                event.stopPropagation();
+                receiptPreviewDialogRef.current?.showModal();
+              }}
+              aria-label="선택한 영수증 크게 보기"
+            >
+              <img
+                src={attachmentPreview}
+                alt="선택한 영수증 미리보기"
+                className={styles.attachmentPreviewImage}
+              />
+            </button>
+          ) : (
+            <span
+              className={`material-icons ${styles.attachmentIcon}`}
+              aria-hidden="true"
+            >
+              add_photo_alternate
+            </span>
+          )}
 
           <span className={styles.attachmentText}>
             <strong>
@@ -583,10 +620,47 @@ export default function ManualEntryForm({
                 : "이미지 등록"}
             </strong>
 
-            <small>이 영역을 클릭하거나 이미지를 드래그 하세요.</small>
+            <small>
+              {transactionForm.attachment
+                ? "이미지를 클릭하면 크게 볼 수 있어요."
+                : "이 영역을 클릭하거나 이미지를 드래그 하세요."}
+            </small>
           </span>
         </label>
       </section>
+      {attachmentPreview && (
+        <dialog
+          ref={receiptPreviewDialogRef}
+          className={styles.receiptPreviewDialog}
+          aria-label="선택한 영수증 확대 보기"
+        >
+          <div
+            className={styles.receiptPreviewContent}
+            onClick={event => {
+              if (event.target === event.currentTarget) {
+                receiptPreviewDialogRef.current?.close();
+              }
+            }}
+          >
+            <button
+              type="button"
+              className={styles.receiptPreviewClose}
+              onClick={() => receiptPreviewDialogRef.current?.close()}
+              aria-label="영수증 확대 보기 닫기"
+            >
+              <span className="material-icons" aria-hidden="true">
+                close
+              </span>
+            </button>
+
+            <img
+              src={attachmentPreview}
+              alt="선택한 영수증 확대 이미지"
+              className={styles.receiptPreviewLargeImage}
+            />
+          </div>
+        </dialog>
+      )}
     </>
   );
 }
