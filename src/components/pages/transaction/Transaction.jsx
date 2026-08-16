@@ -416,6 +416,11 @@ export default function Transaction() {
                   onOpenDetail={handleOpenDetail}
                   onLoadMore={loadMoreTransactions}
                   hasMoreTransactions={hasMoreTransactions}
+                  activeTransactionId={
+                    panelView === "detail" || panelView === "edit"
+                      ? selectedTransaction?.id
+                      : null
+                  }
                 />
               </section>
             </div>
@@ -447,6 +452,7 @@ export default function Transaction() {
                   setPanelView("edit");
                 }}
                 onDelete={() => setIsDeleteConfirmOpen(true)}
+                onCopy={() => handleRecentCopy(selectedTransaction)}
               />
             )}
 

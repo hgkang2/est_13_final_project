@@ -57,6 +57,11 @@
   background-color: var(--color-selection-background);
 }
 
+.activeRow {
+  background-color: var(--color-background-green);
+  box-shadow: inset 2px 0 0 var(--color-point);
+}
+
 .checkboxCell {
   display: flex;
   width: 40px;

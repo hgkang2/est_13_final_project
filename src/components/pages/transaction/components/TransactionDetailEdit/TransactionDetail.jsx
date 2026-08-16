@@ -6,6 +6,7 @@ export default function TransactionDetail({
   onClose,
   onEdit,
   onDelete,
+  onCopy,
 }) {
   const receiptPreviewDialogRef = useRef(null);
 
@@ -27,11 +28,16 @@ export default function TransactionDetail({
 
         <h2 className={styles.detailTitle}>소비 기록 상세</h2>
 
-        <div className={styles.detailHistoryIcon}>
+        <button
+          type="button"
+          className={styles.detailHeaderButton}
+          onClick={onCopy}
+          aria-label="이 거래 복사"
+        >
           <span className="material-icons" aria-hidden="true">
-            history
+            content_copy
           </span>
-        </div>
+        </button>
       </div>
 
       {transaction.receiptImage && (

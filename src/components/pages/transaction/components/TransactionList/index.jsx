@@ -18,6 +18,7 @@ export default function TransactionList({
   onClearSelection,
   onDeleteSelected,
   onOpenDetail,
+  activeTransactionId,
   recentlyAddedId,
   scrollTargetId,
   onLoadMore,
@@ -295,6 +296,10 @@ export default function TransactionList({
                 <li
                   className={`${styles.transactionRow} ${
                     isSelected ? styles.selectedRow : ""
+                  } ${
+                    transaction.id === activeTransactionId
+                      ? styles.activeRow
+                      : ""
                   } ${
                     transaction.id === recentlyAddedId
                       ? styles.recentlyAdded
