@@ -18,6 +18,8 @@ export default function TransactionList({
   onClearSelection,
   onOpenDetail,
   recentlyAddedId,
+  onLoadMore,
+  hasMoreTransactions,
 }) {
   const selectedTransactions = visibleTransactions.filter(transaction =>
     selectedIds.includes(transaction.id),
@@ -44,6 +46,16 @@ export default function TransactionList({
   const displayedTransactions = isExpanded
     ? visibleTransactions
     : visibleTransactions.slice(0, INITIAL_VISIBLE_COUNT);
+
+  const handleLoadMore = async () => {
+    if (hasMoreTransactions) {
+      setIsExpanded(true);
+      await onLoadMore();
+      return;
+    }
+
+    setIsExpanded(prev => !prev);
+  };
 
   const handleToggleMemo = transactionId => {
     setExpandedId(prevId => (prevId === transactionId ? null : transactionId));
@@ -265,17 +277,24 @@ export default function TransactionList({
             })}
           </ul>
 
-          {visibleTransactions.length > INITIAL_VISIBLE_COUNT && (
+          {(visibleTransactions.length > INITIAL_VISIBLE_COUNT ||
+            hasMoreTransactions) && (
             <div className={styles.loadMoreArea}>
               <button
                 type="button"
                 className={styles.loadMoreButton}
-                onClick={() => setIsExpanded(prev => !prev)}
+                onClick={handleLoadMore}
               >
-                <span>{isExpanded ? "접기" : "더 많은 내역 보기"}</span>
+                <span>
+                  {isExpanded && !hasMoreTransactions
+                    ? "접기"
+                    : "더 많은 내역 보기"}
+                </span>
 
                 <span className="material-icons" aria-hidden="true">
-                  {isExpanded ? "keyboard_arrow_up" : "keyboard_arrow_down"}
+                  {isExpanded && !hasMoreTransactions
+                    ? "keyboard_arrow_up"
+                    : "keyboard_arrow_down"}
                 </span>
               </button>
             </div>

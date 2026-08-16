@@ -179,29 +179,46 @@ export async function getSpendingComparison(supabase) {
   return data?.[0] ?? null;
 }
 
-// 이번 달 AI 소비 분석 및 추천 미션 조회
-export async function getAiAnalysis(supabase) {
-  const now = new Date();
-
-  const periodStart = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    1,
-  ).toLocaleDateString("sv-SE", {
+// 이번 달 최신 AI 소비 분석 및 추천 미션 조회
+export async function getAiAnalysis(supabase, userId) {
+  const today = new Date().toLocaleDateString("sv-SE", {
     timeZone: "Asia/Seoul",
   });
 
-  const periodEnd = now.toLocaleDateString("sv-SE", {
-    timeZone: "Asia/Seoul",
-  });
+  const periodStart = `${today.slice(0, 7)}-01`;
 
-  const { data, error } = await supabase.functions.invoke("analyze-spending", {
-    body: {
-      analysisType: "monthly",
-      periodStart,
-      periodEnd,
-    },
-  });
+  const { data, error } = await supabase
+    .from("analysis_reports")
+    .select(
+      `
+      home_summary,
+      summary,
+      detail,
+      insight,
+      prediction,
+      action_suggestion,
+      feedback,
+      mission_message,
+
+      recommended_mission:mission_templates (
+        id,
+        code,
+        title,
+        description,
+        category_code,
+        target_type,
+        target_value,
+        unit
+      )
+    `,
+    )
+    .eq("user_id", userId)
+    .eq("analysis_type", "monthly")
+    .eq("period_start", periodStart)
+    .eq("status", "completed")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
   if (error) {
     console.error("AI 소비 분석 조회 실패:", error);
@@ -212,9 +229,7 @@ export async function getAiAnalysis(supabase) {
     };
   }
 
-  if (!data?.success) {
-    console.log("AI 소비 분석 미생성:", data);
-
+  if (!data) {
     return {
       analysis: null,
       recommendedMission: null,
@@ -222,8 +237,26 @@ export async function getAiAnalysis(supabase) {
   }
 
   return {
-    analysis: data.analysis ?? null,
-    recommendedMission: data.recommendedMission ?? null,
+    analysis: {
+      homeSummary: data.home_summary ?? "",
+      summary: data.summary ?? "",
+      detail: data.detail ?? "",
+      insight: data.insight ?? "",
+      prediction: data.prediction ?? "",
+      actionSuggestion: data.action_suggestion ?? "",
+      feedback: data.feedback ?? "",
+      mission: data.recommended_mission
+        ? {
+            templateCode: data.recommended_mission.code,
+            message:
+              data.mission_message ??
+              data.recommended_mission.description ??
+              data.recommended_mission.title,
+          }
+        : null,
+    },
+
+    recommendedMission: data.recommended_mission ?? null,
   };
 }
 
