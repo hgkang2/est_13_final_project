@@ -65,13 +65,13 @@ export const fetchTransactions = async (
   return await query.range(from, to);
 };
 
-// 최근 거래 목록 조회
+// 최근 입력 거래 조회
 export const fetchRecentTransactions = async (supabase, userId) => {
   return await supabase
     .from("transactions")
     .select(TRANSACTION_SELECT)
     .eq("user_id", userId)
-    .order("transaction_at", { ascending: false })
+    .order("created_at", { ascending: false })
     .limit(6);
 };
 

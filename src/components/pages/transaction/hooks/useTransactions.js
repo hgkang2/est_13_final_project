@@ -35,6 +35,7 @@ const LOAD_MORE_COUNT = 20;
 // 사용자 거래 목록 조회와 상태 관리
 export const useTransactions = (supabase, showToast) => {
   const [transactions, setTransactions] = useState([]);
+  const [recentTransactions, setRecentTransactions] = useState([]);
   const [loadedTransactionCount, setLoadedTransactionCount] = useState(0);
   const [transactionTotalCount, setTransactionTotalCount] = useState(0);
   const [monthlySummary, setMonthlySummary] = useState(null);
@@ -106,26 +107,17 @@ export const useTransactions = (supabase, showToast) => {
         return;
       }
 
-      // 3. 기간 거래 + 최근 거래 중복 제거
-      const transactionMap = new Map();
+      // 3. 기간 거래 / 최근 입력 거래 각각 UI 형식으로 변환
+      const formattedTransactions = (transactionData ?? []).map(
+        formatTransaction,
+      );
 
-      (transactionData ?? []).forEach(transaction => {
-        transactionMap.set(transaction.id, transaction);
-      });
-
-      (recentData ?? []).forEach(transaction => {
-        transactionMap.set(transaction.id, transaction);
-      });
-
-      const formattedTransactions = [...transactionMap.values()]
-        .sort(
-          (a, b) =>
-            new Date(b.transaction_at).getTime() -
-            new Date(a.transaction_at).getTime(),
-        )
-        .map(formatTransaction);
+      const formattedRecentTransactions = (recentData ?? []).map(
+        formatTransaction,
+      );
 
       setTransactions(formattedTransactions);
+      setRecentTransactions(formattedRecentTransactions);
 
       // 4. 이번 달 거래 요약 조회
       // const { data: monthlySummaryData, error: monthlySummaryError } =
@@ -163,6 +155,27 @@ export const useTransactions = (supabase, showToast) => {
     setIsSummaryLoading(false);
 
     console.log("소비 기록 요약 조회 성공:", data);
+  };
+
+  // 최근 입력 거래 다시 조회
+  const refreshRecentTransactions = async () => {
+    const user = await getCurrentUser();
+
+    if (!user) return;
+
+    const { data, error } = await fetchRecentTransactions(supabase, user.id);
+
+    if (error) {
+      console.error("최근 소비 기록 조회 실패:", error);
+      showToast("최근 소비 기록을 불러오지 못했어요.", "error");
+      return;
+    }
+
+    const formattedRecentTransactions = (data ?? []).map(formatTransaction);
+
+    setRecentTransactions(formattedRecentTransactions);
+
+    return formattedRecentTransactions;
   };
 
   // CRUD 후 현재까지 불러온 거래 목록 다시 맞추기
@@ -343,9 +356,11 @@ export const useTransactions = (supabase, showToast) => {
   return {
     transactions,
     setTransactions,
+    recentTransactions,
     monthlySummary,
     isSummaryLoading,
     refreshMonthlySummary,
+    refreshRecentTransactions,
     refreshTransactions,
     loadMoreTransactions,
     hasMoreTransactions,

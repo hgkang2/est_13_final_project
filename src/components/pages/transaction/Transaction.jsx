@@ -41,9 +41,11 @@ export default function Transaction() {
   const {
     transactions,
     setTransactions,
+    recentTransactions,
     monthlySummary,
     isSummaryLoading,
     refreshMonthlySummary,
+    refreshRecentTransactions,
     refreshTransactions,
     loadMoreTransactions,
     hasMoreTransactions,
@@ -217,6 +219,7 @@ export default function Transaction() {
 
     setTransactions,
     refreshTransactions,
+    refreshRecentTransactions,
     refreshMonthlySummary,
     setRecentlyAddedId,
     showToast,
@@ -348,8 +351,6 @@ export default function Transaction() {
     expenseChange: 0,
     balanceChange: 0,
   };
-
-  const recentTransactions = transactions.slice(0, 6);
 
   const onCancelMultipleEntry = () => {
     setEntryMode("single");

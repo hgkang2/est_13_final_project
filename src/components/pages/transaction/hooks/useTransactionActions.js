@@ -72,6 +72,7 @@ export const useTransactionActions = ({
   setIsDeleteSuccessOpen,
   setTransactions,
   refreshTransactions,
+  refreshRecentTransactions,
   refreshMonthlySummary,
   setRecentlyAddedId,
   showToast,
@@ -264,6 +265,7 @@ export const useTransactionActions = ({
     setTransactionForm(initialTransactionForm);
 
     const refreshedTransactions = await refreshTransactions();
+    await refreshRecentTransactions();
     await refreshMonthlySummary();
 
     onTransactionSaved?.(
@@ -470,6 +472,7 @@ export const useTransactionActions = ({
     showToast("소비 기록을 수정했어요.");
 
     await refreshTransactions();
+    await refreshRecentTransactions();
     await refreshMonthlySummary();
 
     console.log("소비 기록 수정 성공:", updatedTransaction);
@@ -563,6 +566,7 @@ export const useTransactionActions = ({
     setIsDeleteSuccessOpen(true);
 
     await refreshTransactions();
+    await refreshRecentTransactions();
     await refreshMonthlySummary();
   };
 
@@ -623,6 +627,7 @@ export const useTransactionActions = ({
     showToast(`${newTransactions.length}건의 소비 기록을 저장했어요.`);
 
     await refreshTransactions();
+    await refreshRecentTransactions();
     await refreshMonthlySummary();
 
     if (
@@ -760,6 +765,7 @@ export const useTransactionActions = ({
     setAiTypeValues(initialAiTypeValues);
 
     const refreshedTransactions = await refreshTransactions();
+    await refreshRecentTransactions();
     await refreshMonthlySummary();
 
     onTransactionSaved?.(
