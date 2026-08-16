@@ -246,15 +246,9 @@
   @include typo-table-content;
 }
 
-.selectionInfo > :global(.material-icons) {
-  display: flex;
-  width: 40px;
-  height: 40px;
+.selectionCheckbox {
   flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
   color: var(--color-point);
-  font-size: var(--icon-m-size);
 }
 
 .selectionRight {
@@ -847,10 +841,8 @@
   }
 
   .selectionBar {
-    width: 100%;
-    min-height: 48px;
+    display: none;
   }
-
   .selectionBarInner {
     display: flex;
     width: 100%;
@@ -877,10 +869,6 @@
   .selectionActions button {
     width: 36px;
     height: 36px;
-  }
-
-  .selectionInfo > :global(.material-icons) {
-    display: none;
   }
 }
 

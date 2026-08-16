@@ -24,6 +24,44 @@ export default function TransactionList({
   const [expandedId, setExpandedId] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const lastScrolledIdRef = useRef(null);
+  const tableRef = useRef(null);
+  const clearSelectionRef = useRef(onClearSelection);
+
+  useEffect(() => {
+    clearSelectionRef.current = onClearSelection;
+  }, [onClearSelection]);
+
+  // 거래 목록이 모바일 레이아웃으로 전환되면 기존 선택 초기화
+  useEffect(() => {
+    const tableElement = tableRef.current;
+
+    if (!tableElement) return;
+
+    let wasMobile = tableElement.clientWidth <= 700;
+    // 이미 모바일 너비에서 시작한 경우에도 기존 선택 제거
+    if (wasMobile) {
+      clearSelectionRef.current();
+    }
+
+    const resizeObserver = new ResizeObserver(entries => {
+      const currentWidth =
+        entries[0]?.contentRect.width ?? tableElement.clientWidth;
+
+      const isMobile = currentWidth <= 700;
+
+      if (!wasMobile && isMobile) {
+        clearSelectionRef.current();
+      }
+
+      wasMobile = isMobile;
+    });
+
+    resizeObserver.observe(tableElement);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   const INITIAL_VISIBLE_COUNT = 8;
 
@@ -113,7 +151,7 @@ export default function TransactionList({
   };
 
   return (
-    <div className={styles.table}>
+    <div ref={tableRef} className={styles.table}>
       {hasTransactionData ? (
         <>
           <div className={styles.tableHeader}>
@@ -153,9 +191,16 @@ export default function TransactionList({
             <div className={styles.selectionBar}>
               <div className={styles.selectionBarInner}>
                 <div className={styles.selectionInfo}>
-                  <span className="material-icons" aria-hidden="true">
-                    check_box
-                  </span>
+                  <button
+                    type="button"
+                    className={`${styles.checkboxCell} ${styles.selectionCheckbox}`}
+                    onClick={onClearSelection}
+                    aria-label="선택 거래 전체 해제"
+                  >
+                    <span className="material-icons" aria-hidden="true">
+                      check_box
+                    </span>
+                  </button>
 
                   <span>{selectedTransactions.length}건이 선택되었습니다.</span>
                 </div>
