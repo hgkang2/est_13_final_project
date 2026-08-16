@@ -957,3 +957,132 @@
     );
   }
 }
+
+.transactionSkeleton {
+  width: 100%;
+  overflow: hidden;
+}
+
+.skeletonHeader {
+  width: 100%;
+  height: 72px;
+  background-color: var(--color-background-green);
+  animation: transaction-skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+.skeletonRow {
+  display: flex;
+  width: 100%;
+  min-height: 72px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--color-border-gray);
+  align-items: center;
+  gap: 16px;
+}
+
+.skeletonRow > span {
+  display: block;
+  min-width: 0;
+  height: 14px;
+  border-radius: 999px;
+  background-color: var(--color-dark-white);
+  animation: transaction-skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+.skeletonCheckbox {
+  flex: 0 0 16px;
+}
+
+.skeletonDate {
+  flex: 0 1 110px;
+}
+
+.skeletonType {
+  flex: 0 1 60px;
+}
+
+.skeletonContent {
+  flex: 2 1 180px;
+}
+
+.skeletonAmount {
+  flex: 0 1 100px;
+}
+
+.skeletonPayment {
+  flex: 0 1 100px;
+}
+
+.skeletonMemo {
+  flex: 1 1 120px;
+}
+
+.skeletonAction {
+  flex: 0 0 16px;
+}
+
+@keyframes transaction-skeleton-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+
+  50% {
+    opacity: 0.9;
+  }
+}
+
+@container (max-width: 700px) {
+  .skeletonHeader {
+    height: 48px;
+  }
+
+  .skeletonRow {
+    min-height: 64px;
+    padding: 12px 8px;
+    gap: 8px;
+  }
+
+  .skeletonCheckbox,
+  .skeletonType,
+  .skeletonPayment,
+  .skeletonMemo {
+    display: none;
+  }
+
+  .skeletonDate {
+    flex: 0 1 73px;
+  }
+
+  .skeletonContent {
+    flex: 1 1 97px;
+  }
+
+  .skeletonAmount {
+    flex: 0 1 88px;
+  }
+
+  .skeletonAction {
+    flex: 0 0 20px;
+  }
+}
+
+@container (max-width: 350px) {
+  .skeletonRow {
+    padding-right: 4px;
+    padding-left: 4px;
+    gap: 6px;
+  }
+
+  .skeletonDate {
+    flex-basis: 66px;
+  }
+
+  .skeletonContent {
+    flex-basis: 88px;
+  }
+
+  .skeletonAmount {
+    flex-basis: 82px;
+  }
+}

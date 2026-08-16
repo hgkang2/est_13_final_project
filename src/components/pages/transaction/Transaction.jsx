@@ -42,10 +42,12 @@ export default function Transaction() {
     transactions,
     setTransactions,
     monthlySummary,
+    isSummaryLoading,
     refreshMonthlySummary,
     refreshTransactions,
     loadMoreTransactions,
     hasMoreTransactions,
+    isTransactionsLoading,
     activeFilter,
     setActiveFilter,
     dateRange,
@@ -381,6 +383,7 @@ export default function Transaction() {
               </header>
 
               <SummaryCards
+                isLoading={isSummaryLoading}
                 hasTransactionData={hasTransactionData}
                 summaryData={summaryData}
               />
@@ -394,6 +397,7 @@ export default function Transaction() {
                   onMoveToCurrentMonth={handleMoveToCurrentMonth}
                 />
                 <TransactionList
+                  isLoading={isTransactionsLoading}
                   hasTransactionData={hasTransactionData}
                   visibleTransactions={visibleTransactions}
                   recentlyAddedId={recentlyAddedId}

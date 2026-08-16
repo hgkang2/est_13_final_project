@@ -9,6 +9,7 @@ function formatAmount(amount) {
 }
 
 export default function TransactionList({
+  isLoading,
   hasTransactionData,
   visibleTransactions,
   selectedIds,
@@ -152,7 +153,28 @@ export default function TransactionList({
 
   return (
     <div ref={tableRef} className={styles.table}>
-      {hasTransactionData ? (
+      {isLoading ? (
+        <div
+          className={styles.transactionSkeleton}
+          aria-label="소비 기록을 불러오는 중"
+          aria-busy="true"
+        >
+          <div className={styles.skeletonHeader} />
+
+          {Array.from({ length: 8 }, (_, index) => (
+            <div className={styles.skeletonRow} key={index}>
+              <span className={styles.skeletonCheckbox} />
+              <span className={styles.skeletonDate} />
+              <span className={styles.skeletonType} />
+              <span className={styles.skeletonContent} />
+              <span className={styles.skeletonAmount} />
+              <span className={styles.skeletonPayment} />
+              <span className={styles.skeletonMemo} />
+              <span className={styles.skeletonAction} />
+            </div>
+          ))}
+        </div>
+      ) : hasTransactionData ? (
         <>
           <div className={styles.tableHeader}>
             <button

@@ -38,6 +38,7 @@ export const useTransactions = (supabase, showToast) => {
   const [loadedTransactionCount, setLoadedTransactionCount] = useState(0);
   const [transactionTotalCount, setTransactionTotalCount] = useState(0);
   const [monthlySummary, setMonthlySummary] = useState(null);
+  const [isSummaryLoading, setIsSummaryLoading] = useState(true);
   const [isTransactionsLoading, setIsTransactionsLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState("all");
   const [dateRange, setDateRange] = useState(getCurrentMonthRange);
@@ -154,10 +155,12 @@ export const useTransactions = (supabase, showToast) => {
     if (error) {
       console.error("소비 기록 요약 조회 실패:", error);
       showToast("소비 기록 요약을 불러오지 못했어요.", "error");
+      setIsSummaryLoading(false);
       return;
     }
 
     setMonthlySummary(data);
+    setIsSummaryLoading(false);
 
     console.log("소비 기록 요약 조회 성공:", data);
   };
@@ -341,6 +344,7 @@ export const useTransactions = (supabase, showToast) => {
     transactions,
     setTransactions,
     monthlySummary,
+    isSummaryLoading,
     refreshMonthlySummary,
     refreshTransactions,
     loadMoreTransactions,

@@ -14,7 +14,39 @@ const formatChange = amount => {
   return "0원";
 };
 
-export default function SummaryCards({ hasTransactionData, summaryData }) {
+export default function SummaryCards({
+  isLoading,
+  hasTransactionData,
+  summaryData,
+}) {
+  if (isLoading) {
+    return (
+      <section
+        className={styles.summarySection}
+        aria-label="이번 달 소비 요약을 불러오는 중"
+        aria-busy="true"
+      >
+        {Array.from({ length: 4 }, (_, index) => (
+          <article
+            className={`${styles.summaryCard} ${styles.summarySkeleton}`}
+            key={index}
+          >
+            <span
+              className={`${styles.summarySkeletonBlock} ${styles.summarySkeletonTitle}`}
+            />
+
+            <span
+              className={`${styles.summarySkeletonBlock} ${styles.summarySkeletonValue}`}
+            />
+
+            <span
+              className={`${styles.summarySkeletonBlock} ${styles.summarySkeletonMeta}`}
+            />
+          </article>
+        ))}
+      </section>
+    );
+  }
   const summaryCards = [
     {
       id: "income",

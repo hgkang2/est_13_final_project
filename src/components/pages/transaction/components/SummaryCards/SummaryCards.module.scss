@@ -356,3 +356,40 @@
     font-size: 14px;
   }
 }
+
+.summarySkeleton {
+  pointer-events: none;
+}
+
+.summarySkeletonBlock {
+  display: block;
+  border-radius: 999px;
+  background-color: var(--color-dark-white);
+  animation: summary-skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+.summarySkeletonTitle {
+  width: 72px;
+  height: 14px;
+}
+
+.summarySkeletonValue {
+  width: 55%;
+  height: 22px;
+}
+
+.summarySkeletonMeta {
+  width: 70%;
+  height: 14px;
+}
+
+@keyframes summary-skeleton-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+
+  50% {
+    opacity: 0.9;
+  }
+}
