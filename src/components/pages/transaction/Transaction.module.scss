@@ -34,6 +34,11 @@
   margin-right: auto;
 }
 
+.contentCentered:global(.container) {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .pageHeader {
   display: flex;
   flex-direction: column;
@@ -78,7 +83,7 @@
 
 .openEntryButton {
   position: fixed;
-  right: max(32px, calc((100vw - 1272px) / 2 + 32px));
+  right: 40px;
   bottom: 40px;
   z-index: 50;
 

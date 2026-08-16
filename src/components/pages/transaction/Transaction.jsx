@@ -381,7 +381,11 @@ export default function Transaction() {
 
         <main className={styles.main}>
           <div className={styles.workspace}>
-            <div className={`${styles.content} container`}>
+            <div
+              className={`${styles.content} container ${
+                panelView === "closed" ? styles.contentCentered : ""
+              }`}
+            >
               <header className={styles.pageHeader}>
                 <h1 className={styles.pageTitle}>소비 기록</h1>
 

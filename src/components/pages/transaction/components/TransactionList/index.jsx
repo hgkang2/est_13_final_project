@@ -291,7 +291,9 @@ export default function TransactionList({
           >
             {displayedTransactions.map(transaction => {
               const isSelected = selectedIds.includes(transaction.id);
-
+              const hasMemo = Boolean(
+                transaction.memo?.trim() && transaction.memo.trim() !== "-",
+              );
               return (
                 <li
                   className={`${styles.transactionRow} ${
@@ -394,16 +396,24 @@ export default function TransactionList({
                       aria-hidden="true"
                       onClick={event => {
                         event.stopPropagation();
-                        handleToggleMemo(transaction.id);
+
+                        if (hasMemo) {
+                          handleToggleMemo(transaction.id);
+                          return;
+                        }
+
+                        onOpenDetail(transaction);
                       }}
                     >
-                      {expandedId === transaction.id
-                        ? "keyboard_control_key"
-                        : "keyboard_arrow_down"}
+                      {hasMemo
+                        ? expandedId === transaction.id
+                          ? "keyboard_control_key"
+                          : "keyboard_arrow_down"
+                        : "chevron_right"}
                     </span>
                   </button>
 
-                  {expandedId === transaction.id && (
+                  {hasMemo && expandedId === transaction.id && (
                     <div className={styles.mobileMemo}>
                       <strong>메모</strong>
                       <span>{transaction.memo}</span>
