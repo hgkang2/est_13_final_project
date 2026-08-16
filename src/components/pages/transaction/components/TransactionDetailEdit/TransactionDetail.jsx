@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import styles from "./TransactionDetailEdit.module.scss";
 
 export default function TransactionDetail({
@@ -6,6 +7,8 @@ export default function TransactionDetail({
   onEdit,
   onDelete,
 }) {
+  const receiptPreviewDialogRef = useRef(null);
+
   if (!transaction) return null;
 
   return (
@@ -50,11 +53,50 @@ export default function TransactionDetail({
           <section className={styles.detailReceiptSection}>
             <h3>영수증 / 거래내역 첨부</h3>
 
-            <div className={styles.detailReceiptImageBox}>
+            <button
+              type="button"
+              className={`${styles.detailReceiptImageBox} ${styles.receiptPreviewButton}`}
+              onClick={() => receiptPreviewDialogRef.current?.showModal()}
+              aria-label="등록된 영수증 크게 보기"
+            >
               <img src={transaction.receiptImage} alt="등록된 영수증" />
-            </div>
+            </button>
           </section>
         </>
+      )}
+
+      {transaction.receiptImage && (
+        <dialog
+          ref={receiptPreviewDialogRef}
+          className={styles.receiptPreviewDialog}
+          aria-label="등록된 영수증 확대 보기"
+        >
+          <div
+            className={styles.receiptPreviewContent}
+            onClick={event => {
+              if (event.target === event.currentTarget) {
+                receiptPreviewDialogRef.current?.close();
+              }
+            }}
+          >
+            <button
+              type="button"
+              className={styles.receiptPreviewClose}
+              onClick={() => receiptPreviewDialogRef.current?.close()}
+              aria-label="영수증 확대 보기 닫기"
+            >
+              <span className="material-icons" aria-hidden="true">
+                close
+              </span>
+            </button>
+
+            <img
+              src={transaction.receiptImage}
+              alt="등록된 영수증 확대 이미지"
+              className={styles.receiptPreviewImage}
+            />
+          </div>
+        </dialog>
       )}
 
       <div className={styles.detailFields}>

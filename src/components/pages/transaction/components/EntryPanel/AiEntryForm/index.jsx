@@ -17,6 +17,7 @@ export default function AiEntryForm({
   onAiTransactionSubmit,
 }) {
   const timeInputRef = useRef(null);
+  const receiptPreviewDialogRef = useRef(null);
 
   return (
     <form className={styles.aiEntryForm} onSubmit={onAiTransactionSubmit}>
@@ -120,15 +121,54 @@ export default function AiEntryForm({
             </div>
 
             {aiPreview && (
-              <img
-                src={aiPreview}
-                alt="업로드한 영수증 미리보기"
-                className={styles.aiReceiptPreview}
-              />
+              <button
+                type="button"
+                className={styles.aiReceiptPreviewButton}
+                onClick={() => receiptPreviewDialogRef.current?.showModal()}
+                aria-label="영수증 이미지 크게 보기"
+              >
+                <img
+                  src={aiPreview}
+                  alt="업로드한 영수증 미리보기"
+                  className={styles.aiReceiptPreview}
+                />
+              </button>
             )}
           </div>
         )}
       </section>
+
+      {aiPreview && (
+        <dialog
+          ref={receiptPreviewDialogRef}
+          className={styles.receiptPreviewDialog}
+          aria-label="영수증 이미지 확대 보기"
+          onClick={event => {
+            if (event.target === event.currentTarget) {
+              receiptPreviewDialogRef.current?.close();
+            }
+          }}
+        >
+          <div className={styles.receiptPreviewContent}>
+            <button
+              type="button"
+              className={styles.receiptPreviewClose}
+              onClick={() => receiptPreviewDialogRef.current?.close()}
+              aria-label="영수증 이미지 확대 보기 닫기"
+            >
+              <span className="material-icons" aria-hidden="true">
+                close
+              </span>
+            </button>
+
+            <img
+              src={aiPreview}
+              alt="업로드한 영수증 확대 이미지"
+              className={styles.receiptPreviewImage}
+            />
+          </div>
+        </dialog>
+      )}
 
       <div className={styles.aiFormFields}>
         <fieldset className={styles.formField}>
