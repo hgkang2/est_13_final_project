@@ -256,12 +256,6 @@ export const useTransactions = (supabase, showToast) => {
 
   const hasTransactionData = visibleTransactions.length > 0;
 
-  const isAllSelected =
-    visibleTransactions.length > 0 &&
-    visibleTransactions.every(transaction =>
-      selectedIds.includes(transaction.id),
-    );
-
   const handleToggleTransaction = id => {
     setSelectedIds(prevSelectedIds =>
       prevSelectedIds.includes(id)
@@ -270,27 +264,26 @@ export const useTransactions = (supabase, showToast) => {
     );
   };
 
-  const handleToggleAll = () => {
-    if (isAllSelected) {
-      const visibleIds = visibleTransactions.map(transaction => transaction.id);
+  const handleToggleAll = targetIds => {
+    if (!targetIds?.length) return;
 
-      setSelectedIds(prevSelectedIds =>
-        prevSelectedIds.filter(id => !visibleIds.includes(id)),
+    setSelectedIds(prevSelectedIds => {
+      const areAllSelected = targetIds.every(id =>
+        prevSelectedIds.includes(id),
       );
 
-      return;
-    }
+      if (areAllSelected) {
+        return prevSelectedIds.filter(id => !targetIds.includes(id));
+      }
 
-    setSelectedIds(prevSelectedIds => [
-      ...new Set([
-        ...prevSelectedIds,
-        ...visibleTransactions.map(transaction => transaction.id),
-      ]),
-    ]);
+      return [...new Set([...prevSelectedIds, ...targetIds])];
+    });
   };
 
   const handleDateRangeChange = event => {
     const { name, value } = event.target;
+
+    setSelectedIds([]);
 
     setDateRange(prevRange => ({
       ...prevRange,
@@ -315,7 +308,6 @@ export const useTransactions = (supabase, showToast) => {
     handleDateRangeChange,
     selectedIds,
     setSelectedIds,
-    isAllSelected,
     handleToggleTransaction,
     handleToggleAll,
   };

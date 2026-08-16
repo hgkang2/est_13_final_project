@@ -12,7 +12,6 @@ export default function TransactionList({
   hasTransactionData,
   visibleTransactions,
   selectedIds,
-  isAllSelected,
   onToggleAll,
   onToggleTransaction,
   onClearSelection,
@@ -21,7 +20,22 @@ export default function TransactionList({
   onLoadMore,
   hasMoreTransactions,
 }) {
-  const selectedTransactions = visibleTransactions.filter(transaction =>
+  const [expandedId, setExpandedId] = useState(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const INITIAL_VISIBLE_COUNT = 8;
+
+  const displayedTransactions = isExpanded
+    ? visibleTransactions
+    : visibleTransactions.slice(0, INITIAL_VISIBLE_COUNT);
+
+  const displayedIds = displayedTransactions.map(transaction => transaction.id);
+
+  const isDisplayedAllSelected =
+    displayedTransactions.length > 0 &&
+    displayedIds.every(id => selectedIds.includes(id));
+
+  const selectedTransactions = displayedTransactions.filter(transaction =>
     selectedIds.includes(transaction.id),
   );
 
@@ -38,15 +52,6 @@ export default function TransactionList({
     },
   );
 
-  const [expandedId, setExpandedId] = useState(null);
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  const INITIAL_VISIBLE_COUNT = 8;
-
-  const displayedTransactions = isExpanded
-    ? visibleTransactions
-    : visibleTransactions.slice(0, INITIAL_VISIBLE_COUNT);
-
   const handleLoadMore = async () => {
     if (hasMoreTransactions) {
       setIsExpanded(true);
@@ -54,7 +59,13 @@ export default function TransactionList({
       return;
     }
 
-    setIsExpanded(prev => !prev);
+    if (isExpanded) {
+      onClearSelection();
+      setIsExpanded(false);
+      return;
+    }
+
+    setIsExpanded(true);
   };
 
   const handleToggleMemo = transactionId => {
@@ -69,15 +80,17 @@ export default function TransactionList({
             <button
               type="button"
               className={styles.checkboxCell}
-              onClick={onToggleAll}
+              onClick={() => onToggleAll(displayedIds)}
               aria-label={
-                isAllSelected
+                isDisplayedAllSelected
                   ? "현재 거래 전체 선택 해제"
                   : "현재 거래 전체 선택"
               }
             >
               <span className="material-icons" aria-hidden="true">
-                {isAllSelected ? "check_box" : "check_box_outline_blank"}
+                {isDisplayedAllSelected
+                  ? "check_box"
+                  : "check_box_outline_blank"}
               </span>
             </button>
 

@@ -55,7 +55,6 @@ export default function Transaction() {
     handleDateRangeChange,
     selectedIds,
     setSelectedIds,
-    isAllSelected,
     handleToggleTransaction,
     handleToggleAll,
   } = useTransactions(supabase, showToast);
@@ -348,7 +347,6 @@ export default function Transaction() {
                   visibleTransactions={visibleTransactions}
                   recentlyAddedId={recentlyAddedId}
                   selectedIds={selectedIds}
-                  isAllSelected={isAllSelected}
                   onToggleAll={handleToggleAll}
                   onToggleTransaction={handleToggleTransaction}
                   onClearSelection={() => setSelectedIds([])}
