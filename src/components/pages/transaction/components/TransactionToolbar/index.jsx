@@ -91,7 +91,7 @@ export default function TransactionToolbar({
             <span>내보내기</span>
           </button>
 
-          <button
+          {/* <button
             type="button"
             className={styles.moreButton}
             aria-label="거래 목록 추가 메뉴"
@@ -99,7 +99,7 @@ export default function TransactionToolbar({
             <span className="material-icons" aria-hidden="true">
               more_vert
             </span>
-          </button>
+          </button> */}
         </div>
       </div>
     </div>

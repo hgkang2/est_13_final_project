@@ -556,15 +556,17 @@ export default function AiEntryForm({
         </label>
       </div>
 
-      <button
-        type="submit"
-        className={`${styles.aiSaveButton} ${
-          aiStatus === "success" ? styles.aiSaveButtonActive : ""
-        }`}
-        disabled={aiStatus !== "success"}
-      >
-        저장하기
-      </button>
+      <div className={styles.aiFormActions}>
+        <button
+          type="submit"
+          className={`${styles.aiSaveButton} ${
+            aiStatus === "success" ? styles.aiSaveButtonActive : ""
+          }`}
+          disabled={aiStatus !== "success"}
+        >
+          저장하기
+        </button>
+      </div>
     </form>
   );
 }

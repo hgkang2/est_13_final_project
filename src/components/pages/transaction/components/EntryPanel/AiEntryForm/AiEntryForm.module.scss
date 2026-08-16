@@ -168,6 +168,11 @@
   color: var(--color-green-gray);
 }
 
+.aiFormActions {
+  display: flex;
+  width: 100%;
+}
+
 .aiSaveButton {
   display: flex;
   width: 100%;
@@ -332,4 +337,18 @@
   flex-shrink: 0;
   color: var(--color-danger-dot);
   font-size: var(--icon-l-size);
+}
+
+@media (max-width: 1024px) {
+  .aiFormActions {
+    position: sticky;
+    bottom: -16px;
+    z-index: 10;
+
+    width: calc(100% + 32px);
+    margin: 0 -16px -16px;
+    padding: 12px 16px 16px;
+
+    background-color: var(--color-white);
+  }
 }
