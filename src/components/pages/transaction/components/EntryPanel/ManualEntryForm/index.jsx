@@ -335,16 +335,32 @@ export default function ManualEntryForm({
                       className={styles.timeButton}
                       onClick={() => timeInputRef.current?.showPicker()}
                     >
-                      <span className="material-icons" aria-hidden="true">
-                        schedule
-                      </span>
-
                       <span>{transactionForm.time || "시간 설정"}</span>
 
                       {transactionForm.time && (
                         <span className={styles.timeAction}>변경</span>
                       )}
                     </button>
+                    {!transactionForm.time && (
+                      <span className={styles.timeHelp}>
+                        <button
+                          type="button"
+                          className={styles.timeHelpButton}
+                          aria-label="시간 미설정 안내"
+                        >
+                          <span
+                            className="material-icons-outlined"
+                            aria-hidden="true"
+                          >
+                            info
+                          </span>
+                        </button>
+
+                        <span className={styles.timeTooltip} role="tooltip">
+                          시간을 설정하지 않으면 현재 시간으로 저장돼요.
+                        </span>
+                      </span>
+                    )}
                   </div>
                 </label>
               ) : (
@@ -366,7 +382,11 @@ export default function ManualEntryForm({
                       aria-invalid={Boolean(transactionErrors.date)}
                     />
                   </span>
-
+                  {transactionErrors.date && (
+                    <span className={styles.errorMessage}>
+                      {transactionErrors.date}
+                    </span>
+                  )}
                   <div className={styles.timePicker}>
                     <input
                       ref={timeInputRef}
@@ -382,23 +402,33 @@ export default function ManualEntryForm({
                       className={styles.timeButton}
                       onClick={() => timeInputRef.current?.showPicker()}
                     >
-                      <span className="material-icons" aria-hidden="true">
-                        schedule
-                      </span>
-
                       <span>{transactionForm.time || "시간 설정"}</span>
 
                       {transactionForm.time && (
                         <span className={styles.timeAction}>변경</span>
                       )}
                     </button>
-                  </div>
+                    {!transactionForm.time && (
+                      <span className={styles.timeHelp}>
+                        <button
+                          type="button"
+                          className={styles.timeHelpButton}
+                          aria-label="시간 미설정 안내"
+                        >
+                          <span
+                            className="material-icons-outlined"
+                            aria-hidden="true"
+                          >
+                            info
+                          </span>
+                        </button>
 
-                  {transactionErrors.date && (
-                    <span className={styles.errorMessage}>
-                      {transactionErrors.date}
-                    </span>
-                  )}
+                        <span className={styles.timeTooltip} role="tooltip">
+                          시간을 설정하지 않으면 현재 시간으로 저장돼요.
+                        </span>
+                      </span>
+                    )}
+                  </div>
                 </label>
               )}
             </div>
@@ -460,7 +490,11 @@ export default function ManualEntryForm({
                     aria-invalid={Boolean(transactionErrors.date)}
                   />
                 </span>
-
+                {transactionErrors.date && (
+                  <span className={styles.errorMessage}>
+                    {transactionErrors.date}
+                  </span>
+                )}
                 <div className={styles.timePicker}>
                   <input
                     ref={timeInputRef}
@@ -476,23 +510,33 @@ export default function ManualEntryForm({
                     className={styles.timeButton}
                     onClick={() => timeInputRef.current?.showPicker()}
                   >
-                    <span className="material-icons" aria-hidden="true">
-                      schedule
-                    </span>
-
                     <span>{transactionForm.time || "시간 설정"}</span>
 
                     {transactionForm.time && (
                       <span className={styles.timeAction}>변경</span>
                     )}
                   </button>
-                </div>
+                  {!transactionForm.time && (
+                    <span className={styles.timeHelp}>
+                      <button
+                        type="button"
+                        className={styles.timeHelpButton}
+                        aria-label="시간 미설정 안내"
+                      >
+                        <span
+                          className="material-icons-outlined"
+                          aria-hidden="true"
+                        >
+                          info
+                        </span>
+                      </button>
 
-                {transactionErrors.date && (
-                  <span className={styles.errorMessage}>
-                    {transactionErrors.date}
-                  </span>
-                )}
+                      <span className={styles.timeTooltip} role="tooltip">
+                        시간을 설정하지 않으면 현재 시간으로 저장돼요.
+                      </span>
+                    </span>
+                  )}
+                </div>
               </label>
             </div>
 

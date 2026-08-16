@@ -224,7 +224,6 @@
   align-self: flex-end;
   align-items: center;
   gap: 4px;
-  margin-top: 4px;
   padding: 0;
   border: 0;
   color: var(--color-gray);
@@ -240,7 +239,77 @@
 
 .timePicker {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
+  gap: 4px;
+}
+.timeHelp {
+  position: relative;
+  display: inline-flex;
+}
+
+.timeHelpButton {
+  display: flex;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-light-gray);
+  background-color: transparent;
+  cursor: help;
+}
+
+.timeHelpButton :global(.material-icons-outlined) {
+  font-size: 14px;
+}
+
+.timeTooltip {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 30;
+
+  width: 210px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+
+  color: var(--color-gray);
+  background-color: var(--color-white);
+  box-shadow: 0 4px 12px rgb(6 7 14 / 10%);
+
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-2px);
+  pointer-events: none;
+
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+
+  @include typo-body-s;
+}
+
+.timeTooltip::before {
+  position: absolute;
+  top: -5px;
+  right: 5px;
+  width: 8px;
+  height: 8px;
+  border-top: 1px solid var(--color-border-gray);
+  border-left: 1px solid var(--color-border-gray);
+  background-color: var(--color-white);
+  content: "";
+  transform: rotate(45deg);
+}
+
+.timeHelp:hover .timeTooltip,
+.timeHelp:focus-within .timeTooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
 }
 
 .hiddenTimeInput {
