@@ -26,9 +26,26 @@ export default function MultipleEntryForm({
           <div>메모</div>
 
           <div className={styles.multipleHelp}>
-            <span className="material-icons" aria-hidden="true">
-              help_outline
-            </span>
+            <button
+              type="button"
+              className={styles.multipleHelpButton}
+              aria-label="다건 입력 이용 안내"
+              aria-describedby="multiple-entry-help"
+            >
+              <span className="material-icons" aria-hidden="true">
+                help_outline
+              </span>
+            </button>
+
+            <div
+              id="multiple-entry-help"
+              className={styles.multipleHelpTooltip}
+              role="tooltip"
+            >
+              <span>• 시간을 설정하지 않으면 현재 시간으로 저장돼요.</span>
+              <span>• 다건 입력은 PC 환경에서 사용할 수 있어요.</span>
+              <span>• 입력이 완료된 행만 저장돼요.</span>
+            </div>
           </div>
         </div>
 
