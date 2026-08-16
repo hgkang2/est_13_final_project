@@ -90,7 +90,7 @@
 .detailReceiptNoticeText span {
   color: var(--color-light-gray);
 
-  @include typo-caption;
+  @include typo-body-s-plus;
 }
 
 .detailReceiptSection {

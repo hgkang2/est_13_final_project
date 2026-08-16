@@ -17,11 +17,7 @@ import EntryPanel from "./components/EntryPanel";
 import Modal from "@/components/common/Modal";
 import { fetchTransactionOptions } from "./services/transactionService";
 import { useReceiptAnalysis } from "./hooks/useReceiptAnalysis";
-import {
-  initialTransactionForm,
-  useTransactionForm,
-} from "./hooks/useTransactionForm";
-
+import { useTransactionForm } from "./hooks/useTransactionForm";
 import { useMultipleTransactionForm } from "./hooks/useMultipleTransactionForm";
 import { useTransactions } from "./hooks/useTransactions";
 import { useTransactionActions } from "./hooks/useTransactionActions";
@@ -353,10 +349,6 @@ export default function Transaction() {
 
   const recentTransactions = transactions.slice(0, 6);
 
-  const onContinueEntry = () => {
-    setTransactionForm(initialTransactionForm);
-  };
-
   const onCancelMultipleEntry = () => {
     setEntryMode("single");
   };
@@ -474,7 +466,6 @@ export default function Transaction() {
                   onTransactionFormChange,
                   onToggleRecurring,
                   onTransactionSubmit,
-                  onContinueEntry,
                   onResetTransactionForm: () => {
                     handleResetTransactionForm();
                     setCopiedRecentId(null);

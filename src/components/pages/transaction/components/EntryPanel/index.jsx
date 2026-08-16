@@ -20,7 +20,6 @@ export default function EntryPanel({
     onTransactionFormChange,
     onToggleRecurring,
     onTransactionSubmit,
-    onContinueEntry,
     onResetTransactionForm,
   } = manualEntry;
 
@@ -234,7 +233,7 @@ export default function EntryPanel({
               <button
                 type="button"
                 className={styles.continueButton}
-                onClick={onContinueEntry}
+                onClick={onTransactionSubmit}
               >
                 계속 입력
               </button>

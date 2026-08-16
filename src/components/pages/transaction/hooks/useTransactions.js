@@ -291,12 +291,32 @@ export const useTransactions = (supabase, showToast) => {
   const handleDateRangeChange = event => {
     const { name, value } = event.target;
 
+    if (!value) return;
+
     setSelectedIds([]);
 
-    setDateRange(prevRange => ({
-      ...prevRange,
-      [name]: value,
-    }));
+    setDateRange(prevRange => {
+      // 시작일이 종료일보다 뒤로 가면 종료일도 시작일에 맞춤
+      if (name === "startDate" && value > prevRange.endDate) {
+        return {
+          startDate: value,
+          endDate: value,
+        };
+      }
+
+      // 종료일이 시작일보다 앞으로 가면 시작일도 종료일에 맞춤
+      if (name === "endDate" && value < prevRange.startDate) {
+        return {
+          startDate: value,
+          endDate: value,
+        };
+      }
+
+      return {
+        ...prevRange,
+        [name]: value,
+      };
+    });
   };
 
   // 저장한 거래 날짜만 보기

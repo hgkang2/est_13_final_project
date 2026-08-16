@@ -23,7 +23,7 @@ export default function TransactionReceiptSection({
 
             <div className={styles.detailReceiptNoticeText}>
               <strong>영수증으로 등록된 내역이에요</strong>
-              <span>기존 영수증을 교체하거나 삭제할 수 있습니다.</span>
+              <span>기존 영수증을 교체하거나 삭제할 수 있어요.</span>
             </div>
           </div>
 
