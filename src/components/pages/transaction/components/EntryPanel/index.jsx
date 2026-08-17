@@ -40,6 +40,7 @@ export default function EntryPanel({
     aiTransactionErrors,
     aiPreview,
     onAiFormChange,
+    onToggleAiRecurring,
     onAiReceiptChange,
     onAiDragOver,
     onAiDrop,
@@ -254,6 +255,7 @@ export default function EntryPanel({
           transferAccounts={transferAccounts}
           focusGoals={focusGoals}
           onAiFormChange={onAiFormChange}
+          onToggleAiRecurring={onToggleAiRecurring}
           onAiReceiptChange={onAiReceiptChange}
           onAiDragOver={onAiDragOver}
           onAiDrop={onAiDrop}

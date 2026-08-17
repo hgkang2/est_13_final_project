@@ -145,6 +145,7 @@ export default function Transaction() {
     handleResetTransactionForm,
     onTransactionFormChange,
     onToggleRecurring,
+    onToggleAiRecurring,
 
     aiTransactionForm,
     setAiTransactionForm,
@@ -186,6 +187,19 @@ export default function Transaction() {
     setAiTypeValues,
     setAiTransactionErrors,
   });
+
+  // 집중목표 선택지 다시 조회
+  const refreshFocusGoals = async userId => {
+    const [, , , { data: focusGoalData, error: focusGoalError }] =
+      await fetchTransactionOptions(supabase, userId);
+
+    if (focusGoalError) {
+      console.error("집중목표 새로고침 실패:", focusGoalError);
+      return;
+    }
+
+    setFocusGoals(focusGoalData ?? []);
+  };
 
   // 4. 실제 거래 저장 action
   const {
@@ -231,6 +245,7 @@ export default function Transaction() {
     refreshTransactions,
     refreshRecentTransactions,
     refreshMonthlySummary,
+    refreshFocusGoals,
     setRecentlyAddedId,
     showToast,
     onTransactionSaved: handleSavedTransaction,
@@ -538,6 +553,7 @@ export default function Transaction() {
                   aiTransactionErrors,
                   aiPreview,
                   onAiFormChange,
+                  onToggleAiRecurring,
                   onAiReceiptChange,
                   onAiDragOver,
                   onAiDrop,

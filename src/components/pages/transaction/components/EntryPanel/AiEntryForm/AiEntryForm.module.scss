@@ -200,6 +200,94 @@
   @include typo-caption-plus;
 }
 
+.formLabelRow {
+  display: flex;
+  min-height: 24px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.recurringControl {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-gray);
+
+  @include typo-body-s-plus;
+}
+
+.recurringSwitch {
+  position: relative;
+  display: flex;
+  width: 40px;
+  height: 20px;
+  padding: 0 5px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 999px;
+  align-items: center;
+  justify-content: flex-end;
+  background-color: var(--color-white);
+  cursor: pointer;
+}
+
+.recurringSwitchHandle {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--color-green-gray);
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.recurringSwitchActive {
+  justify-content: flex-start;
+}
+
+.recurringSwitchActive .recurringSwitchHandle {
+  background-color: var(--color-point);
+}
+
+.recurringDateBox {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+  align-items: center;
+  background-color: var(--color-white);
+}
+
+.recurringDateBox:focus-within {
+  border-color: var(--color-point);
+}
+
+.recurringDateBox select {
+  min-width: 0;
+  height: 100%;
+  padding-right: 24px;
+  border: 0;
+  outline: 0;
+  flex: 1;
+  color: var(--color-light-gray);
+  background-color: transparent;
+  appearance: none;
+  cursor: pointer;
+
+  @include typo-body-m-minus;
+}
+
+.recurringDateBox :global(.material-icons) {
+  position: absolute;
+  right: 12px;
+  color: var(--color-light-gray);
+  font-size: var(--icon-m-size);
+  pointer-events: none;
+}
+
 .aiDisabledTypeButton {
   color: var(--color-light-gray);
   cursor: default;

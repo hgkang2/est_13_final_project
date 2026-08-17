@@ -30,6 +30,9 @@ export const initialAiTransactionForm = {
   receipt: null,
   withdrawAccount: "",
   depositAccount: "",
+  savingGoal: "",
+  isRecurring: false,
+  recurringDay: "29",
 };
 
 export const initialAiTypeValues = {
@@ -45,6 +48,9 @@ export const initialAiTypeValues = {
     category: "",
     withdrawAccount: "",
     depositAccount: "",
+    savingGoal: "",
+    isRecurring: false,
+    recurringDay: "29",
   },
 };
 
@@ -142,6 +148,28 @@ export const useTransactionForm = () => {
     }));
   };
 
+  const onToggleAiRecurring = () => {
+    if (aiTransactionForm.type !== "transfer" || aiTransactionForm.savingGoal) {
+      return;
+    }
+
+    const nextIsRecurring = !aiTransactionForm.isRecurring;
+
+    setAiTransactionForm(prevForm => ({
+      ...prevForm,
+      isRecurring: nextIsRecurring,
+    }));
+
+    setAiTypeValues(prevValues => ({
+      ...prevValues,
+      transfer: {
+        ...prevValues.transfer,
+        isRecurring: nextIsRecurring,
+        recurringDay: aiTransactionForm.recurringDay,
+      },
+    }));
+  };
+
   const onAiFormChange = event => {
     const { name, value } = event.target;
 
@@ -164,6 +192,9 @@ export const useTransactionForm = () => {
                   category: aiTransactionForm.category,
                   withdrawAccount: aiTransactionForm.withdrawAccount,
                   depositAccount: aiTransactionForm.depositAccount,
+                  savingGoal: aiTransactionForm.savingGoal,
+                  isRecurring: aiTransactionForm.isRecurring,
+                  recurringDay: aiTransactionForm.recurringDay,
                 }
               : {
                   category: aiTransactionForm.category,
@@ -183,6 +214,11 @@ export const useTransactionForm = () => {
             paymentMethod: "",
             withdrawAccount: savedValues?.withdrawAccount ?? "",
             depositAccount: savedValues?.depositAccount ?? "",
+            savingGoal: savedValues?.savingGoal ?? "",
+            isRecurring: savedValues?.savingGoal
+              ? false
+              : Boolean(savedValues?.isRecurring),
+            recurringDay: savedValues?.recurringDay ?? "29",
           };
         }
 
@@ -193,8 +229,80 @@ export const useTransactionForm = () => {
           paymentMethod: savedValues?.paymentMethod ?? "",
           withdrawAccount: "",
           depositAccount: "",
+          savingGoal: "",
+          isRecurring: false,
         };
       });
+
+      return;
+    }
+
+    // 이체 입금 대상 선택
+    if (name === "transferDestination") {
+      setAiTransactionErrors(prevErrors => ({
+        ...prevErrors,
+        depositAccount: "",
+        savingGoal: "",
+        transferDestination: "",
+      }));
+
+      if (!value) {
+        setAiTransactionForm(prevForm => ({
+          ...prevForm,
+          depositAccount: "",
+          savingGoal: "",
+        }));
+
+        setAiTypeValues(prevValues => ({
+          ...prevValues,
+          transfer: {
+            ...prevValues.transfer,
+            depositAccount: "",
+            savingGoal: "",
+          },
+        }));
+
+        return;
+      }
+
+      if (value.startsWith("goal:")) {
+        const savingGoal = value.replace("goal:", "");
+        setAiTransactionForm(prevForm => ({
+          ...prevForm,
+          depositAccount: "",
+          savingGoal,
+          isRecurring: false,
+        }));
+
+        setAiTypeValues(prevValues => ({
+          ...prevValues,
+          transfer: {
+            ...prevValues.transfer,
+            depositAccount: "",
+            savingGoal,
+            isRecurring: false,
+          },
+        }));
+
+        return;
+      }
+
+      const depositAccount = value.replace("account:", "");
+
+      setAiTransactionForm(prevForm => ({
+        ...prevForm,
+        depositAccount,
+        savingGoal: "",
+      }));
+
+      setAiTypeValues(prevValues => ({
+        ...prevValues,
+        transfer: {
+          ...prevValues.transfer,
+          depositAccount,
+          savingGoal: "",
+        },
+      }));
 
       return;
     }
@@ -210,7 +318,8 @@ export const useTransactionForm = () => {
       name === "category" ||
       name === "paymentMethod" ||
       name === "withdrawAccount" ||
-      name === "depositAccount"
+      name === "depositAccount" ||
+      name === "recurringDay"
     ) {
       setAiTypeValues(prevValues => ({
         ...prevValues,
@@ -230,6 +339,7 @@ export const useTransactionForm = () => {
     handleResetTransactionForm,
     onTransactionFormChange,
     onToggleRecurring,
+    onToggleAiRecurring,
     aiTransactionForm,
     setAiTransactionForm,
     aiTransactionErrors,

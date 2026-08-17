@@ -278,7 +278,7 @@ export default function ManualEntryForm({
                     카테고리 <span className={styles.requiredMark}>*</span>
                   </span>
 
-                  {isTransfer && (
+                  {isTransfer && !transactionForm.savingGoal && (
                     <div className={styles.recurringControl}>
                       <span>반복</span>
 

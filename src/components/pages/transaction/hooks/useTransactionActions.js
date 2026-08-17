@@ -8,6 +8,7 @@ import {
   createMultipleTransactions,
   createTransaction,
   createFocusGoalDeposit,
+  createAiFocusGoalDeposit,
   fetchTransactionRollbackSnapshot,
   fetchTransactionGoalLink,
   deleteTransaction,
@@ -82,6 +83,7 @@ export const useTransactionActions = ({
   refreshTransactions,
   refreshRecentTransactions,
   refreshMonthlySummary,
+  refreshFocusGoals,
   setRecentlyAddedId,
   showToast,
   onTransactionSaved,
@@ -1173,13 +1175,47 @@ export const useTransactionActions = ({
       ...createTransactionBaseData(aiTransactionForm, user.id, transactionDate),
 
       input_method: "ai",
-      is_recurring: false,
-      recurring_day: null,
+
+      is_recurring:
+        aiTransactionForm.type === "transfer" && !aiTransactionForm.savingGoal
+          ? Boolean(aiTransactionForm.isRecurring)
+          : false,
+
+      recurring_day:
+        aiTransactionForm.type === "transfer" &&
+        !aiTransactionForm.savingGoal &&
+        aiTransactionForm.isRecurring
+          ? Number(aiTransactionForm.recurringDay)
+          : null,
     };
 
     // 5. 거래 저장
-    const { data: insertedTransaction, error: insertError } =
-      await createTransaction(supabase, transactionData);
+    let insertedTransaction;
+    let insertError;
+
+    if (aiTransactionForm.type === "transfer" && aiTransactionForm.savingGoal) {
+      const focusGoalResult = await createAiFocusGoalDeposit(supabase, {
+        userId: user.id,
+        requestId: crypto.randomUUID(),
+        goalId: aiTransactionForm.savingGoal,
+        amount: Number(aiTransactionForm.amount),
+        withdrawAccountId: aiTransactionForm.withdrawAccount,
+        transactionAt: transactionDate.toISOString(),
+        content: aiTransactionForm.content.trim() || null,
+        memo: aiTransactionForm.memo.trim() || null,
+      });
+
+      insertedTransaction = focusGoalResult.data;
+      insertError = focusGoalResult.error;
+    } else {
+      const transactionResult = await createTransaction(
+        supabase,
+        transactionData,
+      );
+
+      insertedTransaction = transactionResult.data;
+      insertError = transactionResult.error;
+    }
 
     if (insertError) {
       console.error("AI 소비 기록 저장 실패:", insertError);
@@ -1241,7 +1277,9 @@ export const useTransactionActions = ({
 
     // 8. 저장 성공 → 화면 즉시 반영
     console.log("AI 소비 기록 저장 성공:", insertedTransaction);
-
+    if (aiTransactionForm.savingGoal) {
+      await refreshFocusGoals?.(user.id);
+    }
     const newTransaction = formatTransaction(insertedTransaction);
 
     const isTodayTransaction = newTransaction.dateValue === getToday();

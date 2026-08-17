@@ -252,6 +252,62 @@ export const createFocusGoalDeposit = async (
     .single();
 };
 
+// AI 인식 거래를 집중목표 적립으로 저장
+export const createAiFocusGoalDeposit = async (
+  supabase,
+  {
+    userId,
+    requestId,
+    goalId,
+    amount,
+    withdrawAccountId,
+    transactionAt,
+    content,
+    memo,
+  },
+) => {
+  const { data: rpcData, error: rpcError } = await supabase.rpc(
+    "deposit_to_focus_goal_ai",
+    {
+      p_request_id: requestId,
+      p_goal_id: goalId,
+      p_amount: amount,
+      p_withdraw_account_id: withdrawAccountId,
+      p_transaction_at: transactionAt,
+      p_content: content,
+      p_memo: memo,
+    },
+  );
+
+  if (rpcError) {
+    return {
+      data: null,
+      error: rpcError,
+    };
+  }
+
+  const transactionId = rpcData?.transactionId;
+
+  if (!transactionId) {
+    return {
+      data: null,
+      error: new Error("AI 집중목표 거래 ID가 반환되지 않았습니다."),
+    };
+  }
+
+  const { data, error } = await supabase
+    .from("transactions")
+    .select(TRANSACTION_SELECT)
+    .eq("id", transactionId)
+    .eq("user_id", userId)
+    .single();
+
+  return {
+    data,
+    error,
+  };
+};
+
 // 집중목표 연결 거래 수정
 export const updateFocusGoalTransaction = async (
   supabase,
