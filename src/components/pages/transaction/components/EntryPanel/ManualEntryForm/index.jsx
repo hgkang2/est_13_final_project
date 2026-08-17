@@ -1,12 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./ManualEntryForm.module.scss";
 
+const truncateGoalTitle = title => {
+  const maxLength = 10;
+
+  return title.length > maxLength ? `${title.slice(0, maxLength)}…` : title;
+};
 export default function ManualEntryForm({
   transactionForm,
   transactionErrors,
   categories,
   paymentMethods,
   transferAccounts,
+  focusGoals,
   isTransfer,
   onTransactionFormChange,
   onToggleRecurring,
@@ -199,27 +205,55 @@ export default function ManualEntryForm({
 
               <label className={styles.formField}>
                 <span className={styles.formLabel}>
-                  입금 <span className={styles.requiredMark}>*</span>
+                  입금 대상 <span className={styles.requiredMark}>*</span>
                 </span>
 
                 <span
                   className={`${styles.selectBox} ${
-                    transactionErrors.depositAccount ? styles.errorField : ""
+                    transactionErrors.depositAccount ||
+                    transactionErrors.savingGoal
+                      ? styles.errorField
+                      : ""
                   }`}
                 >
                   <select
-                    name="depositAccount"
-                    value={transactionForm.depositAccount}
+                    name="transferDestination"
+                    value={
+                      transactionForm.savingGoal
+                        ? `goal:${transactionForm.savingGoal}`
+                        : transactionForm.depositAccount
+                          ? `account:${transactionForm.depositAccount}`
+                          : ""
+                    }
                     onChange={onTransactionFormChange}
-                    aria-invalid={Boolean(transactionErrors.depositAccount)}
+                    aria-invalid={Boolean(
+                      transactionErrors.depositAccount ||
+                      transactionErrors.savingGoal,
+                    )}
                   >
-                    <option value="">입금 계좌 선택</option>
+                    <option value="">입금 대상 선택</option>
 
-                    {transferAccounts.map(account => (
-                      <option value={account.id} key={account.id}>
-                        {account.name}
-                      </option>
-                    ))}
+                    <optgroup label="계좌">
+                      {transferAccounts.map(account => (
+                        <option
+                          value={`account:${account.id}`}
+                          key={account.id}
+                        >
+                          {account.name}
+                        </option>
+                      ))}
+                    </optgroup>
+
+                    {focusGoals.length > 0 && (
+                      <optgroup label="집중목표">
+                        {focusGoals.map(goal => (
+                          <option value={`goal:${goal.id}`} key={goal.id}>
+                            집중목표 {goal.focus_order} ·{" "}
+                            {truncateGoalTitle(goal.title)}
+                          </option>
+                        ))}
+                      </optgroup>
+                    )}
                   </select>
 
                   <span className="material-icons" aria-hidden="true">
@@ -227,9 +261,11 @@ export default function ManualEntryForm({
                   </span>
                 </span>
 
-                {transactionErrors.depositAccount && (
+                {(transactionErrors.depositAccount ||
+                  transactionErrors.savingGoal) && (
                   <span className={styles.errorMessage}>
-                    {transactionErrors.depositAccount}
+                    {transactionErrors.depositAccount ||
+                      transactionErrors.savingGoal}
                   </span>
                 )}
               </label>

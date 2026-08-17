@@ -13,6 +13,7 @@ export const initialTransactionForm = {
   attachment: null,
   withdrawAccount: "",
   depositAccount: "",
+  savingGoal: "",
   isRecurring: false,
   recurringDay: "29",
 };
@@ -57,7 +58,7 @@ export const useTransactionForm = () => {
     initialAiTransactionForm,
   );
   const [aiTransactionErrors, setAiTransactionErrors] = useState({});
-  
+
   const [aiTypeValues, setAiTypeValues] = useState(initialAiTypeValues);
   const handleResetTransactionForm = () => {
     setTransactionForm(prev => ({
@@ -74,19 +75,51 @@ export const useTransactionForm = () => {
     setTransactionErrors(prevErrors => ({
       ...prevErrors,
       [name]: "",
+      ...(name === "transferDestination"
+        ? {
+            depositAccount: "",
+            savingGoal: "",
+          }
+        : {}),
     }));
-
     setTransactionForm(prevForm => {
       const nextForm = {
         ...prevForm,
         [name]: files ? (files[0] ?? null) : value,
       };
 
+      // 이체 입금 대상 선택
+      if (name === "transferDestination") {
+        if (!value) {
+          return {
+            ...nextForm,
+            depositAccount: "",
+            savingGoal: "",
+          };
+        }
+
+        if (value.startsWith("goal:")) {
+          return {
+            ...nextForm,
+            depositAccount: "",
+            savingGoal: value.replace("goal:", ""),
+            isRecurring: false,
+          };
+        }
+
+        return {
+          ...nextForm,
+          depositAccount: value.replace("account:", ""),
+          savingGoal: "",
+        };
+      }
+
       if (name === "type" && value !== "transfer") {
         return {
           ...nextForm,
           withdrawAccount: "",
           depositAccount: "",
+          savingGoal: "",
           isRecurring: false,
         };
       }

@@ -7,6 +7,7 @@ import { createTransactionDate, getToday } from "../utils/transactionDate";
 import {
   createMultipleTransactions,
   createTransaction,
+  createFocusGoalDeposit,
   deleteTransaction,
   updateTransaction,
   refreshSpendingAnalysisIfNeeded,
@@ -183,10 +184,33 @@ export const useTransactionActions = ({
           ? Number(transactionForm.recurringDay)
           : null,
     };
-
     // 거래 저장
-    const { data: insertedTransaction, error: insertError } =
-      await createTransaction(supabase, transactionData);
+    let insertedTransaction;
+    let insertError;
+
+    if (transactionForm.type === "transfer" && transactionForm.savingGoal) {
+      const focusGoalResult = await createFocusGoalDeposit(supabase, {
+        userId: user.id,
+        requestId: crypto.randomUUID(),
+        goalId: transactionForm.savingGoal,
+        amount: Number(transactionForm.amount),
+        withdrawAccountId: transactionForm.withdrawAccount,
+        transactionAt: transactionDate.toISOString(),
+        content: transactionForm.content.trim() || null,
+        memo: transactionForm.memo.trim() || null,
+      });
+
+      insertedTransaction = focusGoalResult.data;
+      insertError = focusGoalResult.error;
+    } else {
+      const transactionResult = await createTransaction(
+        supabase,
+        transactionData,
+      );
+
+      insertedTransaction = transactionResult.data;
+      insertError = transactionResult.error;
+    }
 
     // 저장 실패
     if (insertError) {

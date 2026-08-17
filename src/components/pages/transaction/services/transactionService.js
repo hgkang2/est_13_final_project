@@ -197,6 +197,55 @@ export const createTransaction = async (supabase, transactionData) => {
     .single();
 };
 
+// 집중목표 적립 거래 저장
+export const createFocusGoalDeposit = async (
+  supabase,
+  {
+    userId,
+    requestId,
+    goalId,
+    amount,
+    withdrawAccountId,
+    transactionAt,
+    content,
+    memo,
+  },
+) => {
+  const { data: depositResult, error: depositError } = await supabase.rpc(
+    "deposit_to_focus_goal",
+    {
+      p_request_id: requestId,
+      p_goal_id: goalId,
+      p_amount: amount,
+      p_withdraw_account_id: withdrawAccountId,
+      p_transaction_at: transactionAt,
+      p_content: content,
+      p_memo: memo,
+    },
+  );
+
+  if (depositError) {
+    return {
+      data: null,
+      error: depositError,
+    };
+  }
+
+  if (!depositResult?.transactionId) {
+    return {
+      data: null,
+      error: new Error("집중목표 거래 ID를 확인할 수 없습니다."),
+    };
+  }
+
+  return await supabase
+    .from("transactions")
+    .select(TRANSACTION_SELECT)
+    .eq("id", depositResult.transactionId)
+    .eq("user_id", userId)
+    .single();
+};
+
 // 다건 거래 저장
 export const createMultipleTransactions = async (supabase, transactionData) => {
   return await supabase
