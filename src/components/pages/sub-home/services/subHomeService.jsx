@@ -34,8 +34,8 @@ export async function getGoal(supabase, userId) {
     .select("id, title, current_amount, target_amount, start_date, end_date")
     .eq("user_id", userId)
     .eq("status", "in_progress")
+    .eq("focus_order", 1)
     .gte("end_date", new Date().toISOString().slice(0, 10))
-    .order("end_date", { ascending: true })
     .limit(1)
     .maybeSingle();
 
@@ -54,9 +54,9 @@ export async function getSavingGoal(supabase, userId) {
     .select("id, title, current_amount, target_amount, start_date, end_date")
     .eq("user_id", userId)
     .eq("status", "in_progress")
+    .eq("focus_order", 2)
     .gte("end_date", new Date().toISOString().slice(0, 10))
-    .order("end_date", { ascending: true })
-    .range(1, 1)
+    .limit(1)
     .maybeSingle();
 
   if (error) {
