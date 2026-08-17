@@ -146,6 +146,57 @@ main {
   color: var(--color-text-gray);
   font-size: 18px;
 }
+.input-with-error {
+  position: relative;
+}
+
+.error-bubble {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  z-index: 10;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  width: max-content;
+  max-width: 100%;
+  padding: 10px 14px;
+
+  color: var(--color-danger-dot);
+  font-size: 14px;
+  line-height: 20px;
+
+  background-color: var(--color-white);
+  border: 1px solid var(--color-danger-dot);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 12%);
+
+  transform: translateX(-50%);
+}
+
+.error-bubble::before {
+  position: absolute;
+  top: -7px;
+  left: 24px;
+
+  width: 12px;
+  height: 12px;
+
+  background-color: var(--color-white);
+  border-top: 1px solid var(--color-danger-dot);
+  border-left: 1px solid var(--color-danger-dot);
+
+  content: "";
+  transform: rotate(45deg);
+}
+
+.error-bubble .material-icons {
+  flex-shrink: 0;
+  font-size: 20px;
+  color: var(--color-danger-dot);
+}
 .terms {
   width: 100%;
   margin: 20px 0 0;
@@ -237,8 +288,9 @@ main {
   justify-content: center;
   align-items: center;
 
-  background: rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(6px);
+  background: rgba(218, 242, 226, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 .reset-modal {
   width: 420px;
