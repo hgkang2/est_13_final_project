@@ -2,9 +2,44 @@ import Image from "next/image";
 import styles from "../SubHome.module.scss";
 import OutlineButton from "./OutlineButton";
 
-export default function MissionCard({ hasSpendingData, recommendedMission }) {
-  const hasMission = hasSpendingData && Boolean(recommendedMission?.title);
+export default function MissionCard({
+  hasSpendingData,
+  recommendedMission,
+  isLoading,
+}) {
+  if (isLoading) {
+    return (
+      <article
+        className={`${styles.missionCard} ${styles.skeletonCard}`}
+        aria-busy="true"
+        aria-label="오늘의 미션을 불러오는 중"
+      >
+        <div className={styles.missionContent}>
+          <div className={styles.skeletonTextGroup} aria-hidden="true">
+            <div
+              className={`${styles.skeletonBlock} ${styles.skeletonTitle}`}
+            />
+            <div
+              className={`${styles.skeletonBlock} ${styles.skeletonLineLong}`}
+            />
+            <div
+              className={`${styles.skeletonBlock} ${styles.skeletonLineMedium}`}
+            />
+            <div
+              className={`${styles.skeletonBlock} ${styles.skeletonButton}`}
+            />
+          </div>
 
+          <div
+            className={`${styles.skeletonBlock} ${styles.skeletonCharacter}`}
+            aria-hidden="true"
+          />
+        </div>
+      </article>
+    );
+  }
+
+  const hasMission = hasSpendingData && Boolean(recommendedMission?.title);
   return (
     <article
       className={styles.missionCard}
