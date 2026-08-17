@@ -12,7 +12,7 @@ export default function EntryPanel({
   panelActions,
 }) {
   const { entryTab, entryMode } = entryState;
-  const { categories, paymentMethods, transferAccounts } = options;
+  const { categories, paymentMethods, transferAccounts, focusGoals } = options;
 
   const {
     transactionForm,
@@ -205,6 +205,7 @@ export default function EntryPanel({
               categories={categories}
               paymentMethods={paymentMethods}
               transferAccounts={transferAccounts}
+              focusGoals={focusGoals}
               isTransfer={isTransfer}
               onTransactionFormChange={onTransactionFormChange}
               onToggleRecurring={onToggleRecurring}
@@ -217,6 +218,7 @@ export default function EntryPanel({
               categories={categories}
               paymentMethods={paymentMethods}
               transferAccounts={transferAccounts}
+              focusGoals={focusGoals}
               onMultipleRowChange={onMultipleRowChange}
               onAddMultipleRow={onAddMultipleRow}
               onRemoveMultipleRow={onRemoveMultipleRow}
@@ -250,6 +252,7 @@ export default function EntryPanel({
           categories={categories}
           paymentMethods={paymentMethods}
           transferAccounts={transferAccounts}
+          focusGoals={focusGoals}
           onAiFormChange={onAiFormChange}
           onAiReceiptChange={onAiReceiptChange}
           onAiDragOver={onAiDragOver}

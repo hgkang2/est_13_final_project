@@ -231,7 +231,7 @@ export const deleteTransaction = async (supabase, transactionId, userId) => {
 };
 
 // 거래 입력에 필요한 옵션 조회
-export const fetchTransactionOptions = async supabase => {
+export const fetchTransactionOptions = async (supabase, userId) => {
   return await Promise.all([
     supabase
       .from("categories")
@@ -250,5 +250,13 @@ export const fetchTransactionOptions = async supabase => {
       .select("id, code, name, sort_order")
       .eq("is_active", true)
       .order("sort_order"),
+
+    supabase
+      .from("saving_goals")
+      .select("id, title, current_amount, target_amount, focus_order")
+      .eq("user_id", userId)
+      .eq("status", "in_progress")
+      .in("focus_order", [1, 2])
+      .order("focus_order"),
   ]);
 };

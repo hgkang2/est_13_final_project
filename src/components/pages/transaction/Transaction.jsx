@@ -129,6 +129,7 @@ export default function Transaction() {
   const [categories, setCategories] = useState([]);
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [transferAccounts, setTransferAccounts] = useState([]);
+  const [focusGoals, setFocusGoals] = useState([]);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [isDeleteSuccessOpen, setIsDeleteSuccessOpen] = useState(false);
   const [selectedDeleteIds, setSelectedDeleteIds] = useState([]);
@@ -235,11 +236,23 @@ export default function Transaction() {
 
   useEffect(() => {
     const loadTransactionOptions = async () => {
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError || !user) {
+        console.error("사용자 확인 실패:", userError);
+        showToast("로그인 정보를 확인할 수 없어요.", "error");
+        return;
+      }
+
       const [
         { data: categoryData, error: categoryError },
         { data: paymentMethodData, error: paymentMethodError },
         { data: transferAccountData, error: transferAccountError },
-      ] = await fetchTransactionOptions(supabase);
+        { data: focusGoalData, error: focusGoalError },
+      ] = await fetchTransactionOptions(supabase, user.id);
 
       if (categoryError) {
         console.error("카테고리 조회 실패:", categoryError);
@@ -259,9 +272,16 @@ export default function Transaction() {
         return;
       }
 
+      if (focusGoalError) {
+        console.error("집중목표 조회 실패:", focusGoalError);
+        showToast("집중목표를 불러오지 못했어요.", "error");
+        return;
+      }
+
       setCategories(categoryData ?? []);
       setPaymentMethods(paymentMethodData ?? []);
       setTransferAccounts(transferAccountData ?? []);
+      setFocusGoals(focusGoalData ?? []);
     };
 
     loadTransactionOptions();
@@ -486,6 +506,7 @@ export default function Transaction() {
                   categories,
                   paymentMethods,
                   transferAccounts,
+                  focusGoals,
                 }}
                 manualEntry={{
                   transactionForm,
