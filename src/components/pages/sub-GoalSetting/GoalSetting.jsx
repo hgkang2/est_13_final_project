@@ -355,17 +355,17 @@ export default function GoalSetting() {
       }
     }
 
+    const status =
+      GOAL_STATUS_TO_DB[goalSettingSavedGoal.status] ?? "in_progress";
+
     const goalSettingDatabaseValues = {
       user_id: user.id,
       title: goalSettingSavedGoal.title.trim(),
       target_amount: goalSettingSavedGoal.targetAmount,
       start_date: goalSettingSavedGoal.startDate,
       end_date: goalSettingSavedGoal.targetDate,
-      status: GOAL_STATUS_TO_DB[goalSettingSavedGoal.status] ?? "in_progress",
-      focus_order:
-        goalSettingSavedGoal.status === "진행 중"
-          ? (goalSettingEditingGoal?.focusOrder ?? null)
-          : null,
+      status,
+      ...(status !== "in_progress" && { focus_order: null }),
       memo: goalSettingSavedGoal.memo.trim() || null,
       image_path: goalSettingSavedGoal.imageRemoved
         ? null

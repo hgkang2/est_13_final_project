@@ -1,18 +1,25 @@
 import styles from "../MyPage.module.scss";
 
+const formatSavingAmount = (amount) =>
+  amount >= 1_000_000
+    ? `${(amount / 10_000).toLocaleString("ko-KR", {
+        maximumFractionDigits: 1,
+      })}만원`
+    : `${amount.toLocaleString("ko-KR")}원`;
+
 export default function ProfileSection({
   profile,
+  dayCount,
   activeGoalCount,
   monthlySavingAmount,
   completedChallengeCount,
 }) {
   const nickname = profile.nickname || "회원";
-  const dayCount = 0;
   const stats = [
     { label: "진행중인 목표", value: `${activeGoalCount}개` },
     {
       label: "이번 달 저축 금액",
-      value: `${monthlySavingAmount.toLocaleString("ko-KR")}원`,
+      value: formatSavingAmount(monthlySavingAmount),
     },
     { label: "완료한 챌린지수", value: `${completedChallengeCount}개` },
   ];

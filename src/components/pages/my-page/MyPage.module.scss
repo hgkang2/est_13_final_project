@@ -119,6 +119,7 @@
 
   strong {
     color: var(--color-point);
+    white-space: nowrap;
   }
 }
 
@@ -273,6 +274,11 @@
   flex-direction: column;
   align-items: center;
   color: var(--color-text);
+}
+
+.rankingPending {
+  @include typo-body-l;
+  color: var(--color-light-gray);
 }
 
 /* 메시지 카드 */
