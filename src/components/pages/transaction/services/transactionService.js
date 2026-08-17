@@ -311,6 +311,33 @@ export const updateFocusGoalTransaction = async (
     .single();
 };
 
+// 집중목표 거래 수정 후 실패 시 기존 거래값으로 원복
+export const rollbackFocusGoalTransaction = async (
+  supabase,
+  transactionId,
+  rollbackData,
+) => {
+  return await updateFocusGoalTransaction(supabase, {
+    transactionId,
+    transactionType: rollbackData.transaction_type,
+    amount: Number(rollbackData.amount),
+
+    categoryId: rollbackData.category_id,
+    paymentMethodId: rollbackData.payment_method_id,
+    withdrawAccountId: rollbackData.withdraw_account_id,
+    depositAccountId: rollbackData.deposit_account_id,
+    savingGoalId: rollbackData.saving_goal_id,
+
+    transactionAt: rollbackData.transaction_at,
+
+    content: rollbackData.content,
+    memo: rollbackData.memo,
+
+    isRecurring: rollbackData.is_recurring,
+    recurringDay: rollbackData.recurring_day,
+  });
+};
+
 // 집중목표 연결 거래 삭제
 export const deleteFocusGoalTransaction = async (supabase, transactionId) => {
   return await supabase.rpc("delete_focus_goal_transaction", {

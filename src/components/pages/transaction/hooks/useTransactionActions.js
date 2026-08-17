@@ -14,6 +14,7 @@ import {
   deleteFocusGoalTransaction,
   updateTransaction,
   updateFocusGoalTransaction,
+  rollbackFocusGoalTransaction,
   refreshSpendingAnalysisIfNeeded,
 } from "../services/transactionService";
 import {
@@ -116,12 +117,43 @@ export const useTransactionActions = ({
     userId,
     rollbackData,
   ) => {
-    const { error: rollbackError } = await updateTransaction(
-      supabase,
-      transactionId,
-      userId,
-      rollbackData,
+    // 수정 전/후 어느 한쪽이라도 집중목표 거래면 goal-aware 롤백 필요
+    const { data: currentGoalLink, error: goalLinkError } =
+      await fetchTransactionGoalLink(supabase, transactionId, userId);
+
+    if (goalLinkError || !currentGoalLink) {
+      console.error("거래 롤백 전 집중목표 연결 확인 실패:", goalLinkError);
+
+      return (
+        goalLinkError ??
+        new Error("롤백할 거래의 집중목표 연결 정보를 확인할 수 없습니다.")
+      );
+    }
+
+    const isFocusGoalRollback = Boolean(
+      rollbackData.saving_goal_id || currentGoalLink.saving_goal_id,
     );
+
+    let rollbackError = null;
+
+    if (isFocusGoalRollback) {
+      const { error: focusRollbackError } = await rollbackFocusGoalTransaction(
+        supabase,
+        transactionId,
+        rollbackData,
+      );
+
+      rollbackError = focusRollbackError;
+    } else {
+      const { error: regularRollbackError } = await updateTransaction(
+        supabase,
+        transactionId,
+        userId,
+        rollbackData,
+      );
+
+      rollbackError = regularRollbackError;
+    }
 
     if (rollbackError) {
       console.error("거래 수정 롤백 실패:", rollbackError);
@@ -146,11 +178,42 @@ export const useTransactionActions = ({
       };
     }
 
-    const { error: rollbackTransactionError } = await deleteTransaction(
-      supabase,
-      transactionId,
-      userId,
-    );
+    // 실패한 거래가 집중목표와 연결되어 있는지 확인
+    const { data: transactionGoalLink, error: goalLinkError } =
+      await fetchTransactionGoalLink(supabase, transactionId, userId);
+
+    if (goalLinkError || !transactionGoalLink) {
+      console.error(
+        "거래 저장 롤백 전 집중목표 연결 확인 실패:",
+        goalLinkError,
+      );
+
+      return {
+        ...receiptResult,
+        rollbackTransactionError:
+          goalLinkError ??
+          new Error("롤백할 거래의 집중목표 연결 정보를 확인할 수 없습니다."),
+      };
+    }
+
+    let rollbackTransactionError = null;
+
+    if (transactionGoalLink.saving_goal_id) {
+      const { error: focusRollbackError } = await deleteFocusGoalTransaction(
+        supabase,
+        transactionId,
+      );
+
+      rollbackTransactionError = focusRollbackError;
+    } else {
+      const { error: regularRollbackError } = await deleteTransaction(
+        supabase,
+        transactionId,
+        userId,
+      );
+
+      rollbackTransactionError = regularRollbackError;
+    }
 
     return {
       ...receiptResult,
