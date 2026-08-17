@@ -205,12 +205,17 @@ export default function TransactionDetail({
                 <span>{transaction.withdrawAccount || "-"}</span>
               </div>
             </section>
-
             <section className={styles.detailField}>
-              <h3>입금 계좌</h3>
+              <h3>입금 대상</h3>
 
               <div className={styles.detailValueBox}>
-                <span>{transaction.depositAccount || "-"}</span>
+                <span>
+                  {transaction.savingGoal
+                    ? transaction.savingGoalFocusOrder
+                      ? `집중목표 ${transaction.savingGoalFocusOrder} · ${transaction.savingGoal}`
+                      : transaction.savingGoal
+                    : transaction.depositAccount || "-"}
+                </span>
               </div>
             </section>
           </div>

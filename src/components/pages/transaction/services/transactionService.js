@@ -31,13 +31,19 @@ export const TRANSACTION_SELECT = `
     name
   ),
 
-  deposit_account:transfer_accounts!transactions_deposit_account_id_fkey (
-    id,
-    code,
-    name
-  )
-`;
+deposit_account:transfer_accounts!transactions_deposit_account_id_fkey (
+  id,
+  code,
+  name
+),
 
+saving_goal:saving_goals!transactions_saving_goal_owner_fkey (
+  id,
+  title,
+  focus_order,
+  status
+)
+`;
 // 사용자 거래 목록 조회
 export const fetchTransactions = async (
   supabase,
