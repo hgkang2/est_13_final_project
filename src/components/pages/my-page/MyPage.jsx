@@ -27,6 +27,7 @@ export default function MyPage() {
     notification: false,
     image: "",
   });
+  const [dayCount, setDayCount] = useState(0);
   const [activeGoalCount, setActiveGoalCount] = useState(0);
   const [monthlySavingAmount, setMonthlySavingAmount] = useState(0);
   const [previousMonthlySavingAmount, setPreviousMonthlySavingAmount] = useState(0);
@@ -83,10 +84,9 @@ export default function MyPage() {
       const previousStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
       const { data: savings, error: savingsError } = await supabase
         .from("transactions")
-        .select("amount, transaction_at, category:categories!inner(code)")
+        .select("amount, transaction_at")
         .eq("user_id", user.id)
         .eq("transaction_type", "transfer")
-        .eq("category.code", "savings")
         .gte("transaction_at", previousStart.toISOString())
         .lt("transaction_at", end.toISOString());
 
@@ -134,6 +134,19 @@ export default function MyPage() {
 
       if (challengeError) return setError("챌린지 정보를 불러오지 못했습니다.");
       setCompletedChallengeCount(completedCount ?? 0);
+
+      const joinedDate = new Date(user.created_at);
+      const today = new Date();
+
+      joinedDate.setHours(0, 0, 0, 0);
+      today.setHours(0, 0, 0, 0);
+
+      setDayCount(
+        Math.max(
+          0,
+          Math.floor((today.getTime() - joinedDate.getTime()) / 86400000),
+        ),
+      );
 
       setProfile({
         nickname: data.nickname ?? "",
@@ -192,6 +205,7 @@ export default function MyPage() {
 
             <ProfileSection
               profile={profile}
+              dayCount={dayCount}
               activeGoalCount={activeGoalCount}
               monthlySavingAmount={monthlySavingAmount}
               completedChallengeCount={completedChallengeCount}
