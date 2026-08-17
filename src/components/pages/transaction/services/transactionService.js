@@ -254,6 +254,36 @@ export const createMultipleTransactions = async (supabase, transactionData) => {
     .select(TRANSACTION_SELECT);
 };
 
+// 거래 수정 실패 시 원복에 사용할 기존 DB 값 조회
+export const fetchTransactionRollbackSnapshot = async (
+  supabase,
+  transactionId,
+  userId,
+) => {
+  return await supabase
+    .from("transactions")
+    .select(
+      `
+      transaction_type,
+      amount,
+      category_id,
+      payment_method_id,
+      withdraw_account_id,
+      deposit_account_id,
+      saving_goal_id,
+      content,
+      memo,
+      transaction_at,
+      is_recurring,
+      recurring_day,
+      updated_at
+    `,
+    )
+    .eq("id", transactionId)
+    .eq("user_id", userId)
+    .single();
+};
+
 // 거래 수정
 export const updateTransaction = async (
   supabase,

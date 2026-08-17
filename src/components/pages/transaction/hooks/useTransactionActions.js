@@ -8,6 +8,7 @@ import {
   createMultipleTransactions,
   createTransaction,
   createFocusGoalDeposit,
+  fetchTransactionRollbackSnapshot,
   deleteTransaction,
   updateTransaction,
   refreshSpendingAnalysisIfNeeded,
@@ -16,7 +17,7 @@ import {
   createReceiptSignedUrl,
   fetchReceiptAttachment,
   removeReceiptAttachment,
-  removeTransactionReceiptFile,
+  removeReceiptFile,
   replaceReceiptAttachment,
   saveReceiptAttachment,
 } from "../services/receiptService";
@@ -56,6 +57,7 @@ export const useTransactionActions = ({
   multipleRows,
   isValidMultipleRow,
   resetMultipleRows,
+  removeMultipleRows,
   setIsMultipleConfirmOpen,
   aiStatus,
   aiTransactionForm,
@@ -103,6 +105,26 @@ export const useTransactionActions = ({
     setTimeout(() => {
       setRecentlyAddedId(null);
     }, 1800);
+  };
+
+  // 거래 수정 후 후속 작업 실패 시 기존 거래값으로 원복
+  const rollbackTransactionUpdate = async (
+    transactionId,
+    userId,
+    rollbackData,
+  ) => {
+    const { error: rollbackError } = await updateTransaction(
+      supabase,
+      transactionId,
+      userId,
+      rollbackData,
+    );
+
+    if (rollbackError) {
+      console.error("거래 수정 롤백 실패:", rollbackError);
+    }
+
+    return rollbackError;
   };
 
   // 영수증 저장 실패 시 함께 생성된 거래도 롤백
@@ -314,6 +336,19 @@ export const useTransactionActions = ({
 
     if (!user) return;
 
+    const { data: rollbackData, error: rollbackDataError } =
+      await fetchTransactionRollbackSnapshot(
+        supabase,
+        selectedTransaction.id,
+        user.id,
+      );
+
+    if (rollbackDataError || !rollbackData) {
+      console.error("수정 전 거래 정보 조회 실패:", rollbackDataError);
+      showToast("기존 거래 정보를 확인하지 못했어요.", "error");
+      return;
+    }
+
     const { data: existingAttachment, error: existingAttachmentError } =
       await fetchReceiptAttachment(supabase, selectedTransaction.id);
 
@@ -325,14 +360,22 @@ export const useTransactionActions = ({
 
     const newAttachment = updatedForm.attachment;
 
+    if (newAttachment) {
+      const receiptFileError = validateReceiptFile(newAttachment);
+
+      if (receiptFileError) {
+        showToast(receiptFileError, "error");
+        return;
+      }
+    }
+
     let nextReceiptImage = selectedTransaction.receiptImage ?? null;
 
     // 2. 수정 날짜/시간 생성
-    const [year, month, day] = updatedForm.date.split("-").map(Number);
-
-    const [hour, minute] = (updatedForm.time || "00:00").split(":").map(Number);
-
-    const transactionDate = new Date(year, month - 1, day, hour, minute, 0);
+    const transactionDate = createTransactionDate(
+      updatedForm.date,
+      updatedForm.time,
+    );
 
     if (Number.isNaN(transactionDate.getTime())) {
       showToast("거래 날짜를 확인해주세요.", "error");
@@ -397,12 +440,12 @@ export const useTransactionActions = ({
     // 영수증 첨부 수정 처리
     // 새 영수증 선택 → 신규 첨부 또는 기존 첨부 교체
     if (newAttachment) {
-      const receiptFileError = validateReceiptFile(newAttachment);
+      // const receiptFileError = validateReceiptFile(newAttachment);
 
-      if (receiptFileError) {
-        showToast(receiptFileError, "error");
-        return;
-      }
+      // if (receiptFileError) {
+      //   showToast(receiptFileError, "error");
+      //   return;
+      // }
 
       const {
         newStoragePath,
@@ -420,7 +463,25 @@ export const useTransactionActions = ({
 
       if (uploadError) {
         console.error("새 영수증 업로드 실패:", uploadError);
-        showToast("새 영수증을 업로드하지 못했어요.", "error");
+
+        const rollbackError = await rollbackTransactionUpdate(
+          selectedTransaction.id,
+          user.id,
+          rollbackData,
+        );
+
+        if (rollbackError) {
+          showToast(
+            "영수증 수정에 실패했고 거래 변경도 되돌리지 못했어요. 다시 확인해주세요.",
+            "error",
+          );
+          return;
+        }
+
+        showToast(
+          "새 영수증을 업로드하지 못해 거래 수정을 취소했어요.",
+          "error",
+        );
         return;
       }
 
@@ -431,7 +492,24 @@ export const useTransactionActions = ({
           console.error("새 영수증 Storage 롤백 실패:", rollbackStorageError);
         }
 
-        showToast("영수증 정보를 수정하지 못했어요.", "error");
+        const rollbackError = await rollbackTransactionUpdate(
+          selectedTransaction.id,
+          user.id,
+          rollbackData,
+        );
+
+        if (rollbackError) {
+          showToast(
+            "영수증 수정에 실패했고 거래 변경도 되돌리지 못했어요. 다시 확인해주세요.",
+            "error",
+          );
+          return;
+        }
+
+        showToast(
+          "영수증 정보를 수정하지 못해 거래 수정을 취소했어요.",
+          "error",
+        );
         return;
       }
 
@@ -458,7 +536,25 @@ export const useTransactionActions = ({
 
         if (attachmentDeleteError) {
           console.error("영수증 첨부정보 삭제 실패:", attachmentDeleteError);
-          showToast("영수증 정보를 삭제하지 못했어요.", "error");
+
+          const rollbackError = await rollbackTransactionUpdate(
+            selectedTransaction.id,
+            user.id,
+            rollbackData,
+          );
+
+          if (rollbackError) {
+            showToast(
+              "영수증 삭제에 실패했고 거래 변경도 되돌리지 못했어요. 다시 확인해주세요.",
+              "error",
+            );
+            return;
+          }
+
+          showToast(
+            "영수증 정보를 삭제하지 못해 거래 수정을 취소했어요.",
+            "error",
+          );
           return;
         }
 
@@ -543,9 +639,9 @@ export const useTransactionActions = ({
 
     if (!user) return;
 
-    // 2. 거래 삭제 전 영수증 Storage 파일 정리
-    const { attachmentError, storageDeleteError } =
-      await removeTransactionReceiptFile(supabase, selectedTransaction.id);
+    // 2. 거래 삭제 후 Storage 정리를 위해 기존 영수증 경로 확인
+    const { data: existingAttachment, error: attachmentError } =
+      await fetchReceiptAttachment(supabase, selectedTransaction.id);
 
     if (attachmentError) {
       console.error("첨부파일 정보 조회 실패:", attachmentError);
@@ -553,13 +649,8 @@ export const useTransactionActions = ({
       return;
     }
 
-    if (storageDeleteError) {
-      console.error("영수증 Storage 삭제 실패:", storageDeleteError);
-      showToast("영수증 파일을 삭제하지 못했어요.", "error");
-      return;
-    }
-
     // 3. 거래 삭제
+    // transaction_attachments는 ON DELETE CASCADE로 함께 삭제됨
     const { error: deleteError } = await deleteTransaction(
       supabase,
       selectedTransaction.id,
@@ -572,7 +663,24 @@ export const useTransactionActions = ({
       return;
     }
 
-    // 4. 화면에서 즉시 제거
+    // 4. DB 삭제 성공 후 Storage 파일 정리
+    if (existingAttachment?.storage_path) {
+      const { error: storageDeleteError } = await removeReceiptFile(
+        supabase,
+        existingAttachment.storage_path,
+      );
+
+      if (storageDeleteError) {
+        // 거래와 첨부 DB는 정상 삭제됨.
+        // Storage에 사용하지 않는 파일만 남는 cleanup 문제.
+        console.error(
+          "삭제된 거래의 영수증 Storage 정리 실패:",
+          storageDeleteError,
+        );
+      }
+    }
+
+    // 5. 화면에서 즉시 제거
     setTransactions(prevTransactions =>
       prevTransactions.filter(
         transaction => transaction.id !== selectedTransaction.id,
@@ -610,10 +718,10 @@ export const useTransactionActions = ({
     const deletedIds = [];
     const failedIds = [];
 
-    // 2. 선택 거래별 영수증 정리 후 거래 삭제
+    // 2. 선택 거래별 영수증 경로 확인 후 거래 삭제
     for (const transactionId of transactionIds) {
-      const { attachmentError, storageDeleteError } =
-        await removeTransactionReceiptFile(supabase, transactionId);
+      const { data: existingAttachment, error: attachmentError } =
+        await fetchReceiptAttachment(supabase, transactionId);
 
       if (attachmentError) {
         console.error(
@@ -626,17 +734,8 @@ export const useTransactionActions = ({
         continue;
       }
 
-      if (storageDeleteError) {
-        console.error(
-          "선택 거래 영수증 Storage 삭제 실패:",
-          transactionId,
-          storageDeleteError,
-        );
-
-        failedIds.push(transactionId);
-        continue;
-      }
-
+      // 3. 거래 삭제
+      // transaction_attachments는 ON DELETE CASCADE로 함께 삭제
       const { error: deleteError } = await deleteTransaction(
         supabase,
         transactionId,
@@ -649,10 +748,29 @@ export const useTransactionActions = ({
         continue;
       }
 
+      // 4. DB 삭제 성공 후 Storage 파일 정리
+      if (existingAttachment?.storage_path) {
+        const { error: storageDeleteError } = await removeReceiptFile(
+          supabase,
+          existingAttachment.storage_path,
+        );
+
+        if (storageDeleteError) {
+          // 거래와 첨부 DB는 정상 삭제됨.
+          // Storage에 사용하지 않는 파일만 남는 cleanup 문제.
+          console.error(
+            "선택 삭제 거래의 영수증 Storage 정리 실패:",
+            transactionId,
+            storageDeleteError,
+          );
+        }
+      }
+
+      // DB 삭제에 성공한 거래만 성공 목록에 추가
       deletedIds.push(transactionId);
     }
 
-    // 3. 삭제 성공 거래 화면에서 제거
+    // 5. 삭제 성공 거래 화면에서 제거
     if (deletedIds.length > 0) {
       setTransactions(prevTransactions =>
         prevTransactions.filter(
@@ -669,7 +787,7 @@ export const useTransactionActions = ({
       await refreshMonthlySummary();
     }
 
-    // 4. 결과 안내
+    // 6. 일부 또는 전체 삭제 실패 안내
     if (failedIds.length > 0) {
       if (deletedIds.length > 0) {
         showToast(
@@ -686,6 +804,7 @@ export const useTransactionActions = ({
       return;
     }
 
+    // 7. 전체 삭제 성공
     setIsSelectedDeleteSuccessOpen(true);
   };
 
