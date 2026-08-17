@@ -707,39 +707,139 @@ export const useTransactionActions = ({
       return;
     }
 
-    // 2. UI row → DB 저장 데이터 변환
-    const transactionData = validRows.map(row => {
+    // 2. 일반 거래 / 집중목표 적립 거래 분리
+    const focusGoalRows = validRows.filter(
+      row => row.type === "transfer" && row.savingGoal,
+    );
+
+    const regularRows = validRows.filter(
+      row => !(row.type === "transfer" && row.savingGoal),
+    );
+
+    const savedTransactions = [];
+    const savedRowIds = [];
+
+    // 3. 집중목표 적립 거래 저장
+    // 같은 목표에 여러 행이 있을 수 있으므로 순서대로 처리
+    for (const row of focusGoalRows) {
       const transactionDate = createTransactionDate(row.date, row.time);
-      return {
-        ...createTransactionBaseData(row, user.id, transactionDate),
 
-        input_method: "manual",
-        is_recurring: false,
-        recurring_day: null,
-      };
-    });
+      const { data: insertedTransaction, error: insertError } =
+        await createFocusGoalDeposit(supabase, {
+          userId: user.id,
+          requestId: crypto.randomUUID(),
+          goalId: row.savingGoal,
+          amount: Number(row.amount),
+          withdrawAccountId: row.withdrawAccount,
+          transactionAt: transactionDate.toISOString(),
+          content: row.content.trim() || null,
+          memo: row.memo.trim() || null,
+        });
 
-    // 3. 다건 INSERT
-    const { data: insertedTransactions, error: insertError } =
-      await createMultipleTransactions(supabase, transactionData);
+      if (insertError || !insertedTransaction) {
+        console.error("다건 집중목표 적립 저장 실패:", row.id, insertError);
 
-    if (insertError) {
-      console.error("다건 소비 기록 저장 실패:", insertError);
-      setIsMultipleConfirmOpen(false);
-      showToast("소비 기록을 저장하지 못했어요.", "error");
-      return;
+        setIsMultipleConfirmOpen(false);
+
+        // 앞에서 이미 저장된 행은 입력창에서 제거해 중복 저장 방지
+        if (savedRowIds.length > 0) {
+          const newTransactions = savedTransactions.map(formatTransaction);
+
+          setTransactions(prevTransactions => [
+            ...newTransactions,
+            ...prevTransactions,
+          ]);
+
+          removeMultipleRows(savedRowIds);
+
+          await refreshTransactions();
+          await refreshRecentTransactions();
+          await refreshMonthlySummary();
+
+          showToast(
+            `${newTransactions.length}건은 저장됐고, 나머지 거래는 저장하지 못했어요.`,
+            "error",
+          );
+
+          return;
+        }
+
+        showToast("집중목표 적립 거래를 저장하지 못했어요.", "error");
+        return;
+      }
+
+      savedTransactions.push(insertedTransaction);
+      savedRowIds.push(row.id);
     }
 
-    // 4. DB 데이터 → 기존 UI 형식
-    const newTransactions = (insertedTransactions ?? []).map(formatTransaction);
+    // 4. 나머지 일반 거래는 기존 다건 INSERT
+    let insertedRegularTransactions = [];
 
-    // 5. 화면 즉시 반영
+    if (regularRows.length > 0) {
+      const transactionData = regularRows.map(row => {
+        const transactionDate = createTransactionDate(row.date, row.time);
+
+        return {
+          ...createTransactionBaseData(row, user.id, transactionDate),
+          input_method: "manual",
+          is_recurring: false,
+          recurring_day: null,
+        };
+      });
+
+      const { data, error: insertError } = await createMultipleTransactions(
+        supabase,
+        transactionData,
+      );
+
+      if (insertError) {
+        console.error("다건 소비 기록 저장 실패:", insertError);
+
+        setIsMultipleConfirmOpen(false);
+
+        // 집중목표 행이 먼저 저장됐다면 해당 행만 제거
+        if (savedRowIds.length > 0) {
+          const newTransactions = savedTransactions.map(formatTransaction);
+
+          setTransactions(prevTransactions => [
+            ...newTransactions,
+            ...prevTransactions,
+          ]);
+
+          removeMultipleRows(savedRowIds);
+
+          await refreshTransactions();
+          await refreshRecentTransactions();
+          await refreshMonthlySummary();
+
+          showToast(
+            `${newTransactions.length}건은 저장됐고, 나머지 거래는 저장하지 못했어요.`,
+            "error",
+          );
+
+          return;
+        }
+
+        showToast("소비 기록을 저장하지 못했어요.", "error");
+        return;
+      }
+
+      insertedRegularTransactions = data ?? [];
+
+      savedTransactions.push(...insertedRegularTransactions);
+      savedRowIds.push(...regularRows.map(row => row.id));
+    }
+
+    // 5. DB 데이터 → 기존 UI 형식
+    const newTransactions = savedTransactions.map(formatTransaction);
+
+    // 6. 화면 즉시 반영
     setTransactions(prevTransactions => [
       ...newTransactions,
       ...prevTransactions,
     ]);
 
-    // 6. 입력창 초기화
+    // 7. 전체 저장 성공 → 다건 입력 초기화
     resetMultipleRows();
 
     setIsMultipleConfirmOpen(false);
@@ -749,8 +849,9 @@ export const useTransactionActions = ({
     await refreshRecentTransactions();
     await refreshMonthlySummary();
 
+    // 지출이 포함된 경우만 소비 분석 갱신
     if (
-      (insertedTransactions ?? []).some(
+      insertedRegularTransactions.some(
         transaction => transaction.transaction_type === "expense",
       )
     ) {

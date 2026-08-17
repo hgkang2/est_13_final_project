@@ -158,6 +158,7 @@ export default function Transaction() {
   const {
     multipleRows,
     resetMultipleRows,
+    removeMultipleRows,
     isValidMultipleRow,
     multipleRowStatus,
     onMultipleRowChange,
@@ -205,6 +206,7 @@ export default function Transaction() {
     multipleRows,
     isValidMultipleRow,
     resetMultipleRows,
+    removeMultipleRows,
     setIsMultipleConfirmOpen,
 
     aiStatus,

@@ -6,6 +6,7 @@ export default function MultipleEntryForm({
   categories,
   paymentMethods,
   transferAccounts,
+  focusGoals,
   onMultipleRowChange,
   onAddMultipleRow,
   onRemoveMultipleRow,
@@ -162,29 +163,52 @@ export default function MultipleEntryForm({
                   <select
                     name="transferRoute"
                     value={
-                      row.withdrawAccount && row.depositAccount
-                        ? `${row.withdrawAccount}|${row.depositAccount}`
-                        : ""
+                      row.withdrawAccount && row.savingGoal
+                        ? `${row.withdrawAccount}|goal:${row.savingGoal}`
+                        : row.withdrawAccount && row.depositAccount
+                          ? `${row.withdrawAccount}|account:${row.depositAccount}`
+                          : ""
                     }
                     onChange={event => onMultipleRowChange(row.id, event)}
                     aria-label={`${index + 1}번 거래 계좌 이동`}
                   >
-                    <option value="">계좌 선택</option>
+                    <option value="">이체 경로 선택</option>
 
-                    {transferAccounts.flatMap(withdrawAccount =>
-                      transferAccounts
-                        .filter(
-                          depositAccount =>
-                            depositAccount.id !== withdrawAccount.id,
-                        )
-                        .map(depositAccount => (
-                          <option
-                            key={`${withdrawAccount.id}-${depositAccount.id}`}
-                            value={`${withdrawAccount.id}|${depositAccount.id}`}
-                          >
-                            {withdrawAccount.name} → {depositAccount.name}
-                          </option>
-                        )),
+                    <optgroup label="계좌 이체">
+                      {transferAccounts.flatMap(withdrawAccount =>
+                        transferAccounts
+                          .filter(
+                            depositAccount =>
+                              depositAccount.id !== withdrawAccount.id,
+                          )
+                          .map(depositAccount => (
+                            <option
+                              key={`${withdrawAccount.id}-${depositAccount.id}`}
+                              value={`${withdrawAccount.id}|account:${depositAccount.id}`}
+                            >
+                              {withdrawAccount.name} → {depositAccount.name}
+                            </option>
+                          )),
+                      )}
+                    </optgroup>
+
+                    {focusGoals.length > 0 && (
+                      <optgroup label="집중목표 적립">
+                        {transferAccounts.flatMap(withdrawAccount =>
+                          focusGoals.map(goal => (
+                            <option
+                              key={`${withdrawAccount.id}-goal-${goal.id}`}
+                              value={`${withdrawAccount.id}|goal:${goal.id}`}
+                            >
+                              {withdrawAccount.name} → 집중목표{" "}
+                              {goal.focus_order} ·{" "}
+                              {goal.title.length > 10
+                                ? `${goal.title.slice(0, 10)}…`
+                                : goal.title}
+                            </option>
+                          )),
+                        )}
+                      </optgroup>
                     )}
                   </select>
 
