@@ -829,7 +829,7 @@ export const useTransactionActions = ({
     );
 
     setSelectedTransaction(null);
-    setPanelView("closed");
+    setPanelView("entry");
 
     setIsDeleteConfirmOpen(false);
     setIsDeleteSuccessOpen(true);

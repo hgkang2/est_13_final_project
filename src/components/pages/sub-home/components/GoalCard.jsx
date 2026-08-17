@@ -55,6 +55,11 @@ export default function GoalCard({ hasGoal, goal }) {
   const remainingProgress = Math.max(100 - progress, 0);
   const isGoalNotStarted = hasGoal && currentAmount === 0;
 
+  const isCompleted =
+    hasGoal &&
+    (goal?.status === "completed" ||
+      (targetAmount > 0 && currentAmount >= targetAmount));
+
   const plannedProgress = hasGoal
     ? getPlannedProgress(goal.start_date, goal.end_date)
     : 0;
@@ -69,10 +74,17 @@ export default function GoalCard({ hasGoal, goal }) {
     slow: "계획보다 살짝 느린 속도예요",
     behind: "목표 달성을 위해 조금 더 저축이 필요해요",
   };
-  const progressStatusText = isGoalNotStarted
-    ? "아직 저축을 시작하지 않았어요"
-    : progressStatusMessage[progressStatus];
+  const progressStatusText = isCompleted
+    ? "목표를 달성했어요!"
+    : isGoalNotStarted
+      ? "아직 저축을 시작하지 않았어요"
+      : progressStatusMessage[progressStatus];
 
+  const goalStatusStyle = isCompleted
+    ? "ahead"
+    : isGoalNotStarted
+      ? "notStarted"
+      : progressStatus;
   return (
     <article className={styles.goalCard} aria-labelledby="goal-card-title">
       <div
@@ -157,16 +169,12 @@ export default function GoalCard({ hasGoal, goal }) {
           {hasGoal && (
             <p
               className={`${styles.warningBadge} ${
-                styles[
-                  `warningBadge_${isGoalNotStarted ? "notStarted" : progressStatus}`
-                ]
+                styles[`warningBadge_${goalStatusStyle}`]
               }`}
             >
               <span
                 className={`${styles.warningDot} ${
-                  styles[
-                    `warningDot_${isGoalNotStarted ? "notStarted" : progressStatus}`
-                  ]
+                  styles[`warningDot_${goalStatusStyle}`]
                 }`}
                 aria-hidden="true"
               />
@@ -183,8 +191,11 @@ export default function GoalCard({ hasGoal, goal }) {
 
               <Image
                 className={styles.goalImage}
-                // src={goal.imageUrl || "/images/character/goal_image.png"}
-                src="/images/character/goal_image.png"
+                src={
+                  isCompleted
+                    ? "/images/character/goal_complete.png"
+                    : "/images/character/goal_image.png"
+                }
                 alt=""
                 width={240}
                 height={200}
@@ -192,7 +203,12 @@ export default function GoalCard({ hasGoal, goal }) {
             </div>
 
             <figcaption className={styles.goalCaption}>
-              {isGoalNotStarted ? (
+              {isCompleted ? (
+                <>
+                  <p>{goal.title} 목표를 달성했어요!</p>
+                  <span>새로운 집중목표를 설정해보세요.</span>
+                </>
+              ) : isGoalNotStarted ? (
                 <>
                   <p>{goal.title} 목표를 시작해볼까요?</p>
                   <span>첫 적립을 기다리고 있어요</span>
