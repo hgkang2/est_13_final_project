@@ -53,6 +53,7 @@ export default function GoalCard({ hasGoal, goal }) {
       : 0;
 
   const remainingProgress = Math.max(100 - progress, 0);
+  const isGoalNotStarted = hasGoal && currentAmount === 0;
 
   const plannedProgress = hasGoal
     ? getPlannedProgress(goal.start_date, goal.end_date)
@@ -68,6 +69,9 @@ export default function GoalCard({ hasGoal, goal }) {
     slow: "계획보다 살짝 느린 속도예요",
     behind: "목표 달성을 위해 조금 더 저축이 필요해요",
   };
+  const progressStatusText = isGoalNotStarted
+    ? "아직 저축을 시작하지 않았어요"
+    : progressStatusMessage[progressStatus];
 
   return (
     <article className={styles.goalCard} aria-labelledby="goal-card-title">
@@ -153,17 +157,21 @@ export default function GoalCard({ hasGoal, goal }) {
           {hasGoal && (
             <p
               className={`${styles.warningBadge} ${
-                styles[`warningBadge_${progressStatus}`]
+                styles[
+                  `warningBadge_${isGoalNotStarted ? "notStarted" : progressStatus}`
+                ]
               }`}
             >
               <span
                 className={`${styles.warningDot} ${
-                  styles[`warningDot_${progressStatus}`]
+                  styles[
+                    `warningDot_${isGoalNotStarted ? "notStarted" : progressStatus}`
+                  ]
                 }`}
                 aria-hidden="true"
               />
 
-              {progressStatusMessage[progressStatus]}
+              {progressStatusText}
             </p>
           )}
         </div>
@@ -184,13 +192,22 @@ export default function GoalCard({ hasGoal, goal }) {
             </div>
 
             <figcaption className={styles.goalCaption}>
-              <p>
-                {goal.title}까지{" "}
-                <strong className={styles.pointText}>{progress}%</strong>{" "}
-                왔어요!
-              </p>
+              {isGoalNotStarted ? (
+                <>
+                  <p>{goal.title} 목표를 시작해볼까요?</p>
+                  <span>첫 적립을 기다리고 있어요</span>
+                </>
+              ) : (
+                <>
+                  <p>
+                    {goal.title}까지{" "}
+                    <strong className={styles.pointText}>{progress}%</strong>{" "}
+                    왔어요!
+                  </p>
 
-              <span>목표까지 {remainingProgress}% 남았어요</span>
+                  <span>목표까지 {remainingProgress}% 남았어요</span>
+                </>
+              )}
             </figcaption>
           </figure>
         )}

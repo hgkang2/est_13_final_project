@@ -267,6 +267,16 @@
   background-color: var(--color-success-dot);
 }
 
+.warningBadge_notStarted {
+  border: 1px solid var(--color-border-gray);
+  color: var(--color-light-gray);
+  background-color: var(--color-white);
+}
+
+.warningDot_notStarted {
+  background-color: var(--color-gray);
+}
+
 .warningBadge_slow {
   color: var(--color-warning-text);
   background-color: var(--color-warning-background);
@@ -331,9 +341,12 @@
 
 .goalCaption p {
   @include typo-body-m-plus;
+  @include multi-ellipsis(2);
 
+  width: 100%;
   margin: 0;
   color: var(--color-text);
+  word-break: keep-all;
 }
 
 .goalCaption span {
