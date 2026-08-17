@@ -252,6 +252,72 @@ export const createFocusGoalDeposit = async (
     .single();
 };
 
+// 집중목표 연결 거래 수정
+export const updateFocusGoalTransaction = async (
+  supabase,
+  {
+    transactionId,
+    transactionType,
+    amount,
+    categoryId,
+    paymentMethodId,
+    withdrawAccountId,
+    depositAccountId,
+    savingGoalId,
+    transactionAt,
+    content,
+    memo,
+    isRecurring,
+    recurringDay,
+  },
+) => {
+  const { data: updateResult, error: updateError } = await supabase.rpc(
+    "update_focus_goal_transaction",
+    {
+      p_transaction_id: transactionId,
+      p_transaction_type: transactionType,
+      p_amount: amount,
+      p_category_id: categoryId || null,
+      p_payment_method_id: paymentMethodId || null,
+      p_withdraw_account_id: withdrawAccountId || null,
+      p_deposit_account_id: depositAccountId || null,
+      p_saving_goal_id: savingGoalId || null,
+      p_transaction_at: transactionAt,
+      p_content: content || null,
+      p_memo: memo || null,
+      p_is_recurring: Boolean(isRecurring),
+      p_recurring_day: recurringDay ? Number(recurringDay) : null,
+    },
+  );
+
+  if (updateError) {
+    return {
+      data: null,
+      error: updateError,
+    };
+  }
+
+  if (!updateResult?.transactionId) {
+    return {
+      data: null,
+      error: new Error("수정된 집중목표 거래 ID를 확인할 수 없습니다."),
+    };
+  }
+
+  return await supabase
+    .from("transactions")
+    .select(TRANSACTION_SELECT)
+    .eq("id", updateResult.transactionId)
+    .single();
+};
+
+// 집중목표 연결 거래 삭제
+export const deleteFocusGoalTransaction = async (supabase, transactionId) => {
+  return await supabase.rpc("delete_focus_goal_transaction", {
+    p_transaction_id: transactionId,
+  });
+};
+
 // 다건 거래 저장
 export const createMultipleTransactions = async (supabase, transactionData) => {
   return await supabase
@@ -303,6 +369,20 @@ export const updateTransaction = async (
     .eq("id", transactionId)
     .eq("user_id", userId)
     .select(TRANSACTION_SELECT)
+    .single();
+};
+
+// 거래의 집중목표 연결 여부 조회
+export const fetchTransactionGoalLink = async (
+  supabase,
+  transactionId,
+  userId,
+) => {
+  return await supabase
+    .from("transactions")
+    .select("saving_goal_id")
+    .eq("id", transactionId)
+    .eq("user_id", userId)
     .single();
 };
 

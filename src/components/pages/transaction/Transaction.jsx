@@ -462,6 +462,7 @@ export default function Transaction() {
                 categories={categories}
                 paymentMethods={paymentMethods}
                 transferAccounts={transferAccounts}
+                focusGoals={focusGoals}
                 onClose={() => {
                   setPanelView("closed");
                   setSelectedTransaction(null);

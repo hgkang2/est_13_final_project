@@ -13,6 +13,7 @@ export default function TransactionEdit({
   categories,
   paymentMethods,
   transferAccounts,
+  focusGoals,
   onClose,
   onCancel,
   onSave,
@@ -36,6 +37,7 @@ export default function TransactionEdit({
       memo: transaction.memo ?? "",
       withdrawAccount: transaction.withdrawAccountId,
       depositAccount: transaction.depositAccountId,
+      savingGoal: transaction.savingGoalId ?? "",
       isRecurring: transaction.isRecurring ?? false,
       recurringDay: transaction.recurringDay?.toString() ?? "29",
       attachment: null, // 새로 선택한 파일
@@ -44,6 +46,22 @@ export default function TransactionEdit({
   }, [transaction]);
 
   if (!transaction || !editForm) return null;
+
+  const currentSavingGoal =
+    transaction.savingGoalId && transaction.savingGoal
+      ? {
+          id: transaction.savingGoalId,
+          title: transaction.savingGoal,
+          focus_order: transaction.savingGoalFocusOrder,
+        }
+      : null;
+
+  const focusGoalOptions = currentSavingGoal
+    ? [
+        currentSavingGoal,
+        ...(focusGoals ?? []).filter(goal => goal.id !== currentSavingGoal.id),
+      ]
+    : (focusGoals ?? []);
 
   const handleToggleRecurring = () => {
     setEditForm(prevForm => ({
@@ -63,6 +81,43 @@ export default function TransactionEdit({
     setEditForm(prevForm => ({
       ...prevForm,
       [name]: value,
+    }));
+  };
+
+  const handleTransferDestinationChange = event => {
+    const value = event.target.value;
+
+    setEditErrors(prevErrors => ({
+      ...prevErrors,
+      depositAccount: "",
+      savingGoal: "",
+    }));
+
+    if (!value) {
+      setEditForm(prevForm => ({
+        ...prevForm,
+        depositAccount: "",
+        savingGoal: "",
+      }));
+      return;
+    }
+
+    const [destinationType, destinationId] = value.split(":");
+
+    if (destinationType === "goal") {
+      setEditForm(prevForm => ({
+        ...prevForm,
+        depositAccount: "",
+        savingGoal: destinationId,
+        isRecurring: false,
+      }));
+      return;
+    }
+
+    setEditForm(prevForm => ({
+      ...prevForm,
+      depositAccount: destinationId,
+      savingGoal: "",
     }));
   };
 
@@ -148,6 +203,7 @@ export default function TransactionEdit({
       paymentMethod: type === "transfer" ? "" : prevForm.paymentMethod,
       withdrawAccount: type === "transfer" ? prevForm.withdrawAccount : "",
       depositAccount: type === "transfer" ? prevForm.depositAccount : "",
+      savingGoal: type === "transfer" ? prevForm.savingGoal : "",
       isRecurring: type === "transfer" ? prevForm.isRecurring : false,
     }));
   };
@@ -281,7 +337,7 @@ export default function TransactionEdit({
                 카테고리 <span className={styles.requiredMark}>*</span>
               </label>
 
-              {editForm.type === "transfer" && (
+              {editForm.type === "transfer" && !editForm.savingGoal && (
                 <div className={styles.recurringControl}>
                   <span>반복</span>
 
@@ -454,37 +510,69 @@ export default function TransactionEdit({
             </section>
 
             <section className={styles.detailField}>
-              <label htmlFor="editDepositAccount">
-                입금 계좌 <span className={styles.requiredMark}>*</span>
+              <label htmlFor="editTransferDestination">
+                입금 대상 <span className={styles.requiredMark}>*</span>
               </label>
+
               <div
                 className={`${styles.selectBox} ${
-                  editErrors.depositAccount ? styles.errorField : ""
+                  editErrors.depositAccount || editErrors.savingGoal
+                    ? styles.errorField
+                    : ""
                 }`}
               >
                 <select
-                  id="editDepositAccount"
-                  name="depositAccount"
-                  value={editForm.depositAccount}
-                  onChange={handleChange}
-                  aria-invalid={Boolean(editErrors.depositAccount)}
+                  id="editTransferDestination"
+                  value={
+                    editForm.savingGoal
+                      ? `goal:${editForm.savingGoal}`
+                      : editForm.depositAccount
+                        ? `account:${editForm.depositAccount}`
+                        : ""
+                  }
+                  onChange={handleTransferDestinationChange}
+                  aria-invalid={Boolean(
+                    editErrors.depositAccount || editErrors.savingGoal,
+                  )}
                 >
-                  <option value="">입금 계좌 선택</option>
+                  <option value="">입금 대상 선택</option>
 
-                  {transferAccounts.map(account => (
-                    <option key={account.id} value={account.id}>
-                      {account.name}
-                    </option>
-                  ))}
+                  <optgroup label="계좌 이체">
+                    {transferAccounts.map(account => (
+                      <option key={account.id} value={`account:${account.id}`}>
+                        {account.name}
+                      </option>
+                    ))}
+                  </optgroup>
+
+                  {focusGoalOptions.length > 0 && (
+                    <optgroup label="집중목표 적립">
+                      {focusGoalOptions.map(goal => {
+                        const shortTitle =
+                          goal.title.length > 10
+                            ? `${goal.title.slice(0, 10)}...`
+                            : goal.title;
+
+                        return (
+                          <option key={goal.id} value={`goal:${goal.id}`}>
+                            {goal.focus_order
+                              ? `집중목표 ${goal.focus_order} · ${shortTitle}`
+                              : shortTitle}
+                          </option>
+                        );
+                      })}
+                    </optgroup>
+                  )}
                 </select>
 
                 <span className="material-icons" aria-hidden="true">
                   keyboard_arrow_down
                 </span>
               </div>
-              {editErrors.depositAccount && (
+
+              {(editErrors.depositAccount || editErrors.savingGoal) && (
                 <span className={styles.errorMessage}>
-                  {editErrors.depositAccount}
+                  {editErrors.depositAccount || editErrors.savingGoal}
                 </span>
               )}
             </section>

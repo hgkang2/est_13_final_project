@@ -9,8 +9,11 @@ import {
   createTransaction,
   createFocusGoalDeposit,
   fetchTransactionRollbackSnapshot,
+  fetchTransactionGoalLink,
   deleteTransaction,
+  deleteFocusGoalTransaction,
   updateTransaction,
+  updateFocusGoalTransaction,
   refreshSpendingAnalysisIfNeeded,
 } from "../services/transactionService";
 import {
@@ -416,14 +419,69 @@ export const useTransactionActions = ({
     };
 
     // 4. 거래 수정
-    const { data: updatedTransaction, error: updateError } =
-      await updateTransaction(
+    // 기존 거래 또는 수정 결과가 집중목표와 연결되면 RPC로 원자 처리
+    const isFocusGoalRelatedUpdate =
+      Boolean(selectedTransaction.savingGoalId) ||
+      Boolean(updatedForm.savingGoal);
+
+    let updatedTransaction = null;
+    let updateError = null;
+
+    if (isFocusGoalRelatedUpdate) {
+      const focusUpdateResult = await updateFocusGoalTransaction(supabase, {
+        transactionId: selectedTransaction.id,
+        transactionType: updatedForm.type,
+        amount: Number(updatedForm.amount),
+
+        categoryId: updatedForm.category,
+
+        paymentMethodId:
+          updatedForm.type === "transfer" ? null : updatedForm.paymentMethod,
+
+        withdrawAccountId:
+          updatedForm.type === "transfer" ? updatedForm.withdrawAccount : null,
+
+        depositAccountId:
+          updatedForm.type === "transfer" && !updatedForm.savingGoal
+            ? updatedForm.depositAccount
+            : null,
+
+        savingGoalId:
+          updatedForm.type === "transfer"
+            ? updatedForm.savingGoal || null
+            : null,
+
+        transactionAt: transactionDate.toISOString(),
+
+        content: updatedForm.content.trim() || null,
+        memo: updatedForm.memo.trim() || null,
+
+        isRecurring:
+          updatedForm.type === "transfer" && !updatedForm.savingGoal
+            ? Boolean(updatedForm.isRecurring)
+            : false,
+
+        recurringDay:
+          updatedForm.type === "transfer" &&
+          !updatedForm.savingGoal &&
+          updatedForm.isRecurring
+            ? Number(updatedForm.recurringDay)
+            : null,
+      });
+
+      updatedTransaction = focusUpdateResult.data;
+      updateError = focusUpdateResult.error;
+    } else {
+      const regularUpdateResult = await updateTransaction(
         supabase,
         selectedTransaction.id,
         user.id,
         updateData,
       );
 
+      updatedTransaction = regularUpdateResult.data;
+      updateError = regularUpdateResult.error;
+    }
     // 5. 수정 실패
     if (updateError) {
       console.error("소비 기록 수정 실패:", updateError);
@@ -650,12 +708,25 @@ export const useTransactionActions = ({
     }
 
     // 3. 거래 삭제
-    // transaction_attachments는 ON DELETE CASCADE로 함께 삭제됨
-    const { error: deleteError } = await deleteTransaction(
-      supabase,
-      selectedTransaction.id,
-      user.id,
-    );
+    // 집중목표 거래는 history + goal 금액까지 RPC에서 함께 원자 처리
+    let deleteError = null;
+
+    if (selectedTransaction.savingGoalId) {
+      const { error: focusDeleteError } = await deleteFocusGoalTransaction(
+        supabase,
+        selectedTransaction.id,
+      );
+
+      deleteError = focusDeleteError;
+    } else {
+      const { error: regularDeleteError } = await deleteTransaction(
+        supabase,
+        selectedTransaction.id,
+        user.id,
+      );
+
+      deleteError = regularDeleteError;
+    }
 
     if (deleteError) {
       console.error("소비 기록 삭제 실패:", deleteError);
@@ -734,13 +805,41 @@ export const useTransactionActions = ({
         continue;
       }
 
-      // 3. 거래 삭제
-      // transaction_attachments는 ON DELETE CASCADE로 함께 삭제
-      const { error: deleteError } = await deleteTransaction(
-        supabase,
-        transactionId,
-        user.id,
-      );
+      // 3. 집중목표 연결 여부 확인
+      const { data: transactionGoalLink, error: goalLinkError } =
+        await fetchTransactionGoalLink(supabase, transactionId, user.id);
+
+      if (goalLinkError || !transactionGoalLink) {
+        console.error(
+          "선택 거래 집중목표 연결 정보 조회 실패:",
+          transactionId,
+          goalLinkError,
+        );
+
+        failedIds.push(transactionId);
+        continue;
+      }
+
+      // 4. 거래 삭제
+      // 집중목표 거래는 history + goal 금액까지 RPC에서 함께 원자 처리
+      let deleteError = null;
+
+      if (transactionGoalLink.saving_goal_id) {
+        const { error: focusDeleteError } = await deleteFocusGoalTransaction(
+          supabase,
+          transactionId,
+        );
+
+        deleteError = focusDeleteError;
+      } else {
+        const { error: regularDeleteError } = await deleteTransaction(
+          supabase,
+          transactionId,
+          user.id,
+        );
+
+        deleteError = regularDeleteError;
+      }
 
       if (deleteError) {
         console.error("선택 거래 삭제 실패:", transactionId, deleteError);
@@ -748,7 +847,7 @@ export const useTransactionActions = ({
         continue;
       }
 
-      // 4. DB 삭제 성공 후 Storage 파일 정리
+      // 5. DB 삭제 성공 후 Storage 파일 정리
       if (existingAttachment?.storage_path) {
         const { error: storageDeleteError } = await removeReceiptFile(
           supabase,
@@ -770,7 +869,7 @@ export const useTransactionActions = ({
       deletedIds.push(transactionId);
     }
 
-    // 5. 삭제 성공 거래 화면에서 제거
+    // 6. 삭제 성공 거래 화면에서 제거
     if (deletedIds.length > 0) {
       setTransactions(prevTransactions =>
         prevTransactions.filter(
@@ -787,7 +886,7 @@ export const useTransactionActions = ({
       await refreshMonthlySummary();
     }
 
-    // 6. 일부 또는 전체 삭제 실패 안내
+    // 7. 일부 또는 전체 삭제 실패 안내
     if (failedIds.length > 0) {
       if (deletedIds.length > 0) {
         showToast(
@@ -804,7 +903,7 @@ export const useTransactionActions = ({
       return;
     }
 
-    // 7. 전체 삭제 성공
+    // 8. 전체 삭제 성공
     setIsSelectedDeleteSuccessOpen(true);
   };
 
