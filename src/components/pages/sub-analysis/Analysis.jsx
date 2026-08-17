@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { createClient } from "@/utils/supabase/client";
 import {
   Chart as ChartJS,
@@ -20,7 +21,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import BottomTab from "@/components/layout/BottomTab";
 import SubFooter from "@/components/layout/SubFooter";
 import styles from "./Analysis.module.scss";
-// ⚠️ 실제 경로에 맞게 조정하세요 (sub-home/services/subHomeService.js 기준)
+
 import { getAiAnalysis } from "../sub-home/services/subHomeService";
 
 ChartJS.register(
@@ -46,9 +47,6 @@ const COLORS = [
   "#f97316",
   "#94a3b8",
 ];
-
-// AI 캐릭터 이미지 (단일 이미지로 통일)
-const AI_CHARACTER_SRC = "/images/character/moa analysis.png";
 
 export default function Analysis() {
   const router = useRouter();
@@ -141,7 +139,7 @@ export default function Analysis() {
     fetchAnalysisData();
   }, [supabase]);
 
-  // ── AI 분석 리포트 별도 fetch (갱신 중일 때 로딩 화면 표시) ──
+  // ── AI 분석 리포트 별도 fetch (subHomeService와 동일한 구조 연동) ──
   useEffect(() => {
     let isMounted = true;
 
@@ -149,8 +147,94 @@ export default function Analysis() {
       setIsAiLoading(true);
       setAiError(null);
       try {
-        const data = await getAiAnalysis(supabase);
+        // 1. 유저 정보를 먼저 조회하여 user.id 확보
+        const {
+          data: { user },
+          error: userError,
+        } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+          throw new Error("로그인 유저 정보를 찾을 수 없습니다.");
+        }
+
+        // 2. getAiAnalysis에 supabase와 user.id를 모두 전달
+        let data = await getAiAnalysis(supabase, user.id);
+
+        // 3. 이번 달 리포트가 아직 생성되지 않은 경우(서브홈을 거치지 않은 경우 등)
+        //    analyze-spending 함수를 직접 호출해 생성을 요청한다.
+        //    이 함수는 auth 세션에서 user를 자동으로 인식하므로 user_id는 보내지 않고,
+        //    analysisType / periodStart / periodEnd(camelCase, 문자열)를 반드시 보내야 한다.
+        //    이미 동일 기간의 완료된 리포트가 있으면 AI를 다시 호출하지 않고 재사용해서 반환한다.
+        if (!data?.analysis) {
+          const todayKST = new Date().toLocaleDateString("sv-SE", {
+            timeZone: "Asia/Seoul",
+          });
+          const periodStart = `${todayKST.slice(0, 7)}-01`;
+          const periodEnd = todayKST;
+
+          try {
+            const { data: fnData, error: fnError } =
+              await supabase.functions.invoke("analyze-spending", {
+                body: {
+                  analysisType: "monthly",
+                  periodStart,
+                  periodEnd,
+                },
+              });
+
+            if (fnError) {
+              if (fnError.context) {
+                try {
+                  const detail = await fnError.context.json();
+                  console.error(
+                    "AI 분석 리포트 생성 요청 실패 (서버 응답):",
+                    detail,
+                  );
+                } catch {
+                  const text = await fnError.context.text?.();
+                  console.error(
+                    "AI 분석 리포트 생성 요청 실패 (서버 응답 텍스트):",
+                    text,
+                  );
+                }
+              } else {
+                console.error("AI 분석 리포트 생성 요청 실패:", fnError);
+              }
+            } else if (fnData?.success && fnData?.analysis) {
+              // 함수가 바로 최신 분석 결과를 반환하므로 재조회 없이 그대로 사용
+              data = {
+                analysis: fnData.analysis,
+                recommendedMission: fnData.recommendedMission ?? null,
+              };
+            } else if (fnData?.success && fnData?.analysisAvailable === false) {
+              // 소비 데이터 자체가 없는 경우(NO_DATA) — 빈 상태로 둔다
+              data = { analysis: null, recommendedMission: null };
+            }
+          } catch (fnErr) {
+            if (fnErr?.context) {
+              try {
+                const detail = await fnErr.context.json();
+                console.error(
+                  "analyze-spending 함수 호출 오류 (서버 응답):",
+                  detail,
+                );
+              } catch {
+                const text = await fnErr.context.text?.();
+                console.error(
+                  "analyze-spending 함수 호출 오류 (서버 응답 텍스트):",
+                  text,
+                );
+              }
+            } else {
+              console.error("analyze-spending 함수 호출 오류:", fnErr);
+            }
+          }
+        }
+
         if (!isMounted) return;
+
+        // getAiAnalysis는 { analysis, recommendedMission } 형태로 반환되므로
+        // 실제 리포트 내용은 data.analysis에서 꺼내야 함
         setAiAnalysis(data?.analysis ?? null);
         setRecommendedMission(data?.recommendedMission ?? null);
       } catch (err) {
@@ -333,18 +417,35 @@ export default function Analysis() {
   const hasCurrentMonthExpense =
     currentMonthCategoryData.length > 0 && currentMonthExpense > 0;
   const hasLineData = totalExpense > 0;
-  const hasAiAnalysis = Boolean(aiAnalysis);
+  const hasSpendingData = totalExpense > 0;
 
   const comparison = aiAnalysis?.calculatedData?.comparison;
   const isOverspending =
     comparison?.available === true && comparison?.expenseChangePercent >= 10;
 
-  // updatedAt 필드가 없을 경우를 대비해 오늘 날짜를 폴백으로 생성
   const todayLabel = new Date().toLocaleDateString("ko-KR", {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
   });
+
+  const aiImageSrc = !hasSpendingData
+    ? "/images/character/ai_empty_moa.png"
+    : isOverspending
+      ? "/images/character/poor_moa.png"
+      : "/images/character/ai_moa.png";
+
+  const renderAiMessage = message => {
+    if (!message) return null;
+    const parts = message.split(/(\d+(?:\.\d+)?%)/g);
+    return parts.map((part, index) =>
+      /^\d+(?:\.\d+)?%$/.test(part) ? (
+        <strong key={index}>{part}</strong>
+      ) : (
+        part
+      ),
+    );
+  };
 
   const doughnutData = {
     labels: hasExpense ? categoryData.map(item => item.name) : ["데이터 없음"],
@@ -389,7 +490,6 @@ export default function Analysis() {
             </p>
           </div>
 
-          {/* ── AI 분석 리포트 카드 ── */}
           <section className={`${styles.card} ${styles.aiReportCard}`}>
             {isAiLoading ? (
               <div
@@ -398,9 +498,11 @@ export default function Analysis() {
                 aria-live="polite"
               >
                 <div className={styles.analyzingCharacter}>
-                  <img
-                    src={AI_CHARACTER_SRC}
+                  <Image
+                    src="/images/character/ai_moa.png"
                     alt="AI가 분석 중인 모아 캐릭터"
+                    width={100}
+                    height={100}
                   />
                 </div>
                 <p className={styles.analyzingTitle}>
@@ -417,7 +519,7 @@ export default function Analysis() {
               <div className={styles.emptyAiReport}>
                 <p>{aiError}</p>
               </div>
-            ) : !hasAiAnalysis ? (
+            ) : !aiAnalysis ? (
               <div className={styles.emptyAiReport}>
                 <div className={styles.emptyIconBox}>
                   <span className="material-icons">assignment_add</span>
@@ -453,13 +555,12 @@ export default function Analysis() {
                 <div className={styles.aiReportBody}>
                   <div className={styles.characterArea}>
                     <div className={styles.characterBox}>
-                      <img
-                        src={AI_CHARACTER_SRC}
+                      <Image
+                        src={aiImageSrc}
                         alt="AI 소비 분석 결과를 설명하는 모아 캐릭터"
+                        width={247}
+                        height={247}
                         className={styles.characterImage}
-                        onError={e => {
-                          e.currentTarget.style.display = "none";
-                        }}
                       />
                     </div>
                   </div>
@@ -470,7 +571,11 @@ export default function Analysis() {
                         <span className="material-icons">analytics</span>
                         <h4>분석</h4>
                       </div>
-                      <p>{aiAnalysis.summary}</p>
+                      <p>
+                        {renderAiMessage(
+                          aiAnalysis.summary || aiAnalysis.homeSummary,
+                        )}
+                      </p>
                       {aiAnalysis.detail && (
                         <p className={styles.insightSub}>{aiAnalysis.detail}</p>
                       )}
@@ -489,21 +594,30 @@ export default function Analysis() {
                       <span className="material-icons">trending_up</span>
                       예측
                     </h5>
-                    <p>{aiAnalysis.prediction}</p>
+                    <p>
+                      {aiAnalysis.prediction ||
+                        "소비 패턴을 기반으로 한 예측 데이터가 준비 중입니다."}
+                    </p>
                   </div>
                   <div className={styles.aiReportGridItem}>
                     <h5>
                       <span className="material-icons">directions_run</span>
                       실행
                     </h5>
-                    <p>{aiAnalysis.actionSuggestion}</p>
+                    <p>
+                      {aiAnalysis.actionSuggestion ||
+                        "지출을 줄이기 위한 맞춤형 미션을 확인해 보세요."}
+                    </p>
                   </div>
                   <div className={styles.aiReportGridItem}>
                     <h5>
                       <span className="material-icons">thumb_up</span>
                       피드백
                     </h5>
-                    <p>{aiAnalysis.feedback}</p>
+                    <p>
+                      {aiAnalysis.feedback ||
+                        "꾸준한 기록이 스마트한 자산 관리의 지름길입니다!"}
+                    </p>
                   </div>
                 </div>
 

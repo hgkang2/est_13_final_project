@@ -1,8 +1,11 @@
+@use "../../../styles/mixins" as *;
+
 /* 페이지 전체 레이아웃 */
 .pageLayout {
   display: flex;
   min-height: 100vh;
-  background-color: #f8fafc;
+  background-color: var(--color-white); /* 흰색으로 통일 */
+  font-family: var(--font-family-base);
 }
 
 .contentWrapper {
@@ -10,6 +13,7 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
+  background-color: var(--color-white); /* 흰색으로 통일 */
 }
 
 .container {
@@ -29,23 +33,26 @@
   margin-bottom: 24px;
 
   .title {
-    font-size: 24px;
-    font-weight: 700;
-    color: #111827;
+    font-size: var(--heading-xs-size);
+    line-height: var(--heading-xs-line-height);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
     margin-bottom: 4px;
   }
 
   .subtitle {
-    font-size: 14px;
-    color: #6b7280;
+    @include typo-caption;
+    font-size: var(--caption-size);
+    line-height: var(--caption-line-height);
+    color: var(--color-light-gray);
   }
 }
 
 /* 카드 공통 스타일 */
 .card {
-  background-color: #ffffff;
+  background-color: var(--color-white);
   border-radius: 16px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-border-gray);
   padding: 24px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
   box-sizing: border-box;
@@ -64,9 +71,10 @@
   margin-bottom: 20px;
 
   h3 {
-    font-size: 18px;
-    font-weight: 700;
-    color: #111827;
+    font-size: var(--card-head-size);
+    line-height: var(--card-head-line-height);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text);
   }
 }
 
@@ -76,24 +84,25 @@
   gap: 8px;
 
   .aiDate {
-    font-size: 13px;
-    color: #9ca3af;
+    font-size: var(--body-s-size);
+    color: var(--color-light-gray);
   }
 }
 
 .actionBtnInline {
-  background-color: #f0fdf4;
-  color: #10b981;
-  font-size: 13px;
-  font-weight: 600;
+  background-color: var(--color-success-background);
+  color: var(--color-success-text);
+  font-size: var(--body-s-size);
+  font-weight: var(--font-weight-semibold);
   padding: 6px 14px;
   border-radius: 6px;
-  border: 1px solid #d1fae5;
+  border: 1px solid var(--color-success-dot);
   cursor: pointer;
   transition: background-color 0.2s;
 
   &:hover {
-    background-color: #d1fae5;
+    background-color: var(--color-success-dot);
+    color: var(--color-white);
   }
 }
 
@@ -114,7 +123,7 @@
     width: 100px;
     height: 100px;
     border-radius: 50%;
-    background-color: #f8fafc;
+    background-color: var(--color-dark-white);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -141,25 +150,27 @@
       margin-bottom: 6px;
 
       span {
-        color: #10b981;
-        font-size: 20px;
+        color: var(--color-success-dot);
+        font-size: var(--icon-l-size);
       }
 
       h4 {
-        font-size: 15px;
-        font-weight: 600;
-        color: #111827;
+        font-size: var(--card-label-size);
+        line-height: var(--card-label-line-height);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text);
       }
     }
 
     p {
-      font-size: 14px;
-      color: #374151;
+      font-size: var(--body-m-minus-size);
+      line-height: var(--body-m-minus-line-height);
+      color: var(--color-gray);
       line-height: 1.5;
 
       .highlightRed {
-        color: #ef4444;
-        font-weight: 600;
+        color: var(--color-danger-text);
+        font-weight: var(--font-weight-semibold);
       }
     }
   }
@@ -177,8 +188,8 @@
   .emptyIconBox {
     width: 56px;
     height: 56px;
-    background-color: #f0fdf4;
-    color: #10b981;
+    background-color: var(--color-success-background);
+    color: var(--color-success-dot);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -186,29 +197,30 @@
     margin-bottom: 12px;
 
     span {
-      font-size: 28px;
+      font-size: var(--icon-xl-size);
     }
   }
 
   h3 {
-    font-size: 18px;
-    font-weight: 700;
-    color: #111827;
+    font-size: var(--card-head-size);
+    line-height: var(--card-head-line-height);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text);
     margin-bottom: 6px;
   }
 
   p {
-    font-size: 14px;
-    color: #6b7280;
+    font-size: var(--body-m-minus-size);
+    color: var(--color-light-gray);
     margin-bottom: 16px;
   }
 }
 
 .actionBtnPrimary {
-  background-color: #10b981;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
+  background-color: var(--color-point);
+  color: var(--color-white);
+  font-size: var(--body-m-minus-size);
+  font-weight: var(--font-weight-semibold);
   padding: 10px 24px;
   border-radius: 8px;
   border: none;
@@ -216,7 +228,7 @@
   transition: background-color 0.2s;
 
   &:hover {
-    background-color: #059669;
+    background-color: var(--color-success-text);
   }
 }
 
@@ -241,8 +253,8 @@
 
   .summaryLabel {
     display: block;
-    font-size: 13px;
-    color: #6b7280;
+    font-size: var(--body-s-size);
+    color: var(--color-light-gray);
     margin-bottom: 8px;
   }
 
@@ -253,21 +265,21 @@
     margin-bottom: 6px;
 
     .summaryAmount {
-      font-size: 24px;
-      font-weight: 700;
-      color: #111827;
+      font-size: var(--heading-xs-size);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text);
     }
 
     .unit {
-      font-size: 15px;
-      font-weight: 600;
-      color: #111827;
+      font-size: var(--body-m-size);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
     }
   }
 
   .summarySubText {
-    font-size: 12px;
-    color: #9ca3af;
+    font-size: var(--body-s-size);
+    color: var(--color-light-gray);
   }
 }
 
@@ -283,12 +295,12 @@
   }
 
   .selectBox {
-    font-size: 13px;
-    color: #6b7280;
-    border: 1px solid #e5e7eb;
+    font-size: var(--body-s-size);
+    color: var(--color-light-gray);
+    border: 1px solid var(--color-border-gray);
     padding: 4px 10px;
     border-radius: 6px;
-    background-color: #fff;
+    background-color: var(--color-white);
   }
 }
 
@@ -315,14 +327,14 @@
     pointer-events: none;
 
     span {
-      font-size: 12px;
-      color: #9ca3af;
+      font-size: var(--body-s-size);
+      color: var(--color-light-gray);
     }
 
     strong {
-      font-size: 16px;
-      font-weight: 700;
-      color: #111827;
+      font-size: var(--body-m-size);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text);
     }
   }
 }
@@ -337,24 +349,24 @@
   text-align: center;
 
   .emptyChartIcon {
-    color: #10b981;
+    color: var(--color-point);
     margin-bottom: 12px;
 
     span {
-      font-size: 36px;
+      font-size: var(--icon-xl-size);
     }
   }
 
   .emptyTitle {
-    font-size: 15px;
-    font-weight: 600;
-    color: #111827;
+    font-size: var(--card-label-size);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text);
     margin-bottom: 4px;
   }
 
   .emptyDesc {
-    font-size: 13px;
-    color: #9ca3af;
+    font-size: var(--body-s-size);
+    color: var(--color-light-gray);
   }
 }
 
@@ -371,7 +383,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 14px;
+    font-size: var(--body-m-minus-size);
 
     .legendLeft {
       display: flex;
@@ -385,27 +397,27 @@
       }
 
       .legendName {
-        color: #374151;
-        font-weight: 500;
+        color: var(--color-gray);
+        font-weight: var(--font-weight-medium);
       }
 
       .legendPercent {
-        color: #9ca3af;
-        font-size: 13px;
+        color: var(--color-light-gray);
+        font-size: var(--body-s-size);
       }
     }
 
     .price {
-      font-weight: 600;
-      color: #111827;
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
     }
   }
 }
 
 /* 랭킹 섹션 */
 .rankingDate {
-  font-size: 13px;
-  color: #9ca3af;
+  font-size: var(--body-s-size);
+  color: var(--color-light-gray);
 }
 
 .rankingList {
@@ -423,39 +435,39 @@
       width: 24px;
       height: 24px;
       border-radius: 50%;
-      background-color: #f3f4f6;
-      color: #4b5563;
-      font-size: 12px;
-      font-weight: 700;
+      background-color: var(--color-dark-white);
+      color: var(--color-gray);
+      font-size: var(--body-s-size);
+      font-weight: var(--font-weight-bold);
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
 
       &.r1 {
-        background-color: #fef3c7;
-        color: #d97706;
+        background-color: var(--color-warning-background);
+        color: var(--color-warning-text);
       }
     }
 
     .rankCategory {
       width: 80px;
-      font-size: 14px;
-      font-weight: 500;
-      color: #374151;
+      font-size: var(--body-m-minus-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-gray);
       flex-shrink: 0;
     }
 
     .progressBarWrapper {
       flex: 1;
       height: 8px;
-      background-color: #f3f4f6;
+      background-color: var(--color-dark-white);
       border-radius: 4px;
       overflow: hidden;
 
       .progressBar {
         height: 100%;
-        background-color: #10b981;
+        background-color: var(--color-point);
         border-radius: 4px;
       }
     }
@@ -463,17 +475,17 @@
     .rankPercent {
       width: 40px;
       text-align: right;
-      font-size: 13px;
-      font-weight: 600;
-      color: #10b981;
+      font-size: var(--body-s-size);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-point);
       flex-shrink: 0;
     }
 
     .rankAmount {
       width: 100px;
       text-align: right;
-      font-size: 13px;
-      color: #6b7280;
+      font-size: var(--body-s-size);
+      color: var(--color-light-gray);
       flex-shrink: 0;
     }
   }
@@ -482,19 +494,20 @@
 .moreBtn {
   width: 100%;
   padding: 10px;
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background-color: var(--color-dark-white);
+  border: 1px solid var(--color-border-gray);
   border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #4b5563;
+  font-size: var(--body-s-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray);
   cursor: pointer;
   transition: background-color 0.2s;
 
   &:hover {
-    background-color: #f3f4f6;
+    background-color: var(--color-border-gray);
   }
 }
+
 /* ==========================
    AI 분석 리포트 - 분석중 로딩 화면
    ========================== */
@@ -520,15 +533,15 @@
   }
 
   .analyzingTitle {
-    font-size: 16px;
-    font-weight: 700;
-    color: #111827;
+    font-size: var(--card-head-size);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
     margin-bottom: 4px;
   }
 
   .analyzingDesc {
-    font-size: 13px;
-    color: #9ca3af;
+    font-size: var(--body-s-size);
+    color: var(--color-light-gray);
     margin-bottom: 16px;
   }
 
@@ -536,7 +549,7 @@
     width: 180px;
     height: 6px;
     border-radius: 999px;
-    background-color: #f3f4f6;
+    background-color: var(--color-dark-white);
     overflow: hidden;
   }
 
@@ -544,7 +557,7 @@
     width: 40%;
     height: 100%;
     border-radius: inherit;
-    background-color: #10b981;
+    background-color: var(--color-point);
     animation: aiLoadingBar 1.2s ease-in-out infinite;
   }
 }
@@ -573,8 +586,8 @@
    ========================== */
 .insightSub {
   margin-top: 6px;
-  font-size: 13px;
-  color: #9ca3af;
+  font-size: var(--body-s-size);
+  color: var(--color-light-gray);
   line-height: 1.5;
 }
 
@@ -589,7 +602,7 @@
   }
 
   .aiReportGridItem {
-    background-color: #f8fafc;
+    background-color: var(--color-dark-white);
     border-radius: 12px;
     padding: 14px 16px;
 
@@ -597,20 +610,20 @@
       display: flex;
       align-items: center;
       gap: 4px;
-      font-size: 13px;
-      font-weight: 700;
-      color: #111827;
+      font-size: var(--body-s-size);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text);
       margin-bottom: 6px;
 
       span {
-        font-size: 16px;
-        color: #10b981;
+        font-size: var(--body-m-minus-size);
+        color: var(--color-point);
       }
     }
 
     p {
-      font-size: 13px;
-      color: #4b5563;
+      font-size: var(--body-s-size);
+      color: var(--color-gray);
       line-height: 1.5;
     }
   }
@@ -622,19 +635,19 @@
   gap: 8px;
   margin-top: 16px;
   padding: 12px 16px;
-  background-color: #fffbeb;
-  border: 1px solid #fde68a;
+  background-color: var(--color-warning-background);
+  border: 1px solid var(--color-warning-dot);
   border-radius: 10px;
 
   span {
-    color: #d97706;
-    font-size: 18px;
+    color: var(--color-warning-dot);
+    font-size: var(--icon-l-size);
     flex-shrink: 0;
   }
 
   p {
-    font-size: 13px;
-    color: #92400e;
+    font-size: var(--body-s-size);
+    color: var(--color-warning-text);
     line-height: 1.4;
   }
 }
