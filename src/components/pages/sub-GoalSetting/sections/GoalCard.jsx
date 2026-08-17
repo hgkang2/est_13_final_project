@@ -130,7 +130,7 @@ function formatGoalDate(dateValue) {
   return String(dateValue).replace(/-/g, ".");
 }
 
-export default function GoalCard({ goal, onEdit, onDelete }) {
+export default function GoalCard({ goal, focusRank, onEdit, onDelete }) {
   const goalCardPointerStartX = useRef(0);
   const goalCardRef = useRef(null);
 
@@ -214,7 +214,13 @@ export default function GoalCard({ goal, onEdit, onDelete }) {
       ref={goalCardRef}
       className={`${styles.goalSettingGoalCard} ${
         goalCardIsExpanded ? styles.goalSettingGoalCardExpanded : ""
-      } ${goalCardIsSwiped ? styles.goalSettingGoalCardSwiped : ""}`}
+      } ${goalCardIsSwiped ? styles.goalSettingGoalCardSwiped : ""} ${
+        focusRank === 1
+          ? styles.goalSettingFirstFocusCard
+          : focusRank === 2
+            ? styles.goalSettingSecondFocusCard
+            : ""
+      }`}
       onPointerDown={handleGoalCardPointerDown}
       onPointerUp={handleGoalCardPointerUp}
     >
