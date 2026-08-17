@@ -131,10 +131,18 @@ export async function getPreviousMonthlySpendingDaily(supabase) {
 
   const previousMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
 
+  const previousMonthLastDay = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    0,
+  ).getDate();
+
+  const previousEquivalentDay = Math.min(now.getDate(), previousMonthLastDay);
+
   const previousMonthEnd = new Date(
     now.getFullYear(),
     now.getMonth() - 1,
-    now.getDate() + 1,
+    previousEquivalentDay + 1,
   );
 
   const { data, error } = await supabase.rpc("get_monthly_expense_daily", {
@@ -158,10 +166,18 @@ export async function getSpendingComparison(supabase) {
 
   const previousStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
 
+  const previousMonthLastDay = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    0,
+  ).getDate();
+
+  const previousEquivalentDay = Math.min(now.getDate(), previousMonthLastDay);
+
   const previousEnd = new Date(
     now.getFullYear(),
     now.getMonth() - 1,
-    now.getDate() + 1,
+    previousEquivalentDay + 1,
   );
 
   const { data, error } = await supabase.rpc("get_monthly_expense_comparison", {
@@ -199,6 +215,7 @@ export async function getAiAnalysis(supabase, userId) {
       action_suggestion,
       feedback,
       mission_message,
+      calculated_data,
 
       recommended_mission:mission_templates (
         id,
@@ -245,6 +262,7 @@ export async function getAiAnalysis(supabase, userId) {
       prediction: data.prediction ?? "",
       actionSuggestion: data.action_suggestion ?? "",
       feedback: data.feedback ?? "",
+      calculatedData: data.calculated_data ?? null,
       mission: data.recommended_mission
         ? {
             templateCode: data.recommended_mission.code,
