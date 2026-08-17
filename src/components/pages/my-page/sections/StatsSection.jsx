@@ -5,7 +5,9 @@ export default function StatsSection({
   monthlyExpense,
   monthlyAiAnalysisCount,
   averageGoalRate,
+  monthlySavingRank = null,
 }) {
+  const hasSavingRank = monthlySavingRank > 0;
   const stats = [
     {
       label: "이번 달 총 지출",
@@ -24,8 +26,9 @@ export default function StatsSection({
     },
     {
       label: "이번 달 절약 랭킹",
-      value: "0위",
-      image: "/images/mypage/04-achievement.png",
+      value: hasSavingRank ? `${monthlySavingRank}위` : "서비스를 준비중이에요!",
+      image: hasSavingRank ? "/images/mypage/04-achievement.png" : null,
+      isPending: !hasSavingRank,
     },
   ];
 
@@ -35,10 +38,18 @@ export default function StatsSection({
         <div className={styles.statCard} key={stat.label}>
           <div className={styles.statText}>
             <p className="body-m-plus">{stat.label}</p>
-            <strong className="heading-s">{stat.value}</strong>
+            <strong
+              className={`heading-s ${
+                stat.isPending ? styles.rankingPending : ""
+              }`}
+            >
+              {stat.value}
+            </strong>
           </div>
 
-          <Image src={stat.image} alt="" width={140} height={140} />
+          {stat.image && (
+            <Image src={stat.image} alt="" width={140} height={140} />
+          )}
         </div>
       ))}
     </div>
