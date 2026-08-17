@@ -20,7 +20,7 @@ function getGoalTargetTime(targetDate) {
   return parsedDate.getTime();
 }
 
-export default function GoalList({ goals, onEdit, onDelete }) {
+export default function GoalList({ goals, focusGoals = [], onEdit, onDelete }) {
   const [goalListIsMobile, setGoalListIsMobile] = useState(false);
 
   const [goalListVisibleCount, setGoalListVisibleCount] = useState(6);
@@ -90,6 +90,9 @@ export default function GoalList({ goals, onEdit, onDelete }) {
           <GoalCard
             key={goal.id}
             goal={goal}
+            focusRank={
+              focusGoals.findIndex((focusGoal) => focusGoal.id === goal.id) + 1
+            }
             onEdit={onEdit}
             onDelete={onDelete}
           />

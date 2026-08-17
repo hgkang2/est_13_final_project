@@ -3,8 +3,15 @@ import styles from "../GoalSetting.module.scss";
 
 const PAGE_SIZE = 4;
 
-export default function FocusGoalModal({ goals, onClose, onComplete }) {
-  const [selectedGoals, setSelectedGoals] = useState([]);
+export default function FocusGoalModal({
+  goals,
+  initialSelectedGoals,
+  onClose,
+  onComplete,
+}) {
+  const [selectedGoals, setSelectedGoals] = useState(
+    initialSelectedGoals ?? [],
+  );
   const [page, setPage] = useState(1);
 
   const totalPages = Math.ceil(goals.length / PAGE_SIZE);
@@ -80,18 +87,27 @@ export default function FocusGoalModal({ goals, onClose, onComplete }) {
 
         <div className={styles.goalList}>
           {visibleGoals.map((goal) => {
-            const isSelected = selectedGoals.some(
+            const selectedIndex = selectedGoals.findIndex(
               (item) => item.id === goal.id,
             );
+            const isSelected = selectedIndex !== -1;
 
             return (
               <label className={styles.goalCard} key={goal.id}>
-                <input
-                  className={styles.checkbox}
-                  type="checkbox"
-                  checked={isSelected}
-                  onChange={() => toggleGoal(goal)}
-                />
+                <span className={styles.checkboxField}>
+                  <input
+                    className={styles.checkbox}
+                    type="checkbox"
+                    checked={isSelected}
+                    onChange={() => toggleGoal(goal)}
+                  />
+                  <span
+                    className={`${styles.checkboxIcon} material-icons`}
+                    aria-hidden="true"
+                  >
+                    check_small
+                  </span>
+                </span>
                 <span>{goal.title}</span>
               </label>
             );
@@ -100,17 +116,44 @@ export default function FocusGoalModal({ goals, onClose, onComplete }) {
 
         {totalPages > 1 && (
           <nav className={styles.pagination} aria-label="목표 목록 페이지">
+            <button
+              type="button"
+              className={styles.pageArrow}
+              onClick={() => setPage(page - 1)}
+              disabled={page === 1}
+              aria-label="이전 페이지"
+            >
+              <span className="material-icons" aria-hidden="true">
+                chevron_left
+              </span>
+            </button>
+
             {Array.from({ length: totalPages }, (_, index) => index + 1).map(
               (pageNumber) => (
                 <button
                   type="button"
                   key={pageNumber}
+                  className={`${styles.pageDot} ${
+                    page === pageNumber ? styles.activePage : ""
+                  }`}
                   onClick={() => setPage(pageNumber)}
-                >
-                  {pageNumber}
-                </button>
+                  aria-label={`${pageNumber}페이지`}
+                  aria-current={page === pageNumber ? "page" : undefined}
+                />
               ),
             )}
+
+            <button
+              type="button"
+              className={styles.pageArrow}
+              onClick={() => setPage(page + 1)}
+              disabled={page === totalPages}
+              aria-label="다음 페이지"
+            >
+              <span className="material-icons" aria-hidden="true">
+                chevron_right
+              </span>
+            </button>
           </nav>
         )}
       </section>
