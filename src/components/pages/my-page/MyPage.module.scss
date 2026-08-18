@@ -12,6 +12,9 @@
 
 .pageLayout {
   display: flex;
+  width: 100%; /*추가*/
+  max-width: 1920px; /*추가*/
+  margin: 0 auto; /*추가*/
 }
 
 .pageContent {
