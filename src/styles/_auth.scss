@@ -25,9 +25,7 @@ main {
 .auth-container {
     display: flex;
     width: 100%;
-    height: 100%;
     max-width: 1840px;
-    margin: 0 auto;
     padding: 0;
 
   overflow: hidden;
@@ -55,7 +53,7 @@ main {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 .intro h1 {
   font-size: 38px;
@@ -323,6 +321,21 @@ main {
   color: var(--color-white);
   font-weight: 700;
   cursor: pointer;
+}
+@media (max-width: 1200px) {
+  .image-section {
+    display: none;
+  }
+
+  .form-section {
+    width: 100%;
+    max-width: 500px;
+    padding: 0 24px;
+  }
+
+  .auth-container {
+    justify-content: center;
+  }
 }
 
 /*Tablet*/
