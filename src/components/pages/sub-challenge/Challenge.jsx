@@ -190,6 +190,50 @@ export default function Challenge() {
       const todayStr = getKstTodayString();
 
       if (user) {
+        // AI 분석 리포트에서 추천 미션 조회 (analysis_reports의 최신 리포트 기준)
+        const { data: latestReport, error: reportError } = await supabase
+          .from("analysis_reports")
+          .select("recommended_mission_template_id")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (reportError) {
+          console.error("AI 추천 미션 리포트 조회 실패:", reportError.message);
+        } else if (latestReport?.recommended_mission_template_id) {
+          const recommendedTemplate = allTemplates.find(
+            t => t.id === latestReport.recommended_mission_template_id,
+          );
+
+          if (recommendedTemplate) {
+            // AI가 추천한 카테고리 내의 다른 미션 후보들을 모아
+            // 오늘 날짜 + 사용자 id를 시드로 하나를 결정론적으로 선택
+            // (같은 날에는 새로고침해도 동일 미션 유지, 날짜가 바뀌면 다른 미션으로 갱신)
+            const sameCategoryTemplates = allTemplates.filter(
+              t => t.category_code === recommendedTemplate.category_code,
+            );
+
+            const candidates =
+              sameCategoryTemplates.length > 0
+                ? sameCategoryTemplates
+                : [recommendedTemplate];
+
+            const seedStr = `${todayStr}-${user.id}`;
+            let seedHash = 0;
+            for (let i = 0; i < seedStr.length; i++) {
+              seedHash = (seedHash * 31 + seedStr.charCodeAt(i)) >>> 0;
+            }
+            const selectedIndex = seedHash % candidates.length;
+            const selectedMission = candidates[selectedIndex];
+
+            setAiMission(selectedMission);
+            setMissionTemplates(
+              allTemplates.filter(t => t.id !== selectedMission.id),
+            );
+          }
+        }
+
         // 이번 주 월~일 날짜 범위 계산
         const today = new Date();
         const currentDayOfWeek = today.getDay();
@@ -249,8 +293,8 @@ export default function Challenge() {
           `,
           )
           .eq("user_id", user.id)
-          .eq("start_date", todayStr) // 오늘 날짜 조건 추가
-          .in("status", ["in_progress", "completed"]) // 완료된 미션도 포함해서 조회
+          .eq("start_date", todayStr)
+          .in("status", ["in_progress", "completed"])
           .order("created_at", { ascending: false })
           .limit(1)
           .maybeSingle();
