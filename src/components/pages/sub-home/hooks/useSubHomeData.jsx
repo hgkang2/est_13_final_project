@@ -3,8 +3,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import {
   getRecentTransactions,
-  getGoal,
-  getSavingGoal,
+  getSubHomeGoals,
   getMonthlySpending,
   getMonthlySpendingDaily,
   getPreviousMonthlySpendingDaily,
@@ -56,8 +55,7 @@ export default function useSubHomeData() {
       try {
         const [
           recentTransactionsData,
-          goalData,
-          savingGoalData,
+          subHomeGoalsData,
           monthlySpendingData,
           monthlySpendingDailyData,
           previousMonthlySpendingDailyData,
@@ -66,8 +64,7 @@ export default function useSubHomeData() {
           weeklyJournalsData,
         ] = await Promise.all([
           getRecentTransactions(supabase, user.id),
-          getGoal(supabase, user.id),
-          getSavingGoal(supabase, user.id),
+          getSubHomeGoals(supabase, user.id),
           getMonthlySpending(supabase),
           getMonthlySpendingDaily(supabase),
           getPreviousMonthlySpendingDaily(supabase),
@@ -79,8 +76,8 @@ export default function useSubHomeData() {
         if (!isMounted) return;
 
         setRecentTransactions(recentTransactionsData);
-        setGoal(goalData);
-        setSavingGoal(savingGoalData);
+        setGoal(subHomeGoalsData.goal);
+        setSavingGoal(subHomeGoalsData.savingGoal);
         setMonthlySpending(monthlySpendingData);
         setMonthlySpendingDaily(monthlySpendingDailyData);
         setPreviousMonthlySpendingDaily(previousMonthlySpendingDailyData);
@@ -89,8 +86,7 @@ export default function useSubHomeData() {
         setWeeklyJournals(weeklyJournalsData);
         setIsLoading(false);
 
-        // 현재는 서브홈 핵심 데이터 조회 후 AI 분석을 별도 호출
-        // 소비기록 연동 후 분석 갱신 시점을 소비기록 저장 시점으로 변경 예정
+        // 소비기록에서 생성된 최신 AI 분석 결과 조회
         setIsAiLoading(true);
         try {
           const aiData = await getAiAnalysis(supabase, user.id);

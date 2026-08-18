@@ -27,24 +27,65 @@ export async function getRecentTransactions(supabase, userId) {
   return data ?? [];
 }
 
-// 진행 중인 첫 번째 목표 조회
-export async function getGoal(supabase, userId) {
-  const { data, error } = await supabase
-    .from("saving_goals")
-    .select("id, title, current_amount, target_amount, start_date, end_date")
-    .eq("user_id", userId)
-    .eq("status", "in_progress")
-    .gte("end_date", new Date().toISOString().slice(0, 10))
-    .order("end_date", { ascending: true })
-    .limit(1)
-    .maybeSingle();
+// 서브홈 집중목표 조회
+export async function getSubHomeGoals(supabase, userId) {
+  const today = new Date().toLocaleDateString("sv-SE", {
+    timeZone: "Asia/Seoul",
+  });
 
-  if (error) {
-    console.error("서브홈 목표 조회 실패:", error);
-    return null;
+  const goalSelect =
+    "id, title, status, current_amount, target_amount, start_date, end_date, completed_at, focus_order";
+
+  const [
+    { data: focusGoals, error: focusGoalError },
+    { data: completedGoals, error: completedGoalError },
+  ] = await Promise.all([
+    supabase
+      .from("saving_goals")
+      .select(goalSelect)
+      .eq("user_id", userId)
+      .eq("status", "in_progress")
+      .in("focus_order", [1, 2])
+      .gte("end_date", today)
+      .order("focus_order"),
+
+    supabase
+      .from("saving_goals")
+      .select(goalSelect)
+      .eq("user_id", userId)
+      .eq("status", "completed")
+      .order("completed_at", { ascending: false })
+      .limit(2),
+  ]);
+
+  if (focusGoalError || completedGoalError) {
+    console.error(
+      "서브홈 집중목표 조회 실패:",
+      focusGoalError ?? completedGoalError,
+    );
+
+    return {
+      goal: null,
+      savingGoal: null,
+    };
   }
 
-  return data ?? null;
+  const firstFocusGoal =
+    focusGoals?.find(goal => goal.focus_order === 1) ?? null;
+
+  const secondFocusGoal =
+    focusGoals?.find(goal => goal.focus_order === 2) ?? null;
+
+  const completedGoalQueue = [...(completedGoals ?? [])];
+
+  const goal = firstFocusGoal ?? completedGoalQueue.shift() ?? null;
+
+  const savingGoal = secondFocusGoal ?? completedGoalQueue.shift() ?? null;
+
+  return {
+    goal,
+    savingGoal,
+  };
 }
 
 // 진행 중인 두 번째 저축 목표 조회
@@ -54,9 +95,9 @@ export async function getSavingGoal(supabase, userId) {
     .select("id, title, current_amount, target_amount, start_date, end_date")
     .eq("user_id", userId)
     .eq("status", "in_progress")
+    .eq("focus_order", 2)
     .gte("end_date", new Date().toISOString().slice(0, 10))
-    .order("end_date", { ascending: true })
-    .range(1, 1)
+    .limit(1)
     .maybeSingle();
 
   if (error) {
@@ -131,10 +172,18 @@ export async function getPreviousMonthlySpendingDaily(supabase) {
 
   const previousMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
 
+  const previousMonthLastDay = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    0,
+  ).getDate();
+
+  const previousEquivalentDay = Math.min(now.getDate(), previousMonthLastDay);
+
   const previousMonthEnd = new Date(
     now.getFullYear(),
     now.getMonth() - 1,
-    now.getDate() + 1,
+    previousEquivalentDay + 1,
   );
 
   const { data, error } = await supabase.rpc("get_monthly_expense_daily", {
@@ -158,10 +207,18 @@ export async function getSpendingComparison(supabase) {
 
   const previousStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
 
+  const previousMonthLastDay = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    0,
+  ).getDate();
+
+  const previousEquivalentDay = Math.min(now.getDate(), previousMonthLastDay);
+
   const previousEnd = new Date(
     now.getFullYear(),
     now.getMonth() - 1,
-    now.getDate() + 1,
+    previousEquivalentDay + 1,
   );
 
   const { data, error } = await supabase.rpc("get_monthly_expense_comparison", {
@@ -199,6 +256,7 @@ export async function getAiAnalysis(supabase, userId) {
       action_suggestion,
       feedback,
       mission_message,
+      calculated_data,
 
       recommended_mission:mission_templates (
         id,
@@ -245,6 +303,7 @@ export async function getAiAnalysis(supabase, userId) {
       prediction: data.prediction ?? "",
       actionSuggestion: data.action_suggestion ?? "",
       feedback: data.feedback ?? "",
+      calculatedData: data.calculated_data ?? null,
       mission: data.recommended_mission
         ? {
             templateCode: data.recommended_mission.code,

@@ -10,13 +10,21 @@ export default function AiEntryForm({
   categories,
   paymentMethods,
   transferAccounts,
+  focusGoals = [],
   onAiFormChange,
+  onToggleAiRecurring,
   onAiReceiptChange,
   onAiDragOver,
   onAiDrop,
   onAiTransactionSubmit,
 }) {
   const timeInputRef = useRef(null);
+  const receiptPreviewDialogRef = useRef(null);
+  const transferDestinationValue = aiTransactionForm.savingGoal
+    ? `goal:${aiTransactionForm.savingGoal}`
+    : aiTransactionForm.depositAccount
+      ? `account:${aiTransactionForm.depositAccount}`
+      : "";
 
   return (
     <form className={styles.aiEntryForm} onSubmit={onAiTransactionSubmit}>
@@ -120,15 +128,54 @@ export default function AiEntryForm({
             </div>
 
             {aiPreview && (
-              <img
-                src={aiPreview}
-                alt="업로드한 영수증 미리보기"
-                className={styles.aiReceiptPreview}
-              />
+              <button
+                type="button"
+                className={styles.aiReceiptPreviewButton}
+                onClick={() => receiptPreviewDialogRef.current?.showModal()}
+                aria-label="영수증 이미지 크게 보기"
+              >
+                <img
+                  src={aiPreview}
+                  alt="업로드한 영수증 미리보기"
+                  className={styles.aiReceiptPreview}
+                />
+              </button>
             )}
           </div>
         )}
       </section>
+
+      {aiPreview && (
+        <dialog
+          ref={receiptPreviewDialogRef}
+          className={styles.receiptPreviewDialog}
+          aria-label="영수증 이미지 확대 보기"
+          onClick={event => {
+            if (event.target === event.currentTarget) {
+              receiptPreviewDialogRef.current?.close();
+            }
+          }}
+        >
+          <div className={styles.receiptPreviewContent}>
+            <button
+              type="button"
+              className={styles.receiptPreviewClose}
+              onClick={() => receiptPreviewDialogRef.current?.close()}
+              aria-label="영수증 이미지 확대 보기 닫기"
+            >
+              <span className="material-icons" aria-hidden="true">
+                close
+              </span>
+            </button>
+
+            <img
+              src={aiPreview}
+              alt="업로드한 영수증 확대 이미지"
+              className={styles.receiptPreviewImage}
+            />
+          </div>
+        </dialog>
+      )}
 
       <div className={styles.aiFormFields}>
         <fieldset className={styles.formField}>
@@ -260,12 +307,37 @@ export default function AiEntryForm({
 
         <div className={styles.formFieldRow}>
           <label className={styles.formField}>
-            <span className={styles.aiFormLabel}>
-              카테고리
-              {aiStatus === "success" && (
-                <span className={styles.requiredMark}> *</span>
-              )}
-            </span>
+            <div className={styles.formLabelRow}>
+              <span className={styles.aiFormLabel}>
+                카테고리
+                {aiStatus === "success" && (
+                  <span className={styles.requiredMark}> *</span>
+                )}
+              </span>
+
+              {aiStatus === "success" &&
+                aiTransactionForm.type === "transfer" &&
+                !aiTransactionForm.savingGoal && (
+                  <div className={styles.recurringControl}>
+                    <span>반복</span>
+
+                    <button
+                      type="button"
+                      className={`${styles.recurringSwitch} ${
+                        aiTransactionForm.isRecurring
+                          ? styles.recurringSwitchActive
+                          : ""
+                      }`}
+                      onClick={onToggleAiRecurring}
+                      role="switch"
+                      aria-checked={aiTransactionForm.isRecurring}
+                      aria-label="AI 반복 이체 설정"
+                    >
+                      <span className={styles.recurringSwitchHandle} />
+                    </button>
+                  </div>
+                )}
+            </div>
 
             <span
               className={`${styles.selectBox} ${
@@ -307,35 +379,61 @@ export default function AiEntryForm({
               </span>
             )}
           </label>
-
           <label className={styles.formField}>
             <span className={styles.aiFormLabel}>
-              날짜
-              {aiStatus === "success" && (
+              {aiTransactionForm.isRecurring ? "반복일" : "날짜"}
+
+              {!aiTransactionForm.isRecurring && aiStatus === "success" && (
                 <span className={styles.requiredMark}> *</span>
               )}
             </span>
-            <span className={styles.dateInputBox}>
-              {aiStatus === "analyzing" ? (
-                <>
-                  <span className={styles.aiAnalyzingText}>
-                    분석 중입니다...
-                  </span>
 
-                  <span className="material-icons" aria-hidden="true">
-                    calendar_month
-                  </span>
-                </>
-              ) : (
-                <input
-                  type="date"
-                  name="date"
-                  value={aiTransactionForm.date}
+            {aiTransactionForm.isRecurring ? (
+              <span className={styles.recurringDateBox}>
+                <select
+                  name="recurringDay"
+                  value={aiTransactionForm.recurringDay}
                   onChange={onAiFormChange}
                   disabled={aiStatus !== "success"}
-                />
-              )}
-            </span>
+                >
+                  {Array.from({ length: 31 }, (_, index) => {
+                    const day = String(index + 1);
+
+                    return (
+                      <option value={day} key={day}>
+                        매월 {day}일
+                      </option>
+                    );
+                  })}
+                </select>
+
+                <span className="material-icons" aria-hidden="true">
+                  calendar_month
+                </span>
+              </span>
+            ) : (
+              <span className={styles.dateInputBox}>
+                {aiStatus === "analyzing" ? (
+                  <>
+                    <span className={styles.aiAnalyzingText}>
+                      분석 중입니다...
+                    </span>
+
+                    <span className="material-icons" aria-hidden="true">
+                      calendar_month
+                    </span>
+                  </>
+                ) : (
+                  <input
+                    type="date"
+                    name="date"
+                    value={aiTransactionForm.date}
+                    onChange={onAiFormChange}
+                    disabled={aiStatus !== "success"}
+                  />
+                )}
+              </span>
+            )}
 
             <div className={styles.aiTimePicker}>
               <input
@@ -423,7 +521,7 @@ export default function AiEntryForm({
 
             <label className={styles.formField}>
               <span className={styles.aiFormLabel}>
-                입금 계좌
+                입금 대상
                 {aiStatus === "success" && (
                   <span className={styles.requiredMark}> *</span>
                 )}
@@ -431,23 +529,44 @@ export default function AiEntryForm({
 
               <span
                 className={`${styles.selectBox} ${
-                  aiTransactionErrors.depositAccount ? styles.errorField : ""
+                  aiTransactionErrors.depositAccount ||
+                  aiTransactionErrors.savingGoal
+                    ? styles.errorField
+                    : ""
                 }`}
               >
                 <select
-                  name="depositAccount"
-                  value={aiTransactionForm.depositAccount}
+                  name="transferDestination"
+                  value={transferDestinationValue}
                   onChange={onAiFormChange}
                   disabled={aiStatus !== "success"}
-                  aria-invalid={Boolean(aiTransactionErrors.depositAccount)}
+                  aria-invalid={Boolean(
+                    aiTransactionErrors.depositAccount ||
+                    aiTransactionErrors.savingGoal,
+                  )}
                 >
-                  <option value="">입금 계좌 선택</option>
+                  <option value="">입금 대상 선택</option>
 
-                  {transferAccounts.map(account => (
-                    <option key={account.id} value={account.id}>
-                      {account.name}
-                    </option>
-                  ))}
+                  <optgroup label="계좌 이체">
+                    {transferAccounts.map(account => (
+                      <option key={account.id} value={`account:${account.id}`}>
+                        {account.name}
+                      </option>
+                    ))}
+                  </optgroup>
+
+                  {focusGoals.length > 0 && (
+                    <optgroup label="집중목표 적립">
+                      {focusGoals.map(goal => (
+                        <option key={goal.id} value={`goal:${goal.id}`}>
+                          집중목표 {goal.focus_order} ·{" "}
+                          {goal.title.length > 10
+                            ? `${goal.title.slice(0, 10)}...`
+                            : goal.title}
+                        </option>
+                      ))}
+                    </optgroup>
+                  )}
                 </select>
 
                 <span className="material-icons" aria-hidden="true">
@@ -455,9 +574,11 @@ export default function AiEntryForm({
                 </span>
               </span>
 
-              {aiTransactionErrors.depositAccount && (
+              {(aiTransactionErrors.depositAccount ||
+                aiTransactionErrors.savingGoal) && (
                 <span className={styles.errorMessage}>
-                  {aiTransactionErrors.depositAccount}
+                  {aiTransactionErrors.depositAccount ||
+                    aiTransactionErrors.savingGoal}
                 </span>
               )}
             </label>
@@ -556,15 +677,17 @@ export default function AiEntryForm({
         </label>
       </div>
 
-      <button
-        type="submit"
-        className={`${styles.aiSaveButton} ${
-          aiStatus === "success" ? styles.aiSaveButtonActive : ""
-        }`}
-        disabled={aiStatus !== "success"}
-      >
-        저장하기
-      </button>
+      <div className={styles.aiFormActions}>
+        <button
+          type="submit"
+          className={`${styles.aiSaveButton} ${
+            aiStatus === "success" ? styles.aiSaveButtonActive : ""
+          }`}
+          disabled={aiStatus !== "success"}
+        >
+          저장하기
+        </button>
+      </div>
     </form>
   );
 }

@@ -17,11 +17,7 @@ import EntryPanel from "./components/EntryPanel";
 import Modal from "@/components/common/Modal";
 import { fetchTransactionOptions } from "./services/transactionService";
 import { useReceiptAnalysis } from "./hooks/useReceiptAnalysis";
-import {
-  initialTransactionForm,
-  useTransactionForm,
-} from "./hooks/useTransactionForm";
-
+import { useTransactionForm } from "./hooks/useTransactionForm";
 import { useMultipleTransactionForm } from "./hooks/useMultipleTransactionForm";
 import { useTransactions } from "./hooks/useTransactions";
 import { useTransactionActions } from "./hooks/useTransactionActions";
@@ -33,31 +29,89 @@ export default function Transaction() {
 
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
+  const [toastAction, setToastAction] = useState(null);
+  const [scrollTargetId, setScrollTargetId] = useState(null);
 
-  const showToast = (message, type = "success") => {
+  const showToast = (message, type = "success", action = null) => {
     setToastType(type);
     setToastMessage(message);
+    setToastAction(action);
   };
 
   const {
     transactions,
     setTransactions,
+    recentTransactions,
     monthlySummary,
+    isSummaryLoading,
     refreshMonthlySummary,
+    refreshRecentTransactions,
+    refreshTransactions,
     loadMoreTransactions,
     hasMoreTransactions,
+    isTransactionsLoading,
     activeFilter,
     setActiveFilter,
+    detailFilters,
+    handleDetailFilterApply,
     dateRange,
     visibleTransactions,
     hasTransactionData,
+    isCurrentMonthRange,
     handleDateRangeChange,
+    handleMoveToDate,
+    handleMoveToCurrentMonth,
     selectedIds,
     setSelectedIds,
-    isAllSelected,
     handleToggleTransaction,
     handleToggleAll,
   } = useTransactions(supabase, showToast);
+
+  // 저장한 거래 위치로 이동
+  const focusSavedTransaction = transactionId => {
+    setScrollTargetId(transactionId);
+    setRecentlyAddedId(transactionId);
+
+    setTimeout(() => {
+      setScrollTargetId(currentId =>
+        currentId === transactionId ? null : currentId,
+      );
+
+      setRecentlyAddedId(currentId =>
+        currentId === transactionId ? null : currentId,
+      );
+    }, 1800);
+  };
+
+  // 저장 후 현재 목록에서 확인 가능한지에 따라 안내
+  const handleSavedTransaction = (
+    transaction,
+    refreshedTransactions,
+    successMessage,
+  ) => {
+    const isLoaded = (refreshedTransactions ?? []).some(
+      item => item.id === transaction.id,
+    );
+
+    // 현재 로드된 목록 안에 있으면 실제 위치로 바로 이동
+    if (isLoaded) {
+      focusSavedTransaction(transaction.id);
+      return;
+    }
+
+    const [, month, day] = transaction.dateValue.split("-");
+
+    // 현재 목록에서 바로 볼 수 없으면 해당 날짜 보기 제공
+    showToast(successMessage, "success", {
+      label: `${Number(month)}월 ${Number(day)}일 기록 보기`,
+      onClick: () => {
+        focusSavedTransaction(transaction.id);
+        handleMoveToDate(transaction.dateValue);
+
+        showToast(`${Number(month)}월 ${Number(day)}일 기록을 보고 있어요.`);
+      },
+    });
+  };
 
   const [panelView, setPanelView] = useState("entry");
   // "entry" | "recent" | "detail" | "edit" | "closed"
@@ -75,8 +129,12 @@ export default function Transaction() {
   const [categories, setCategories] = useState([]);
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [transferAccounts, setTransferAccounts] = useState([]);
+  const [focusGoals, setFocusGoals] = useState([]);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [isDeleteSuccessOpen, setIsDeleteSuccessOpen] = useState(false);
+  const [selectedDeleteIds, setSelectedDeleteIds] = useState([]);
+  const [isSelectedDeleteSuccessOpen, setIsSelectedDeleteSuccessOpen] =
+    useState(false);
 
   // 1. 단건 + AI 폼 상태
   const {
@@ -87,6 +145,7 @@ export default function Transaction() {
     handleResetTransactionForm,
     onTransactionFormChange,
     onToggleRecurring,
+    onToggleAiRecurring,
 
     aiTransactionForm,
     setAiTransactionForm,
@@ -100,6 +159,7 @@ export default function Transaction() {
   const {
     multipleRows,
     resetMultipleRows,
+    removeMultipleRows,
     isValidMultipleRow,
     multipleRowStatus,
     onMultipleRowChange,
@@ -128,6 +188,19 @@ export default function Transaction() {
     setAiTransactionErrors,
   });
 
+  // 집중목표 선택지 다시 조회
+  const refreshFocusGoals = async userId => {
+    const [, , , { data: focusGoalData, error: focusGoalError }] =
+      await fetchTransactionOptions(supabase, userId);
+
+    if (focusGoalError) {
+      console.error("집중목표 새로고침 실패:", focusGoalError);
+      return;
+    }
+
+    setFocusGoals(focusGoalData ?? []);
+  };
+
   // 4. 실제 거래 저장 action
   const {
     onTransactionSubmit,
@@ -136,6 +209,7 @@ export default function Transaction() {
     handleUpdateTransaction,
     handleOpenDetail,
     handleDeleteTransaction,
+    handleDeleteSelectedTransactions,
   } = useTransactionActions({
     supabase,
 
@@ -146,6 +220,7 @@ export default function Transaction() {
     multipleRows,
     isValidMultipleRow,
     resetMultipleRows,
+    removeMultipleRows,
     setIsMultipleConfirmOpen,
 
     aiStatus,
@@ -164,20 +239,37 @@ export default function Transaction() {
     setSelectedIds,
     setIsDeleteConfirmOpen,
     setIsDeleteSuccessOpen,
+    setIsSelectedDeleteSuccessOpen,
 
     setTransactions,
+    refreshTransactions,
+    refreshRecentTransactions,
     refreshMonthlySummary,
+    refreshFocusGoals,
     setRecentlyAddedId,
     showToast,
+    onTransactionSaved: handleSavedTransaction,
   });
 
   useEffect(() => {
     const loadTransactionOptions = async () => {
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError || !user) {
+        console.error("사용자 확인 실패:", userError);
+        showToast("로그인 정보를 확인할 수 없어요.", "error");
+        return;
+      }
+
       const [
         { data: categoryData, error: categoryError },
         { data: paymentMethodData, error: paymentMethodError },
         { data: transferAccountData, error: transferAccountError },
-      ] = await fetchTransactionOptions(supabase);
+        { data: focusGoalData, error: focusGoalError },
+      ] = await fetchTransactionOptions(supabase, user.id);
 
       if (categoryError) {
         console.error("카테고리 조회 실패:", categoryError);
@@ -197,9 +289,16 @@ export default function Transaction() {
         return;
       }
 
+      if (focusGoalError) {
+        console.error("집중목표 조회 실패:", focusGoalError);
+        showToast("집중목표를 불러오지 못했어요.", "error");
+        return;
+      }
+
       setCategories(categoryData ?? []);
       setPaymentMethods(paymentMethodData ?? []);
       setTransferAccounts(transferAccountData ?? []);
+      setFocusGoals(focusGoalData ?? []);
     };
 
     loadTransactionOptions();
@@ -208,12 +307,16 @@ export default function Transaction() {
   useEffect(() => {
     if (!toastMessage) return;
 
-    const timer = setTimeout(() => {
-      setToastMessage("");
-    }, 2000);
+    const timer = setTimeout(
+      () => {
+        setToastMessage("");
+        setToastAction(null);
+      },
+      toastAction ? 5000 : 2000,
+    );
 
     return () => clearTimeout(timer);
-  }, [toastMessage]);
+  }, [toastMessage, toastAction]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 1024px)");
@@ -293,12 +396,6 @@ export default function Transaction() {
     balanceChange: 0,
   };
 
-  const recentTransactions = transactions.slice(0, 6);
-
-  const onContinueEntry = () => {
-    setTransactionForm(initialTransactionForm);
-  };
-
   const onCancelMultipleEntry = () => {
     setEntryMode("single");
   };
@@ -321,7 +418,11 @@ export default function Transaction() {
 
         <main className={styles.main}>
           <div className={styles.workspace}>
-            <div className={`${styles.content} container`}>
+            <div
+              className={`${styles.content} container ${
+                panelView === "closed" ? styles.contentCentered : ""
+              }`}
+            >
               <header className={styles.pageHeader}>
                 <h1 className={styles.pageTitle}>소비 기록</h1>
 
@@ -331,6 +432,7 @@ export default function Transaction() {
               </header>
 
               <SummaryCards
+                isLoading={isSummaryLoading}
                 hasTransactionData={hasTransactionData}
                 summaryData={summaryData}
               />
@@ -340,19 +442,32 @@ export default function Transaction() {
                   onFilterChange={setActiveFilter}
                   dateRange={dateRange}
                   onDateRangeChange={handleDateRangeChange}
+                  isCurrentMonthRange={isCurrentMonthRange}
+                  onMoveToCurrentMonth={handleMoveToCurrentMonth}
+                  categories={categories}
+                  paymentMethods={paymentMethods}
+                  detailFilters={detailFilters}
+                  onDetailFilterApply={handleDetailFilterApply}
                 />
                 <TransactionList
+                  isLoading={isTransactionsLoading}
                   hasTransactionData={hasTransactionData}
                   visibleTransactions={visibleTransactions}
                   recentlyAddedId={recentlyAddedId}
+                  scrollTargetId={scrollTargetId}
                   selectedIds={selectedIds}
-                  isAllSelected={isAllSelected}
                   onToggleAll={handleToggleAll}
                   onToggleTransaction={handleToggleTransaction}
                   onClearSelection={() => setSelectedIds([])}
+                  onDeleteSelected={setSelectedDeleteIds}
                   onOpenDetail={handleOpenDetail}
                   onLoadMore={loadMoreTransactions}
                   hasMoreTransactions={hasMoreTransactions}
+                  activeTransactionId={
+                    panelView === "detail" || panelView === "edit"
+                      ? selectedTransaction?.id
+                      : null
+                  }
                 />
               </section>
             </div>
@@ -362,6 +477,7 @@ export default function Transaction() {
                 categories={categories}
                 paymentMethods={paymentMethods}
                 transferAccounts={transferAccounts}
+                focusGoals={focusGoals}
                 onClose={() => {
                   setPanelView("closed");
                   setSelectedTransaction(null);
@@ -377,13 +493,14 @@ export default function Transaction() {
               <TransactionDetail
                 transaction={selectedTransaction}
                 onClose={() => {
-                  setPanelView("entry");
+                  setPanelView("closed");
                   setSelectedTransaction(null);
                 }}
                 onEdit={() => {
                   setPanelView("edit");
                 }}
                 onDelete={() => setIsDeleteConfirmOpen(true)}
+                onCopy={() => handleRecentCopy(selectedTransaction)}
               />
             )}
 
@@ -407,6 +524,7 @@ export default function Transaction() {
                   categories,
                   paymentMethods,
                   transferAccounts,
+                  focusGoals,
                 }}
                 manualEntry={{
                   transactionForm,
@@ -414,7 +532,6 @@ export default function Transaction() {
                   onTransactionFormChange,
                   onToggleRecurring,
                   onTransactionSubmit,
-                  onContinueEntry,
                   onResetTransactionForm: () => {
                     handleResetTransactionForm();
                     setCopiedRecentId(null);
@@ -436,6 +553,7 @@ export default function Transaction() {
                   aiTransactionErrors,
                   aiPreview,
                   onAiFormChange,
+                  onToggleAiRecurring,
                   onAiReceiptChange,
                   onAiDragOver,
                   onAiDrop,
@@ -487,6 +605,20 @@ export default function Transaction() {
         onCancel={() => setIsMultipleConfirmOpen(false)}
       />
       <Modal
+        isOpen={selectedDeleteIds.length > 0}
+        type="danger"
+        icon="error_outline"
+        title={`${selectedDeleteIds.length}건을 삭제하시겠습니까?`}
+        description="삭제한 내역은 복구할 수 없습니다."
+        confirmText="삭제하기"
+        cancelText="취소"
+        onCancel={() => setSelectedDeleteIds([])}
+        onConfirm={async () => {
+          await handleDeleteSelectedTransactions(selectedDeleteIds);
+          setSelectedDeleteIds([]);
+        }}
+      />
+      <Modal
         isOpen={isDeleteConfirmOpen}
         type="danger"
         icon="error_outline"
@@ -510,6 +642,15 @@ export default function Transaction() {
           setEntryMode("single");
         }}
       />
+      <Modal
+        isOpen={isSelectedDeleteSuccessOpen}
+        type="danger"
+        icon="delete_outline"
+        title="삭제되었습니다."
+        description="선택한 소비 기록이 삭제되었습니다."
+        confirmText="확인"
+        onConfirm={() => setIsSelectedDeleteSuccessOpen(false)}
+      />
 
       {toastMessage && (
         <div
@@ -527,6 +668,15 @@ export default function Transaction() {
           </span>
 
           <span>{toastMessage}</span>
+          {toastAction && (
+            <button
+              type="button"
+              className={styles.toastAction}
+              onClick={() => toastAction.onClick?.()}
+            >
+              {toastAction.label}
+            </button>
+          )}
         </div>
       )}
     </>
