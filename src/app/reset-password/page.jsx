@@ -125,7 +125,10 @@ const showToast = (message, type = "success") => {
 
         <div className="input-with-error">
   <input
+    id="password"
+    name="password"
     type="password"
+    autoComplete="new-password"
     placeholder="새 비밀번호"
     value={password}
     aria-invalid={Boolean(fieldErrors.password)}
@@ -158,7 +161,10 @@ const showToast = (message, type = "success") => {
 
         <div className="input-with-error">
   <input
+    id="confirmPassword"
+    name="confirmPassword"
     type="password"
+    autoComplete="new-password"
     placeholder="새 비밀번호 확인"
     value={confirmPassword}
     aria-invalid={Boolean(fieldErrors.confirmPassword)}

@@ -147,6 +147,7 @@ if (firstErrorKey) {
                 id="email"
                 name="email"
                 type="email"
+                autoComplete="email"
                 placeholder="이메일을 입력하세요"
                 aria-invalid={Boolean(fieldErrors.email)}
                 aria-describedby={fieldErrors.email ? "login-email-error" : undefined}
@@ -172,6 +173,7 @@ if (firstErrorKey) {
                 id="password"
                 name="password"
                 type="password"
+                autoComplete="current-password"
                 placeholder="비밀번호를 입력하세요"
                 aria-invalid={Boolean(fieldErrors.password)}
     aria-describedby={

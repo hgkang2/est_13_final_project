@@ -132,6 +132,7 @@ const showToast = (message, type = "success") => {
                 id="email"
                 name="email"
                 type="email"
+                autoComplete="email"
                 placeholder="가입한 이메일 주소를 입력하세요"
                 aria-invalid={Boolean(emailError)}
                 aria-describedby={emailError ? "email-error" : undefined}
