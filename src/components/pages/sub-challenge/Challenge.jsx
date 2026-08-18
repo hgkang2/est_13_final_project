@@ -5,6 +5,7 @@ import Image from "next/image";
 import Sidebar from "@/components/layout/Sidebar";
 import BottomTab from "@/components/layout/BottomTab";
 import SubFooter from "@/components/layout/SubFooter";
+import JournalSlider from "@/components/common/JournalSlider";
 import styles from "./Challenge.module.scss";
 import { createClient } from "@/utils/supabase/client";
 import { getWeeklyJournals } from "../sub-home/services/subHomeService";
@@ -233,8 +234,8 @@ export default function Challenge() {
           todayCompleted = newWeekStates[todayIndex];
         }
 
-        // 4. 사용자가 시작한 미션 조회
-        const { data: userMissions, error: userMissionError } = await supabase
+        // 4. 사용자가 시작한 미션 조회 (오늘 날짜에 시작된 미션은 완료 여부와 상관없이 가져옴)
+        const { data: currentMission, error: userMissionError } = await supabase
           .from("user_missions")
           .select(
             `
@@ -248,18 +249,11 @@ export default function Challenge() {
           `,
           )
           .eq("user_id", user.id)
-          .order("start_date", { ascending: false })
-          .limit(5);
-
-        let currentMission = null;
-
-        if (!userMissionError && userMissions && userMissions.length > 0) {
-          // 오늘 날짜이거나 진행 중인 미션 찾기
-          currentMission =
-            userMissions.find(
-              m => m.status === "in_progress" || m.start_date === todayStr,
-            ) || userMissions[0];
-        }
+          .eq("start_date", todayStr) // 오늘 날짜 조건 추가
+          .in("status", ["in_progress", "completed"]) // 완료된 미션도 포함해서 조회
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
 
         if (currentMission) {
           setActiveMission(currentMission);
@@ -289,6 +283,12 @@ export default function Challenge() {
               newWeekStates,
             );
           }
+        } else {
+          // 오늘 날짜에 시작된 미션이 없다면 챌린지 상태를 초기화
+          setHasChallenge(false);
+          setActiveMission(null);
+          setIsTodayCompleted(false);
+          setCanCompleteMission(false);
         }
 
         // 5. 주간 소비 일기 데이터 조회
@@ -430,7 +430,6 @@ export default function Challenge() {
 
     setIsTodayCompleted(true);
     setCanCompleteMission(false);
-    // 완료 후에도 미션 카드가 유지되도록 hasChallenge를 false로 바꾸지 않고 그대로 유지합니다.
     setHasChallenge(true);
   };
 
@@ -479,6 +478,9 @@ export default function Challenge() {
       handleCompleteMission();
     }
   };
+
+  // 저널 데이터 중 완료된 항목이 하나라도 있는지 여부 계산 (서브 홈 JournalCard 로직 반영)
+  const hasJournal = journals.some(journal => !journal.pending);
 
   return (
     <div className={styles.pageLayout}>
@@ -644,49 +646,30 @@ export default function Challenge() {
                   </div>
                 </section>
 
-                <section className={styles.card}>
-                  <div className={styles.cardHeader}>
-                    <h3>나의 소비 기록</h3>
-                    <span
-                      className={styles.moreText}
-                      style={{ cursor: "pointer" }}
+                {/* 📌 서브 홈과 동일한 JournalSlider 컴포넌트를 활용한 '나의 소비 기록' 카드 영역 */}
+                <article
+                  className={styles.card}
+                  aria-labelledby="journal-card-title"
+                >
+                  <div className={styles.journalInner}>
+                    <div
+                      className={styles.cardHeader}
+                      style={{ marginBottom: "16px" }}
                     >
-                      기록 더보기 &gt;
-                    </span>
-                  </div>
-
-                  <div className={styles.historyList}>
-                    {journals.map(journal => (
-                      <div key={journal.id} className={styles.historyItemCard}>
-                        <span className={styles.historyDate}>
-                          {journal.date}
-                        </span>
-                        <span className={styles.historyAmount}>
-                          {journal.amount}
-                        </span>
-
-                        <div
-                          className={`${styles.historyCharacterBox} ${
-                            journal.pending
-                              ? styles.historyCharacterBoxEmpty
-                              : ""
-                          }`}
+                      <h3 id="journal-card-title">나의 소비 기록</h3>
+                      {hasJournal && (
+                        <span
+                          className={styles.moreText}
+                          style={{ cursor: "pointer" }}
                         >
-                          <Image
-                            src={journal.image}
-                            alt={journal.content}
-                            width={80}
-                            height={80}
-                          />
-                        </div>
+                          기록 더보기 &gt;
+                        </span>
+                      )}
+                    </div>
 
-                        <p className={styles.historyMessage}>
-                          {journal.content}
-                        </p>
-                      </div>
-                    ))}
+                    <JournalSlider journals={journals} />
                   </div>
-                </section>
+                </article>
               </div>
             </div>
           </div>
