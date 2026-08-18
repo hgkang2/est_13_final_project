@@ -175,6 +175,17 @@
   color: var(--color-text);
 }
 
+.emailRow {
+  .accountLabel {
+    flex-shrink: 0;
+  }
+
+  .accountValue {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
 .editButton {
   width: 100%;
   padding: 12px;

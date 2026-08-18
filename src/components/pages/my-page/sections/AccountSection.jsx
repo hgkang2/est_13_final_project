@@ -18,7 +18,12 @@ export default function AccountSection({ profile, onEdit }) {
 
       <div className={styles.accountList}>
         {accountItems.map((item) => (
-          <div className={styles.accountRow} key={item.label}>
+          <div
+            className={`${styles.accountRow} ${
+              item.icon === "alternate_email" ? styles.emailRow : ""
+            }`}
+            key={item.label}
+          >
             <div className={styles.accountLabel}>
               <span className="material-icons icon-m">{item.icon}</span>
 
