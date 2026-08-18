@@ -21,11 +21,6 @@ export default function ChallengeCard({ challenge }) {
   const hasTodayMission = Boolean(activeMission);
   const isWeekCompleted = weeklyCompletedCount === 7;
 
-  const challengeTitle =
-    activeMission?.title ??
-    activeMission?.mission_template?.title ??
-    "이번 주 챌린지";
-
   const getChallengeStatusText = () => {
     if (isWeekCompleted) {
       return "7일 모두 달성!";
@@ -87,7 +82,7 @@ export default function ChallengeCard({ challenge }) {
 
         <div className={styles.challengeBody}>
           <div className={styles.challengeSummary}>
-            <h3>{challengeTitle}</h3>
+            <h3>7일 소비 챌린지</h3>
 
             {challengeStatusText && <strong>{challengeStatusText}</strong>}
           </div>
