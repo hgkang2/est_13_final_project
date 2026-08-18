@@ -175,6 +175,17 @@
   color: var(--color-text);
 }
 
+.emailRow {
+  .accountLabel {
+    flex-shrink: 0;
+  }
+
+  .accountValue {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
 .editButton {
   width: 100%;
   padding: 12px;
@@ -312,7 +323,7 @@
 
 /* 태블릿 */
 
-@include tablet {
+@media (max-width: 1200px) {
   .pageContent {
     display: block;
   }
@@ -406,7 +417,9 @@
 
   .accountValue {
     flex: 1;
+    min-width: 0;
     text-align: center;
+    overflow-wrap: anywhere;
   }
 
   .accountValue,
