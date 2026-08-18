@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/client";
 import {
   getRecentTransactions,
   getSubHomeGoals,
+  getSubHomeChallenge,
   getMonthlySpending,
   getMonthlySpendingDaily,
   getPreviousMonthlySpendingDaily,
@@ -23,6 +24,7 @@ export default function useSubHomeData() {
     useState([]);
   const [spendingComparison, setSpendingComparison] = useState(null);
   const [savingGoal, setSavingGoal] = useState(null);
+  const [challenge, setChallenge] = useState(null);
   const [aiAnalysis, setAiAnalysis] = useState(null);
   const [recommendedMission, setRecommendedMission] = useState(null);
   const [weeklyJournals, setWeeklyJournals] = useState([]);
@@ -56,6 +58,7 @@ export default function useSubHomeData() {
         const [
           recentTransactionsData,
           subHomeGoalsData,
+          challengeData,
           monthlySpendingData,
           monthlySpendingDailyData,
           previousMonthlySpendingDailyData,
@@ -65,6 +68,7 @@ export default function useSubHomeData() {
         ] = await Promise.all([
           getRecentTransactions(supabase, user.id),
           getSubHomeGoals(supabase, user.id),
+          getSubHomeChallenge(supabase, user.id),
           getMonthlySpending(supabase),
           getMonthlySpendingDaily(supabase),
           getPreviousMonthlySpendingDaily(supabase),
@@ -78,6 +82,7 @@ export default function useSubHomeData() {
         setRecentTransactions(recentTransactionsData);
         setGoal(subHomeGoalsData.goal);
         setSavingGoal(subHomeGoalsData.savingGoal);
+        setChallenge(challengeData);
         setMonthlySpending(monthlySpendingData);
         setMonthlySpendingDaily(monthlySpendingDailyData);
         setPreviousMonthlySpendingDaily(previousMonthlySpendingDailyData);
@@ -125,6 +130,7 @@ export default function useSubHomeData() {
     previousMonthlySpendingDaily,
     spendingComparison,
     savingGoal,
+    challenge,
     aiAnalysis,
     recommendedMission,
     weeklyJournals,
