@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./TransactionList.module.scss";
 import TransactionEmpty from "../TransactionEmpty";
 
@@ -9,19 +9,76 @@ function formatAmount(amount) {
 }
 
 export default function TransactionList({
+  isLoading,
   hasTransactionData,
   visibleTransactions,
   selectedIds,
-  isAllSelected,
   onToggleAll,
   onToggleTransaction,
   onClearSelection,
+  onDeleteSelected,
   onOpenDetail,
+  activeTransactionId,
   recentlyAddedId,
+  scrollTargetId,
   onLoadMore,
   hasMoreTransactions,
 }) {
-  const selectedTransactions = visibleTransactions.filter(transaction =>
+  const [expandedId, setExpandedId] = useState(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const lastScrolledIdRef = useRef(null);
+  const tableRef = useRef(null);
+  const clearSelectionRef = useRef(onClearSelection);
+
+  useEffect(() => {
+    clearSelectionRef.current = onClearSelection;
+  }, [onClearSelection]);
+
+  // 거래 목록이 모바일 레이아웃으로 전환되면 기존 선택 초기화
+  useEffect(() => {
+    const tableElement = tableRef.current;
+
+    if (!tableElement) return;
+
+    let wasMobile = tableElement.clientWidth <= 700;
+    // 이미 모바일 너비에서 시작한 경우에도 기존 선택 제거
+    if (wasMobile) {
+      clearSelectionRef.current();
+    }
+
+    const resizeObserver = new ResizeObserver(entries => {
+      const currentWidth =
+        entries[0]?.contentRect.width ?? tableElement.clientWidth;
+
+      const isMobile = currentWidth <= 700;
+
+      if (!wasMobile && isMobile) {
+        clearSelectionRef.current();
+      }
+
+      wasMobile = isMobile;
+    });
+
+    resizeObserver.observe(tableElement);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+  const INITIAL_VISIBLE_COUNT = 8;
+
+  const displayedTransactions = isExpanded
+    ? visibleTransactions
+    : visibleTransactions.slice(0, INITIAL_VISIBLE_COUNT);
+
+  const displayedIds = displayedTransactions.map(transaction => transaction.id);
+
+  const isDisplayedAllSelected =
+    displayedTransactions.length > 0 &&
+    displayedIds.every(id => selectedIds.includes(id));
+
+  const selectedTransactions = displayedTransactions.filter(transaction =>
     selectedIds.includes(transaction.id),
   );
 
@@ -38,15 +95,6 @@ export default function TransactionList({
     },
   );
 
-  const [expandedId, setExpandedId] = useState(null);
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  const INITIAL_VISIBLE_COUNT = 8;
-
-  const displayedTransactions = isExpanded
-    ? visibleTransactions
-    : visibleTransactions.slice(0, INITIAL_VISIBLE_COUNT);
-
   const handleLoadMore = async () => {
     if (hasMoreTransactions) {
       setIsExpanded(true);
@@ -54,30 +102,97 @@ export default function TransactionList({
       return;
     }
 
-    setIsExpanded(prev => !prev);
+    if (isExpanded) {
+      onClearSelection();
+      setIsExpanded(false);
+      return;
+    }
+
+    setIsExpanded(true);
   };
+
+  useEffect(() => {
+    if (!scrollTargetId) {
+      lastScrolledIdRef.current = null;
+      return;
+    }
+
+    if (lastScrolledIdRef.current === scrollTargetId) return;
+
+    const targetIndex = visibleTransactions.findIndex(
+      transaction => transaction.id === scrollTargetId,
+    );
+
+    if (targetIndex === -1) return;
+
+    // 접힌 8개보다 아래에 있으면 먼저 목록 펼치기
+    if (targetIndex >= INITIAL_VISIBLE_COUNT && !isExpanded) {
+      setIsExpanded(true);
+      return;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      const targetRow = document.querySelector(
+        `[data-transaction-id="${scrollTargetId}"]`,
+      );
+
+      if (!targetRow) return;
+
+      targetRow.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+
+      lastScrolledIdRef.current = scrollTargetId;
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [scrollTargetId, visibleTransactions, isExpanded]);
 
   const handleToggleMemo = transactionId => {
     setExpandedId(prevId => (prevId === transactionId ? null : transactionId));
   };
 
   return (
-    <div className={styles.table}>
-      {hasTransactionData ? (
+    <div ref={tableRef} className={styles.table}>
+      {isLoading ? (
+        <div
+          className={styles.transactionSkeleton}
+          aria-label="소비 기록을 불러오는 중"
+          aria-busy="true"
+        >
+          <div className={styles.skeletonHeader} />
+
+          {Array.from({ length: 8 }, (_, index) => (
+            <div className={styles.skeletonRow} key={index}>
+              <span className={styles.skeletonCheckbox} />
+              <span className={styles.skeletonDate} />
+              <span className={styles.skeletonType} />
+              <span className={styles.skeletonContent} />
+              <span className={styles.skeletonAmount} />
+              <span className={styles.skeletonPayment} />
+              <span className={styles.skeletonMemo} />
+              <span className={styles.skeletonAction} />
+            </div>
+          ))}
+        </div>
+      ) : hasTransactionData ? (
         <>
           <div className={styles.tableHeader}>
             <button
               type="button"
               className={styles.checkboxCell}
-              onClick={onToggleAll}
+              onClick={() => onToggleAll(displayedIds)}
               aria-label={
-                isAllSelected
+                isDisplayedAllSelected
                   ? "현재 거래 전체 선택 해제"
                   : "현재 거래 전체 선택"
               }
             >
               <span className="material-icons" aria-hidden="true">
-                {isAllSelected ? "check_box" : "check_box_outline_blank"}
+                {isDisplayedAllSelected
+                  ? "check_box"
+                  : "check_box_outline_blank"}
               </span>
             </button>
 
@@ -100,9 +215,16 @@ export default function TransactionList({
             <div className={styles.selectionBar}>
               <div className={styles.selectionBarInner}>
                 <div className={styles.selectionInfo}>
-                  <span className="material-icons" aria-hidden="true">
-                    check_box
-                  </span>
+                  <button
+                    type="button"
+                    className={`${styles.checkboxCell} ${styles.selectionCheckbox}`}
+                    onClick={onClearSelection}
+                    aria-label="선택 거래 전체 해제"
+                  >
+                    <span className="material-icons" aria-hidden="true">
+                      check_box
+                    </span>
+                  </button>
 
                   <span>{selectedTransactions.length}건이 선택되었습니다.</span>
                 </div>
@@ -128,7 +250,17 @@ export default function TransactionList({
                   </div>
 
                   <div className={styles.selectionActions}>
-                    <button type="button" aria-label="선택 거래 삭제">
+                    <button
+                      type="button"
+                      aria-label="선택 거래 삭제"
+                      onClick={() =>
+                        onDeleteSelected(
+                          selectedTransactions.map(
+                            transaction => transaction.id,
+                          ),
+                        )
+                      }
+                    >
                       <span
                         className="material-icons-outlined"
                         aria-hidden="true"
@@ -159,17 +291,24 @@ export default function TransactionList({
           >
             {displayedTransactions.map(transaction => {
               const isSelected = selectedIds.includes(transaction.id);
-
+              const hasMemo = Boolean(
+                transaction.memo?.trim() && transaction.memo.trim() !== "-",
+              );
               return (
                 <li
                   className={`${styles.transactionRow} ${
                     isSelected ? styles.selectedRow : ""
+                  } ${
+                    transaction.id === activeTransactionId
+                      ? styles.activeRow
+                      : ""
                   } ${
                     transaction.id === recentlyAddedId
                       ? styles.recentlyAdded
                       : ""
                   }`}
                   key={transaction.id}
+                  data-transaction-id={transaction.id}
                   onClick={() => onOpenDetail(transaction)}
                 >
                   <button
@@ -257,16 +396,24 @@ export default function TransactionList({
                       aria-hidden="true"
                       onClick={event => {
                         event.stopPropagation();
-                        handleToggleMemo(transaction.id);
+
+                        if (hasMemo) {
+                          handleToggleMemo(transaction.id);
+                          return;
+                        }
+
+                        onOpenDetail(transaction);
                       }}
                     >
-                      {expandedId === transaction.id
-                        ? "keyboard_control_key"
-                        : "keyboard_arrow_down"}
+                      {hasMemo
+                        ? expandedId === transaction.id
+                          ? "keyboard_control_key"
+                          : "keyboard_arrow_down"
+                        : "chevron_right"}
                     </span>
                   </button>
 
-                  {expandedId === transaction.id && (
+                  {hasMemo && expandedId === transaction.id && (
                     <div className={styles.mobileMemo}>
                       <strong>메모</strong>
                       <span>{transaction.memo}</span>

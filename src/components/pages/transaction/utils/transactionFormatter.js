@@ -73,12 +73,16 @@ export const formatTransaction = transaction => {
     paymentMethodId: transaction.payment_method?.id ?? "",
 
     memo: transaction.memo ?? "",
-
     withdrawAccount: transaction.withdraw_account?.name ?? null,
     withdrawAccountId: transaction.withdraw_account?.id ?? "",
 
     depositAccount: transaction.deposit_account?.name ?? null,
     depositAccountId: transaction.deposit_account?.id ?? "",
+
+    savingGoal: transaction.saving_goal?.title ?? null,
+    savingGoalId: transaction.saving_goal?.id ?? "",
+    savingGoalFocusOrder: transaction.saving_goal?.focus_order ?? null,
+    savingGoalStatus: transaction.saving_goal?.status ?? null,
 
     isRecurring: transaction.is_recurring,
     recurringDay: transaction.recurring_day,

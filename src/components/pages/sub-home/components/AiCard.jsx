@@ -6,7 +6,40 @@ export default function AiCard({
   hasSpendingData,
   aiAnalysis,
   isOverspending,
+  isLoading,
 }) {
+  if (isLoading) {
+    return (
+      <article
+        className={`${styles.aiCard} ${styles.skeletonCard}`}
+        aria-busy="true"
+        aria-label="AI 분석을 불러오는 중"
+      >
+        <div className={styles.aiContent}>
+          <div className={styles.skeletonTextGroup} aria-hidden="true">
+            <div
+              className={`${styles.skeletonBlock} ${styles.skeletonTitle}`}
+            />
+            <div
+              className={`${styles.skeletonBlock} ${styles.skeletonLineLong}`}
+            />
+            <div
+              className={`${styles.skeletonBlock} ${styles.skeletonLineMedium}`}
+            />
+            <div
+              className={`${styles.skeletonBlock} ${styles.skeletonButton}`}
+            />
+          </div>
+
+          <div
+            className={`${styles.skeletonBlock} ${styles.skeletonCharacter}`}
+            aria-hidden="true"
+          />
+        </div>
+      </article>
+    );
+  }
+
   const renderAiMessage = message => {
     if (!message) return null;
 

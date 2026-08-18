@@ -50,12 +50,229 @@ export default function SubHome() {
       <>
         <div className={styles.page}>
           <Sidebar />
+
           <main className={styles.main}>
             <div className="container">
-              <div className={styles.content}>로딩 중...</div>
+              <div
+                className={styles.content}
+                aria-busy="true"
+                aria-label="서브홈 데이터를 불러오는 중"
+              >
+                {/* 인사 + 목표 */}
+                <div className={styles.topRow}>
+                  <div className={`${styles.greeting} ${styles.skeletonCard}`}>
+                    <div
+                      className={styles.skeletonTextGroup}
+                      aria-hidden="true"
+                    >
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonTitle}`}
+                      />
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonLineMedium}`}
+                      />
+                    </div>
+                  </div>
+
+                  <div className={`${styles.goalCard} ${styles.skeletonCard}`}>
+                    <div
+                      className={styles.skeletonTextGroup}
+                      aria-hidden="true"
+                    >
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonTitle}`}
+                      />
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonLineLong}`}
+                      />
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonLineMedium}`}
+                      />
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonProgress}`}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 소비 요약 + AI */}
+                <div className={styles.summaryRow}>
+                  <div
+                    className={`${styles.spendingSummaryCard} ${styles.skeletonCard}`}
+                  >
+                    <div
+                      className={styles.skeletonTextGroup}
+                      aria-hidden="true"
+                    >
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonTitle}`}
+                      />
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonLineLong}`}
+                      />
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonLineMedium}`}
+                      />
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonChart}`}
+                      />
+                    </div>
+                  </div>
+
+                  <div className={`${styles.aiCard} ${styles.skeletonCard}`}>
+                    <div className={styles.aiContent}>
+                      <div
+                        className={styles.skeletonTextGroup}
+                        aria-hidden="true"
+                      >
+                        <div
+                          className={`${styles.skeletonBlock} ${styles.skeletonTitle}`}
+                        />
+                        <div
+                          className={`${styles.skeletonBlock} ${styles.skeletonLineLong}`}
+                        />
+                        <div
+                          className={`${styles.skeletonBlock} ${styles.skeletonLineMedium}`}
+                        />
+                        <div
+                          className={`${styles.skeletonBlock} ${styles.skeletonButton}`}
+                        />
+                      </div>
+
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonCharacter}`}
+                        aria-hidden="true"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 미션 + 최근 거래 */}
+                <div className={styles.missionRow}>
+                  <div
+                    className={`${styles.missionCard} ${styles.skeletonCard}`}
+                  >
+                    <div className={styles.missionContent}>
+                      <div
+                        className={styles.skeletonTextGroup}
+                        aria-hidden="true"
+                      >
+                        <div
+                          className={`${styles.skeletonBlock} ${styles.skeletonTitle}`}
+                        />
+                        <div
+                          className={`${styles.skeletonBlock} ${styles.skeletonLineLong}`}
+                        />
+                        <div
+                          className={`${styles.skeletonBlock} ${styles.skeletonLineMedium}`}
+                        />
+                        <div
+                          className={`${styles.skeletonBlock} ${styles.skeletonButton}`}
+                        />
+                      </div>
+
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonCharacter}`}
+                        aria-hidden="true"
+                      />
+                    </div>
+                  </div>
+
+                  <div
+                    className={`${styles.recentCard} ${styles.skeletonCard}`}
+                  >
+                    <div
+                      className={styles.skeletonTextGroup}
+                      aria-hidden="true"
+                    >
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonTitle}`}
+                      />
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonLineLong}`}
+                      />
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonLineLong}`}
+                      />
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonLineLong}`}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 저축 목표 + 챌린지 */}
+                <div className={styles.statusRow}>
+                  <div
+                    className={`${styles.savingGoalCard} ${styles.skeletonCard}`}
+                  >
+                    <div
+                      className={styles.skeletonTextGroup}
+                      aria-hidden="true"
+                    >
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonTitle}`}
+                      />
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonLineLong}`}
+                      />
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonProgress}`}
+                      />
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonLineMedium}`}
+                      />
+                    </div>
+                  </div>
+
+                  <div
+                    className={`${styles.challengeCard} ${styles.skeletonCard}`}
+                  >
+                    <div
+                      className={styles.skeletonTextGroup}
+                      aria-hidden="true"
+                    >
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonTitle}`}
+                      />
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonLineMedium}`}
+                      />
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonCalendar}`}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 그림일기 */}
+                <div className={`${styles.journalCard} ${styles.skeletonCard}`}>
+                  <div className={styles.skeletonTextGroup} aria-hidden="true">
+                    <div
+                      className={`${styles.skeletonBlock} ${styles.skeletonTitle}`}
+                    />
+
+                    <div className={styles.skeletonJournalRow}>
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonJournal}`}
+                      />
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonJournal}`}
+                      />
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonJournal}`}
+                      />
+                      <div
+                        className={`${styles.skeletonBlock} ${styles.skeletonJournal}`}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </main>
         </div>
+
         <SubFooter />
         <BottomTab />
       </>
@@ -90,6 +307,7 @@ export default function SubHome() {
                 <GreetingSection userName={userName} />
                 <GoalCard hasGoal={Boolean(goal)} goal={goal} />
               </div>
+
               <div className={styles.summaryRow}>
                 <SpendingSummaryCard
                   hasSpendingData={hasMonthlySpending}
@@ -98,6 +316,7 @@ export default function SubHome() {
                   previousMonthlySpendingDaily={previousMonthlySpendingDaily}
                   spendingComparison={spendingComparison}
                 />
+
                 <AiCard
                   hasSpendingData={hasAiAnalysis}
                   aiAnalysis={aiAnalysis}
@@ -105,30 +324,36 @@ export default function SubHome() {
                   isLoading={isAiLoading}
                 />
               </div>
+
               <div className={styles.missionRow}>
                 <MissionCard
                   hasSpendingData={hasAiAnalysis}
                   recommendedMission={recommendedMission}
                   isLoading={isAiLoading}
                 />
+
                 <RecentTransactionsCard
                   hasSpendingData={hasRecentTransactions}
                   recentTransactions={recentTransactions}
                   onMoreClick={handleMoveToTransaction}
                 />
               </div>
+
               <div className={styles.statusRow}>
                 <SavingGoalCard
                   hasSavingGoal={Boolean(savingGoal)}
                   savingGoal={savingGoal}
                 />
+
                 <ChallengeCard hasChallenge={hasChallenge} />
               </div>
+
               <JournalCard journals={weeklyJournals} />
             </div>
           </div>
         </main>
       </div>
+
       <SubFooter />
       <BottomTab />
     </>
