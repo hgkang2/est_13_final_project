@@ -6,13 +6,14 @@
   min-height: 100vh;
   background-color: var(--color-white); /* 흰색으로 통일 */
   font-family: var(--font-family-base);
+  overflow-x: hidden; /* [수정] 리사이즈/모바일에서 콘텐츠가 밀려도 가로 스크롤 방지 */
 }
 
 .contentWrapper {
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-width: 0;
+  min-width: 0; /* [수정] flex item이 콘텐츠 크기로 부모를 밀어내지 않도록 */
   background-color: var(--color-white); /* 흰색으로 통일 */
 }
 
@@ -46,12 +47,17 @@
 
 /* 카드 공통 스타일 */
 .card {
+  min-width: 0; /* [수정] 그리드/플렉스 자식이 콘텐츠(캔버스 등) 크기로 부모를 밀어내는 문제 방지 */
   background-color: var(--color-white);
   border-radius: 16px;
   border: 1px solid var(--color-border-gray);
   padding: 24px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
   box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    padding: 16px; /* [수정] 모바일에서 좁아진 컨테이너에 맞춰 패딩도 축소 */
+  }
 }
 
 /* 상단 AI 분석 리포트 카드 */
@@ -65,6 +71,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  flex-wrap: wrap; /* [수정] 좁은 화면에서 제목+버튼이 겹치지 않도록 */
+  gap: 8px;
 
   h3 {
     font-size: var(--card-head-size);
@@ -78,6 +86,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
 
   .aiDate {
     font-size: var(--body-s-size);
@@ -95,6 +104,7 @@
   border: 1px solid var(--color-success-dot);
   cursor: pointer;
   transition: background-color 0.2s;
+  white-space: nowrap;
 
   &:hover {
     background-color: var(--color-success-dot);
@@ -135,6 +145,7 @@
 
 .insightContentArea {
   flex: 1;
+  min-width: 0; /* [수정] 긴 텍스트가 flex 컨테이너를 밀어내지 않도록 */
 
   .insightTop {
     margin-bottom: 16px;
@@ -163,6 +174,7 @@
       line-height: var(--body-m-minus-line-height);
       color: var(--color-gray);
       line-height: 1.5;
+      word-break: break-word; /* [수정] 긴 AI 텍스트가 카드 밖으로 넘치지 않도록 */
 
       .highlightRed {
         color: var(--color-danger-text);
@@ -245,6 +257,10 @@
 
   .card {
     padding: 20px;
+
+    @media (max-width: 768px) {
+      padding: 16px;
+    }
   }
 
   .summaryLabel {
@@ -259,6 +275,7 @@
     align-items: baseline;
     gap: 2px;
     margin-bottom: 6px;
+    flex-wrap: wrap; /* [수정] 큰 금액이 좁은 카드에서 줄바꿈되도록 */
 
     .summaryAmount {
       font-size: var(--heading-xs-size);
@@ -290,6 +307,11 @@
     grid-template-columns: 1fr;
   }
 
+  > .card {
+    min-width: 0; /* [수정] 핵심 수정: 캔버스가 그리드 트랙 크기를 밀어내는 순환 문제 방지 */
+    overflow: hidden;
+  }
+
   .selectBox {
     font-size: var(--body-s-size);
     color: var(--color-light-gray);
@@ -302,25 +324,33 @@
 
 /* 차트 영역 */
 .lineChartArea {
+  width: 100%; /* [수정] 명시적 width로 Chart.js의 리사이즈 계산이 부모 기준으로 안정되게 */
   height: 260px;
   position: relative;
+  overflow: hidden;
 }
 
 .donutChartArea {
+  width: 100%; /* [수정] 위와 동일한 이유 */
   height: 200px;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 16px;
+  overflow: hidden;
 
   .donutCenterText {
     position: absolute;
+    top: 50%; /* [수정] flex 중앙정렬 대신 top/left/transform으로 명시 (구형 브라우저 대응) */
+    left: 50%;
+    transform: translate(-50%, -50%);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     pointer-events: none;
+    text-align: center;
 
     span {
       font-size: var(--body-s-size);
@@ -380,32 +410,41 @@
     justify-content: space-between;
     align-items: center;
     font-size: var(--body-m-minus-size);
+    gap: 8px;
 
     .legendLeft {
       display: flex;
       align-items: center;
       gap: 8px;
+      min-width: 0; /* [수정] 긴 카테고리명이 price를 밀어내지 않도록 */
 
       .dot {
         width: 10px;
         height: 10px;
         border-radius: 50%;
+        flex-shrink: 0;
       }
 
       .legendName {
         color: var(--color-gray);
         font-weight: var(--font-weight-medium);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .legendPercent {
         color: var(--color-light-gray);
         font-size: var(--body-s-size);
+        flex-shrink: 0;
       }
     }
 
     .price {
       font-weight: var(--font-weight-semibold);
       color: var(--color-text);
+      flex-shrink: 0;
+      white-space: nowrap;
     }
   }
 }
@@ -452,10 +491,14 @@
       font-weight: var(--font-weight-medium);
       color: var(--color-gray);
       flex-shrink: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .progressBarWrapper {
       flex: 1;
+      min-width: 24px; /* [수정] 고정폭 요소들에 밀려 진행바가 0에 수렴하는 것 방지 */
       height: 8px;
       background-color: var(--color-dark-white);
       border-radius: 4px;
@@ -483,6 +526,34 @@
       font-size: var(--body-s-size);
       color: var(--color-light-gray);
       flex-shrink: 0;
+    }
+
+    /* [수정] 모바일: 고정폭 3개(80+40+100=220px) 때문에 진행바가 찌그러지는 문제 대응 */
+    @media (max-width: 480px) {
+      flex-wrap: wrap;
+      row-gap: 6px;
+
+      .rankCategory {
+        width: auto;
+        order: 1;
+      }
+
+      .rankAmount {
+        width: auto;
+        order: 2;
+        margin-left: auto;
+      }
+
+      .progressBarWrapper {
+        order: 4;
+        width: 100%;
+        flex-basis: 100%;
+      }
+
+      .rankPercent {
+        width: auto;
+        order: 3;
+      }
     }
   }
 }
@@ -598,6 +669,7 @@
   }
 
   .aiReportGridItem {
+    min-width: 0; /* [수정] 긴 문장이 그리드 트랙을 밀어내지 않도록 */
     background-color: var(--color-dark-white);
     border-radius: 12px;
     padding: 14px 16px;
@@ -621,6 +693,7 @@
       font-size: var(--body-s-size);
       color: var(--color-gray);
       line-height: 1.5;
+      word-break: break-word;
     }
   }
 }
@@ -645,5 +718,6 @@
     font-size: var(--body-s-size);
     color: var(--color-warning-text);
     line-height: 1.4;
+    word-break: break-word;
   }
 }
