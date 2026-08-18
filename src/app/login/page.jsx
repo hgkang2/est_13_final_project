@@ -77,9 +77,7 @@ if (firstErrorKey) {
   });
 
   if (error) {
-    console.error(error);
-
-    setFieldErrors({
+     setFieldErrors({
       email: "",
       password: "이메일 또는 비밀번호가 올바르지 않습니다.",
   });
