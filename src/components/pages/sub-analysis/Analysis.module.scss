@@ -33,18 +33,14 @@
   margin-bottom: 24px;
 
   .title {
-    font-size: var(--heading-xs-size);
-    line-height: var(--heading-xs-line-height);
-    font-weight: var(--font-weight-bold);
+    @include typo-heading-s-plus;
     color: var(--color-text);
     margin-bottom: 4px;
   }
 
   .subtitle {
-    @include typo-caption;
-    font-size: var(--caption-size);
-    line-height: var(--caption-line-height);
-    color: var(--color-light-gray);
+    @include typo-heading-xs;
+    color: var(--color-gray);
   }
 }
 
