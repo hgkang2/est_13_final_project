@@ -203,6 +203,8 @@ export default function GoalCard({ hasGoal, goal }) {
                 alt=""
                 width={240}
                 height={200}
+                loading="eager"
+                fetchPriority="high"
               />
             </div>
 
