@@ -33,15 +33,13 @@ $mission-grid-mobile-breakpoint: 480px;
   margin-bottom: 24px;
 
   .title {
-    font-size: var(--heading-xs-size);
-    line-height: var(--heading-xs-line-height);
-    font-weight: var(--font-weight-bold);
+    @include typo-heading-s-plus;
     color: var(--color-text);
   }
 
   .subtitle {
-    @include typo-caption;
-    color: var(--color-light-gray);
+    @include typo-heading-xs;
+    color: var(--color-gray);
     margin-top: 4px;
   }
 }
