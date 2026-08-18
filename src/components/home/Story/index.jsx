@@ -147,7 +147,9 @@ export default function Story() {
   return (
     <section className={styles.story}>
       <div className={styles.inner}>
-        <div className={styles.heading}></div>
+        <div className={styles.heading}>
+          <h2 className={styles.srOnly}>모음 서비스 이용 과정</h2>
+        </div>
 
         <div className={styles.storyList}>
           {storyItems.map((item, index) => (
