@@ -94,7 +94,7 @@
   span:not(:global(.material-icons)) {
     color: var(--color-gray);
 
-    @include typo-caption;
+    @include typo-body-s-plus;
   }
 
   :global(.material-icons) {

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
@@ -18,6 +19,51 @@ export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
+  const [focusGoal, setFocusGoal] = useState(null);
+
+  useEffect(() => {
+    const loadFocusGoal = async () => {
+      const goalSupabase = createClient();
+
+      const {
+        data: { user },
+        error: userError,
+      } = await goalSupabase.auth.getUser();
+
+      if (userError || !user) {
+        setFocusGoal(null);
+        return;
+      }
+
+      const { data, error } = await goalSupabase
+        .from("saving_goals")
+        .select("id, title, current_amount, target_amount")
+        .eq("user_id", user.id)
+        .eq("status", "in_progress")
+        .eq("focus_order", 1)
+        .maybeSingle();
+
+      if (error) {
+        console.error("사이드바 집중목표 조회 실패:", error);
+        setFocusGoal(null);
+        return;
+      }
+
+      setFocusGoal(data ?? null);
+    };
+
+    loadFocusGoal();
+  }, [pathname]);
+
+  const goalPercent = focusGoal
+    ? Math.min(
+        100,
+        Math.round(
+          (Number(focusGoal.current_amount) / Number(focusGoal.target_amount)) *
+            100,
+        ),
+      )
+    : 0;
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -76,20 +122,30 @@ export default function Sidebar() {
         </ul>
       </nav>
 
-      <div className={styles.goalArea}>
-        <div className={styles.goalCard}>
-          <div>
-            <p className={styles.goalTitle}>아이패드 구매 중</p>
-            <p className={styles.goalPercent}>68% 달성</p>
-          </div>
+      {focusGoal && (
+        <div className={styles.goalArea}>
+          <div className={styles.goalCard}>
+            <div>
+              <p className={styles.goalTitle}>{focusGoal.title}</p>
+              <p className={styles.goalPercent}>{goalPercent}% 달성</p>
+            </div>
 
-          <div className={styles.goalImage} />
-
-          <div className={styles.progress}>
-            <div className={styles.progressBar} />
+            <div
+              className={styles.progress}
+              role="progressbar"
+              aria-label={`${focusGoal.title} 달성률`}
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow={goalPercent}
+            >
+              <div
+                className={styles.progressBar}
+                style={{ width: `${goalPercent}%` }}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <ul className={styles.optionList}>
         <li>

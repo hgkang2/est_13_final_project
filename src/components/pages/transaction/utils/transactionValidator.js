@@ -31,8 +31,8 @@ export const validateTransactionForm = (
       errors.withdrawAccount = "출금 계좌를 선택해주세요.";
     }
 
-    if (!form.depositAccount) {
-      errors.depositAccount = "입금 계좌를 선택해주세요.";
+    if (!form.depositAccount && !form.savingGoal) {
+      errors.depositAccount = "입금 대상을 선택해주세요.";
     }
   }
 

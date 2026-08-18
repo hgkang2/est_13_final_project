@@ -27,24 +27,65 @@ export async function getRecentTransactions(supabase, userId) {
   return data ?? [];
 }
 
-// 진행 중인 첫 번째 목표 조회
-export async function getGoal(supabase, userId) {
-  const { data, error } = await supabase
-    .from("saving_goals")
-    .select("id, title, current_amount, target_amount, start_date, end_date")
-    .eq("user_id", userId)
-    .eq("status", "in_progress")
-    .eq("focus_order", 1)
-    .gte("end_date", new Date().toISOString().slice(0, 10))
-    .limit(1)
-    .maybeSingle();
+// 서브홈 집중목표 조회
+export async function getSubHomeGoals(supabase, userId) {
+  const today = new Date().toLocaleDateString("sv-SE", {
+    timeZone: "Asia/Seoul",
+  });
 
-  if (error) {
-    console.error("서브홈 목표 조회 실패:", error);
-    return null;
+  const goalSelect =
+    "id, title, status, current_amount, target_amount, start_date, end_date, completed_at, focus_order";
+
+  const [
+    { data: focusGoals, error: focusGoalError },
+    { data: completedGoals, error: completedGoalError },
+  ] = await Promise.all([
+    supabase
+      .from("saving_goals")
+      .select(goalSelect)
+      .eq("user_id", userId)
+      .eq("status", "in_progress")
+      .in("focus_order", [1, 2])
+      .gte("end_date", today)
+      .order("focus_order"),
+
+    supabase
+      .from("saving_goals")
+      .select(goalSelect)
+      .eq("user_id", userId)
+      .eq("status", "completed")
+      .order("completed_at", { ascending: false })
+      .limit(2),
+  ]);
+
+  if (focusGoalError || completedGoalError) {
+    console.error(
+      "서브홈 집중목표 조회 실패:",
+      focusGoalError ?? completedGoalError,
+    );
+
+    return {
+      goal: null,
+      savingGoal: null,
+    };
   }
 
-  return data ?? null;
+  const firstFocusGoal =
+    focusGoals?.find(goal => goal.focus_order === 1) ?? null;
+
+  const secondFocusGoal =
+    focusGoals?.find(goal => goal.focus_order === 2) ?? null;
+
+  const completedGoalQueue = [...(completedGoals ?? [])];
+
+  const goal = firstFocusGoal ?? completedGoalQueue.shift() ?? null;
+
+  const savingGoal = secondFocusGoal ?? completedGoalQueue.shift() ?? null;
+
+  return {
+    goal,
+    savingGoal,
+  };
 }
 
 // 진행 중인 두 번째 저축 목표 조회

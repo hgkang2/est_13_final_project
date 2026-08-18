@@ -12,7 +12,7 @@ export default function EntryPanel({
   panelActions,
 }) {
   const { entryTab, entryMode } = entryState;
-  const { categories, paymentMethods, transferAccounts } = options;
+  const { categories, paymentMethods, transferAccounts, focusGoals } = options;
 
   const {
     transactionForm,
@@ -20,7 +20,6 @@ export default function EntryPanel({
     onTransactionFormChange,
     onToggleRecurring,
     onTransactionSubmit,
-    onContinueEntry,
     onResetTransactionForm,
   } = manualEntry;
 
@@ -41,6 +40,7 @@ export default function EntryPanel({
     aiTransactionErrors,
     aiPreview,
     onAiFormChange,
+    onToggleAiRecurring,
     onAiReceiptChange,
     onAiDragOver,
     onAiDrop,
@@ -206,6 +206,7 @@ export default function EntryPanel({
               categories={categories}
               paymentMethods={paymentMethods}
               transferAccounts={transferAccounts}
+              focusGoals={focusGoals}
               isTransfer={isTransfer}
               onTransactionFormChange={onTransactionFormChange}
               onToggleRecurring={onToggleRecurring}
@@ -218,6 +219,7 @@ export default function EntryPanel({
               categories={categories}
               paymentMethods={paymentMethods}
               transferAccounts={transferAccounts}
+              focusGoals={focusGoals}
               onMultipleRowChange={onMultipleRowChange}
               onAddMultipleRow={onAddMultipleRow}
               onRemoveMultipleRow={onRemoveMultipleRow}
@@ -234,7 +236,7 @@ export default function EntryPanel({
               <button
                 type="button"
                 className={styles.continueButton}
-                onClick={onContinueEntry}
+                onClick={onTransactionSubmit}
               >
                 계속 입력
               </button>
@@ -251,7 +253,9 @@ export default function EntryPanel({
           categories={categories}
           paymentMethods={paymentMethods}
           transferAccounts={transferAccounts}
+          focusGoals={focusGoals}
           onAiFormChange={onAiFormChange}
+          onToggleAiRecurring={onToggleAiRecurring}
           onAiReceiptChange={onAiReceiptChange}
           onAiDragOver={onAiDragOver}
           onAiDrop={onAiDrop}

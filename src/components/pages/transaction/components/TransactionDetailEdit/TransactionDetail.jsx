@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import styles from "./TransactionDetailEdit.module.scss";
 
 export default function TransactionDetail({
@@ -5,7 +6,10 @@ export default function TransactionDetail({
   onClose,
   onEdit,
   onDelete,
+  onCopy,
 }) {
+  const receiptPreviewDialogRef = useRef(null);
+
   if (!transaction) return null;
 
   return (
@@ -24,11 +28,16 @@ export default function TransactionDetail({
 
         <h2 className={styles.detailTitle}>소비 기록 상세</h2>
 
-        <div className={styles.detailHistoryIcon}>
+        <button
+          type="button"
+          className={styles.detailHeaderButton}
+          onClick={onCopy}
+          aria-label="이 거래 복사"
+        >
           <span className="material-icons" aria-hidden="true">
-            history
+            content_copy
           </span>
-        </div>
+        </button>
       </div>
 
       {transaction.receiptImage && (
@@ -50,11 +59,50 @@ export default function TransactionDetail({
           <section className={styles.detailReceiptSection}>
             <h3>영수증 / 거래내역 첨부</h3>
 
-            <div className={styles.detailReceiptImageBox}>
+            <button
+              type="button"
+              className={`${styles.detailReceiptImageBox} ${styles.receiptPreviewButton}`}
+              onClick={() => receiptPreviewDialogRef.current?.showModal()}
+              aria-label="등록된 영수증 크게 보기"
+            >
               <img src={transaction.receiptImage} alt="등록된 영수증" />
-            </div>
+            </button>
           </section>
         </>
+      )}
+
+      {transaction.receiptImage && (
+        <dialog
+          ref={receiptPreviewDialogRef}
+          className={styles.receiptPreviewDialog}
+          aria-label="등록된 영수증 확대 보기"
+        >
+          <div
+            className={styles.receiptPreviewContent}
+            onClick={event => {
+              if (event.target === event.currentTarget) {
+                receiptPreviewDialogRef.current?.close();
+              }
+            }}
+          >
+            <button
+              type="button"
+              className={styles.receiptPreviewClose}
+              onClick={() => receiptPreviewDialogRef.current?.close()}
+              aria-label="영수증 확대 보기 닫기"
+            >
+              <span className="material-icons" aria-hidden="true">
+                close
+              </span>
+            </button>
+
+            <img
+              src={transaction.receiptImage}
+              alt="등록된 영수증 확대 이미지"
+              className={styles.receiptPreviewImage}
+            />
+          </div>
+        </dialog>
       )}
 
       <div className={styles.detailFields}>
@@ -157,12 +205,17 @@ export default function TransactionDetail({
                 <span>{transaction.withdrawAccount || "-"}</span>
               </div>
             </section>
-
             <section className={styles.detailField}>
-              <h3>입금 계좌</h3>
+              <h3>입금 대상</h3>
 
               <div className={styles.detailValueBox}>
-                <span>{transaction.depositAccount || "-"}</span>
+                <span>
+                  {transaction.savingGoal
+                    ? transaction.savingGoalFocusOrder
+                      ? `집중목표 ${transaction.savingGoalFocusOrder} · ${transaction.savingGoal}`
+                      : transaction.savingGoal
+                    : transaction.depositAccount || "-"}
+                </span>
               </div>
             </section>
           </div>
