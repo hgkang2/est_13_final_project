@@ -88,6 +88,104 @@ export async function getSubHomeGoals(supabase, userId) {
   };
 }
 
+// 서브홈 챌린지 현황 조회
+export async function getSubHomeChallenge(supabase, userId) {
+  const todayString = new Date().toLocaleDateString("sv-SE", {
+    timeZone: "Asia/Seoul",
+  });
+
+  const [year, month, day] = todayString.split("-").map(Number);
+
+  const todayDate = new Date(Date.UTC(year, month - 1, day));
+  const dayOfWeek = todayDate.getUTCDay();
+
+  const todayIndex = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  const distanceToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+
+  const monday = new Date(todayDate);
+  monday.setUTCDate(todayDate.getUTCDate() + distanceToMonday);
+
+  const formatDate = date =>
+    `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(
+      2,
+      "0",
+    )}-${String(date.getUTCDate()).padStart(2, "0")}`;
+
+  const weekDates = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(monday);
+    date.setUTCDate(monday.getUTCDate() + index);
+
+    return formatDate(date);
+  });
+
+  const mondayString = weekDates[0];
+  const sundayString = weekDates[6];
+
+  const [
+    { data: activeMission, error: missionError },
+    { data: records, error: recordError },
+  ] = await Promise.all([
+    supabase
+      .from("user_missions")
+      .select(
+        `
+        id,
+        title,
+        status,
+        start_date,
+        end_date,
+        completed_count,
+        mission_template_id,
+        mission_template:mission_templates (
+          id,
+          code,
+          category_code,
+          title
+        )
+      `,
+      )
+      .eq("user_id", userId)
+      .eq("start_date", todayString)
+      .in("status", ["in_progress", "completed"])
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+
+    supabase
+      .from("mission_records")
+      .select("record_date")
+      .eq("user_id", userId)
+      .eq("is_completed", true)
+      .gte("record_date", mondayString)
+      .lte("record_date", sundayString),
+  ]);
+
+  if (missionError) {
+    console.error("서브홈 오늘 챌린지 조회 실패:", missionError);
+  }
+
+  if (recordError) {
+    console.error("서브홈 주간 챌린지 조회 실패:", recordError);
+  }
+
+  const weekStates = weekDates.map(date =>
+    (records ?? []).some(record => record.record_date === date),
+  );
+
+  const weeklyCompletedCount = weekStates.filter(Boolean).length;
+
+  const isTodayCompleted =
+    weekStates[todayIndex] || activeMission?.status === "completed";
+
+  return {
+    activeMission: activeMission ?? null,
+    weekStates,
+    todayIndex,
+    weeklyCompletedCount,
+    isTodayCompleted,
+  };
+}
+
 // 진행 중인 두 번째 저축 목표 조회
 export async function getSavingGoal(supabase, userId) {
   const { data, error } = await supabase
