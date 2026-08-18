@@ -119,18 +119,22 @@ export default function GoalCard({ hasGoal, goal }) {
                     style={{ width: `${progress}%` }}
                   />
 
-                  <span
-                    className={styles.todayMarker}
-                    style={{ left: `${plannedProgress}%` }}
-                    aria-hidden="true"
-                  />
+                  {!isCompleted && (
+                    <>
+                      <span
+                        className={styles.todayMarker}
+                        style={{ left: `${plannedProgress}%` }}
+                        aria-hidden="true"
+                      />
 
-                  <span
-                    className={styles.todayLabel}
-                    style={{ left: `${plannedProgress}%` }}
-                  >
-                    오늘 기준 {plannedProgress}%
-                  </span>
+                      <span
+                        className={styles.todayLabel}
+                        style={{ left: `${plannedProgress}%` }}
+                      >
+                        오늘 기준 {plannedProgress}%
+                      </span>
+                    </>
+                  )}
                 </>
               )}
             </div>
