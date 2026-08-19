@@ -5,7 +5,7 @@
 ## 🔗 프로젝트 링크
 
 - GitHub: https://github.com/hgkang2/est_13_final_project
-- 배포 사이트: 추후 추가 예정
+- 배포 사이트: https://est-13-final-project.vercel.app/
 
 ## 📌 프로젝트 소개
 
@@ -181,6 +181,30 @@ MO:UM(모음)은 소비 기록과 저축 목표 관리를 통해 사용자가 �
 | Chart.js | 소비 통계와 지출 데이터를 차트로 시각화 |
 | Vercel | 웹 서비스 배포 |
 
+## 🗃️ ERD
+
+```mermaid
+erDiagram
+    profiles ||--o{ transactions : owns
+    transactions ||--o{ transaction_attachments : has
+    categories ||--o{ transactions : classifies
+    payment_methods ||--o{ transactions : uses
+
+    profiles ||--o{ journals : writes
+
+    profiles ||--o{ saving_goals : owns
+    saving_goals ||--o{ saving_goal_history : tracks
+
+    profiles ||--o{ analysis_reports : receives
+
+    profiles ||--o{ user_missions : participates
+    mission_templates ||--o{ user_missions : based_on
+    saving_goals ||--o{ user_missions : connects
+
+    profiles ||--o{ mission_records : records
+    user_missions ||--o{ mission_records : has
+```
+
 ## 👥 팀원 및 역할
 
 | 팀원 | 담당 기능 |
@@ -193,14 +217,14 @@ MO:UM(모음)은 소비 기록과 저축 목표 관리를 통해 사용자가 �
 
 ## 🖥️ 주요 화면
 
-> 프로젝트 완성 후 주요 화면 이미지를 추가할 예정입니다.
+> 프로젝트 주요 화면은 최종 발표 후 업데이트 예정입니다.
 
 
 ![메인 페이지](이미지 경로 추가 예정 )
 ![소비 기록 페이지](이미지 경로 추가 예정)
 ![소비 분석 페이지](이미지 경로 추가 예정)
 ![로그인 페이지](./public/images/readme/login.png)
-![회원가입 페이지](.public/images/readme/register.png)
+![회원가입 페이지](./public/images/readme/register.png)
 ![비밀번호 확인 페이지](./public/images/readme/passwordConfirm.png)
 ![비밀번호 재설정 페이지](./public/images/readme/reset-password.png)
 
