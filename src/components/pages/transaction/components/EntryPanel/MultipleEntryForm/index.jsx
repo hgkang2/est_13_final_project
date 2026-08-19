@@ -17,8 +17,9 @@ export default function MultipleEntryForm({
   return (
     <div className={styles.multipleEntryContent}>
       <section className={styles.multipleTable}>
+        <h3 className="sr-only">다건 거래 입력 목록</h3>
+
         <div className={styles.multipleTableHeader}>
-          <div className={styles.multipleNumberHeader} />
           <div>날짜</div>
           <div>구분</div>
           <div>카테고리</div>

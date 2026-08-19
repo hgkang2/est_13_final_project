@@ -451,6 +451,7 @@ export default function Transaction() {
                 summaryData={summaryData}
               />
               <section className={styles.transactionSection}>
+                <h2 className="sr-only">거래 내역</h2>
                 <TransactionToolbar
                   activeFilter={activeFilter}
                   onFilterChange={setActiveFilter}

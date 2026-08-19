@@ -105,12 +105,12 @@ export default function EntryPanel({
         className={`${styles.entryTabs} ${
           entryMode === "multiple" ? styles.multipleEntryTabs : ""
         }`}
-        role="tablist"
+        role="group"
+        aria-label="입력 방식"
       >
         <button
           type="button"
-          role="tab"
-          aria-selected={entryTab === "manual"}
+          aria-pressed={entryTab === "manual"}
           className={`${styles.entryTab} ${
             entryTab === "manual" ? styles.activeEntryTab : ""
           }`}
@@ -121,8 +121,7 @@ export default function EntryPanel({
 
         <button
           type="button"
-          role="tab"
-          aria-selected={entryTab === "ai"}
+          aria-pressed={entryTab === "ai"}
           className={`${styles.entryTab} ${
             entryTab === "ai" ? styles.activeEntryTab : ""
           }`}

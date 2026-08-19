@@ -80,7 +80,7 @@
   text-align: left;
   cursor: pointer;
 
-  > div {
+  .copyDateOptionText {
     display: flex;
     min-width: 0;
     flex-direction: column;
@@ -91,7 +91,7 @@
     @include typo-body-m-plus;
   }
 
-  span:not(:global(.material-icons)) {
+  .copyDateOptionText > span {
     color: var(--color-gray);
 
     @include typo-body-s-plus;

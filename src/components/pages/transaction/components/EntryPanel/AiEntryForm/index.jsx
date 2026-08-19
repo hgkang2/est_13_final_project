@@ -61,13 +61,13 @@ export default function AiEntryForm({
                 add_photo_alternate
               </span>
 
-              <div className={styles.aiUploadText}>
+              <span className={styles.aiUploadText}>
                 <strong>영수증 이미지를 드래그하거나 클릭하여 업로드</strong>
                 <span>JPG, PNG, WEBP · 최대 5MB</span>
                 <span className={styles.aiUploadNotice}>
                   너무 어둡거나 밝은 이미지는 인식이 어려울 수 있어요.
                 </span>
-              </div>
+              </span>
             </label>
           </>
         )}
@@ -79,13 +79,13 @@ export default function AiEntryForm({
           >
             <div className={styles.aiSpinner} aria-hidden="true" />
 
-            <div className={styles.aiRecognitionMessage}>
+            <span className={styles.aiRecognitionMessage}>
               <strong>
                 거래 정보를 분석하고 있습니다
                 <span className={styles.loadingDots} />
               </strong>
               <span>잠시만 기다려 주세요</span>
-            </div>
+            </span>
           </div>
         )}
 
@@ -109,11 +109,11 @@ export default function AiEntryForm({
               error_outline
             </span>
 
-            <div className={styles.aiRecognitionMessage}>
+            <span className={styles.aiRecognitionMessage}>
               <strong>이미지를 분석하지 못했습니다.</strong>
               <span>{aiErrorMessage}</span>
               <span>다른 이미지를 다시 업로드해주세요.</span>
-            </div>
+            </span>
           </label>
         )}
 
@@ -310,14 +310,14 @@ export default function AiEntryForm({
         </label>
 
         <div className={styles.formFieldRow}>
-          <label className={styles.formField}>
+          <div className={styles.formField}>
             <div className={styles.formLabelRow}>
-              <span className={styles.aiFormLabel}>
+              <label htmlFor="ai-category" className={styles.aiFormLabel}>
                 카테고리
                 {aiStatus === "success" && (
                   <span className={styles.requiredMark}> *</span>
                 )}
-              </span>
+              </label>
 
               {aiStatus === "success" &&
                 aiTransactionForm.type === "transfer" &&
@@ -349,6 +349,7 @@ export default function AiEntryForm({
               }`}
             >
               <select
+                id="ai-category"
                 name="category"
                 value={aiTransactionForm.category}
                 onChange={onAiFormChange}
@@ -372,6 +373,7 @@ export default function AiEntryForm({
                     </option>
                   ))}
               </select>
+
               <span className="material-icons" aria-hidden="true">
                 keyboard_arrow_down
               </span>
@@ -382,8 +384,9 @@ export default function AiEntryForm({
                 {aiTransactionErrors.category}
               </span>
             )}
-          </label>
-          <label className={styles.formField}>
+          </div>
+
+          <div className={styles.formField}>
             <span className={styles.aiFormLabel}>
               {aiTransactionForm.isRecurring ? "반복일" : "날짜"}
 
@@ -394,7 +397,12 @@ export default function AiEntryForm({
 
             {aiTransactionForm.isRecurring ? (
               <span className={styles.recurringDateBox}>
+                <label htmlFor="ai-recurring-day" className="sr-only">
+                  반복일
+                </label>
+
                 <select
+                  id="ai-recurring-day"
                   name="recurringDay"
                   value={aiTransactionForm.recurringDay}
                   onChange={onAiFormChange}
@@ -428,19 +436,31 @@ export default function AiEntryForm({
                     </span>
                   </>
                 ) : (
-                  <input
-                    type="date"
-                    name="date"
-                    value={aiTransactionForm.date}
-                    onChange={onAiFormChange}
-                    disabled={aiStatus !== "success"}
-                  />
+                  <>
+                    <label htmlFor="ai-date" className="sr-only">
+                      날짜
+                    </label>
+
+                    <input
+                      id="ai-date"
+                      type="date"
+                      name="date"
+                      value={aiTransactionForm.date}
+                      onChange={onAiFormChange}
+                      disabled={aiStatus !== "success"}
+                    />
+                  </>
                 )}
               </span>
             )}
 
             <div className={styles.aiTimePicker}>
+              <label htmlFor="ai-time" className="sr-only">
+                거래 시간
+              </label>
+
               <input
+                id="ai-time"
                 ref={timeInputRef}
                 type="time"
                 name="time"
@@ -477,7 +497,7 @@ export default function AiEntryForm({
                 )}
               </button>
             </div>
-          </label>
+          </div>
         </div>
 
         {aiTransactionForm.type === "transfer" ? (

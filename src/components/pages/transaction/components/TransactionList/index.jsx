@@ -332,7 +332,7 @@ export default function TransactionList({
 
                   <time
                     className={styles.dateCell}
-                    dateTime={`${transaction.date}T${transaction.time}`}
+                    dateTime={`${transaction.dateValue}T${transaction.time}`}
                   >
                     <span className={styles.transactionDate}>
                       {transaction.date}
