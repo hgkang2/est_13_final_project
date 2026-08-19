@@ -68,7 +68,9 @@ export default function Transaction() {
     handleToggleAll,
   } = useTransactions(supabase, showToast);
 
-  const hasActiveDetailFilters = Boolean(
+  const hasActiveFilters = Boolean(
+    activeFilter !== "all" ||
+    !isCurrentMonthRange ||
     detailFilters.category ||
     detailFilters.paymentMethod ||
     detailFilters.hasReceipt ||
@@ -405,6 +407,8 @@ export default function Transaction() {
     balanceChange: 0,
   };
 
+  const hasMonthlySummaryData = (monthlySummary?.transactionCount ?? 0) > 0;
+
   const onCancelMultipleEntry = () => {
     setEntryMode("single");
   };
@@ -454,7 +458,7 @@ export default function Transaction() {
 
               <SummaryCards
                 isLoading={isSummaryLoading}
-                hasTransactionData={hasTransactionData}
+                hasTransactionData={hasMonthlySummaryData}
                 summaryData={summaryData}
               />
               <section className={styles.transactionSection}>
@@ -476,7 +480,7 @@ export default function Transaction() {
                   isLoadingMore={isLoadingMore}
                   hasTransactionData={hasTransactionData}
                   visibleTransactions={visibleTransactions}
-                  hasActiveDetailFilters={hasActiveDetailFilters}
+                  hasActiveFilters={hasActiveFilters}
                   recentlyAddedId={recentlyAddedId}
                   scrollTargetId={scrollTargetId}
                   selectedIds={selectedIds}
