@@ -1,4 +1,4 @@
-@use "../styles/mixins" as *;
+@use "./mixins" as *;
 
 .notFound {
   display: flex;
@@ -42,7 +42,7 @@
   }
 }
 
-.actions {
+.notFoundActions {
   display: flex;
   margin-top: 32px;
   align-items: center;
@@ -50,8 +50,8 @@
   gap: 12px;
 }
 
-.homeButton,
-.backButton {
+.notFoundHomeButton,
+.notFoundBackButton {
   display: flex;
   width: 180px;
   height: 48px;
@@ -63,23 +63,23 @@
   @include typo-caption-plus;
 }
 
-.homeButton {
+.notFoundHomeButton {
   border: 1px solid var(--color-point);
   color: var(--color-white);
   background-color: var(--color-point);
 }
 
-.backButton {
+.notFoundBackButton {
   border: 1px solid var(--color-point);
   color: var(--color-point);
   background-color: var(--color-white);
 }
 
-.homeButton:hover {
+.notFoundHomeButton:hover {
   opacity: 0.9;
 }
 
-.backButton:hover {
+.notFoundBackButton:hover {
   background-color: var(--color-background-green);
 }
 
@@ -121,14 +121,14 @@
     }
   }
 
-  .actions {
+  .notFoundActions {
     width: 100%;
     margin-top: 24px;
     gap: 8px;
   }
 
-  .homeButton,
-  .backButton {
+  .notFoundHomeButton,
+  .notFoundBackButton {
     width: 100%;
   }
 }

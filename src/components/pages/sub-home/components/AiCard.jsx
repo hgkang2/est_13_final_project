@@ -106,6 +106,7 @@ export default function AiCard({
             }
             width={247}
             height={247}
+            loading="eager"
           />
         </div>
       </div>

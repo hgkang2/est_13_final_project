@@ -91,6 +91,7 @@ export default function Sidebar() {
                 {menu.href ? (
                   <Link
                     href={menu.href}
+                    prefetch={false}
                     className={`${styles.menuItem} ${
                       isActive ? styles.active : ""
                     }`}

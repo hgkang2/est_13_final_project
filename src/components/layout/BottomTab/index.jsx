@@ -29,6 +29,7 @@ export default function BottomTab() {
               {menu.href ? (
                 <Link
                   href={menu.href}
+                  prefetch={false}
                   className={`${styles.menuItem} ${
                     isActive ? styles.active : ""
                   }`}
