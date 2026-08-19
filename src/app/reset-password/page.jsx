@@ -121,7 +121,7 @@ try {
     router.push("/login");
   }, 2000);
   } finally {
-  setIsSubmitting(true);
+  setIsSubmitting(false);
 }
 };
 
