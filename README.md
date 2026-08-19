@@ -5,7 +5,7 @@
 ## 🔗 프로젝트 링크
 
 - GitHub: https://github.com/hgkang2/est_13_final_project
-- 배포 사이트: 추후 추가 예정
+- 배포 사이트: https://est-13-final-project.vercel.app/
 
 ## 📌 프로젝트 소개
 
@@ -181,26 +181,50 @@ MO:UM(모음)은 소비 기록과 저축 목표 관리를 통해 사용자가 �
 | Chart.js | 소비 통계와 지출 데이터를 차트로 시각화 |
 | Vercel | 웹 서비스 배포 |
 
+## 🗃️ ERD
+
+```mermaid
+erDiagram
+    profiles ||--o{ transactions : owns
+    transactions ||--o{ transaction_attachments : has
+    categories ||--o{ transactions : classifies
+    payment_methods ||--o{ transactions : uses
+
+    profiles ||--o{ journals : writes
+
+    profiles ||--o{ saving_goals : owns
+    saving_goals ||--o{ saving_goal_history : tracks
+
+    profiles ||--o{ analysis_reports : receives
+
+    profiles ||--o{ user_missions : participates
+    mission_templates ||--o{ user_missions : based_on
+    saving_goals ||--o{ user_missions : connects
+
+    profiles ||--o{ mission_records : records
+    user_missions ||--o{ mission_records : has
+```
+
 ## 👥 팀원 및 역할
 
 | 팀원 | 담당 기능 |
 | --- | --- |
+| 권유진 | 팀장, 목표 관리·프로필 페이지, 저축 목표 생성·수정·삭제 및 진행 상태 관리, 사용자 프로필 조회·수정 UI, 반응형 레이아웃 |
+| 김해나 | 메인 랜딩 페이지, 서비스 소개 섹션 및 반응형 UI 구현, ScrollSpy 기반 GNB 활성화·섹션 이동 인터랙션 |
+| 강형규 | 소비 분석·챌린지 페이지, 소비 데이터 시각화 및 AI 분석 결과 연동, 미션 추천·진행 상태 UI, Git 브랜치·PR 관리 |
 | 최이리나 | 로그인·회원가입·비밀번호 재설정, Google·Kakao 로그인, Supabase Auth 연동,    반응형 인증 UI |
-| 이름 입력 | 담당 기능 입력 |
-| 이름 입력 | 담당 기능 입력 |
-| 이름 입력 | 담당 기능 입력 |
-| 이름 입력 | 담당 기능 입력 |
+| 최윤지 | Supabase DB·RLS·RPC·Storage 및 Edge Function 구축, AI 영수증 인식 기반 소비기록 CRUD, 서브홈 데이터 통합·대시보드 구현 |
 
 ## 🖥️ 주요 화면
 
-> 프로젝트 완성 후 주요 화면 이미지를 추가할 예정입니다.
+> 프로젝트 주요 화면은 최종 발표 후 업데이트 예정입니다.
 
 
 ![메인 페이지](이미지 경로 추가 예정 )
 ![소비 기록 페이지](이미지 경로 추가 예정)
 ![소비 분석 페이지](이미지 경로 추가 예정)
 ![로그인 페이지](./public/images/readme/login.png)
-![회원가입 페이지](.public/images/readme/register.png)
+![회원가입 페이지](./public/images/readme/register.png)
 ![비밀번호 확인 페이지](./public/images/readme/passwordConfirm.png)
 ![비밀번호 재설정 페이지](./public/images/readme/reset-password.png)
 
