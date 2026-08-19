@@ -210,6 +210,7 @@ export default function SavingGoalCard({ hasSavingGoal, savingGoal }) {
 
               <div
                 className={styles.savingGoalBadges}
+                role="group"
                 aria-label="저축 목표 예시"
               >
                 <span>여행</span>

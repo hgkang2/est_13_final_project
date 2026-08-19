@@ -2,9 +2,20 @@ import Image from "next/image";
 import JournalSlider from "@/components/common/JournalSlider";
 import styles from "../SubHome.module.scss";
 import MoreButton from "./MoreButton";
+import { createClient } from "@/utils/supabase/client";
 
 export default function JournalCard({ journals = [] }) {
   const hasJournal = journals.some(journal => !journal.pending);
+
+  const supabase = createClient();
+
+  const { data: hobbyImageData } = supabase.storage
+    .from("public-assets")
+    .getPublicUrl("journal/hobby.png");
+
+  const { data: emptyImageData } = supabase.storage
+    .from("public-assets")
+    .getPublicUrl("journal/journal_empty.png");
 
   return (
     <article
@@ -25,17 +36,17 @@ export default function JournalCard({ journals = [] }) {
         ) : (
           <div className={styles.journalEmpty}>
             <div className={styles.journalPreviewDeck} aria-hidden="true">
-              <article
+              <div
                 className={`${styles.journalPreviewCard} ${styles.journalPreviewCardBack}`}
               >
                 <div className={styles.journalPreviewMeta}>
-                  <time>8/01 (토)</time>
+                  <time dateTime="2026-08-01">8/01 (토)</time>
                   <strong>-17,000원</strong>
                 </div>
 
                 <div className={styles.journalPreviewImage}>
                   <Image
-                    src="/images/journal/journal-06.png"
+                    src={hobbyImageData.publicUrl}
                     alt=""
                     width={140}
                     height={136}
@@ -45,13 +56,13 @@ export default function JournalCard({ journals = [] }) {
                 <p className={styles.journalPreviewContent}>
                   무료 취미 활동으로 즐거운 하루!
                 </p>
-              </article>
+              </div>
 
-              <article
+              <div
                 className={`${styles.journalPreviewCard} ${styles.journalPreviewCardFront}`}
               >
                 <div className={styles.journalPreviewMeta}>
-                  <time>8/02 (일)</time>
+                  <time dateTime="2026-08-02">8/02 (일)</time>
                   <strong>--원</strong>
                 </div>
 
@@ -59,7 +70,7 @@ export default function JournalCard({ journals = [] }) {
                   className={`${styles.journalPreviewImage} ${styles.journalPreviewImageEmpty}`}
                 >
                   <Image
-                    src="/images/journal/journal-empty.png"
+                    src={emptyImageData.publicUrl}
                     alt=""
                     width={140}
                     height={136}
@@ -69,7 +80,7 @@ export default function JournalCard({ journals = [] }) {
                 <p className={styles.journalPreviewContent}>
                   오늘도 실천이 기대돼요!
                 </p>
-              </article>
+              </div>
             </div>
 
             <div className={styles.journalEmptyText}>
