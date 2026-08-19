@@ -125,24 +125,10 @@ export const useTransactions = (supabase, showToast) => {
 
       setTransactions(formattedTransactions);
       setRecentTransactions(formattedRecentTransactions);
-
-      // 4. 이번 달 거래 요약 조회
-      // const { data: monthlySummaryData, error: monthlySummaryError } =
-      //   await fetchTransactionMonthlySummary(supabase);
-
-      // if (monthlySummaryError) {
-      //   console.error("소비 기록 요약 조회 실패:", monthlySummaryError);
-      //   showToast("소비 기록 요약을 불러오지 못했어요.", "error");
-      // } else {
-      //   setMonthlySummary(monthlySummaryData);
-      //   console.log("소비 기록 요약 조회 성공:", monthlySummaryData);
-      // }
       setLoadedTransactionCount((transactionData ?? []).length);
       setTransactionTotalCount(transactionCount ?? 0);
 
       setIsTransactionsLoading(false);
-
-      console.log("소비 기록 조회 성공:", formattedTransactions);
     };
 
     loadTransactions();
@@ -160,8 +146,6 @@ export const useTransactions = (supabase, showToast) => {
 
     setMonthlySummary(data);
     setIsSummaryLoading(false);
-
-    console.log("소비 기록 요약 조회 성공:", data);
   };
 
   // 최근 입력 거래 다시 조회

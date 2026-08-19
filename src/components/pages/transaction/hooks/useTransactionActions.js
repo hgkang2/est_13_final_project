@@ -318,7 +318,6 @@ export const useTransactionActions = ({
     // 영수증 첨부파일 저장
     if (attachment) {
       const {
-        storagePath,
         uploadError,
         attachmentInsertError,
         storageRemoveError,
@@ -358,10 +357,8 @@ export const useTransactionActions = ({
         return;
       }
 
-      console.log("영수증 저장 성공:", storagePath);
     }
     // 저장 성공
-    console.log("소비 기록 저장 성공:", insertedTransaction);
     const newTransaction = formatTransaction(insertedTransaction);
 
     const isTodayTransaction = newTransaction.dateValue === getToday();
@@ -563,13 +560,6 @@ export const useTransactionActions = ({
     // 영수증 첨부 수정 처리
     // 새 영수증 선택 → 신규 첨부 또는 기존 첨부 교체
     if (newAttachment) {
-      // const receiptFileError = validateReceiptFile(newAttachment);
-
-      // if (receiptFileError) {
-      //   showToast(receiptFileError, "error");
-      //   return;
-      // }
-
       const {
         newStoragePath,
         uploadError,
@@ -718,8 +708,6 @@ export const useTransactionActions = ({
     await refreshTransactions();
     await refreshRecentTransactions();
     await refreshMonthlySummary();
-
-    console.log("소비 기록 수정 성공:", updatedTransaction);
   };
 
   const handleOpenDetail = async transaction => {
@@ -1271,12 +1259,9 @@ export const useTransactionActions = ({
         );
         return;
       }
-
-      console.log("AI 영수증 저장 성공:", storagePath);
     }
 
     // 8. 저장 성공 → 화면 즉시 반영
-    console.log("AI 소비 기록 저장 성공:", insertedTransaction);
     if (aiTransactionForm.savingGoal) {
       await refreshFocusGoals?.(user.id);
     }

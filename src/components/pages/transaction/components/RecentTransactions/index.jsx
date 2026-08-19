@@ -11,7 +11,6 @@ export default function RecentTransactions({
   copiedId,
   onClose,
   onCopy,
-  onViewAll,
 }) {
   return (
     <section className={styles.recentPanel} aria-label="최근 입력 내용">
@@ -43,8 +42,6 @@ export default function RecentTransactions({
 
       <ul className={styles.recentList}>
         {transactions.map(transaction => {
-          console.log("최근입력 실제 렌더 데이터:", transaction);
-
           const isCopied = copiedId === transaction.id;
           return (
             <li
@@ -118,18 +115,6 @@ export default function RecentTransactions({
           );
         })}
       </ul>
-
-      <button
-        type="button"
-        className={styles.viewAllRecentButton}
-        onClick={onViewAll}
-      >
-        <span>전체 보기</span>
-
-        <span className="material-icons" aria-hidden="true">
-          arrow_forward
-        </span>
-      </button>
     </section>
   );
 }

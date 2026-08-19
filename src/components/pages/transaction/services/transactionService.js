@@ -97,6 +97,7 @@ export const fetchTransactions = async (
   if (trimmedKeyword) {
     query = query.or(
       `content.ilike.%${trimmedKeyword}%,memo.ilike.%${trimmedKeyword}%`,
+      // query.or(`content.ilike."%${kw}%",memo.ilike."%${kw}%"`)
     );
   }
 
@@ -110,7 +111,7 @@ export const fetchRecentTransactions = async (supabase, userId) => {
     .select(TRANSACTION_SELECT)
     .eq("user_id", userId)
     .order("created_at", { ascending: false })
-    .limit(6);
+    .limit(7);
 };
 
 // 이번 달 거래 요약 조회
@@ -190,8 +191,6 @@ export const refreshSpendingAnalysisIfNeeded = async (supabase, userId) => {
     console.error("소비 분석 갱신 결과 확인 실패:", data);
     return;
   }
-
-  console.log("소비 분석 갱신 완료:", data);
 };
 
 // 단건 거래 저장

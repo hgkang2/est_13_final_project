@@ -54,9 +54,6 @@ export const useReceiptAnalysis = ({
         paymentMethods: paymentMethods.map(method => method.name),
       });
 
-      console.log("AI 분석 data:", data);
-      console.log("AI 분석 error:", error);
-
       if (error) {
         setAiErrorMessage(
           "AI 분석 요청 중 문제가 발생했습니다. 이미지를 다시 업로드해주세요.",

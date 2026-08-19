@@ -335,10 +335,6 @@ export default function Transaction() {
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, [entryMode]);
 
-  const handleViewAllRecent = () => {
-    console.log("최근 입력 전체 보기");
-  };
-
   const handleRecentCopy = transaction => {
     setCopyTarget(transaction);
     setIsCopyModalOpen(true);
@@ -510,7 +506,6 @@ export default function Transaction() {
                 copiedId={copiedRecentId}
                 onClose={() => setPanelView("entry")}
                 onCopy={handleRecentCopy}
-                onViewAll={handleViewAllRecent}
               />
             )}
 
