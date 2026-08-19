@@ -482,340 +482,353 @@ export default function Analysis() {
           minWidth: 0,
         }}
       >
-        <main className={styles.container}>
-          <div className={styles.pageHeader}>
-            <h1 className={styles.title}>소비 분석</h1>
-            <p className={styles.subtitle}>
-              내 소비 데이터를 분석하여 체계적으로 관리하세요.
-            </p>
-          </div>
+        <main className={styles.main}>
+          <div className="container">
+            <div className={styles.pageHeader}>
+              <h1 className={styles.title}>소비 분석</h1>
+              <p className={styles.subtitle}>
+                내 소비 데이터를 분석하여 체계적으로 관리하세요.
+              </p>
+            </div>
 
-          <section className={`${styles.card} ${styles.aiReportCard}`}>
-            {isAiLoading ? (
-              <div
-                className={styles.analyzingWrap}
-                role="status"
-                aria-live="polite"
-              >
-                <div className={styles.analyzingCharacter}>
-                  <Image
-                    src="/images/character/ai_moa.png"
-                    alt="AI가 분석 중인 모아 캐릭터"
-                    width={100}
-                    height={100}
-                  />
-                </div>
-                <p className={styles.analyzingTitle}>
-                  AI가 소비 습관을 분석하고 있어요
-                </p>
-                <p className={styles.analyzingDesc}>
-                  조금만 기다려주세요, 곧 리포트가 준비돼요.
-                </p>
-                <div className={styles.analyzingBar}>
-                  <div className={styles.analyzingBarFill} />
-                </div>
-              </div>
-            ) : aiError ? (
-              <div className={styles.emptyAiReport}>
-                <p>{aiError}</p>
-              </div>
-            ) : !aiAnalysis ? (
-              <div className={styles.emptyAiReport}>
-                <div className={styles.emptyIconBox}>
-                  <span className="material-icons">assignment_add</span>
-                </div>
-                <h3>분석할 기록이 없어요!</h3>
-                <p>소비 기록을 바탕으로 AI가 자산 관리를 도와드려요.</p>
-                <button
-                  type="button"
-                  className={styles.actionBtnPrimary}
-                  onClick={handleGoToSubChallenge}
+            <section className={`${styles.card} ${styles.aiReportCard}`}>
+              {isAiLoading ? (
+                <div
+                  className={styles.analyzingWrap}
+                  role="status"
+                  aria-live="polite"
                 >
-                  맞춤 미션 받기
-                </button>
-              </div>
-            ) : (
-              <>
-                <div className={styles.cardHeader}>
-                  <div className={styles.aiTitleGroup}>
-                    <h3>AI 분석 리포트</h3>
-                    <span className={styles.aiDate}>
-                      ({aiAnalysis.updatedAt ?? todayLabel} 기준)
-                    </span>
+                  <div className={styles.analyzingCharacter}>
+                    <Image
+                      src="/images/character/ai_moa.png"
+                      alt="AI가 분석 중인 모아 캐릭터"
+                      width={100}
+                      height={100}
+                    />
                   </div>
+                  <p className={styles.analyzingTitle}>
+                    AI가 소비 습관을 분석하고 있어요
+                  </p>
+                  <p className={styles.analyzingDesc}>
+                    조금만 기다려주세요, 곧 리포트가 준비돼요.
+                  </p>
+                  <div className={styles.analyzingBar}>
+                    <div className={styles.analyzingBarFill} />
+                  </div>
+                </div>
+              ) : aiError ? (
+                <div className={styles.emptyAiReport}>
+                  <p>{aiError}</p>
+                </div>
+              ) : !aiAnalysis ? (
+                <div className={styles.emptyAiReport}>
+                  <div className={styles.emptyIconBox}>
+                    <span className="material-icons">assignment_add</span>
+                  </div>
+                  <h3>분석할 기록이 없어요!</h3>
+                  <p>소비 기록을 바탕으로 AI가 자산 관리를 도와드려요.</p>
                   <button
                     type="button"
-                    className={styles.actionBtnInline}
+                    className={styles.actionBtnPrimary}
                     onClick={handleGoToSubChallenge}
                   >
                     맞춤 미션 받기
                   </button>
                 </div>
-
-                <div className={styles.aiReportBody}>
-                  <div className={styles.characterArea}>
-                    <div className={styles.characterBox}>
-                      <Image
-                        src={aiImageSrc}
-                        alt="AI 소비 분석 결과를 설명하는 모아 캐릭터"
-                        width={247}
-                        height={247}
-                        className={styles.characterImage}
-                      />
+              ) : (
+                <>
+                  <div className={styles.cardHeader}>
+                    <div className={styles.aiTitleGroup}>
+                      <h3>AI 분석 리포트</h3>
+                      <span className={styles.aiDate}>
+                        ({aiAnalysis.updatedAt ?? todayLabel} 기준)
+                      </span>
                     </div>
+                    <button
+                      type="button"
+                      className={styles.actionBtnInline}
+                      onClick={handleGoToSubChallenge}
+                    >
+                      맞춤 미션 받기
+                    </button>
                   </div>
 
-                  <div className={styles.insightContentArea}>
-                    <div className={styles.insightTop}>
-                      <div className={styles.insightHeader}>
-                        <span className="material-icons">analytics</span>
-                        <h4>분석</h4>
+                  <div className={styles.aiReportBody}>
+                    <div className={styles.characterArea}>
+                      <div className={styles.characterBox}>
+                        <Image
+                          src={aiImageSrc}
+                          alt="AI 소비 분석 결과를 설명하는 모아 캐릭터"
+                          width={247}
+                          height={247}
+                          className={styles.characterImage}
+                        />
                       </div>
-                      <p>
-                        {renderAiMessage(
-                          aiAnalysis.summary || aiAnalysis.homeSummary,
-                        )}
-                      </p>
-                      {aiAnalysis.detail && (
-                        <p className={styles.insightSub}>{aiAnalysis.detail}</p>
-                      )}
-                      {aiAnalysis.insight && (
-                        <p className={styles.insightSub}>
-                          {aiAnalysis.insight}
+                    </div>
+
+                    <div className={styles.insightContentArea}>
+                      <div className={styles.insightTop}>
+                        <div className={styles.insightHeader}>
+                          <span className="material-icons">analytics</span>
+                          <h4>분석</h4>
+                        </div>
+                        <p>
+                          {renderAiMessage(
+                            aiAnalysis.summary || aiAnalysis.homeSummary,
+                          )}
                         </p>
-                      )}
+                        {aiAnalysis.detail && (
+                          <p className={styles.insightSub}>
+                            {aiAnalysis.detail}
+                          </p>
+                        )}
+                        {aiAnalysis.insight && (
+                          <p className={styles.insightSub}>
+                            {aiAnalysis.insight}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className={styles.aiReportGrid}>
-                  <div className={styles.aiReportGridItem}>
-                    <h5>
+                  <div className={styles.aiReportGrid}>
+                    <div className={styles.aiReportGridItem}>
+                      <h5>
+                        <span className="material-icons">trending_up</span>
+                        예측
+                      </h5>
+                      <p>
+                        {aiAnalysis.prediction ||
+                          "소비 패턴을 기반으로 한 예측 데이터가 준비 중입니다."}
+                      </p>
+                    </div>
+                    <div className={styles.aiReportGridItem}>
+                      <h5>
+                        <span className="material-icons">directions_run</span>
+                        실행
+                      </h5>
+                      <p>
+                        {aiAnalysis.actionSuggestion ||
+                          "지출을 줄이기 위한 맞춤형 미션을 확인해 보세요."}
+                      </p>
+                    </div>
+                    <div className={styles.aiReportGridItem}>
+                      <h5>
+                        <span className="material-icons">thumb_up</span>
+                        피드백
+                      </h5>
+                      <p>
+                        {aiAnalysis.feedback ||
+                          "꾸준한 기록이 스마트한 자산 관리의 지름길입니다!"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {aiAnalysis.mission_message && (
+                    <div className={styles.aiMissionBanner}>
+                      <span className="material-icons">campaign</span>
+                      <p>{aiAnalysis.mission_message}</p>
+                    </div>
+                  )}
+                </>
+              )}
+            </section>
+
+            <div className={styles.summaryGrid}>
+              <div className={styles.card}>
+                <span className={styles.summaryLabel}>총 지출</span>
+                <div className={styles.summaryValueGroup}>
+                  <strong className={styles.summaryAmount}>
+                    {totalExpense.toLocaleString()}
+                  </strong>
+                  <span className={styles.unit}>원</span>
+                </div>
+                <span className={styles.summarySubText}>최근 3개월 누적</span>
+              </div>
+
+              <div className={styles.card}>
+                <span className={styles.summaryLabel}>월 평균 지출</span>
+                <div className={styles.summaryValueGroup}>
+                  <strong className={styles.summaryAmount}>
+                    {monthlyAverage.toLocaleString()}
+                  </strong>
+                  <span className={styles.unit}>원</span>
+                </div>
+                <span className={styles.summarySubText}>최근 3개월 평균</span>
+              </div>
+
+              <div className={styles.card}>
+                <span className={styles.summaryLabel}>카테고리 수</span>
+                <div className={styles.summaryValueGroup}>
+                  <strong className={styles.summaryAmount}>
+                    {categoryData.length}
+                  </strong>
+                  <span className={styles.unit}>개</span>
+                </div>
+                <span className={styles.summarySubText}>
+                  현재까지 지출 카테고리
+                </span>
+              </div>
+
+              <div className={styles.card}>
+                <span className={styles.summaryLabel}>이번 달 남은 예산</span>
+                <div className={styles.summaryValueGroup}>
+                  <strong className={styles.summaryAmount}>
+                    {(2000000 - currentMonthExpense).toLocaleString()}
+                  </strong>
+                  <span className={styles.unit}>원</span>
+                </div>
+                <span className={styles.summarySubText}>
+                  예산/2,000,000원 기준
+                </span>
+              </div>
+            </div>
+
+            <div className={styles.gridContainer}>
+              <section className={styles.card}>
+                <div className={styles.cardHeader}>
+                  <h3>지출 추이</h3>
+                  <div className={styles.selectBox}>최근 3개월</div>
+                </div>
+                {hasLineData ? (
+                  <div className={styles.lineChartArea}>
+                    <Line data={lineChartData} options={lineChartOptions} />
+                  </div>
+                ) : (
+                  <div className={styles.emptyChartArea}>
+                    <div className={styles.emptyChartIcon}>
                       <span className="material-icons">trending_up</span>
-                      예측
-                    </h5>
-                    <p>
-                      {aiAnalysis.prediction ||
-                        "소비 패턴을 기반으로 한 예측 데이터가 준비 중입니다."}
+                    </div>
+                    <p className={styles.emptyTitle}>
+                      표시 할 지출 데이터가 없어요.
                     </p>
-                  </div>
-                  <div className={styles.aiReportGridItem}>
-                    <h5>
-                      <span className="material-icons">directions_run</span>
-                      실행
-                    </h5>
-                    <p>
-                      {aiAnalysis.actionSuggestion ||
-                        "지출을 줄이기 위한 맞춤형 미션을 확인해 보세요."}
+                    <p className={styles.emptyDesc}>
+                      장부에 지출을 기록해 그래프로 보여드려요.
                     </p>
-                  </div>
-                  <div className={styles.aiReportGridItem}>
-                    <h5>
-                      <span className="material-icons">thumb_up</span>
-                      피드백
-                    </h5>
-                    <p>
-                      {aiAnalysis.feedback ||
-                        "꾸준한 기록이 스마트한 자산 관리의 지름길입니다!"}
-                    </p>
-                  </div>
-                </div>
-
-                {aiAnalysis.mission_message && (
-                  <div className={styles.aiMissionBanner}>
-                    <span className="material-icons">campaign</span>
-                    <p>{aiAnalysis.mission_message}</p>
                   </div>
                 )}
-              </>
-            )}
-          </section>
+              </section>
 
-          <div className={styles.summaryGrid}>
-            <div className={styles.card}>
-              <span className={styles.summaryLabel}>총 지출</span>
-              <div className={styles.summaryValueGroup}>
-                <strong className={styles.summaryAmount}>
-                  {totalExpense.toLocaleString()}
-                </strong>
-                <span className={styles.unit}>원</span>
-              </div>
-              <span className={styles.summarySubText}>최근 3개월 누적</span>
-            </div>
-
-            <div className={styles.card}>
-              <span className={styles.summaryLabel}>월 평균 지출</span>
-              <div className={styles.summaryValueGroup}>
-                <strong className={styles.summaryAmount}>
-                  {monthlyAverage.toLocaleString()}
-                </strong>
-                <span className={styles.unit}>원</span>
-              </div>
-              <span className={styles.summarySubText}>최근 3개월 평균</span>
-            </div>
-
-            <div className={styles.card}>
-              <span className={styles.summaryLabel}>카테고리 수</span>
-              <div className={styles.summaryValueGroup}>
-                <strong className={styles.summaryAmount}>
-                  {categoryData.length}
-                </strong>
-                <span className={styles.unit}>개</span>
-              </div>
-              <span className={styles.summarySubText}>
-                현재까지 지출 카테고리
-              </span>
-            </div>
-
-            <div className={styles.card}>
-              <span className={styles.summaryLabel}>이번 달 남은 예산</span>
-              <div className={styles.summaryValueGroup}>
-                <strong className={styles.summaryAmount}>
-                  {(2000000 - currentMonthExpense).toLocaleString()}
-                </strong>
-                <span className={styles.unit}>원</span>
-              </div>
-              <span className={styles.summarySubText}>
-                예산/2,000,000원 기준
-              </span>
-            </div>
-          </div>
-
-          <div className={styles.gridContainer}>
-            <section className={styles.card}>
-              <div className={styles.cardHeader}>
-                <h3>지출 추이</h3>
-                <div className={styles.selectBox}>최근 3개월</div>
-              </div>
-              {hasLineData ? (
-                <div className={styles.lineChartArea}>
-                  <Line data={lineChartData} options={lineChartOptions} />
+              <section className={styles.card}>
+                <div className={styles.cardHeader}>
+                  <h3>카테고리별 소비 비중</h3>
                 </div>
-              ) : (
-                <div className={styles.emptyChartArea}>
-                  <div className={styles.emptyChartIcon}>
-                    <span className="material-icons">trending_up</span>
-                  </div>
-                  <p className={styles.emptyTitle}>
-                    표시 할 지출 데이터가 없어요.
-                  </p>
-                  <p className={styles.emptyDesc}>
-                    장부에 지출을 기록해 그래프로 보여드려요.
-                  </p>
-                </div>
-              )}
-            </section>
-
-            <section className={styles.card}>
-              <div className={styles.cardHeader}>
-                <h3>카테고리별 소비 비중</h3>
-              </div>
-              {hasExpense ? (
-                <>
-                  <div className={styles.donutChartArea}>
-                    <Doughnut data={doughnutData} options={doughnutOptions} />
-                    <div className={styles.donutCenterText}>
-                      <span>총 지출</span>
-                      <strong>{totalExpense.toLocaleString()}원</strong>
+                {hasExpense ? (
+                  <>
+                    <div className={styles.donutChartArea}>
+                      <Doughnut data={doughnutData} options={doughnutOptions} />
+                      <div className={styles.donutCenterText}>
+                        <span>총 지출</span>
+                        <strong>{totalExpense.toLocaleString()}원</strong>
+                      </div>
                     </div>
+                    <ul className={styles.categoryLegendList}>
+                      {categoryData.map(item => (
+                        <li key={item.name}>
+                          <div className={styles.legendLeft}>
+                            <span
+                              className={styles.dot}
+                              style={{ backgroundColor: item.color }}
+                            />
+                            <span className={styles.legendName}>
+                              {item.name}
+                            </span>
+                            <span className={styles.legendPercent}>
+                              {item.percentage}%
+                            </span>
+                          </div>
+                          <span className={styles.price}>
+                            {item.amount.toLocaleString()}원
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                ) : (
+                  <div className={styles.emptyChartArea}>
+                    <div className={styles.emptyChartIcon}>
+                      <span className="material-icons">donut_large</span>
+                    </div>
+                    <p className={styles.emptyTitle}>
+                      카테고리 데이터가 없어요.
+                    </p>
+                    <p className={styles.emptyDesc}>
+                      지출 내역을 장부에 작성해 확인할 수 있어요.
+                    </p>
                   </div>
-                  <ul className={styles.categoryLegendList}>
-                    {categoryData.map(item => (
-                      <li key={item.name}>
-                        <div className={styles.legendLeft}>
-                          <span
-                            className={styles.dot}
-                            style={{ backgroundColor: item.color }}
-                          />
-                          <span className={styles.legendName}>{item.name}</span>
-                          <span className={styles.legendPercent}>
-                            {item.percentage}%
+                )}
+              </section>
+            </div>
+
+            <section className={styles.card}>
+              <div className={styles.cardHeader}>
+                <h3>예산 대비 지출 랭킹</h3>
+                <span className={styles.rankingDate}>2026.08</span>
+              </div>
+              {hasCurrentMonthExpense ? (
+                <div className={styles.rankingList}>
+                  {currentMonthCategoryData
+                    .slice(
+                      0,
+                      showAllRanking ? currentMonthCategoryData.length : 3,
+                    )
+                    .map((item, index) => {
+                      const budget = 300000;
+                      const percent = Math.min(
+                        Math.round((item.amount / budget) * 100),
+                        100,
+                      );
+
+                      return (
+                        <div className={styles.rankingItem} key={item.name}>
+                          <span className={`${styles.rankBadge} ${styles.r1}`}>
+                            {index + 1}
+                          </span>
+                          <span className={styles.rankCategory}>
+                            {item.name}
+                          </span>
+                          <div className={styles.progressBarWrapper}>
+                            <div
+                              className={styles.progressBar}
+                              style={{ width: `${percent}%` }}
+                            />
+                          </div>
+                          <span className={styles.rankPercent}>{percent}%</span>
+                          <span className={styles.rankAmount}>
+                            {item.amount.toLocaleString()}원
                           </span>
                         </div>
-                        <span className={styles.price}>
-                          {item.amount.toLocaleString()}원
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </>
+                      );
+                    })}
+                </div>
               ) : (
-                <div className={styles.emptyChartArea}>
+                <div
+                  className={styles.emptyChartArea}
+                  style={{ padding: "40px 0" }}
+                >
                   <div className={styles.emptyChartIcon}>
-                    <span className="material-icons">donut_large</span>
+                    <span className="material-icons">bar_chart</span>
                   </div>
-                  <p className={styles.emptyTitle}>카테고리 데이터가 없어요.</p>
+                  <p className={styles.emptyTitle}>
+                    비교 할 소비 내역이 없어요.
+                  </p>
                   <p className={styles.emptyDesc}>
-                    지출 내역을 장부에 작성해 확인할 수 있어요.
+                    매달 예산과 지출을 비교해 그래프로 보여드려요.
                   </p>
                 </div>
               )}
+              {hasCurrentMonthExpense &&
+                currentMonthCategoryData.length > 3 && (
+                  <button
+                    type="button"
+                    className={styles.moreBtn}
+                    onClick={() => setShowAllRanking(!showAllRanking)}
+                  >
+                    {showAllRanking ? "접기" : "더보기"}
+                  </button>
+                )}
             </section>
           </div>
-
-          <section className={styles.card}>
-            <div className={styles.cardHeader}>
-              <h3>예산 대비 지출 랭킹</h3>
-              <span className={styles.rankingDate}>2026.08</span>
-            </div>
-            {hasCurrentMonthExpense ? (
-              <div className={styles.rankingList}>
-                {currentMonthCategoryData
-                  .slice(
-                    0,
-                    showAllRanking ? currentMonthCategoryData.length : 3,
-                  )
-                  .map((item, index) => {
-                    const budget = 300000;
-                    const percent = Math.min(
-                      Math.round((item.amount / budget) * 100),
-                      100,
-                    );
-
-                    return (
-                      <div className={styles.rankingItem} key={item.name}>
-                        <span className={`${styles.rankBadge} ${styles.r1}`}>
-                          {index + 1}
-                        </span>
-                        <span className={styles.rankCategory}>{item.name}</span>
-                        <div className={styles.progressBarWrapper}>
-                          <div
-                            className={styles.progressBar}
-                            style={{ width: `${percent}%` }}
-                          />
-                        </div>
-                        <span className={styles.rankPercent}>{percent}%</span>
-                        <span className={styles.rankAmount}>
-                          {item.amount.toLocaleString()}원
-                        </span>
-                      </div>
-                    );
-                  })}
-              </div>
-            ) : (
-              <div
-                className={styles.emptyChartArea}
-                style={{ padding: "40px 0" }}
-              >
-                <div className={styles.emptyChartIcon}>
-                  <span className="material-icons">bar_chart</span>
-                </div>
-                <p className={styles.emptyTitle}>비교 할 소비 내역이 없어요.</p>
-                <p className={styles.emptyDesc}>
-                  매달 예산과 지출을 비교해 그래프로 보여드려요.
-                </p>
-              </div>
-            )}
-            {hasCurrentMonthExpense && currentMonthCategoryData.length > 3 && (
-              <button
-                type="button"
-                className={styles.moreBtn}
-                onClick={() => setShowAllRanking(!showAllRanking)}
-              >
-                {showAllRanking ? "접기" : "더보기"}
-              </button>
-            )}
-          </section>
         </main>
 
         <SubFooter />

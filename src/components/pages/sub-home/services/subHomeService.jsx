@@ -521,6 +521,7 @@ export async function getWeeklyJournals(supabase, userId) {
       return {
         id: dateKey,
         date: `${date.getMonth() + 1}/${date.getDate()} (${weekdayNames[date.getDay()]})`,
+        dateTime: dateKey,
         amount: `-${totalAmount.toLocaleString()}원`,
         image: imageData.publicUrl,
         content:
@@ -539,6 +540,7 @@ export async function getWeeklyJournals(supabase, userId) {
     return {
       id: dateKey,
       date: `${date.getMonth() + 1}/${date.getDate()} (${weekdayNames[date.getDay()]})`,
+      dateTime: dateKey,
       amount: "--원",
       image: emptyImageData.publicUrl,
       content: date > now ? "오늘도 실천이 기대돼요!" : "소비 기록이 없어요.",
