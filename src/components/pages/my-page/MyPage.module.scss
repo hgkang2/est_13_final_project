@@ -185,7 +185,9 @@
 
   .accountValue {
     min-width: 0;
-    overflow-wrap: anywhere;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 
@@ -326,7 +328,7 @@
 
 /* 태블릿 */
 
-@media (max-width: 1200px) {
+@media (max-width: 1385px) {
   .pageContent {
     display: block;
   }
@@ -512,7 +514,7 @@
 
 /* 모바일 */
 
-@include mobile {
+@media (max-width: 600px) {
   .profile {
     padding: 8px;
   }

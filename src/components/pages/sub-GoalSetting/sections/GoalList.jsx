@@ -26,7 +26,7 @@ export default function GoalList({ goals, focusGoals = [], onEdit, onDelete }) {
   const [goalListVisibleCount, setGoalListVisibleCount] = useState(6);
 
   useEffect(() => {
-    const mobileMediaQuery = window.matchMedia("(max-width: 390px)");
+    const mobileMediaQuery = window.matchMedia("(max-width: 600px)");
 
     const handleMediaChange = (event) => {
       const isMobile = event.matches;

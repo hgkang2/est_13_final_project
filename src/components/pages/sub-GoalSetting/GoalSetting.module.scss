@@ -808,7 +808,7 @@
    모바일
 ======================================== */
 
-@include mobile {
+@media (max-width: 600px) {
   .goalSettingContainer {
     padding-top: 16px;
     padding-bottom: 16px;
@@ -1266,7 +1266,7 @@
    모바일
 ======================================== */
 
-@include mobile {
+@media (max-width: 600px) {
   .goalSettingPage {
     overflow-x: hidden;
   }

@@ -9,6 +9,7 @@ import Toast from "../../components/common/Toast";
 export default function RegisterPage() {
   const router = useRouter();
   const supabase = createClient();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [toast, setToast] = useState({
   isOpen: false,
@@ -55,7 +56,7 @@ const showToast = (message, type = "success") => {
 
  const handleRegister = async (e) => {
   e.preventDefault();
-
+   if (isSubmitting) return;
   const formData = new FormData(e.currentTarget);
 
   const name = formData.get("name")?.toString().trim();
@@ -133,6 +134,9 @@ if (firstErrorKey) {
     passwordConfirm: "",
     agreements: "",
   });
+  setIsSubmitting(true);
+
+try {
 
   const { error } = await supabase.auth.signUp({
     email,
@@ -183,6 +187,9 @@ if (firstErrorKey) {
   setTimeout(() => {
     router.push("/login");
   }, 2000);
+} finally {
+  setIsSubmitting(false);
+}
 };
    
   const handleGoogleLogin = async () => {
@@ -402,8 +409,13 @@ if (firstErrorKey) {
              )}
             </div>
 
-            <button className="button" type="submit">
-              회원가입
+            <button 
+            className="button" 
+            type="submit"
+            disabled={isSubmitting}
+            >
+              {isSubmitting ? "처리 중..." :
+              "회원가입"}
             </button>
           </form>
           <div className="sns">

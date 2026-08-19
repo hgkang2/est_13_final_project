@@ -11,6 +11,7 @@ export default function ResetPasswordPage() {
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [toast, setToast] = useState({
   isOpen: false,
@@ -33,6 +34,7 @@ const showToast = (message, type = "success") => {
 
   const handleUpdatePassword = async (e) => {
   e.preventDefault();
+  if (isSubmitting) return;
 
   if (!password) {
     setFieldErrors({
@@ -70,6 +72,9 @@ const showToast = (message, type = "success") => {
     password: "",
     confirmPassword: "",
   });
+  setIsSubmitting(true);
+
+try {
 
   const { error } = await supabase.auth.updateUser({
     password,
@@ -115,6 +120,9 @@ const showToast = (message, type = "success") => {
   setTimeout(() => {
     router.push("/login");
   }, 2000);
+  } finally {
+  setIsSubmitting(false);
+}
 };
 
   return (
@@ -197,8 +205,12 @@ const showToast = (message, type = "success") => {
   )}
 </div>
 
-        <button type="submit">
-          비밀번호 변경
+        <button 
+        type="submit"
+        disabled={isSubmitting}
+        >
+          {isSubmitting ? "처리 중..." :
+          "비밀번호 변경"}
         </button>
       </form>
     </div>

@@ -9,6 +9,7 @@ export default function PasswordConfirmPage() {
   const router = useRouter();
   const supabase = createClient();
   const [emailError, setEmailError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [toast, setToast] = useState({
   isOpen: false,
@@ -26,6 +27,8 @@ const showToast = (message, type = "success") => {
 
   const handlePasswordReset = async e => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     const formData = new FormData(e.currentTarget);
     const email = formData.get("email")?.toString().trim();
 
@@ -40,6 +43,9 @@ const showToast = (message, type = "success") => {
     return;
   }
     setEmailError("");
+    setIsSubmitting(true);
+
+try {
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${window.location.origin}/reset-password`,
@@ -70,6 +76,9 @@ const showToast = (message, type = "success") => {
     "가입된 이메일이라면 비밀번호 재설정 메일이 발송됩니다.",
     "success"
   );
+  } finally {
+  setIsSubmitting(false);
+}
 };
 
   const handleGoogleLogin = async () => {
@@ -150,8 +159,13 @@ const showToast = (message, type = "success") => {
          )}
             </div>
 
-            <button className="button" type="submit">
-              비밀번호 찾기
+            <button 
+            className="button" 
+            type="submit"
+            disabled={isSubmitting}
+            >
+              {isSubmitting ? "처리 중..." :
+              "비밀번호 찾기"}
             </button>
           </form>
           <div className="sns">
