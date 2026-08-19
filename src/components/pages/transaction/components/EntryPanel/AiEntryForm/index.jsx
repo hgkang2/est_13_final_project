@@ -40,33 +40,36 @@ export default function AiEntryForm({
         </div>
 
         {aiStatus === "idle" && (
-          <label
-            className={styles.aiUploadBox}
-            onDragOver={onAiDragOver}
-            onDrop={onAiDrop}
-          >
-            <input
-              type="file"
-              accept="image/jpeg, image/png, image/webp"
-              onChange={onAiReceiptChange}
-              className={styles.hiddenFileInput}
-            />
-
-            <span
-              className={`material-icons ${styles.aiUploadIcon}`}
-              aria-hidden="true"
+          <>
+            <label
+              className={styles.aiUploadBox}
+              onDragOver={onAiDragOver}
+              onDrop={onAiDrop}
             >
-              add_photo_alternate
-            </span>
+              <input
+                type="file"
+                accept="image/jpeg, image/png, image/webp"
+                onChange={onAiReceiptChange}
+                className={styles.hiddenFileInput}
+              />
 
-            <div className={styles.aiUploadText}>
-              <strong>영수증 이미지를 드래그하거나 클릭하여 업로드</strong>
+              <span
+                className={`material-icons ${styles.aiUploadIcon}`}
+                aria-hidden="true"
+              >
+                add_photo_alternate
+              </span>
 
-              <span>JPG, PNG, WEBP · 최대 5MB</span>
-            </div>
-          </label>
+              <div className={styles.aiUploadText}>
+                <strong>영수증 이미지를 드래그하거나 클릭하여 업로드</strong>
+                <span>JPG, PNG, WEBP · 최대 5MB</span>
+                <span className={styles.aiUploadNotice}>
+                  너무 어둡거나 밝은 이미지는 인식이 어려울 수 있어요.
+                </span>
+              </div>
+            </label>
+          </>
         )}
-
         {aiStatus === "analyzing" && (
           <div
             className={styles.aiRecognitionBox}
