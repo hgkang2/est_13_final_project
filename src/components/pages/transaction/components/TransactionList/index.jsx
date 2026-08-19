@@ -13,6 +13,7 @@ export default function TransactionList({
   isLoadingMore = false,
   hasTransactionData,
   visibleTransactions,
+  hasActiveDetailFilters,
   selectedIds,
   onToggleAll,
   onToggleTransaction,
@@ -452,7 +453,7 @@ export default function TransactionList({
           )}
         </>
       ) : (
-        <TransactionEmpty />
+        <TransactionEmpty type={hasActiveDetailFilters ? "filter" : "empty"} />
       )}
     </div>
   );

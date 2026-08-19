@@ -68,6 +68,13 @@ export default function Transaction() {
     handleToggleAll,
   } = useTransactions(supabase, showToast);
 
+  const hasActiveDetailFilters = Boolean(
+    detailFilters.category ||
+    detailFilters.paymentMethod ||
+    detailFilters.hasReceipt ||
+    detailFilters.keyword,
+  );
+
   // 저장한 거래 위치로 이동
   const focusSavedTransaction = transactionId => {
     setScrollTargetId(transactionId);
@@ -469,6 +476,7 @@ export default function Transaction() {
                   isLoadingMore={isLoadingMore}
                   hasTransactionData={hasTransactionData}
                   visibleTransactions={visibleTransactions}
+                  hasActiveDetailFilters={hasActiveDetailFilters}
                   recentlyAddedId={recentlyAddedId}
                   scrollTargetId={scrollTargetId}
                   selectedIds={selectedIds}
