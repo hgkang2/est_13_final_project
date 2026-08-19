@@ -132,18 +132,35 @@ export default function AiEntryForm({
             </div>
 
             {aiPreview && (
-              <button
-                type="button"
-                className={styles.aiReceiptPreviewButton}
-                onClick={() => receiptPreviewDialogRef.current?.showModal()}
-                aria-label="영수증 이미지 크게 보기"
-              >
-                <img
-                  src={aiPreview}
-                  alt="업로드한 영수증 미리보기"
-                  className={styles.aiReceiptPreview}
-                />
-              </button>
+              <div className={styles.aiReceiptSuccessActions}>
+                <button
+                  type="button"
+                  className={styles.aiReceiptPreviewButton}
+                  onClick={() => receiptPreviewDialogRef.current?.showModal()}
+                  aria-label="영수증 이미지 크게 보기"
+                >
+                  <img
+                    src={aiPreview}
+                    alt="업로드한 영수증 미리보기"
+                    className={styles.aiReceiptPreview}
+                  />
+                </button>
+
+                <label className={styles.aiReceiptChangeButton}>
+                  <input
+                    type="file"
+                    accept="image/jpeg, image/png, image/webp"
+                    onChange={onAiReceiptChange}
+                    className={styles.hiddenFileInput}
+                  />
+
+                  <span className="material-icons" aria-hidden="true">
+                    refresh
+                  </span>
+
+                  <span>다른 이미지로 다시 분석</span>
+                </label>
+              </div>
             )}
           </div>
         )}

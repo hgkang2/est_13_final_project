@@ -498,6 +498,32 @@
   font-size: var(--icon-l-size);
 }
 
+.aiReceiptSuccessActions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.aiReceiptChangeButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-point);
+  cursor: pointer;
+
+  @include typo-body-s-plus;
+
+  :global(.material-icons) {
+    font-size: var(--icon-s-size);
+  }
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+}
+
 @media (max-width: 1024px) {
   .aiFormActions {
     position: sticky;
