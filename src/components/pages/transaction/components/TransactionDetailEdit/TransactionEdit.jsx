@@ -17,6 +17,7 @@ export default function TransactionEdit({
   onClose,
   onCancel,
   onSave,
+  isMutating = false,
 }) {
   const [editForm, setEditForm] = useState(null);
   const [editErrors, setEditErrors] = useState({});
@@ -669,7 +670,11 @@ export default function TransactionEdit({
             취소하기
           </button>
 
-          <button type="submit" className={styles.editSaveButton}>
+          <button
+            type="submit"
+            className={styles.editSaveButton}
+            disabled={isMutating}
+          >
             저장하기
           </button>
         </div>

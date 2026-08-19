@@ -11,7 +11,7 @@ export default function EntryPanel({
   aiEntry,
   panelActions,
 }) {
-  const { entryTab, entryMode } = entryState;
+  const { entryTab, entryMode, isMutating = false } = entryState;
   const { categories, paymentMethods, transferAccounts, focusGoals } = options;
 
   const {
@@ -225,11 +225,16 @@ export default function EntryPanel({
               onRemoveMultipleRow={onRemoveMultipleRow}
               onCancelMultipleEntry={onCancelMultipleEntry}
               onMultipleSubmit={onMultipleSubmit}
+              isMutating={isMutating}
             />
           )}
           {entryMode === "single" && (
             <div className={styles.formActions}>
-              <button type="submit" className={styles.saveButton}>
+              <button
+                type="submit"
+                className={styles.saveButton}
+                disabled={isMutating}
+              >
                 저장하기
               </button>
 
@@ -237,6 +242,7 @@ export default function EntryPanel({
                 type="button"
                 className={styles.continueButton}
                 onClick={onTransactionSubmit}
+                disabled={isMutating}
               >
                 계속 입력
               </button>
@@ -260,6 +266,7 @@ export default function EntryPanel({
           onAiDragOver={onAiDragOver}
           onAiDrop={onAiDrop}
           onAiTransactionSubmit={onAiTransactionSubmit}
+          isMutating={isMutating}
         />
       )}
     </aside>

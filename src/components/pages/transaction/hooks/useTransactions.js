@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   fetchTransactions,
   fetchRecentTransactions,
@@ -41,6 +41,7 @@ export const useTransactions = (supabase, showToast) => {
   const [monthlySummary, setMonthlySummary] = useState(null);
   const [isSummaryLoading, setIsSummaryLoading] = useState(true);
   const [isTransactionsLoading, setIsTransactionsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [activeFilter, setActiveFilter] = useState("all");
   const [dateRange, setDateRange] = useState(getCurrentMonthRange);
   const [selectedIds, setSelectedIds] = useState([]);
@@ -50,6 +51,9 @@ export const useTransactions = (supabase, showToast) => {
     hasReceipt: false,
     keyword: "",
   });
+  const listRequestIdRef = useRef(0);
+  const isListRequestPendingRef = useRef(false);
+  const isLoadingMoreRef = useRef(false);
 
   // 로그인 사용자 확인
   const getCurrentUser = async () => {
@@ -70,15 +74,19 @@ export const useTransactions = (supabase, showToast) => {
   useEffect(() => {
     let ignore = false;
 
+    const requestId = ++listRequestIdRef.current;
+    isListRequestPendingRef.current = true;
+
     const loadTransactions = async () => {
       setIsTransactionsLoading(true);
 
       // 1. 로그인 사용자 확인
       const user = await getCurrentUser();
 
-      if (ignore) return;
+      if (ignore || requestId !== listRequestIdRef.current) return;
 
       if (!user) {
+        isListRequestPendingRef.current = false;
         setIsTransactionsLoading(false);
         return;
       }
@@ -106,11 +114,12 @@ export const useTransactions = (supabase, showToast) => {
       ]);
 
       // 이전 요청이면 화면 반영하지 않음
-      if (ignore) return;
+      if (ignore || requestId !== listRequestIdRef.current) return;
 
       if (transactionError) {
         console.error("소비 기록 조회 실패:", transactionError);
         showToast("소비 기록을 불러오지 못했어요.", "error");
+        isListRequestPendingRef.current = false;
         setIsTransactionsLoading(false);
         return;
       }
@@ -118,6 +127,7 @@ export const useTransactions = (supabase, showToast) => {
       if (recentError) {
         console.error("최근 소비 기록 조회 실패:", recentError);
         showToast("최근 소비 기록을 불러오지 못했어요.", "error");
+        isListRequestPendingRef.current = false;
         setIsTransactionsLoading(false);
         return;
       }
@@ -135,6 +145,7 @@ export const useTransactions = (supabase, showToast) => {
       setRecentTransactions(formattedRecentTransactions);
       setLoadedTransactionCount((transactionData ?? []).length);
       setTransactionTotalCount(transactionCount ?? 0);
+      isListRequestPendingRef.current = false;
       setIsTransactionsLoading(false);
     };
 
@@ -182,9 +193,18 @@ export const useTransactions = (supabase, showToast) => {
 
   // CRUD 후 현재까지 불러온 거래 목록 다시 맞추기
   const refreshTransactions = async () => {
+    const requestId = ++listRequestIdRef.current;
+    isListRequestPendingRef.current = true;
+
     const user = await getCurrentUser();
 
-    if (!user) return;
+    if (requestId !== listRequestIdRef.current) return;
+
+    if (!user) {
+      isListRequestPendingRef.current = false;
+      setIsTransactionsLoading(false);
+      return;
+    }
 
     const refreshCount = Math.max(
       loadedTransactionCount,
@@ -206,9 +226,14 @@ export const useTransactions = (supabase, showToast) => {
       detailFilters,
     );
 
+    // refresh 시작 후 다른 목록 요청이 시작됐다면 결과 폐기
+    if (requestId !== listRequestIdRef.current) return;
+
     if (transactionError) {
       console.error("거래 목록 새로고침 실패:", transactionError);
       showToast("거래 목록을 새로고침하지 못했어요.", "error");
+      isListRequestPendingRef.current = false;
+      setIsTransactionsLoading(false);
       return;
     }
 
@@ -220,43 +245,66 @@ export const useTransactions = (supabase, showToast) => {
     setLoadedTransactionCount((transactionData ?? []).length);
     setTransactionTotalCount(transactionCount ?? 0);
 
+    isListRequestPendingRef.current = false;
+    setIsTransactionsLoading(false);
+
     return formattedTransactions;
   };
 
   const loadMoreTransactions = async () => {
-    const user = await getCurrentUser();
+    // 전체 목록 조회 중이거나 이미 더보기 중이면 새 요청 시작하지 않음
+    if (isListRequestPendingRef.current || isLoadingMoreRef.current) return;
 
-    if (!user) return;
-    const from = loadedTransactionCount;
-    const to = from + LOAD_MORE_COUNT - 1;
+    isLoadingMoreRef.current = true;
+    setIsLoadingMore(true);
 
-    const { data, error, count } = await fetchTransactions(
-      supabase,
-      user.id,
-      dateRange.startDate,
-      dateRange.endDate,
-      activeFilter,
-      from,
-      to,
-      detailFilters,
-    );
+    // 더보기 시작 당시의 현재 목록 요청 버전
+    const requestId = listRequestIdRef.current;
 
-    if (error) {
-      console.error("추가 소비 기록 조회 실패:", error);
-      showToast("추가 소비 기록을 불러오지 못했어요.", "error");
-      return;
+    try {
+      const user = await getCurrentUser();
+
+      if (!user || requestId !== listRequestIdRef.current) return;
+
+      const from = loadedTransactionCount;
+      const to = from + LOAD_MORE_COUNT - 1;
+
+      const { data, error, count } = await fetchTransactions(
+        supabase,
+        user.id,
+        dateRange.startDate,
+        dateRange.endDate,
+        activeFilter,
+        from,
+        to,
+        detailFilters,
+      );
+
+      // 기다리는 동안 필터 변경/refresh가 시작됐다면 옛 결과 폐기
+      if (requestId !== listRequestIdRef.current) return;
+
+      if (error) {
+        console.error("추가 소비 기록 조회 실패:", error);
+        showToast("추가 소비 기록을 불러오지 못했어요.", "error");
+        return;
+      }
+
+      const newTransactions = (data ?? []).map(formatTransaction);
+
+      setTransactions(prevTransactions => [
+        ...prevTransactions,
+        ...newTransactions,
+      ]);
+
+      setLoadedTransactionCount(
+        prevCount => prevCount + newTransactions.length,
+      );
+
+      setTransactionTotalCount(prevCount => count ?? prevCount);
+    } finally {
+      isLoadingMoreRef.current = false;
+      setIsLoadingMore(false);
     }
-
-    const newTransactions = (data ?? []).map(formatTransaction);
-
-    setTransactions(prevTransactions => [
-      ...prevTransactions,
-      ...newTransactions,
-    ]);
-
-    setLoadedTransactionCount(prevCount => prevCount + newTransactions.length);
-
-    setTransactionTotalCount(count ?? transactionTotalCount);
   };
 
   useEffect(() => {
@@ -380,6 +428,7 @@ export const useTransactions = (supabase, showToast) => {
     loadMoreTransactions,
     hasMoreTransactions,
     isTransactionsLoading,
+    isLoadingMore,
     activeFilter,
     setActiveFilter,
     detailFilters,

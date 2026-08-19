@@ -17,6 +17,7 @@ export default function AiEntryForm({
   onAiDragOver,
   onAiDrop,
   onAiTransactionSubmit,
+  isMutating = false,
 }) {
   const timeInputRef = useRef(null);
   const receiptPreviewDialogRef = useRef(null);
@@ -686,7 +687,7 @@ export default function AiEntryForm({
           className={`${styles.aiSaveButton} ${
             aiStatus === "success" ? styles.aiSaveButtonActive : ""
           }`}
-          disabled={aiStatus !== "success"}
+          disabled={aiStatus !== "success" || isMutating}
         >
           저장하기
         </button>

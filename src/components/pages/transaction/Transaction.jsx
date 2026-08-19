@@ -50,6 +50,7 @@ export default function Transaction() {
     loadMoreTransactions,
     hasMoreTransactions,
     isTransactionsLoading,
+    isLoadingMore,
     activeFilter,
     setActiveFilter,
     detailFilters,
@@ -203,6 +204,7 @@ export default function Transaction() {
 
   // 4. 실제 거래 저장 action
   const {
+    isMutating,
     onTransactionSubmit,
     handleConfirmMultipleSubmit,
     onAiTransactionSubmit,
@@ -368,9 +370,13 @@ export default function Transaction() {
     setEntryTab("manual");
     setEntryMode("single");
     setPanelView("entry");
-    setCopiedRecentId(copyTarget.id);
+
+    const copiedTransactionId = copyTarget.id;
+    setCopiedRecentId(copiedTransactionId);
     setTimeout(() => {
-      setCopiedRecentId(null);
+      setCopiedRecentId(currentId =>
+        currentId === copiedTransactionId ? null : currentId,
+      );
     }, 1800);
 
     setIsCopyModalOpen(false);
@@ -405,6 +411,18 @@ export default function Transaction() {
     }
 
     setIsMultipleConfirmOpen(true);
+  };
+
+  const handleEntryTabChange = nextTab => {
+    setEntryTab(nextTab);
+
+    if (nextTab === "ai") {
+      setTransactionErrors({});
+    }
+
+    if (nextTab === "manual") {
+      setAiTransactionErrors({});
+    }
   };
 
   return (
@@ -447,6 +465,7 @@ export default function Transaction() {
                 />
                 <TransactionList
                   isLoading={isTransactionsLoading}
+                  isLoadingMore={isLoadingMore}
                   hasTransactionData={hasTransactionData}
                   visibleTransactions={visibleTransactions}
                   recentlyAddedId={recentlyAddedId}
@@ -474,6 +493,7 @@ export default function Transaction() {
                 paymentMethods={paymentMethods}
                 transferAccounts={transferAccounts}
                 focusGoals={focusGoals}
+                isMutating={isMutating}
                 onClose={() => {
                   setPanelView("closed");
                   setSelectedTransaction(null);
@@ -514,6 +534,7 @@ export default function Transaction() {
                 entryState={{
                   entryTab,
                   entryMode,
+                  isMutating,
                 }}
                 options={{
                   categories,
@@ -557,7 +578,7 @@ export default function Transaction() {
                 panelActions={{
                   onClose: () => setPanelView("closed"),
                   onOpenRecent: () => setPanelView("recent"),
-                  onEntryTabChange: setEntryTab,
+                  onEntryTabChange: handleEntryTabChange,
                   onEntryModeChange: setEntryMode,
                 }}
               />
@@ -596,6 +617,7 @@ export default function Transaction() {
         description="입력이 완료된 거래만 저장됩니다."
         confirmText="저장하기"
         cancelText="취소"
+        isProcessing={isMutating}
         onConfirm={handleConfirmMultipleSubmit}
         onCancel={() => setIsMultipleConfirmOpen(false)}
       />
@@ -608,6 +630,7 @@ export default function Transaction() {
         confirmText="삭제하기"
         cancelText="취소"
         onCancel={() => setSelectedDeleteIds([])}
+        isProcessing={isMutating}
         onConfirm={async () => {
           await handleDeleteSelectedTransactions(selectedDeleteIds);
           setSelectedDeleteIds([]);
@@ -622,6 +645,7 @@ export default function Transaction() {
         confirmText="삭제하기"
         cancelText="취소"
         onCancel={() => setIsDeleteConfirmOpen(false)}
+        isProcessing={isMutating}
         onConfirm={handleDeleteTransaction}
       />
       <Modal

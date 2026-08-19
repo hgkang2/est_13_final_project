@@ -12,6 +12,7 @@ export default function MultipleEntryForm({
   onRemoveMultipleRow,
   onCancelMultipleEntry,
   onMultipleSubmit,
+  isMutating = false,
 }) {
   return (
     <div className={styles.multipleEntryContent}>
@@ -301,6 +302,7 @@ export default function MultipleEntryForm({
             type="button"
             className={styles.saveMultipleButton}
             onClick={onMultipleSubmit}
+            disabled={isMutating}
           >
             {multipleRowStatus.available}건 저장하기
           </button>
