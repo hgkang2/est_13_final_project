@@ -199,7 +199,7 @@ MO:UM(모음)은 소비 기록과 저축 목표 관리를 통해 사용자가 �
 ![소비 기록 페이지](이미지 경로 추가 예정)
 ![소비 분석 페이지](이미지 경로 추가 예정)
 ![로그인 페이지](./public/images/readme/login.png)
-![회원가입 페이지](.public/images/readme/register.png)
+![회원가입 페이지](./public/images/readme/register.png)
 ![비밀번호 확인 페이지](./public/images/readme/passwordConfirm.png)
 ![비밀번호 재설정 페이지](./public/images/readme/reset-password.png)
 
