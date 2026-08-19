@@ -68,10 +68,15 @@ export const useTransactions = (supabase, showToast) => {
   };
 
   useEffect(() => {
+    let ignore = false;
+
     const loadTransactions = async () => {
       setIsTransactionsLoading(true);
+
       // 1. 로그인 사용자 확인
       const user = await getCurrentUser();
+
+      if (ignore) return;
 
       if (!user) {
         setIsTransactionsLoading(false);
@@ -100,6 +105,9 @@ export const useTransactions = (supabase, showToast) => {
         fetchRecentTransactions(supabase, user.id),
       ]);
 
+      // 이전 요청이면 화면 반영하지 않음
+      if (ignore) return;
+
       if (transactionError) {
         console.error("소비 기록 조회 실패:", transactionError);
         showToast("소비 기록을 불러오지 못했어요.", "error");
@@ -127,11 +135,14 @@ export const useTransactions = (supabase, showToast) => {
       setRecentTransactions(formattedRecentTransactions);
       setLoadedTransactionCount((transactionData ?? []).length);
       setTransactionTotalCount(transactionCount ?? 0);
-
       setIsTransactionsLoading(false);
     };
 
     loadTransactions();
+
+    return () => {
+      ignore = true;
+    };
   }, [dateRange.startDate, dateRange.endDate, activeFilter, detailFilters]);
 
   const refreshMonthlySummary = async () => {

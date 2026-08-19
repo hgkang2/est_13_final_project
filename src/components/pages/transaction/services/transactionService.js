@@ -96,8 +96,7 @@ export const fetchTransactions = async (
 
   if (trimmedKeyword) {
     query = query.or(
-      `content.ilike.%${trimmedKeyword}%,memo.ilike.%${trimmedKeyword}%`,
-      // query.or(`content.ilike."%${kw}%",memo.ilike."%${kw}%"`)
+      `content.ilike."%${trimmedKeyword}%",memo.ilike."%${trimmedKeyword}%"`,
     );
   }
 
