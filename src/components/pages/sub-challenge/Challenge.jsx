@@ -5,6 +5,7 @@ import Image from "next/image";
 import Sidebar from "@/components/layout/Sidebar";
 import BottomTab from "@/components/layout/BottomTab";
 import SubFooter from "@/components/layout/SubFooter";
+import JournalSlider from "@/components/common/JournalSlider";
 import styles from "./Challenge.module.scss";
 import { createClient } from "@/utils/supabase/client";
 import { getWeeklyJournals } from "../sub-home/services/subHomeService";
@@ -51,9 +52,16 @@ export default function Challenge() {
     return day === 0 ? 6 : day - 1;
   };
 
-  // 오늘 해당 카테고리 지출이 있는지 확인해서 완료 가능 여부 세팅
+  // KST 기준 오늘 날짜 문자열(YYYY-MM-DD) 반환 헬퍼 함수
+  const getKstTodayString = () => {
+    return new Date().toLocaleDateString("sv-SE", {
+      timeZone: "Asia/Seoul",
+    });
+  };
+
+  // 오늘 미션 완료 가능 여부 세팅 (저축 vs 일반 지출 미션 분기 처리)
   const checkTodayEligibility = async (
-    categoryCode,
+    currentMissionObj,
     todayIndex,
     weekStatesArr,
   ) => {
@@ -68,36 +76,70 @@ export default function Challenge() {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user || !categoryCode) return;
+    if (!user || !currentMissionObj) return;
 
-    const todayStr = new Date().toLocaleDateString("sv-SE", {
-      timeZone: "Asia/Seoul",
-    });
+    const todayStr = getKstTodayString();
 
     const { data: todayTx, error } = await supabase
       .from("transactions")
       .select(
         `
         id,
-        category:categories ( code )
+        amount,
+        transaction_type,
+        category:categories ( code, name )
       `,
       )
       .eq("user_id", user.id)
-      .eq("transaction_type", "expense")
       .gte("transaction_at", `${todayStr}T00:00:00`)
       .lte("transaction_at", `${todayStr}T23:59:59`);
 
     if (error) {
-      console.error("오늘 소비 내역 조회 실패:", error.message);
+      console.error("오늘 거래 내역 조회 실패:", error.message);
       return;
     }
 
-    const hasCategorySpending = (todayTx ?? []).some(
-      tx => tx.category?.code === categoryCode,
-    );
+    const templateCode =
+      currentMissionObj.mission_template?.code || currentMissionObj.code || "";
+    const templateTitle =
+      currentMissionObj.mission_template?.title ||
+      currentMissionObj.title ||
+      "";
+    const categoryCode =
+      currentMissionObj.mission_template?.category_code || "";
 
-    // 해당 카테고리 지출이 없으면 완료 가능
-    setCanCompleteMission(!hasCategorySpending);
+    // 저축 미션 여부 판별
+    const isSavingMission =
+      templateCode === "daily_saving" ||
+      templateCode.includes("saving") ||
+      templateTitle.includes("저축") ||
+      categoryCode.includes("saving") ||
+      categoryCode.includes("deposit");
+
+    if (isSavingMission) {
+      const hasSavingTx = (todayTx ?? []).some(tx => {
+        const txCode = tx.category?.code || "";
+        const txName = tx.category?.name || "";
+        const lowerCode = txCode.toLowerCase();
+        const lowerName = txName.toLowerCase();
+
+        return (
+          lowerCode.includes("saving") ||
+          lowerCode.includes("deposit") ||
+          lowerName.includes("저축") ||
+          lowerName.includes("예금") ||
+          lowerName.includes("적금") ||
+          tx.transaction_type === "transfer"
+        );
+      });
+
+      setCanCompleteMission(hasSavingTx);
+    } else {
+      const hasCategorySpending = (todayTx ?? []).some(
+        tx => tx.category?.code === categoryCode,
+      );
+      setCanCompleteMission(!hasCategorySpending);
+    }
   };
 
   useEffect(() => {
@@ -121,7 +163,7 @@ export default function Challenge() {
         console.error("미션 템플릿 조회 실패:", templateError.message);
       }
 
-      // 2. categories 테이블 조회 (수입 관련 항목 제외 필터링)
+      // 2. categories 테이블 조회
       const { data: catData, error: catError } = await supabase
         .from("categories")
         .select("*")
@@ -145,47 +187,51 @@ export default function Challenge() {
         console.error("카테고리 조회 실패:", catError.message);
       }
 
+      const todayStr = getKstTodayString();
+
       if (user) {
-        // 3. 사용자가 이미 시작한(진행중인) 미션 조회
-        const { data: userMissions, error: userMissionError } = await supabase
-          .from("user_missions")
-          .select(
-            `
-            *,
-            mission_template:mission_templates (
-              id,
-              category_code,
-              title
-            )
-          `,
-          )
+        // AI 분석 리포트에서 추천 미션 조회 (analysis_reports의 최신 리포트 기준)
+        const { data: latestReport, error: reportError } = await supabase
+          .from("analysis_reports")
+          .select("recommended_mission_template_id")
           .eq("user_id", user.id)
-          .order("start_date", { ascending: false })
-          .limit(5);
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
 
-        let currentMission = null;
-
-        if (!userMissionError && userMissions && userMissions.length > 0) {
-          currentMission =
-            userMissions.find(m => m.status === "in_progress") ??
-            userMissions[0];
-
-          setHasChallenge(true);
-          setActiveMission(currentMission);
-          setCompletedCount(currentMission.completed_count || 0);
-
-          const matchedTemplate = allTemplates.find(
-            t => t.id === currentMission.mission_template_id,
+        if (reportError) {
+          console.error("AI 추천 미션 리포트 조회 실패:", reportError.message);
+        } else if (latestReport?.recommended_mission_template_id) {
+          const recommendedTemplate = allTemplates.find(
+            t => t.id === latestReport.recommended_mission_template_id,
           );
 
-          if (matchedTemplate) {
-            setAiMission(matchedTemplate);
+          if (recommendedTemplate) {
+            // AI가 추천한 카테고리 내의 다른 미션 후보들을 모아
+            // 오늘 날짜 + 사용자 id를 시드로 하나를 결정론적으로 선택
+            // (같은 날에는 새로고침해도 동일 미션 유지, 날짜가 바뀌면 다른 미션으로 갱신)
+            const sameCategoryTemplates = allTemplates.filter(
+              t => t.category_code === recommendedTemplate.category_code,
+            );
+
+            const candidates =
+              sameCategoryTemplates.length > 0
+                ? sameCategoryTemplates
+                : [recommendedTemplate];
+
+            const seedStr = `${todayStr}-${user.id}`;
+            let seedHash = 0;
+            for (let i = 0; i < seedStr.length; i++) {
+              seedHash = (seedHash * 31 + seedStr.charCodeAt(i)) >>> 0;
+            }
+            const selectedIndex = seedHash % candidates.length;
+            const selectedMission = candidates[selectedIndex];
+
+            setAiMission(selectedMission);
             setMissionTemplates(
-              allTemplates.filter(t => t.id !== matchedTemplate.id),
+              allTemplates.filter(t => t.id !== selectedMission.id),
             );
           }
-        } else if (userMissionError) {
-          console.error("진행중인 미션 조회 실패:", userMissionError.message);
         }
 
         // 이번 주 월~일 날짜 범위 계산
@@ -209,7 +255,7 @@ export default function Challenge() {
           weekDates.push(d.toISOString().split("T")[0]);
         }
 
-        // 4. 미션 기록 조회 (이번 주 기간 조건 추가하여 주 바뀔 때 자동 초기화)
+        // 3. 미션 기록 조회 (이번 주에 오늘 날짜로 완료된 기록이 있는지 확인)
         const { data: records, error: recordError } = await supabase
           .from("mission_records")
           .select("*")
@@ -219,27 +265,77 @@ export default function Challenge() {
           .lte("record_date", sundayStr);
 
         let newWeekStates = weekStates;
+        let todayCompleted = false;
 
         if (!recordError && records) {
           newWeekStates = weekDates.map(dateStr => {
             return records.some(record => record.record_date === dateStr);
           });
           setWeekStates(newWeekStates);
-        } else if (recordError) {
-          console.warn("미션 기록 조회 실패:", recordError.message);
+
+          // 오늘 날짜에 해당하는 기록이 있는지 체크
+          const todayIndex = getTodayIndex();
+          todayCompleted = newWeekStates[todayIndex];
         }
 
-        // 5. 오늘 미션 완료 가능 여부 체크 (진행중인 미션이 있을 때만)
+        // 4. 사용자가 시작한 미션 조회 (오늘 날짜에 시작된 미션은 완료 여부와 상관없이 가져옴)
+        const { data: currentMission, error: userMissionError } = await supabase
+          .from("user_missions")
+          .select(
+            `
+            *,
+            mission_template:mission_templates (
+              id,
+              code,
+              category_code,
+              title
+            )
+          `,
+          )
+          .eq("user_id", user.id)
+          .eq("start_date", todayStr)
+          .in("status", ["in_progress", "completed"])
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
         if (currentMission) {
-          const categoryCode = currentMission.mission_template?.category_code;
-          await checkTodayEligibility(
-            categoryCode,
-            getTodayIndex(),
-            newWeekStates,
+          setActiveMission(currentMission);
+          setCompletedCount(currentMission.completed_count || 0);
+
+          const matchedTemplate = allTemplates.find(
+            t => t.id === currentMission.mission_template_id,
           );
+
+          if (matchedTemplate) {
+            setAiMission(matchedTemplate);
+            setMissionTemplates(
+              allTemplates.filter(t => t.id !== matchedTemplate.id),
+            );
+          }
+
+          if (todayCompleted) {
+            // 오늘 이미 완료했다면 상태를 완료로 고정
+            setHasChallenge(true);
+            setIsTodayCompleted(true);
+            setCanCompleteMission(false);
+          } else {
+            setHasChallenge(true);
+            await checkTodayEligibility(
+              currentMission,
+              getTodayIndex(),
+              newWeekStates,
+            );
+          }
+        } else {
+          // 오늘 날짜에 시작된 미션이 없다면 챌린지 상태를 초기화
+          setHasChallenge(false);
+          setActiveMission(null);
+          setIsTodayCompleted(false);
+          setCanCompleteMission(false);
         }
 
-        // 6. 주간 소비 일기 데이터 조회
+        // 5. 주간 소비 일기 데이터 조회
         const weeklyJournals = await getWeeklyJournals(supabase, user.id);
         if (weeklyJournals) {
           setJournals(weeklyJournals);
@@ -287,8 +383,7 @@ export default function Challenge() {
       return;
     }
 
-    const today = new Date();
-    const dateString = today.toISOString().split("T")[0];
+    const dateString = getKstTodayString();
 
     const { data: inserted, error } = await supabase
       .from("user_missions")
@@ -309,6 +404,7 @@ export default function Challenge() {
         *,
         mission_template:mission_templates (
           id,
+          code,
           category_code,
           title
         )
@@ -325,8 +421,7 @@ export default function Challenge() {
       setCompletedCount(0);
       setActiveMission(inserted);
 
-      const categoryCode = inserted?.mission_template?.category_code;
-      await checkTodayEligibility(categoryCode, getTodayIndex(), weekStates);
+      await checkTodayEligibility(inserted, getTodayIndex(), weekStates);
     }
   };
 
@@ -337,9 +432,7 @@ export default function Challenge() {
 
     if (!user || !activeMission) return;
 
-    const todayStr = new Date().toLocaleDateString("sv-SE", {
-      timeZone: "Asia/Seoul",
-    });
+    const todayStr = getKstTodayString();
 
     const { error } = await supabase.from("mission_records").insert([
       {
@@ -360,11 +453,14 @@ export default function Challenge() {
 
     const { error: updateError } = await supabase
       .from("user_missions")
-      .update({ completed_count: newCompletedCount })
+      .update({
+        completed_count: newCompletedCount,
+        status: "completed",
+      })
       .eq("id", activeMission.id);
 
     if (updateError) {
-      console.error("완료 횟수 업데이트 실패:", updateError.message);
+      console.error("완료 상태 업데이트 실패:", updateError.message);
     }
 
     setCompletedCount(newCompletedCount);
@@ -378,6 +474,7 @@ export default function Challenge() {
 
     setIsTodayCompleted(true);
     setCanCompleteMission(false);
+    setHasChallenge(true);
   };
 
   const weekDays = ["월", "화", "수", "목", "금", "토", "일"];
@@ -403,8 +500,15 @@ export default function Challenge() {
   const getGoalStatusText = () => {
     if (!hasChallenge) return "0/1회 달성";
     if (isTodayCompleted) return `${completedCount}/1회 달성 (오늘 완료)`;
-    if (canCompleteMission) return `${completedCount + 1}/1회 달성 (완료 가능)`;
-    return `${completedCount}/1회 달성 (완료 불가 · 해당 카테고리 지출 있음)`;
+
+    const templateCode = aiMission?.code || "";
+    const title = aiMission?.title || "";
+    const isSaving = templateCode === "daily_saving" || title.includes("저축");
+
+    if (canCompleteMission) {
+      return `${completedCount + 1}/1회 달성 (완료 가능)`;
+    }
+    return `${completedCount}/1회 달성 (완료 불가 · ${isSaving ? "저축 내역 없음" : "해당 카테고리 지출 있음"})`;
   };
 
   const isButtonDisabled = hasChallenge && !canCompleteMission;
@@ -418,6 +522,9 @@ export default function Challenge() {
       handleCompleteMission();
     }
   };
+
+  // 저널 데이터 중 완료된 항목이 하나라도 있는지 여부 계산 (서브 홈 JournalCard 로직 반영)
+  const hasJournal = journals.some(journal => !journal.pending);
 
   return (
     <div className={styles.pageLayout}>
@@ -449,10 +556,10 @@ export default function Challenge() {
                         height={56}
                       />
                     </div>
-                    <h3>{aiMission?.title || "외식 줄이기"}</h3>
+                    <h3>{aiMission?.title || "저축하기"}</h3>
                     <p>
                       {aiMission?.description ||
-                        "이번 주 1회 이하로 외식하고 집밥으로 해결해보세요!"}
+                        "정해둔 금액을 저축하며 목표에 가까워져 보세요."}
                     </p>
                   </div>
                   <div className={styles.missionGoalRow}>
@@ -583,49 +690,30 @@ export default function Challenge() {
                   </div>
                 </section>
 
-                <section className={styles.card}>
-                  <div className={styles.cardHeader}>
-                    <h3>나의 소비 기록</h3>
-                    <span
-                      className={styles.moreText}
-                      style={{ cursor: "pointer" }}
+                {/* 📌 서브 홈과 동일한 JournalSlider 컴포넌트를 활용한 '나의 소비 기록' 카드 영역 */}
+                <article
+                  className={styles.card}
+                  aria-labelledby="journal-card-title"
+                >
+                  <div className={styles.journalInner}>
+                    <div
+                      className={styles.cardHeader}
+                      style={{ marginBottom: "16px" }}
                     >
-                      기록 더보기 &gt;
-                    </span>
-                  </div>
-
-                  <div className={styles.historyList}>
-                    {journals.map(journal => (
-                      <div key={journal.id} className={styles.historyItemCard}>
-                        <span className={styles.historyDate}>
-                          {journal.date}
-                        </span>
-                        <span className={styles.historyAmount}>
-                          {journal.amount}
-                        </span>
-
-                        <div
-                          className={`${styles.historyCharacterBox} ${
-                            journal.pending
-                              ? styles.historyCharacterBoxEmpty
-                              : ""
-                          }`}
+                      <h3 id="journal-card-title">나의 소비 기록</h3>
+                      {hasJournal && (
+                        <span
+                          className={styles.moreText}
+                          style={{ cursor: "pointer" }}
                         >
-                          <Image
-                            src={journal.image}
-                            alt={journal.content}
-                            width={80}
-                            height={80}
-                          />
-                        </div>
+                          기록 더보기 &gt;
+                        </span>
+                      )}
+                    </div>
 
-                        <p className={styles.historyMessage}>
-                          {journal.content}
-                        </p>
-                      </div>
-                    ))}
+                    <JournalSlider journals={journals} />
                   </div>
-                </section>
+                </article>
               </div>
             </div>
           </div>

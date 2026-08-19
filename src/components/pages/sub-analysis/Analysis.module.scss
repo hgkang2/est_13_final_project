@@ -1,26 +1,44 @@
+@use "../../../styles/mixins" as *;
+
 /* 페이지 전체 레이아웃 */
 .pageLayout {
   display: flex;
-  min-height: 100vh;
-  background-color: #f8fafc;
+  width: 100%;
+  max-width: 1920px;
+  margin: 0 auto;
+  min-height: calc(100vh - 86px);
+  background-color: var(--color-white); /* 흰색으로 통일 */
+  font-family: var(--font-family-base);
+  // overflow-x: hidden; /* [수정] 리사이즈/모바일에서 콘텐츠가 밀려도 가로 스크롤 방지 */
 }
 
 .contentWrapper {
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-width: 0;
+  min-width: 0; /* [수정] flex item이 콘텐츠 크기로 부모를 밀어내지 않도록 */
+  background-color: var(--color-white); /* 흰색으로 통일 */
 }
 
-.container {
-  padding: 32px 40px;
-  max-width: 1400px;
-  width: 100%;
-  margin: 0 auto;
-  box-sizing: border-box;
+// .container {
+//   padding: 32px 40px;
+//   max-width: var(--container-max-width);
+//   width: 100%;
+//   margin: 0 auto;
+//   box-sizing: border-box;
+
+//   @media (max-width: 768px) {
+//     padding: 20px 16px;
+//   }
+// }
+
+.main {
+  flex: 1;
+  min-width: 0;
+  padding: 32px 0;
 
   @media (max-width: 768px) {
-    padding: 20px 16px;
+    padding: 20px 0;
   }
 }
 
@@ -29,26 +47,30 @@
   margin-bottom: 24px;
 
   .title {
-    font-size: 24px;
-    font-weight: 700;
-    color: #111827;
+    @include typo-heading-s-plus;
+    color: var(--color-text);
     margin-bottom: 4px;
   }
 
   .subtitle {
-    font-size: 14px;
-    color: #6b7280;
+    @include typo-heading-xs;
+    color: var(--color-gray);
   }
 }
 
 /* 카드 공통 스타일 */
 .card {
-  background-color: #ffffff;
+  min-width: 0; /* [수정] 그리드/플렉스 자식이 콘텐츠(캔버스 등) 크기로 부모를 밀어내는 문제 방지 */
+  background-color: var(--color-white);
   border-radius: 16px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-border-gray);
   padding: 24px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
   box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    padding: 16px; /* [수정] 모바일에서 좁아진 컨테이너에 맞춰 패딩도 축소 */
+  }
 }
 
 /* 상단 AI 분석 리포트 카드 */
@@ -62,11 +84,14 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  flex-wrap: wrap; /* [수정] 좁은 화면에서 제목+버튼이 겹치지 않도록 */
+  gap: 8px;
 
   h3 {
-    font-size: 18px;
-    font-weight: 700;
-    color: #111827;
+    font-size: var(--card-head-size);
+    line-height: var(--card-head-line-height);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text);
   }
 }
 
@@ -74,26 +99,29 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
 
   .aiDate {
-    font-size: 13px;
-    color: #9ca3af;
+    font-size: var(--body-s-size);
+    color: var(--color-light-gray);
   }
 }
 
 .actionBtnInline {
-  background-color: #f0fdf4;
-  color: #10b981;
-  font-size: 13px;
-  font-weight: 600;
+  background-color: var(--color-success-background);
+  color: var(--color-success-text);
+  font-size: var(--body-s-size);
+  font-weight: var(--font-weight-semibold);
   padding: 6px 14px;
   border-radius: 6px;
-  border: 1px solid #d1fae5;
+  border: 1px solid var(--color-success-dot);
   cursor: pointer;
   transition: background-color 0.2s;
+  white-space: nowrap;
 
   &:hover {
-    background-color: #d1fae5;
+    background-color: var(--color-success-dot);
+    color: var(--color-white);
   }
 }
 
@@ -114,7 +142,7 @@
     width: 100px;
     height: 100px;
     border-radius: 50%;
-    background-color: #f8fafc;
+    background-color: var(--color-dark-white);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -130,6 +158,7 @@
 
 .insightContentArea {
   flex: 1;
+  min-width: 0; /* [수정] 긴 텍스트가 flex 컨테이너를 밀어내지 않도록 */
 
   .insightTop {
     margin-bottom: 16px;
@@ -141,25 +170,28 @@
       margin-bottom: 6px;
 
       span {
-        color: #10b981;
-        font-size: 20px;
+        color: var(--color-success-dot);
+        font-size: var(--icon-l-size);
       }
 
       h4 {
-        font-size: 15px;
-        font-weight: 600;
-        color: #111827;
+        font-size: var(--card-label-size);
+        line-height: var(--card-label-line-height);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text);
       }
     }
 
     p {
-      font-size: 14px;
-      color: #374151;
+      font-size: var(--body-m-minus-size);
+      line-height: var(--body-m-minus-line-height);
+      color: var(--color-gray);
       line-height: 1.5;
+      word-break: break-word; /* [수정] 긴 AI 텍스트가 카드 밖으로 넘치지 않도록 */
 
       .highlightRed {
-        color: #ef4444;
-        font-weight: 600;
+        color: var(--color-danger-text);
+        font-weight: var(--font-weight-semibold);
       }
     }
   }
@@ -177,8 +209,8 @@
   .emptyIconBox {
     width: 56px;
     height: 56px;
-    background-color: #f0fdf4;
-    color: #10b981;
+    background-color: var(--color-success-background);
+    color: var(--color-success-dot);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -186,29 +218,30 @@
     margin-bottom: 12px;
 
     span {
-      font-size: 28px;
+      font-size: var(--icon-xl-size);
     }
   }
 
   h3 {
-    font-size: 18px;
-    font-weight: 700;
-    color: #111827;
+    font-size: var(--card-head-size);
+    line-height: var(--card-head-line-height);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text);
     margin-bottom: 6px;
   }
 
   p {
-    font-size: 14px;
-    color: #6b7280;
+    font-size: var(--body-m-minus-size);
+    color: var(--color-light-gray);
     margin-bottom: 16px;
   }
 }
 
 .actionBtnPrimary {
-  background-color: #10b981;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
+  background-color: var(--color-point);
+  color: var(--color-white);
+  font-size: var(--body-m-minus-size);
+  font-weight: var(--font-weight-semibold);
   padding: 10px 24px;
   border-radius: 8px;
   border: none;
@@ -216,7 +249,7 @@
   transition: background-color 0.2s;
 
   &:hover {
-    background-color: #059669;
+    background-color: var(--color-success-text);
   }
 }
 
@@ -237,12 +270,16 @@
 
   .card {
     padding: 20px;
+
+    @media (max-width: 768px) {
+      padding: 16px;
+    }
   }
 
   .summaryLabel {
     display: block;
-    font-size: 13px;
-    color: #6b7280;
+    font-size: var(--body-s-size);
+    color: var(--color-light-gray);
     margin-bottom: 8px;
   }
 
@@ -251,23 +288,24 @@
     align-items: baseline;
     gap: 2px;
     margin-bottom: 6px;
+    flex-wrap: wrap; /* [수정] 큰 금액이 좁은 카드에서 줄바꿈되도록 */
 
     .summaryAmount {
-      font-size: 24px;
-      font-weight: 700;
-      color: #111827;
+      font-size: var(--heading-xs-size);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text);
     }
 
     .unit {
-      font-size: 15px;
-      font-weight: 600;
-      color: #111827;
+      font-size: var(--body-m-size);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
     }
   }
 
   .summarySubText {
-    font-size: 12px;
-    color: #9ca3af;
+    font-size: var(--body-s-size);
+    color: var(--color-light-gray);
   }
 }
 
@@ -282,47 +320,60 @@
     grid-template-columns: 1fr;
   }
 
+  > .card {
+    min-width: 0; /* [수정] 핵심 수정: 캔버스가 그리드 트랙 크기를 밀어내는 순환 문제 방지 */
+    overflow: hidden;
+  }
+
   .selectBox {
-    font-size: 13px;
-    color: #6b7280;
-    border: 1px solid #e5e7eb;
+    font-size: var(--body-s-size);
+    color: var(--color-light-gray);
+    border: 1px solid var(--color-border-gray);
     padding: 4px 10px;
     border-radius: 6px;
-    background-color: #fff;
+    background-color: var(--color-white);
   }
 }
 
 /* 차트 영역 */
 .lineChartArea {
+  width: 100%; /* [수정] 명시적 width로 Chart.js의 리사이즈 계산이 부모 기준으로 안정되게 */
   height: 260px;
   position: relative;
+  overflow: hidden;
 }
 
 .donutChartArea {
+  width: 100%; /* [수정] 위와 동일한 이유 */
   height: 200px;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 16px;
+  overflow: hidden;
 
   .donutCenterText {
     position: absolute;
+    top: 50%; /* [수정] flex 중앙정렬 대신 top/left/transform으로 명시 (구형 브라우저 대응) */
+    left: 50%;
+    transform: translate(-50%, -50%);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     pointer-events: none;
+    text-align: center;
 
     span {
-      font-size: 12px;
-      color: #9ca3af;
+      font-size: var(--body-s-size);
+      color: var(--color-light-gray);
     }
 
     strong {
-      font-size: 16px;
-      font-weight: 700;
-      color: #111827;
+      font-size: var(--body-m-size);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text);
     }
   }
 }
@@ -337,24 +388,24 @@
   text-align: center;
 
   .emptyChartIcon {
-    color: #10b981;
+    color: var(--color-point);
     margin-bottom: 12px;
 
     span {
-      font-size: 36px;
+      font-size: var(--icon-xl-size);
     }
   }
 
   .emptyTitle {
-    font-size: 15px;
-    font-weight: 600;
-    color: #111827;
+    font-size: var(--card-label-size);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text);
     margin-bottom: 4px;
   }
 
   .emptyDesc {
-    font-size: 13px;
-    color: #9ca3af;
+    font-size: var(--body-s-size);
+    color: var(--color-light-gray);
   }
 }
 
@@ -371,41 +422,50 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 14px;
+    font-size: var(--body-m-minus-size);
+    gap: 8px;
 
     .legendLeft {
       display: flex;
       align-items: center;
       gap: 8px;
+      min-width: 0; /* [수정] 긴 카테고리명이 price를 밀어내지 않도록 */
 
       .dot {
         width: 10px;
         height: 10px;
         border-radius: 50%;
+        flex-shrink: 0;
       }
 
       .legendName {
-        color: #374151;
-        font-weight: 500;
+        color: var(--color-gray);
+        font-weight: var(--font-weight-medium);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .legendPercent {
-        color: #9ca3af;
-        font-size: 13px;
+        color: var(--color-light-gray);
+        font-size: var(--body-s-size);
+        flex-shrink: 0;
       }
     }
 
     .price {
-      font-weight: 600;
-      color: #111827;
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      flex-shrink: 0;
+      white-space: nowrap;
     }
   }
 }
 
 /* 랭킹 섹션 */
 .rankingDate {
-  font-size: 13px;
-  color: #9ca3af;
+  font-size: var(--body-s-size);
+  color: var(--color-light-gray);
 }
 
 .rankingList {
@@ -423,39 +483,43 @@
       width: 24px;
       height: 24px;
       border-radius: 50%;
-      background-color: #f3f4f6;
-      color: #4b5563;
-      font-size: 12px;
-      font-weight: 700;
+      background-color: var(--color-dark-white);
+      color: var(--color-gray);
+      font-size: var(--body-s-size);
+      font-weight: var(--font-weight-bold);
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
 
       &.r1 {
-        background-color: #fef3c7;
-        color: #d97706;
+        background-color: var(--color-warning-background);
+        color: var(--color-warning-text);
       }
     }
 
     .rankCategory {
       width: 80px;
-      font-size: 14px;
-      font-weight: 500;
-      color: #374151;
+      font-size: var(--body-m-minus-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-gray);
       flex-shrink: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .progressBarWrapper {
       flex: 1;
+      min-width: 24px; /* [수정] 고정폭 요소들에 밀려 진행바가 0에 수렴하는 것 방지 */
       height: 8px;
-      background-color: #f3f4f6;
+      background-color: var(--color-dark-white);
       border-radius: 4px;
       overflow: hidden;
 
       .progressBar {
         height: 100%;
-        background-color: #10b981;
+        background-color: var(--color-point);
         border-radius: 4px;
       }
     }
@@ -463,18 +527,46 @@
     .rankPercent {
       width: 40px;
       text-align: right;
-      font-size: 13px;
-      font-weight: 600;
-      color: #10b981;
+      font-size: var(--body-s-size);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-point);
       flex-shrink: 0;
     }
 
     .rankAmount {
       width: 100px;
       text-align: right;
-      font-size: 13px;
-      color: #6b7280;
+      font-size: var(--body-s-size);
+      color: var(--color-light-gray);
       flex-shrink: 0;
+    }
+
+    /* [수정] 모바일: 고정폭 3개(80+40+100=220px) 때문에 진행바가 찌그러지는 문제 대응 */
+    @media (max-width: 480px) {
+      flex-wrap: wrap;
+      row-gap: 6px;
+
+      .rankCategory {
+        width: auto;
+        order: 1;
+      }
+
+      .rankAmount {
+        width: auto;
+        order: 2;
+        margin-left: auto;
+      }
+
+      .progressBarWrapper {
+        order: 4;
+        width: 100%;
+        flex-basis: 100%;
+      }
+
+      .rankPercent {
+        width: auto;
+        order: 3;
+      }
     }
   }
 }
@@ -482,16 +574,163 @@
 .moreBtn {
   width: 100%;
   padding: 10px;
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background-color: var(--color-dark-white);
+  border: 1px solid var(--color-border-gray);
   border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #4b5563;
+  font-size: var(--body-s-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray);
   cursor: pointer;
   transition: background-color 0.2s;
 
   &:hover {
-    background-color: #f3f4f6;
+    background-color: var(--color-border-gray);
+  }
+}
+
+/* ==========================
+   AI 분석 리포트 - 분석중 로딩 화면
+   ========================== */
+.analyzingWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 20px;
+
+  .analyzingCharacter {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 16px;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      animation: aiBounce 1.4s ease-in-out infinite;
+    }
+  }
+
+  .analyzingTitle {
+    font-size: var(--card-head-size);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+    margin-bottom: 4px;
+  }
+
+  .analyzingDesc {
+    font-size: var(--body-s-size);
+    color: var(--color-light-gray);
+    margin-bottom: 16px;
+  }
+
+  .analyzingBar {
+    width: 180px;
+    height: 6px;
+    border-radius: 999px;
+    background-color: var(--color-dark-white);
+    overflow: hidden;
+  }
+
+  .analyzingBarFill {
+    width: 40%;
+    height: 100%;
+    border-radius: inherit;
+    background-color: var(--color-point);
+    animation: aiLoadingBar 1.2s ease-in-out infinite;
+  }
+}
+
+@keyframes aiBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes aiLoadingBar {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+/* ==========================
+   AI 분석 리포트 - 예측 / 실행 / 피드백 그리드
+   ========================== */
+.insightSub {
+  margin-top: 6px;
+  font-size: var(--body-s-size);
+  color: var(--color-light-gray);
+  line-height: 1.5;
+}
+
+.aiReportGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 20px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+
+  .aiReportGridItem {
+    min-width: 0; /* [수정] 긴 문장이 그리드 트랙을 밀어내지 않도록 */
+    background-color: var(--color-dark-white);
+    border-radius: 12px;
+    padding: 14px 16px;
+
+    h5 {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: var(--body-s-size);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text);
+      margin-bottom: 6px;
+
+      span {
+        font-size: var(--body-m-minus-size);
+        color: var(--color-point);
+      }
+    }
+
+    p {
+      font-size: var(--body-s-size);
+      color: var(--color-gray);
+      line-height: 1.5;
+      word-break: break-word;
+    }
+  }
+}
+
+.aiMissionBanner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 12px 16px;
+  background-color: var(--color-warning-background);
+  border: 1px solid var(--color-warning-dot);
+  border-radius: 10px;
+
+  span {
+    color: var(--color-warning-dot);
+    font-size: var(--icon-l-size);
+    flex-shrink: 0;
+  }
+
+  p {
+    font-size: var(--body-s-size);
+    color: var(--color-warning-text);
+    line-height: 1.4;
+    word-break: break-word;
   }
 }

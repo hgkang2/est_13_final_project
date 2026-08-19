@@ -245,6 +245,7 @@ if (firstErrorKey) {
                 id="name"
                 name="name"
                 type="text"
+                autoComplete="name"
                 placeholder="이름을 입력하세요"
                 aria-invalid={Boolean(fieldErrors.name)}
                 aria-describedby={fieldErrors.name ? "register-name-error" : undefined}
@@ -270,6 +271,7 @@ if (firstErrorKey) {
                 id="email"
                 name="email"
                 type="email"
+                autoComplete="email"
                 placeholder="이메일을 입력하세요"
                 aria-invalid={Boolean(fieldErrors.email)}
                 aria-describedby={fieldErrors.email ? "register-email-error" : undefined}
@@ -297,6 +299,7 @@ if (firstErrorKey) {
                 id="password"
                 name="password"
                 type="password"
+                autoComplete="new-password"
                 placeholder="비밀번호를 입력하세요"
                 aria-invalid={Boolean(fieldErrors.password)}
                 aria-describedby={fieldErrors.password ? "register-password-error" : undefined}
@@ -324,6 +327,7 @@ if (firstErrorKey) {
                 id="passwordConfirm"
                 name="passwordConfirm"
                 type="password"
+                autoComplete="new-password"
                 placeholder="비밀번호를 다시 입력하세요"
                 aria-invalid={Boolean(fieldErrors.passwordConfirm)}
                 aria-describedby={fieldErrors.passwordConfirm ? "register-passwordConfirm-error" : undefined}

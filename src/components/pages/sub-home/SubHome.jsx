@@ -16,8 +16,6 @@ import { useRouter } from "next/navigation";
 import useSubHomeData from "./hooks/useSubHomeData";
 
 export default function SubHome() {
-  // UI 개발용 상태값 [챌린지와, 목표연동은 소비기록과 각 다른 페이지 연동이 필요함]
-  const hasChallenge = false;
   const {
     userName,
     recentTransactions,
@@ -27,6 +25,7 @@ export default function SubHome() {
     previousMonthlySpendingDaily,
     spendingComparison,
     savingGoal,
+    challenge,
     aiAnalysis,
     recommendedMission,
     weeklyJournals,
@@ -345,7 +344,7 @@ export default function SubHome() {
                   savingGoal={savingGoal}
                 />
 
-                <ChallengeCard hasChallenge={hasChallenge} />
+                <ChallengeCard challenge={challenge} />
               </div>
 
               <JournalCard journals={weeklyJournals} />
