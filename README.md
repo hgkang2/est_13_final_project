@@ -58,14 +58,14 @@ MO:UM(모음)은 소비 기록과 저축 목표 관리를 통해 사용자가 �
 - 여러 거래 내역 선택 및 관리
 - 입력값 검증과 성공·오류 알림 제공
 
-### 🧾 영수증 및 ALAN AI 자동 입력
+### 🧾 영수증 및 AI 자동 입력
 
 - 영수증 이미지 업로드 및 미리보기
 - JPG, PNG, WEBP 이미지 형식 지원
 - 업로드된 영수증 이미지 등록·교체·삭제
 - Drag & Drop 방식의 영수증 업로드
-- ALAN AI를 활용한 영수증 정보 분석
-- 영수증에서 금액, 날짜, 카테고리, 결제 수단 및 사용처 자동 추출
+- OpenAI 멀티모달 모델을 활용한 영수증 및 거래 증빙 이미지 분석
+- 영수증에서 금액, 날짜, 시간, 거래 구분, 카테고리, 결제 수단 및 사용처 자동 추출
 - AI 분석 결과를 소비 기록 입력 폼에 자동 반영
 - 사용자가 AI 분석 결과를 확인하고 수정한 후 저장
 - 사용자별 영수증 이미지를 Supabase Storage에 안전하게 저장
@@ -152,8 +152,9 @@ MO:UM(모음)은 소비 기록과 저축 목표 관리를 통해 사용자가 �
 ### AI
 
 - ESTsoft ALAN AI
+- OpenAI API
 - 소비 데이터 기반 맞춤형 분석
-- 영수증 정보 분석 및 자동 입력
+- 영수증 및 거래 증빙 이미지 분석·자동 입력
 - 절약 미션과 금융 습관 개선 방법 추천
 
 ### Design & Collaboration
@@ -169,17 +170,27 @@ MO:UM(모음)은 소비 기록과 저축 목표 관리를 통해 사용자가 �
 
 ## ⚙️ 서비스 구성
 
-| 구분              | 역할                                       |
-| ----------------- | ------------------------------------------ |
-| Next.js           | 페이지 라우팅 및 웹 애플리케이션 구성      |
-| React             | 컴포넌트 기반 UI와 상태 관리               |
-| SCSS              | 공통 스타일 및 반응형 화면 구현            |
-| Supabase Auth     | 이메일 및 소셜 로그인 인증                 |
-| Supabase Database | 사용자, 소비 기록, 목표 데이터 저장        |
-| Supabase Storage  | 영수증 및 목표 이미지 저장                 |
-| ALAN AI           | 소비 분석, 영수증 인식 및 맞춤형 미션 추천 |
-| Chart.js          | 소비 통계와 지출 데이터를 차트로 시각화    |
-| Vercel            | 웹 서비스 배포                             |
+| 구분              | 역할                                               |
+| ----------------- | -------------------------------------------------- |
+| Next.js           | 페이지 라우팅 및 웹 애플리케이션 구성              |
+| React             | 컴포넌트 기반 UI와 상태 관리                       |
+| SCSS              | 공통 스타일 및 반응형 화면 구현                    |
+| Supabase Auth     | 이메일 및 소셜 로그인 인증                         |
+| Supabase Database | 사용자, 소비 기록, 목표 데이터 저장                |
+| Supabase Storage  | 영수증 및 목표 이미지 저장                         |
+| ALAN AI           | 소비 분석 및 개인 맞춤형 미션 추천                 |
+| OpenAI            | 영수증 및 거래 증빙 이미지 인식과 거래 정보 구조화 |
+| Chart.js          | 소비 통계와 지출 데이터를 차트로 시각화            |
+| Vercel            | 웹 서비스 배포                                     |
+
+## 🔎 주요 구현 포인트
+
+- Supabase Auth와 RLS를 활용한 사용자별 데이터 접근 제어
+- 거래 CRUD와 Supabase Storage를 연계한 영수증 이미지 관리
+- OpenAI 멀티모달 모델을 활용한 거래 증빙 이미지 구조화
+- 실제 소비 집계 데이터를 기반으로 한 ALAN AI 소비 분석
+- 데스크톱·태블릿·모바일 환경에 대응하는 반응형 UI
+- 공통 Layout 및 SCSS 디자인 시스템을 통한 화면 일관성 유지
 
 ## 🗃️ ERD
 
@@ -207,25 +218,168 @@ erDiagram
 
 ## 👥 팀원 및 역할
 
-| 팀원     | 담당 기능                                                                                                              |
-| -------- | ---------------------------------------------------------------------------------------------------------------------- |
-| 권유진   | 팀장, 목표 관리·프로필 페이지, 저축 목표 생성·수정·삭제 및 진행 상태 관리, 사용자 프로필 조회·수정 UI, 반응형 레이아웃 |
-| 김해나   | 메인 랜딩 페이지, 서비스 소개 섹션 및 반응형 UI 구현, ScrollSpy 기반 GNB 활성화·섹션 이동 인터랙션                     |
-| 강형규   | 소비 분석·챌린지 페이지, 소비 데이터 시각화 및 AI 분석 결과 연동, 미션 추천·진행 상태 UI, Git 브랜치·PR 관리           |
-| 최이리나 | 로그인·회원가입·비밀번호 재설정, Google·Kakao 로그인, Supabase Auth 연동, 반응형 인증 UI                               |
-| 최윤지   | Supabase DB·RLS·RPC·Storage 및 Edge Function 구축, AI 영수증 인식 기반 소비기록 CRUD, 서브홈 데이터 통합·대시보드 구현 |
+| 팀원     | 담당 기능                                                                                                                          |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| 권유진   | 팀장,기획,디자인 목표 관리·프로필 페이지, 저축 목표 생성·수정·삭제 및 진행 상태 관리, 사용자 프로필 조회·수정 UI, 반응형 레이아웃  |
+| 김해나   | 기획,메인 랜딩 페이지, 서비스 소개 섹션 및 반응형 UI 구현, ScrollSpy 기반 GNB 활성화·섹션 이동 인터랙션                            |
+| 강형규   | 기획,소비 분석·챌린지 페이지, 소비 데이터 시각화 및 AI 분석 결과 연동, 미션 추천·진행 상태 UI, Git 브랜치·PR 관리                  |
+| 최이리나 | 로그인·회원가입·비밀번호 재설정, Google·Kakao 로그인, Supabase Auth 연동, 반응형 인증 UI                                           |
+| 최윤지   | 기획,디자인,Supabase DB·RLS·RPC·Storage 및 Edge Function 구축, AI 영수증 인식 기반 소비기록 CRUD, 서브홈 데이터 통합·대시보드 구현 |
 
 ## 🖥️ 주요 화면
 
-> 프로젝트 주요 화면은 최종 발표 후 업데이트 예정입니다.
+> 프로젝트 주요 화면입니다.
 
-![메인 페이지](이미지 경로 추가 예정 )
-![소비 기록 페이지](이미지 경로 추가 예정)
-![소비 분석 페이지](이미지 경로 추가 예정)
+### 주요 서비스 화면
+
+#### 메인 페이지
+
+MO:UM의 서비스 가치와 주요 기능을 소개하는 랜딩 페이지입니다.
+
+![메인 페이지](./public/images/readme/main.png)
+
+#### 서브홈 페이지
+
+소비·저축·목표·AI 분석 정보를 한눈에 확인할 수 있는 개인 맞춤형 대시보드입니다.
+
+![서브홈 페이지](./public/images/readme/sub-home.png)
+
+#### 소비 기록 페이지
+
+수입·지출·이체 내역을 관리하고 AI 영수증 인식을 통해 거래 정보를 간편하게 입력할 수 있습니다.
+
+![소비 기록 페이지](./public/images/readme/transaction.png)
+
+#### 소비 분석 페이지
+
+소비 데이터를 시각화하고 AI 분석 리포트를 통해 소비 패턴과 개선 방향을 확인할 수 있습니다.
+
+![소비 분석 페이지](./public/images/readme/analysis.png)
+
+#### 목표 관리 페이지
+
+여러 저축 목표를 생성하고 목표별 진행률과 상태, 목표일까지의 진행 상황을 관리할 수 있습니다.
+
+![목표 관리 페이지](./public/images/readme/goal.png)
+
+#### 챌린지 페이지
+
+개인 맞춤형 절약 미션을 선택하고 일별 수행 현황과 챌린지 진행 상황을 확인할 수 있습니다.
+
+![챌린지 페이지](./public/images/readme/challenge.png)
+
+#### 마이페이지
+
+프로필과 계정 정보, 저축·소비·AI 분석 등 사용자의 주요 활동 통계를 확인할 수 있습니다.
+
+![마이페이지](./public/images/readme/my-page.png)
+
+### 인증 화면
+
+#### 로그인 페이지
+
+이메일 또는 소셜 계정을 이용해 MO:UM 서비스에 로그인할 수 있습니다.
+
 ![로그인 페이지](./public/images/readme/login.png)
+
+#### 회원가입 페이지
+
+이메일 기반 회원가입을 통해 새로운 사용자 계정을 생성할 수 있습니다.
+
 ![회원가입 페이지](./public/images/readme/register.png)
+
+#### 비밀번호 확인 페이지
+
+계정 정보 변경 전 사용자의 비밀번호를 확인합니다.
+
 ![비밀번호 확인 페이지](./public/images/readme/passwordConfirm.png)
+
+#### 비밀번호 재설정 페이지
+
+이메일 인증을 통해 새로운 비밀번호를 설정할 수 있습니다.
+
 ![비밀번호 재설정 페이지](./public/images/readme/reset-password.png)
+
+## 📁 폴더 구조
+
+```text
+est_13_final_project/
+├─ src/
+│  ├─ app/                     # Next.js App Router 기반 페이지 및 라우팅
+│  │  ├─ auth/                 # 인증 처리
+│  │  ├─ introduce/            # 서비스 소개
+│  │  ├─ login/                # 로그인
+│  │  ├─ register/             # 회원가입
+│  │  ├─ passwordConfirm/      # 비밀번호 확인
+│  │  ├─ reset-password/       # 비밀번호 재설정
+│  │  ├─ my-page/              # 마이페이지
+│  │  ├─ sub-home/             # 개인 맞춤형 대시보드
+│  │  ├─ transaction/          # 소비 기록
+│  │  ├─ sub-analysis/         # 소비 분석
+│  │  ├─ sub-goalsetting/      # 저축 목표 관리
+│  │  ├─ sub-challenge/        # 챌린지 및 미션
+│  │  ├─ globals.scss          # 전역 스타일
+│  │  ├─ layout.js             # 공통 Root Layout
+│  │  ├─ not-found.jsx         # 404 페이지
+│  │  └─ page.js               # 메인 진입 페이지
+│  │
+│  ├─ components/              # 공통 및 페이지별 UI 컴포넌트
+│  │  ├─ common/               # 공통 UI 컴포넌트
+│  │  ├─ home/                 # 메인·서브홈 관련 컴포넌트
+│  │  ├─ introduce/            # 서비스 소개 관련 컴포넌트
+│  │  ├─ layout/               # 공통 레이아웃 컴포넌트
+│  │  │  ├─ BottomTab/         # 모바일 하단 탭
+│  │  │  ├─ Header/            # 공통 헤더
+│  │  │  ├─ LandingFooter/     # 랜딩 페이지 푸터
+│  │  │  ├─ Sidebar/           # 데스크톱 사이드바
+│  │  │  └─ SubFooter/         # 서브 페이지 푸터
+│  │  │
+│  │  └─ pages/                # 주요 서비스 페이지별 컴포넌트
+│  │     ├─ my-page/           # 마이페이지
+│  │     ├─ sub-analysis/      # 소비 분석
+│  │     ├─ sub-challenge/     # 챌린지 및 미션
+│  │     ├─ sub-GoalSetting/   # 저축 목표 관리
+│  │     ├─ sub-home/          # 개인 맞춤형 대시보드
+│  │     └─ transaction/       # 소비 기록
+│  │
+│  ├─ styles/                  # 공통 SCSS 스타일 및 디자인 시스템
+│  │
+│  ├─ utils/
+│  │  └─ supabase/             # Supabase 클라이언트·서버 연결 설정
+│  │     ├─ client.js          # 브라우저용 Supabase 클라이언트
+│  │     └─ server.js          # 서버용 Supabase 클라이언트
+│  │
+│  └─ middleware.js            # 요청 및 인증 관련 미들웨어
+│
+└─ supabase/                   # Supabase 설정 및 서버 관련 구성
+```
+
+## 🔐 환경 변수
+
+서비스 실행을 위해 Supabase, ESTsoft ALAN AI 및 OpenAI API 관련 환경 변수 설정이 필요합니다.
+
+### Next.js 환경 변수
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+```
+
+- `NEXT_PUBLIC_SUPABASE_URL`: Supabase 프로젝트 URL
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`: Supabase 클라이언트용 Publishable Key
+
+### Supabase Edge Function Secret
+
+OpenAI 및 ALAN AI 연동에 필요한 API Key는 Supabase Edge Function의 Secret으로 관리합니다.
+
+```env
+OPENAI_API_KEY=
+```
+
+- `OPENAI_API_KEY`: 영수증 및 거래 증빙 이미지 분석을 위한 OpenAI API Key
+- ALAN AI 관련 Secret은 프로젝트에서 사용하는 API 설정에 맞게 별도로 설정합니다.
+
+> 보안을 위해 실제 API Key 및 Secret 값은 저장소에 포함하지 않습니다.
 
 ## 🚀 실행 방법
 
@@ -244,5 +398,3 @@ npm run dev
 ```
 
 브라우저에서 `http://localhost:3000`으로 접속합니다.
-
-> Supabase 및 ALAN AI 사용을 위해 별도의 환경 변수가 필요합니다.
