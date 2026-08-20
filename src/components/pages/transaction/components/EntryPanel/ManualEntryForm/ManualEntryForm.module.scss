@@ -124,6 +124,7 @@
 }
 
 .attachmentBox {
+  position: relative;
   display: flex;
   width: 100%;
   min-height: 88px;
@@ -144,6 +145,14 @@
   pointer-events: none;
 }
 
+.attachmentUploadLabel {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  cursor: pointer;
+}
+
 .attachmentIcon {
   display: flex;
   width: 56px;
@@ -156,6 +165,8 @@
 }
 
 .attachmentPreviewButton {
+  position: relative;
+  z-index: 2;
   display: block;
   width: 56px;
   height: 56px;
@@ -326,13 +337,51 @@
   font-weight: var(--font-weight-bold);
 }
 
-.timeAction {
-  color: var(--color-point);
-}
-
 .timeButton:hover .timeAction {
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+
+@supports (-moz-appearance: none) {
+  .timePicker {
+    align-items: center;
+    gap: 8px;
+  }
+
+  .timePicker::before {
+    content: "시간 설정";
+    flex-shrink: 0;
+    color: var(--color-gray);
+
+    @include typo-body-s-plus;
+  }
+
+  .hiddenTimeInput {
+    position: static;
+    width: auto;
+    height: auto;
+    opacity: 1;
+    pointer-events: auto;
+
+    padding: 4px 8px;
+    border: 1px solid var(--color-border-gray);
+    border-radius: 6px;
+    outline: 0;
+
+    color: var(--color-gray);
+    background-color: var(--color-white);
+    cursor: pointer;
+
+    @include typo-body-s-plus;
+  }
+
+  .hiddenTimeInput:focus {
+    border-color: var(--color-point);
+  }
+
+  .timeButton {
+    display: none;
+  }
 }
 
 .resetButton {

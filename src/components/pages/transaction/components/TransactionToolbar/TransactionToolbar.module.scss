@@ -62,15 +62,14 @@
   font-weight: var(--font-weight-bold);
 }
 
-.dateButton input[type="date"] {
+.dateField {
   position: relative;
+  display: inline-flex;
+}
 
-  width: 96px;
-  min-width: 0;
+.datePickerButton {
   padding: 0;
-
   border: 0;
-  outline: 0;
 
   color: var(--color-light-gray);
   background: transparent;
@@ -79,6 +78,15 @@
   font-weight: var(--font-weight-bold);
 
   cursor: pointer;
+  white-space: nowrap;
+}
+
+.nativeDateInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .toolbarActions {
@@ -315,17 +323,6 @@
   background-color: var(--color-point);
 }
 
-.dateButton input[type="date"]::-webkit-calendar-picker-indicator {
-  position: absolute;
-  inset: 0;
-
-  width: 100%;
-  height: 100%;
-
-  opacity: 0;
-  cursor: pointer;
-}
-
 .dateButton :global(.material-icons) {
   flex-shrink: 0;
   font-size: 16px;
@@ -378,6 +375,46 @@
 
 .mobileToolbarRow {
   display: contents;
+}
+
+.preparingButton {
+  position: relative;
+}
+
+.preparingTooltip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  z-index: 10;
+
+  width: max-content;
+  padding: 6px 10px;
+
+  border-radius: 8px;
+  background-color: var(--color-white);
+  color: var(--color-point);
+  border: 1px solid var(--color-border-gray);
+
+  font-size: 12px;
+  line-height: 18px;
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  transform: translateX(-50%) translateY(4px);
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0.2s ease;
+}
+
+.preparingButton:hover .preparingTooltip,
+.preparingButton:has(button:focus-visible) .preparingTooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
 }
 
 @container (max-width: 1200px) {
@@ -518,18 +555,14 @@
     font-size: 14px;
   }
 
-  .dateButton input[type="date"]::-webkit-datetime-edit {
-    padding: 0;
+  .dateField {
+    min-width: 74px;
+    font-size: 12px;
+    line-height: 18px;
   }
 
-  .dateButton input[type="date"]::-webkit-calendar-picker-indicator {
-    position: absolute;
-    inset: 0;
-
-    width: 100%;
-    height: 100%;
-
-    opacity: 0;
-    cursor: pointer;
+  .datePickerButton {
+    font-size: 12px;
+    line-height: 18px;
   }
 }

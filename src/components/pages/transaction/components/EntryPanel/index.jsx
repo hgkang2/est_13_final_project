@@ -11,7 +11,7 @@ export default function EntryPanel({
   aiEntry,
   panelActions,
 }) {
-  const { entryTab, entryMode } = entryState;
+  const { entryTab, entryMode, isMutating = false } = entryState;
   const { categories, paymentMethods, transferAccounts, focusGoals } = options;
 
   const {
@@ -105,12 +105,12 @@ export default function EntryPanel({
         className={`${styles.entryTabs} ${
           entryMode === "multiple" ? styles.multipleEntryTabs : ""
         }`}
-        role="tablist"
+        role="group"
+        aria-label="입력 방식"
       >
         <button
           type="button"
-          role="tab"
-          aria-selected={entryTab === "manual"}
+          aria-pressed={entryTab === "manual"}
           className={`${styles.entryTab} ${
             entryTab === "manual" ? styles.activeEntryTab : ""
           }`}
@@ -121,8 +121,7 @@ export default function EntryPanel({
 
         <button
           type="button"
-          role="tab"
-          aria-selected={entryTab === "ai"}
+          aria-pressed={entryTab === "ai"}
           className={`${styles.entryTab} ${
             entryTab === "ai" ? styles.activeEntryTab : ""
           }`}
@@ -225,11 +224,16 @@ export default function EntryPanel({
               onRemoveMultipleRow={onRemoveMultipleRow}
               onCancelMultipleEntry={onCancelMultipleEntry}
               onMultipleSubmit={onMultipleSubmit}
+              isMutating={isMutating}
             />
           )}
           {entryMode === "single" && (
             <div className={styles.formActions}>
-              <button type="submit" className={styles.saveButton}>
+              <button
+                type="submit"
+                className={styles.saveButton}
+                disabled={isMutating}
+              >
                 저장하기
               </button>
 
@@ -237,6 +241,7 @@ export default function EntryPanel({
                 type="button"
                 className={styles.continueButton}
                 onClick={onTransactionSubmit}
+                disabled={isMutating}
               >
                 계속 입력
               </button>
@@ -260,6 +265,7 @@ export default function EntryPanel({
           onAiDragOver={onAiDragOver}
           onAiDrop={onAiDrop}
           onAiTransactionSubmit={onAiTransactionSubmit}
+          isMutating={isMutating}
         />
       )}
     </aside>

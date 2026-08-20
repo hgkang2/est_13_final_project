@@ -3,10 +3,13 @@
 /* 페이지 전체 레이아웃 */
 .pageLayout {
   display: flex;
-  min-height: 100vh;
+  width: 100%;
+  max-width: 1920px;
+  margin: 0 auto;
+  min-height: calc(100vh - 86px);
   background-color: var(--color-white); /* 흰색으로 통일 */
   font-family: var(--font-family-base);
-  overflow-x: hidden; /* [수정] 리사이즈/모바일에서 콘텐츠가 밀려도 가로 스크롤 방지 */
+  // overflow-x: hidden; /* [수정] 리사이즈/모바일에서 콘텐츠가 밀려도 가로 스크롤 방지 */
 }
 
 .contentWrapper {
@@ -17,22 +20,36 @@
   background-color: var(--color-white); /* 흰색으로 통일 */
 }
 
-.container {
-  padding: 32px 40px;
-  max-width: 1400px;
-  width: 100%;
-  margin: 0 auto;
-  box-sizing: border-box;
+// .container {
+//   padding: 32px 40px;
+//   max-width: var(--container-max-width);
+//   width: 100%;
+//   margin: 0 auto;
+//   box-sizing: border-box;
+
+//   @media (max-width: 768px) {
+//     padding: 20px 16px;
+//   }
+// }
+
+.main {
+  flex: 1;
+  min-width: 0;
+  padding: 32px 0;
 
   @media (max-width: 768px) {
-    padding: 20px 16px;
+    padding: 20px 0;
   }
 }
 
 /* 페이지 헤더 */
 .pageHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
   margin-bottom: 24px;
-
+  
   .title {
     @include typo-heading-s-plus;
     color: var(--color-text);
@@ -42,6 +59,20 @@
   .subtitle {
     @include typo-heading-xs;
     color: var(--color-gray);
+  }
+}
+
+@media (max-width: 1272px) {
+  .pageHeader {
+    .title {
+      font-size: 24px;
+      line-height: 36px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      line-height: 24px;
+    }
   }
 }
 

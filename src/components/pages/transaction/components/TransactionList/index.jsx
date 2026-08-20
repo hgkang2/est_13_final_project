@@ -10,8 +10,10 @@ function formatAmount(amount) {
 
 export default function TransactionList({
   isLoading,
+  isLoadingMore = false,
   hasTransactionData,
   visibleTransactions,
+  hasActiveFilters,
   selectedIds,
   onToggleAll,
   onToggleTransaction,
@@ -96,6 +98,8 @@ export default function TransactionList({
   );
 
   const handleLoadMore = async () => {
+    if (isLoadingMore) return;
+
     if (hasMoreTransactions) {
       setIsExpanded(true);
       await onLoadMore();
@@ -205,9 +209,7 @@ export default function TransactionList({
             <div className={styles.memoCell}>메모</div>
 
             <div className={styles.actionCell}>
-              <span className="material-icons" aria-hidden="true">
-                more_vert
-              </span>
+              <div className={styles.actionCell} aria-hidden="true" />
             </div>
           </div>
 
@@ -329,7 +331,7 @@ export default function TransactionList({
 
                   <time
                     className={styles.dateCell}
-                    dateTime={`${transaction.date}T${transaction.time}`}
+                    dateTime={`${transaction.dateValue}T${transaction.time}`}
                   >
                     <span className={styles.transactionDate}>
                       {transaction.date}
@@ -379,16 +381,17 @@ export default function TransactionList({
                   <button
                     type="button"
                     className={styles.actionCell}
-                    aria-label={`${transaction.content} 거래 메뉴`}
+                    aria-label={`${transaction.content} 거래 상세보기`}
                     onClick={event => {
                       event.stopPropagation();
+                      onOpenDetail(transaction);
                     }}
                   >
                     <span
                       className={`material-icons ${styles.desktopActionIcon}`}
                       aria-hidden="true"
                     >
-                      more_vert
+                      chevron_right
                     </span>
 
                     <span
@@ -431,6 +434,7 @@ export default function TransactionList({
                 type="button"
                 className={styles.loadMoreButton}
                 onClick={handleLoadMore}
+                disabled={isLoadingMore}
               >
                 <span>
                   {isExpanded && !hasMoreTransactions
@@ -448,7 +452,7 @@ export default function TransactionList({
           )}
         </>
       ) : (
-        <TransactionEmpty />
+        <TransactionEmpty type={hasActiveFilters ? "filter" : "empty"} />
       )}
     </div>
   );

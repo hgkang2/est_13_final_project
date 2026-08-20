@@ -12,6 +12,9 @@
 
 .pageLayout {
   display: flex;
+  width: 100%; /*추가*/
+  max-width: 1920px; /*추가*/
+  margin: 0 auto; /*추가*/
 }
 
 .pageContent {
@@ -23,6 +26,7 @@
   width: 100%;
   max-width: 1634px;
   margin: 0 auto;
+  padding-bottom: 16px;
 }
 
 .main {
@@ -175,6 +179,19 @@
   color: var(--color-text);
 }
 
+.emailRow {
+  .accountLabel {
+    flex-shrink: 0;
+  }
+
+  .accountValue {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
 .editButton {
   width: 100%;
   padding: 12px;
@@ -312,7 +329,7 @@
 
 /* 태블릿 */
 
-@include tablet {
+@media (max-width: 1385px) {
   .pageContent {
     display: block;
   }
@@ -406,7 +423,9 @@
 
   .accountValue {
     flex: 1;
+    min-width: 0;
     text-align: center;
+    overflow-wrap: anywhere;
   }
 
   .accountValue,
@@ -494,9 +513,59 @@
   }
 }
 
+.mobileLogoutArea {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .mobileLogoutArea {
+    display: flex;
+    order: 6;
+    justify-content: center;
+    padding: 8px 0;
+  }
+
+  .mobileLogoutButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    width: 100%;
+    max-width: 240px;
+    padding: 12px 16px;
+
+    border: 1px solid var(--color-border-gray);
+    border-radius: 8px;
+    background-color: var(--color-white);
+    color: var(--color-gray);
+
+    cursor: pointer;
+
+    transition:
+      border-color 0.2s ease,
+      color 0.2s ease,
+      background-color 0.2s ease;
+
+    &:hover {
+      border-color: var(--color-danger-dot);
+      color: var(--color-danger-text);
+      background-color: var(--color-danger-background);
+    }
+
+    &:active {
+      background-color: var(--color-background-secondary);
+    }
+  }
+}
+
 /* 모바일 */
 
-@include mobile {
+@media (max-width: 600px) {
+  .pageContent {
+    padding-bottom: 0;
+  }
+
   .profile {
     padding: 8px;
   }

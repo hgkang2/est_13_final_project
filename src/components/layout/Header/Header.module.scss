@@ -1,8 +1,10 @@
 @use "../../../styles/mixins" as *;
 
 .header {
+  position: relative;
   width: 100%;
   background-color: var(--color-white);
+  z-index: 100;
 }
 
 .sticky {
@@ -22,6 +24,7 @@
   align-items: center;
   justify-content: space-between;
 }
+
 .logoArea {
   flex-shrink: 0;
   margin: 0;
@@ -65,17 +68,13 @@
 
   &::after {
     content: "";
-
     position: absolute;
     left: 50%;
     bottom: 0;
-
     width: 0;
     height: 3px;
-
     background-color: var(--color-point);
     border-radius: 999px;
-
     transform: translateX(-50%);
     transition: width 0.3s ease;
   }
@@ -124,6 +123,14 @@
   }
 }
 
+.mobileMenuButton {
+  display: none;
+}
+
+.mobileNavigation {
+  display: none;
+}
+
 @media (max-width: 1024px) {
   .inner {
     padding: 8px 16px;
@@ -153,12 +160,39 @@
 }
 
 @media (max-width: 720px) {
+  .inner {
+    position: relative;
+    padding: 8px 16px;
+  }
+
   .navigation {
     display: none;
   }
 
-  .inner {
-    padding: 8px 16px;
+  .mobileMenuButton {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 0;
+    color: var(--color-point);
+    background-color: transparent;
+    cursor: pointer;
+  }
+
+  .mobileMenuIcon {
+    font-family: var(--font-family-icon);
+    font-size: var(--icon-l-size);
+    line-height: 1;
+  }
+
+  .logoArea {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   .logo {
@@ -166,12 +200,82 @@
   }
 
   .userButton {
-    gap: 6px;
-    padding: 4px 8px;
-    border-radius: 10px;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    gap: 0;
+
+    border: 0;
+    border-radius: 0;
+
+    color: var(--color-point);
+    background-color: transparent;
+
+    &:hover {
+      color: var(--color-point);
+      background-color: transparent;
+    }
   }
 
   .userIcon {
-    font-size: var(--icon-m-size);
+    font-size: var(--icon-l-size);
+  }
+
+  .userText {
+    display: none;
+  }
+
+  .mobileNavigation {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    display: block;
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    background-color: var(--color-white);
+    border-top: 1px solid transparent;
+    box-shadow: 0 8px 16px rgb(0 0 0 / 6%);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      max-height 0.3s ease,
+      opacity 0.2s ease,
+      visibility 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .mobileNavigationOpen {
+    max-height: 300px;
+    border-top-color: var(--color-light-gray);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .mobileMenuList {
+    margin: 0;
+    padding: 8px 16px 12px;
+    list-style: none;
+  }
+
+  .mobileMenuLink {
+    @include typo-body-m-plus;
+
+    display: block;
+    width: 100%;
+    padding: 12px 8px;
+    color: var(--color-light-gray);
+    text-decoration: none;
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease;
+
+    &:hover {
+      color: var(--color-point);
+    }
+  }
+
+  .mobileActive {
+    color: var(--color-point);
   }
 }

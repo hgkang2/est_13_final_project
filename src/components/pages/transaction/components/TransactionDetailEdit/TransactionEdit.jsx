@@ -17,6 +17,7 @@ export default function TransactionEdit({
   onClose,
   onCancel,
   onSave,
+  isMutating = false,
 }) {
   const [editForm, setEditForm] = useState(null);
   const [editErrors, setEditErrors] = useState({});
@@ -305,7 +306,7 @@ export default function TransactionEdit({
           </div>
         </section>
 
-        <section className={styles.detailField}>
+        <div className={styles.detailField}>
           <label htmlFor="editAmount">
             금액 <span className={styles.requiredMark}>*</span>
           </label>
@@ -329,9 +330,9 @@ export default function TransactionEdit({
           {editErrors.amount && (
             <span className={styles.errorMessage}>{editErrors.amount}</span>
           )}
-        </section>
+        </div>
         <div className={styles.detailFieldRow}>
-          <section className={styles.detailField}>
+          <div className={styles.detailField}>
             <div className={styles.formLabelRow}>
               <label htmlFor="editCategory">
                 카테고리 <span className={styles.requiredMark}>*</span>
@@ -389,9 +390,9 @@ export default function TransactionEdit({
             {editErrors.category && (
               <span className={styles.errorMessage}>{editErrors.category}</span>
             )}
-          </section>
+          </div>
 
-          <section className={styles.detailField}>
+          <div className={styles.detailField}>
             {editForm.type === "transfer" && editForm.isRecurring ? (
               <>
                 <label htmlFor="editRecurringDay">반복일</label>
@@ -454,7 +455,16 @@ export default function TransactionEdit({
               <button
                 type="button"
                 className={styles.timeButton}
-                onClick={() => timeInputRef.current?.showPicker()}
+                onClick={() => {
+                  const isFirefox = navigator.userAgent.includes("Firefox");
+
+                  if (isFirefox) {
+                    timeInputRef.current?.focus();
+                    return;
+                  }
+
+                  timeInputRef.current?.showPicker();
+                }}
               >
                 <span className="material-icons" aria-hidden="true">
                   schedule
@@ -467,12 +477,12 @@ export default function TransactionEdit({
                 )}
               </button>
             </div>
-          </section>
+          </div>
         </div>
 
         {editForm.type === "transfer" ? (
           <div className={styles.detailFieldRow}>
-            <section className={styles.detailField}>
+            <div className={styles.detailField}>
               <label htmlFor="editWithdrawAccount">
                 출금 계좌 <span className={styles.requiredMark}>*</span>
               </label>
@@ -507,9 +517,9 @@ export default function TransactionEdit({
                   {editErrors.withdrawAccount}
                 </span>
               )}
-            </section>
+            </div>
 
-            <section className={styles.detailField}>
+            <div className={styles.detailField}>
               <label htmlFor="editTransferDestination">
                 입금 대상 <span className={styles.requiredMark}>*</span>
               </label>
@@ -575,10 +585,10 @@ export default function TransactionEdit({
                   {editErrors.depositAccount || editErrors.savingGoal}
                 </span>
               )}
-            </section>
+            </div>
           </div>
         ) : (
-          <section className={styles.detailField}>
+          <div className={styles.detailField}>
             <label htmlFor="editPaymentMethod">
               결제수단 <span className={styles.requiredMark}>*</span>
             </label>
@@ -614,10 +624,10 @@ export default function TransactionEdit({
                 {editErrors.paymentMethod}
               </span>
             )}
-          </section>
+          </div>
         )}
 
-        <section className={styles.detailField}>
+        <div className={styles.detailField}>
           <label htmlFor="editContent">내용</label>
 
           <input
@@ -633,9 +643,9 @@ export default function TransactionEdit({
           <span className={styles.detailCharacterCount}>
             {editForm.content.length}/50
           </span>
-        </section>
+        </div>
 
-        <section className={styles.detailField}>
+        <div className={styles.detailField}>
           <label htmlFor="editMemo">메모</label>
 
           <input
@@ -651,7 +661,7 @@ export default function TransactionEdit({
           <span className={styles.detailCharacterCount}>
             {editForm.memo.length}/50
           </span>
-        </section>
+        </div>
         <input
           ref={attachmentInputRef}
           type="file"
@@ -669,7 +679,11 @@ export default function TransactionEdit({
             취소하기
           </button>
 
-          <button type="submit" className={styles.editSaveButton}>
+          <button
+            type="submit"
+            className={styles.editSaveButton}
+            disabled={isMutating}
+          >
             저장하기
           </button>
         </div>

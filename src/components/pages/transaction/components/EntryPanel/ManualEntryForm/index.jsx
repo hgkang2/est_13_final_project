@@ -45,8 +45,10 @@ export default function ManualEntryForm({
     <>
       <div className={styles.formFields}>
         <fieldset className={styles.formField}>
+          <legend className="sr-only">거래구분</legend>
+
           <div className={styles.formLabelRow}>
-            <legend className={styles.formLabel}>거래구분</legend>
+            <span className={styles.formLabel}>거래구분</span>
 
             <button
               type="button"
@@ -59,6 +61,7 @@ export default function ManualEntryForm({
               <span>초기화</span>
             </button>
           </div>
+
           <div className={styles.transactionTypeOptions}>
             <label
               className={`${styles.transactionTypeButton} ${
@@ -272,11 +275,14 @@ export default function ManualEntryForm({
             </div>
 
             <div className={styles.formFieldRow}>
-              <label className={styles.formField}>
+              <div className={styles.formField}>
                 <div className={styles.formLabelRow}>
-                  <span className={styles.formLabel}>
+                  <label
+                    htmlFor="transfer-category"
+                    className={styles.formLabel}
+                  >
                     카테고리 <span className={styles.requiredMark}>*</span>
-                  </span>
+                  </label>
 
                   {isTransfer && !transactionForm.savingGoal && (
                     <div className={styles.recurringControl}>
@@ -306,6 +312,7 @@ export default function ManualEntryForm({
                   }`}
                 >
                   <select
+                    id="transfer-category"
                     name="category"
                     value={transactionForm.category}
                     onChange={onTransactionFormChange}
@@ -330,13 +337,19 @@ export default function ManualEntryForm({
                     {transactionErrors.category}
                   </span>
                 )}
-              </label>
+              </div>
               {transactionForm.isRecurring ? (
-                <label className={styles.formField}>
-                  <span className={styles.formLabel}>반복일</span>
+                <div className={styles.formField}>
+                  <label
+                    htmlFor="transfer-recurring-day"
+                    className={styles.formLabel}
+                  >
+                    반복일
+                  </label>
 
                   <span className={styles.recurringDateBox}>
                     <select
+                      id="transfer-recurring-day"
                       name="recurringDay"
                       value={transactionForm.recurringDay}
                       onChange={onTransactionFormChange}
@@ -356,8 +369,17 @@ export default function ManualEntryForm({
                       calendar_month
                     </span>
                   </span>
+
                   <div className={styles.timePicker}>
+                    <label
+                      htmlFor="transfer-recurring-time"
+                      className="sr-only"
+                    >
+                      거래 시간
+                    </label>
+
                     <input
+                      id="transfer-recurring-time"
                       ref={timeInputRef}
                       type="time"
                       name="time"
@@ -377,6 +399,7 @@ export default function ManualEntryForm({
                         <span className={styles.timeAction}>변경</span>
                       )}
                     </button>
+
                     {!transactionForm.time && (
                       <span className={styles.timeHelp}>
                         <button
@@ -398,12 +421,12 @@ export default function ManualEntryForm({
                       </span>
                     )}
                   </div>
-                </label>
+                </div>
               ) : (
-                <label className={styles.formField}>
-                  <span className={styles.formLabel}>
+                <div className={styles.formField}>
+                  <label htmlFor="transfer-date" className={styles.formLabel}>
                     날짜 <span className={styles.requiredMark}>*</span>
-                  </span>
+                  </label>
 
                   <span
                     className={`${styles.dateInputBox} ${
@@ -411,6 +434,7 @@ export default function ManualEntryForm({
                     }`}
                   >
                     <input
+                      id="transfer-date"
                       type="date"
                       name="date"
                       value={transactionForm.date ?? ""}
@@ -418,13 +442,20 @@ export default function ManualEntryForm({
                       aria-invalid={Boolean(transactionErrors.date)}
                     />
                   </span>
+
                   {transactionErrors.date && (
                     <span className={styles.errorMessage}>
                       {transactionErrors.date}
                     </span>
                   )}
+
                   <div className={styles.timePicker}>
+                    <label htmlFor="transfer-time" className="sr-only">
+                      거래 시간
+                    </label>
+
                     <input
+                      id="transfer-time"
                       ref={timeInputRef}
                       type="time"
                       name="time"
@@ -444,6 +475,7 @@ export default function ManualEntryForm({
                         <span className={styles.timeAction}>변경</span>
                       )}
                     </button>
+
                     {!transactionForm.time && (
                       <span className={styles.timeHelp}>
                         <button
@@ -465,7 +497,7 @@ export default function ManualEntryForm({
                       </span>
                     )}
                   </div>
-                </label>
+                </div>
               )}
             </div>
           </>
@@ -509,16 +541,18 @@ export default function ManualEntryForm({
                 )}
               </label>
 
-              <label className={styles.formField}>
-                <span className={styles.formLabel}>
+              <div className={styles.formField}>
+                <label htmlFor="transaction-date" className={styles.formLabel}>
                   날짜 <span className={styles.requiredMark}>*</span>
-                </span>
+                </label>
+
                 <span
                   className={`${styles.dateInputBox} ${
                     transactionErrors.date ? styles.errorField : ""
                   }`}
                 >
                   <input
+                    id="transaction-date"
                     type="date"
                     name="date"
                     value={transactionForm.date ?? ""}
@@ -526,13 +560,20 @@ export default function ManualEntryForm({
                     aria-invalid={Boolean(transactionErrors.date)}
                   />
                 </span>
+
                 {transactionErrors.date && (
                   <span className={styles.errorMessage}>
                     {transactionErrors.date}
                   </span>
                 )}
+
                 <div className={styles.timePicker}>
+                  <label htmlFor="transaction-time" className="sr-only">
+                    거래 시간
+                  </label>
+
                   <input
+                    id="transaction-time"
                     ref={timeInputRef}
                     type="time"
                     name="time"
@@ -552,6 +593,7 @@ export default function ManualEntryForm({
                       <span className={styles.timeAction}>변경</span>
                     )}
                   </button>
+
                   {!transactionForm.time && (
                     <span className={styles.timeHelp}>
                       <button
@@ -573,7 +615,7 @@ export default function ManualEntryForm({
                     </span>
                   )}
                 </div>
-              </label>
+              </div>
             </div>
 
             <label className={styles.formField}>
@@ -659,8 +701,9 @@ export default function ManualEntryForm({
           <p>영수증, 거래내역 등을 거래 기록과 함께 보관하세요.</p>
         </div>
 
-        <label className={styles.attachmentBox}>
+        <div className={styles.attachmentBox}>
           <input
+            id="manual-transaction-attachment"
             type="file"
             name="attachment"
             accept="image/*"
@@ -671,9 +714,7 @@ export default function ManualEntryForm({
             <button
               type="button"
               className={styles.attachmentPreviewButton}
-              onClick={event => {
-                event.preventDefault();
-                event.stopPropagation();
+              onClick={() => {
                 receiptPreviewDialogRef.current?.showModal();
               }}
               aria-label="선택한 영수증 크게 보기"
@@ -706,7 +747,18 @@ export default function ManualEntryForm({
                 : "이 영역을 클릭하거나 이미지를 드래그 하세요."}
             </small>
           </span>
-        </label>
+
+          <label
+            htmlFor="manual-transaction-attachment"
+            className={styles.attachmentUploadLabel}
+          >
+            <span className="sr-only">
+              {transactionForm.attachment
+                ? "거래 자료 이미지 교체"
+                : "거래 자료 이미지 등록"}
+            </span>
+          </label>
+        </div>
       </section>
       {attachmentPreview && (
         <dialog

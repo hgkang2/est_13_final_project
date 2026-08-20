@@ -20,6 +20,7 @@
 }
 
 .summaryTitle {
+  margin: 0;
   color: var(--color-gray);
 
   @include typo-card-label;

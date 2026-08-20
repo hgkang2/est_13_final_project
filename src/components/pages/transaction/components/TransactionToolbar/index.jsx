@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./TransactionToolbar.module.scss";
 
 const transactionFilters = [
@@ -22,6 +22,12 @@ export default function TransactionToolbar({
 }) {
   const [isDetailFilterOpen, setIsDetailFilterOpen] = useState(false);
   const [detailFilterDraft, setDetailFilterDraft] = useState(detailFilters);
+  const startDateInputRef = useRef(null);
+  const endDateInputRef = useRef(null);
+
+  const handleOpenDatePicker = inputRef => {
+    inputRef.current?.showPicker();
+  };
 
   useEffect(() => {
     setDetailFilterDraft(detailFilters);
@@ -72,23 +78,51 @@ export default function TransactionToolbar({
 
       <div className={styles.mobileToolbarRow}>
         <div className={styles.dateButton}>
-          <input
-            type="date"
-            name="startDate"
-            value={dateRange.startDate}
-            onChange={onDateRangeChange}
-            aria-label="조회 시작일"
-          />
+          <div className={styles.dateField}>
+            <button
+              type="button"
+              className={styles.datePickerButton}
+              onClick={() => handleOpenDatePicker(startDateInputRef)}
+              aria-label="조회 시작일 선택"
+            >
+              {dateRange.startDate.replaceAll("-", ".")}
+            </button>
+
+            <input
+              ref={startDateInputRef}
+              type="date"
+              name="startDate"
+              value={dateRange.startDate}
+              onChange={onDateRangeChange}
+              className={styles.nativeDateInput}
+              tabIndex={-1}
+              aria-hidden="true"
+            />
+          </div>
 
           <span>-</span>
 
-          <input
-            type="date"
-            name="endDate"
-            value={dateRange.endDate}
-            onChange={onDateRangeChange}
-            aria-label="조회 종료일"
-          />
+          <div className={styles.dateField}>
+            <button
+              type="button"
+              className={styles.datePickerButton}
+              onClick={() => handleOpenDatePicker(endDateInputRef)}
+              aria-label="조회 종료일 선택"
+            >
+              {dateRange.endDate.replaceAll("-", ".")}
+            </button>
+
+            <input
+              ref={endDateInputRef}
+              type="date"
+              name="endDate"
+              value={dateRange.endDate}
+              onChange={onDateRangeChange}
+              className={styles.nativeDateInput}
+              tabIndex={-1}
+              aria-hidden="true"
+            />
+          </div>
 
           {isCurrentMonthRange ? (
             <span className="material-icons" aria-hidden="true">
@@ -108,7 +142,6 @@ export default function TransactionToolbar({
             </button>
           )}
         </div>
-
         <div className={styles.toolbarActions}>
           <div className={styles.filterAction}>
             <button
@@ -240,27 +273,26 @@ export default function TransactionToolbar({
               </div>
             )}
           </div>
+          <div className={styles.preparingButton}>
+            <button
+              type="button"
+              className={`${styles.toolbarButton} ${styles.exportButton}`}
+              aria-describedby="export-preparing-tooltip"
+            >
+              <span className="material-icons" aria-hidden="true">
+                file_download
+              </span>
+              <span>내보내기</span>
+            </button>
 
-          <button
-            type="button"
-            className={`${styles.toolbarButton} ${styles.exportButton}`}
-          >
-            <span className="material-icons" aria-hidden="true">
-              file_download
+            <span
+              id="export-preparing-tooltip"
+              className={styles.preparingTooltip}
+              role="tooltip"
+            >
+              서비스 준비 중이에요.
             </span>
-
-            <span>내보내기</span>
-          </button>
-
-          {/* <button
-            type="button"
-            className={styles.moreButton}
-            aria-label="거래 목록 추가 메뉴"
-          >
-            <span className="material-icons" aria-hidden="true">
-              more_vert
-            </span>
-          </button> */}
+          </div>
         </div>
       </div>
     </div>

@@ -2,7 +2,75 @@ import Image from "next/image";
 import styles from "../SubHome.module.scss";
 import MoreButton from "./MoreButton";
 
-export default function ChallengeCard({ hasChallenge }) {
+export default function ChallengeCard({ challenge }) {
+  const activeMission = challenge?.activeMission ?? null;
+  const weekStates = challenge?.weekStates ?? [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ];
+
+  const todayIndex = challenge?.todayIndex ?? -1;
+  const weeklyCompletedCount = challenge?.weeklyCompletedCount ?? 0;
+  const isTodayCompleted = Boolean(challenge?.isTodayCompleted);
+
+  const hasTodayMission = Boolean(activeMission);
+  const isWeekCompleted = weeklyCompletedCount === 7;
+
+  const getChallengeStatusText = () => {
+    if (isWeekCompleted) {
+      return "7일 모두 달성!";
+    }
+
+    if (isTodayCompleted) {
+      return "오늘 미션 완료!";
+    }
+
+    if (hasTodayMission) {
+      return "오늘 미션 진행 중";
+    }
+
+    if (weeklyCompletedCount > 0) {
+      return `${weeklyCompletedCount}일 성공 중`;
+    }
+
+    return null;
+  };
+
+  const getChallengeMessage = () => {
+    if (isWeekCompleted) {
+      return "이번 주 7일 챌린지를 모두 달성했어요!";
+    }
+
+    if (isTodayCompleted) {
+      return `오늘 미션까지 완료! 이번 주 ${weeklyCompletedCount}일 성공했어요.`;
+    }
+
+    if (hasTodayMission && weeklyCompletedCount === 6) {
+      return "오늘 미션까지 성공하면 7일 달성!";
+    }
+
+    if (hasTodayMission && weeklyCompletedCount > 0) {
+      return `오늘 미션 진행 중! 이번 주 ${weeklyCompletedCount}일 성공했어요.`;
+    }
+
+    if (hasTodayMission) {
+      return "오늘 미션에 도전하고 첫 새싹을 채워보세요.";
+    }
+
+    if (weeklyCompletedCount > 0) {
+      return `이번 주 ${weeklyCompletedCount}일 성공했어요. 오늘 미션도 이어가보세요.`;
+    }
+
+    return "챌린지를 시작하면 매일 새싹 스탬프가 채워져요.";
+  };
+
+  const challengeStatusText = getChallengeStatusText();
+
   return (
     <article className={styles.challengeCard} aria-labelledby="challenge-title">
       <div className={styles.cardInner}>
@@ -16,7 +84,7 @@ export default function ChallengeCard({ hasChallenge }) {
           <div className={styles.challengeSummary}>
             <h3>7일 소비 챌린지</h3>
 
-            {hasChallenge && <strong>6일째 진행 중!</strong>}
+            {challengeStatusText && <strong>{challengeStatusText}</strong>}
           </div>
 
           <div className={styles.challengeCalendar}>
@@ -27,12 +95,11 @@ export default function ChallengeCard({ hasChallenge }) {
             </div>
 
             <div className={styles.challengeDays}>
-              {[1, 2, 3, 4, 5, 6, 7].map(day => {
-                const isCompleted = hasChallenge && day < 7;
-                const isCurrent = hasChallenge && day === 6;
+              {weekStates.map((isCompleted, index) => {
+                const isCurrent = index === todayIndex;
 
                 return (
-                  <div key={day} className={styles.challengeDay}>
+                  <div key={index} className={styles.challengeDay}>
                     <div
                       className={`${styles.challengeIcon} ${
                         isCurrent ? styles.currentChallengeIcon : ""
@@ -47,18 +114,14 @@ export default function ChallengeCard({ hasChallenge }) {
                       />
                     </div>
 
-                    <span>{day}일차</span>
+                    <span>{index + 1}일차</span>
                   </div>
                 );
               })}
             </div>
           </div>
 
-          <p className={styles.challengeMessage}>
-            {hasChallenge
-              ? "하루만 더 성공하면 7일 달성!"
-              : "챌린지를 시작하면 매일 새싹 스탬프가 채워져요."}
-          </p>
+          <p className={styles.challengeMessage}>{getChallengeMessage()}</p>
         </div>
       </div>
     </article>

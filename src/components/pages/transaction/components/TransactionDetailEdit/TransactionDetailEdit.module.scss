@@ -500,6 +500,49 @@
   text-underline-offset: 2px;
 }
 
+@supports (-moz-appearance: none) {
+  .timePicker {
+    align-items: center;
+    gap: 8px;
+  }
+
+  .timePicker::before {
+    content: "시간 변경";
+    flex-shrink: 0;
+    color: var(--color-gray);
+
+    @include typo-body-s-plus;
+  }
+
+  .hiddenTimeInput {
+    position: static;
+    width: auto;
+    height: auto;
+    opacity: 1;
+    pointer-events: auto;
+
+    padding: 4px 8px;
+    border: 1px solid var(--color-border-gray);
+    border-radius: 6px;
+    outline: 0;
+
+    color: var(--color-gray);
+    background-color: var(--color-white);
+
+    cursor: pointer;
+
+    @include typo-body-s-plus;
+  }
+
+  .hiddenTimeInput:focus {
+    border-color: var(--color-point);
+  }
+
+  .timeButton {
+    display: none;
+  }
+}
+
 .addAttachmentButton {
   display: flex;
   width: 100%;
