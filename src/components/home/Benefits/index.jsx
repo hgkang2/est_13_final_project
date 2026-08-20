@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import styles from "./Benefits.module.scss";
 
@@ -29,6 +29,13 @@ const benefits = [
 
 export default function Benefits() {
   const [selected, setSelected] = useState(0);
+
+  useEffect(() => {
+    benefits.forEach((item) => {
+      const img = new window.Image();
+      img.src = item.image;
+    });
+  }, []);
 
   return (
     <section className={styles.benefits}>
