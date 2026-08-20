@@ -26,6 +26,7 @@
   width: 100%;
   max-width: 1634px;
   margin: 0 auto;
+  padding-bottom: 16px;
 }
 
 .main {
@@ -515,6 +516,10 @@
 /* 모바일 */
 
 @media (max-width: 600px) {
+  .pageContent {
+    padding-bottom: 0;
+  }
+
   .profile {
     padding: 8px;
   }

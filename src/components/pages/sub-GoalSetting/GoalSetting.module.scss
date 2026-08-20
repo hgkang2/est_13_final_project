@@ -1,29 +1,5 @@
 @use "../../../styles/mixins" as *;
 
-/* This page keeps the fixed bottom navigation fully inside the viewport. */
-.goalSettingBottomTab {
-  :global(nav) {
-    box-sizing: border-box;
-  }
-
-  :global(nav > ul) {
-    box-sizing: border-box;
-  }
-}
-
-@include tablet {
-  .goalSettingBottomTab {
-    :global(nav) {
-      height: calc(69px + env(safe-area-inset-bottom));
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-
-    :global(nav > ul) {
-      height: 69px;
-    }
-  }
-}
-
 /* ========================================
    전체 페이지
 ======================================== */
@@ -751,10 +727,6 @@
 ======================================== */
 
 @include tablet {
-  .goalSettingPage {
-    padding-bottom: calc(69px + env(safe-area-inset-bottom));
-  }
-
   .goalSettingContainer {
     padding-top: 16px;
     padding-bottom: 16px;
@@ -927,6 +899,7 @@
   width: 100%;
   height: auto;
   overflow: visible;
+  padding-bottom: 16px;
 }
 
 .goalSettingGoalList {
@@ -1267,6 +1240,10 @@
 ======================================== */
 
 @media (max-width: 600px) {
+  .goalSettingGoalListSection {
+    padding-bottom: 0;
+  }
+
   .goalSettingPage {
     overflow-x: hidden;
   }
