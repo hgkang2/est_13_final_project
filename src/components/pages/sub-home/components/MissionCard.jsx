@@ -105,6 +105,7 @@ export default function MissionCard({
             width={220}
             height={220}
             loading="eager"
+            fetchPriority="high"
           />
         </div>
       </div>
