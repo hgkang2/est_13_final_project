@@ -30,6 +30,10 @@ $mission-grid-mobile-breakpoint: 480px;
 }
 
 .pageHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
   margin-bottom: 24px;
 
   .title {
@@ -40,7 +44,20 @@ $mission-grid-mobile-breakpoint: 480px;
   .subtitle {
     @include typo-heading-xs;
     color: var(--color-gray);
-    margin-top: 4px;
+  }
+}
+
+@media (max-width: 1272px) {
+  .pageHeader {
+    .title {
+      font-size: 24px;
+      line-height: 36px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      line-height: 24px;
+    }
   }
 }
 
