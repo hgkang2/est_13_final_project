@@ -2347,3 +2347,13 @@
 .saving_transfer {
   color: var(--color-transfer-savings);
 }
+
+@supports (-moz-appearance: none) {
+  .outlineButton :global(.material-icons) {
+    transform: translateY(2px);
+  }
+
+  .outlineButton:hover :global(.material-icons) {
+    transform: translate(4px, 2px);
+  }
+}

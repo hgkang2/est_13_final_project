@@ -5,3 +5,10 @@
 @use "../styles/base";
 @use "../styles/auth";
 @use "../styles/not-found";
+
+@supports (-moz-appearance: none) {
+  .material-icons,
+  .material-icons-outlined {
+    transform: translateY(1px);
+  }
+}
