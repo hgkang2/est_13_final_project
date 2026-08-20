@@ -281,13 +281,27 @@ export default function MultipleEntryForm({
             <span>행 추가</span>
           </button>
 
-          <button type="button" className={styles.excelDownloadButton}>
-            <span className="material-icons" aria-hidden="true">
-              file_download
-            </span>
+          <div className={styles.preparingButton}>
+            <button
+              type="button"
+              className={styles.excelDownloadButton}
+              aria-describedby="excel-preparing-tooltip"
+            >
+              <span className="material-icons" aria-hidden="true">
+                file_download
+              </span>
 
-            <span>엑셀 파일로 다운로드</span>
-          </button>
+              <span>엑셀 파일로 다운로드</span>
+            </button>
+
+            <span
+              id="excel-preparing-tooltip"
+              className={styles.preparingTooltip}
+              role="tooltip"
+            >
+              서비스 준비 중이에요.
+            </span>
+          </div>
         </div>
 
         <div className={styles.multipleRightActions}>

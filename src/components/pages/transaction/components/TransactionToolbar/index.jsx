@@ -273,27 +273,26 @@ export default function TransactionToolbar({
               </div>
             )}
           </div>
+          <div className={styles.preparingButton}>
+            <button
+              type="button"
+              className={`${styles.toolbarButton} ${styles.exportButton}`}
+              aria-describedby="export-preparing-tooltip"
+            >
+              <span className="material-icons" aria-hidden="true">
+                file_download
+              </span>
+              <span>내보내기</span>
+            </button>
 
-          <button
-            type="button"
-            className={`${styles.toolbarButton} ${styles.exportButton}`}
-          >
-            <span className="material-icons" aria-hidden="true">
-              file_download
+            <span
+              id="export-preparing-tooltip"
+              className={styles.preparingTooltip}
+              role="tooltip"
+            >
+              서비스 준비 중이에요.
             </span>
-
-            <span>내보내기</span>
-          </button>
-
-          {/* <button
-            type="button"
-            className={styles.moreButton}
-            aria-label="거래 목록 추가 메뉴"
-          >
-            <span className="material-icons" aria-hidden="true">
-              more_vert
-            </span>
-          </button> */}
+          </div>
         </div>
       </div>
     </div>

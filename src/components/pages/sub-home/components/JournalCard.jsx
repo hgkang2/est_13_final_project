@@ -28,7 +28,15 @@ export default function JournalCard({ journals = [] }) {
             <h2 id="journal-card-title">이번 주 소비 그림일기</h2>
           </div>
 
-          {hasJournal && <MoreButton>그림일기로 이동</MoreButton>}
+          {hasJournal && (
+            <div className={styles.preparingButton}>
+              <MoreButton>그림일기로 이동</MoreButton>
+
+              <span className={styles.preparingTooltip} role="tooltip">
+                서비스 준비 중이에요.
+              </span>
+            </div>
+          )}
         </header>
 
         {hasJournal ? (
@@ -90,13 +98,18 @@ export default function JournalCard({ journals = [] }) {
                 오늘의 소비를 기록하면 첫 그림일기가 완성돼요.
               </span>
 
-              <button type="button" className={styles.journalEmptyButton}>
-                <span>그림일기 보러가기</span>
+              <div className={styles.preparingButton}>
+                <button type="button" className={styles.journalEmptyButton}>
+                  <span>그림일기 보러가기</span>
+                  <span className="material-icons" aria-hidden="true">
+                    arrow_forward
+                  </span>
+                </button>
 
-                <span className="material-icons" aria-hidden="true">
-                  arrow_forward
+                <span className={styles.preparingTooltip} role="tooltip">
+                  서비스 준비 중이에요.
                 </span>
-              </button>
+              </div>
             </div>
           </div>
         )}
