@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 
 import Sidebar from "@/components/layout/Sidebar";
@@ -17,6 +18,7 @@ import ProfileEditForm from "./sections/ProfileEditForm";
 import styles from "./MyPage.module.scss";
 
 export default function MyPage() {
+  const router = useRouter();
   const [supabase] = useState(() => createClient());
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [profile, setProfile] = useState({
@@ -30,7 +32,8 @@ export default function MyPage() {
   const [dayCount, setDayCount] = useState(0);
   const [activeGoalCount, setActiveGoalCount] = useState(0);
   const [monthlySavingAmount, setMonthlySavingAmount] = useState(0);
-  const [previousMonthlySavingAmount, setPreviousMonthlySavingAmount] = useState(0);
+  const [previousMonthlySavingAmount, setPreviousMonthlySavingAmount] =
+    useState(0);
   const [monthlyExpense, setMonthlyExpense] = useState(0);
   const [monthlyAiAnalysisCount, setMonthlyAiAnalysisCount] = useState(0);
   const [averageGoalRate, setAverageGoalRate] = useState(0);
@@ -39,8 +42,12 @@ export default function MyPage() {
 
   useEffect(() => {
     const loadProfile = async () => {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError || !user) return setError("사용자 정보를 불러오지 못했습니다.");
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+      if (userError || !user)
+        return setError("사용자 정보를 불러오지 못했습니다.");
 
       const { data, error: profileError } = await supabase
         .from("profiles")
@@ -161,10 +168,14 @@ export default function MyPage() {
     loadProfile();
   }, [supabase]);
 
-  const handleSave = async (updatedProfile) => {
+  const handleSave = async updatedProfile => {
     setError("");
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) throw new Error("로그인 정보를 확인할 수 없습니다.");
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+    if (userError || !user)
+      throw new Error("로그인 정보를 확인할 수 없습니다.");
 
     const { error: profileError } = await supabase
       .from("profiles")
@@ -179,15 +190,32 @@ export default function MyPage() {
         notification: updatedProfile.notification,
       },
     };
-    if (updatedProfile.email !== user.email) authChanges.email = updatedProfile.email;
+    if (updatedProfile.email !== user.email)
+      authChanges.email = updatedProfile.email;
     if (updatedProfile.password) authChanges.password = updatedProfile.password;
 
     const { error: authError } = await supabase.auth.updateUser(authChanges);
     if (authError) throw authError;
 
-    setProfile((previous) => ({ ...previous, ...updatedProfile, password: undefined }));
+    setProfile(previous => ({
+      ...previous,
+      ...updatedProfile,
+      password: undefined,
+    }));
 
     setIsEditOpen(false);
+  };
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.error("로그아웃 실패:", error);
+      return;
+    }
+
+    router.push("/login");
+    router.refresh();
   };
 
   return (
@@ -227,6 +255,22 @@ export default function MyPage() {
             />
             <MessageSection />
             {error && <p role="alert">{error}</p>}
+
+            <div className={styles.mobileLogoutArea}>
+              <button
+                type="button"
+                className={styles.mobileLogoutButton}
+                onClick={handleLogout}
+              >
+                <span
+                  className={`material-icons-outlined ${styles.mobileLogoutIcon}`}
+                  aria-hidden="true"
+                >
+                  logout
+                </span>
+                <span>로그아웃</span>
+              </button>
+            </div>
           </main>
 
           {isEditOpen && (
