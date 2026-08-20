@@ -2347,3 +2347,54 @@
 .saving_transfer {
   color: var(--color-transfer-savings);
 }
+
+@supports (-moz-appearance: none) {
+  .outlineButton :global(.material-icons) {
+    transform: translateY(2px);
+  }
+
+  .outlineButton:hover :global(.material-icons) {
+    transform: translate(4px, 2px);
+  }
+}
+
+.preparingButton {
+  position: relative;
+  width: fit-content;
+}
+
+.preparingTooltip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  z-index: 10;
+
+  width: max-content;
+  padding: 6px 10px;
+
+  border-radius: 8px;
+  background-color: var(--color-white);
+  color: var(--color-point);
+  border: 1px solid var(--color-border-gray);
+
+  font-size: 12px;
+  line-height: 18px;
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  transform: translateX(-50%) translateY(4px);
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0.2s ease;
+}
+
+.preparingButton:hover .preparingTooltip,
+.preparingButton:has(:focus-visible) .preparingTooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}

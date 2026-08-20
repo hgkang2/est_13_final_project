@@ -209,9 +209,7 @@ export default function TransactionList({
             <div className={styles.memoCell}>메모</div>
 
             <div className={styles.actionCell}>
-              <span className="material-icons" aria-hidden="true">
-                more_vert
-              </span>
+              <div className={styles.actionCell} aria-hidden="true" />
             </div>
           </div>
 
@@ -383,16 +381,17 @@ export default function TransactionList({
                   <button
                     type="button"
                     className={styles.actionCell}
-                    aria-label={`${transaction.content} 거래 메뉴`}
+                    aria-label={`${transaction.content} 거래 상세보기`}
                     onClick={event => {
                       event.stopPropagation();
+                      onOpenDetail(transaction);
                     }}
                   >
                     <span
                       className={`material-icons ${styles.desktopActionIcon}`}
                       aria-hidden="true"
                     >
-                      more_vert
+                      chevron_right
                     </span>
 
                     <span

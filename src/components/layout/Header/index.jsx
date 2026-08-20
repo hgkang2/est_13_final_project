@@ -3,10 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
 import Logo from "@/components/common/Logo";
 import { createClient } from "@/utils/supabase/client";
-
 import styles from "./Header.module.scss";
 
 const menus = [
@@ -44,6 +42,8 @@ export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("");
 
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   const isIntroducePage = pathname.startsWith("/introduce");
 
   useEffect(() => {
@@ -58,7 +58,6 @@ export default function Header() {
         .filter(Boolean);
 
       const headerOffset = 150;
-
       let currentSection = "service";
 
       sections.forEach(section => {
@@ -104,10 +103,8 @@ export default function Header() {
 
       if (profileError) {
         console.error("프로필 조회 실패:", profileError);
-
         setIsLoggedIn(true);
         setUserName("");
-
         return;
       }
 
@@ -116,19 +113,54 @@ export default function Header() {
     };
 
     fetchUser();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(event => {
+      if (event === "SIGNED_OUT") {
+        setIsLoggedIn(false);
+        setUserName("");
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
+  
+  const handleMobileMenuClick = () => {
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <header
       className={`${styles.header} ${isIntroducePage ? styles.sticky : ""}`}
     >
       <div className={styles.inner}>
+        <button
+          type="button"
+          className={styles.mobileMenuButton}
+          aria-label={isMobileMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
+          aria-expanded={isMobileMenuOpen}
+          aria-controls="mobile-navigation"
+          onClick={() => setIsMobileMenuOpen(prev => !prev)}
+        >
+          <span
+            className={`material-icons ${styles.mobileMenuIcon}`}
+            aria-hidden="true"
+          >
+            {isMobileMenuOpen ? "close" : "menu"}
+          </span>
+        </button>
+
+        {/* 로고 */}
         <div className={styles.logoArea}>
           <Link href="/" aria-label="모음 홈으로 이동">
             <Logo className={styles.logo} />
           </Link>
         </div>
 
+        {/* PC / 태블릿 GNB */}
         <nav className={styles.navigation} aria-label="주요 메뉴">
           <ul className={styles.menuList}>
             {menus.map(menu => (
@@ -136,7 +168,11 @@ export default function Header() {
                 <Link
                   href={menu.href}
                   prefetch={false}
-                  className={`${styles.menuLink} ${isIntroducePage && activeSection === menu.id ? styles.active : ""}`}
+                  className={`${styles.menuLink} ${
+                    isIntroducePage && activeSection === menu.id
+                      ? styles.active
+                      : ""
+                  }`}
                 >
                   {menu.label}
                 </Link>
@@ -148,6 +184,7 @@ export default function Header() {
         <Link
           className={styles.userButton}
           href={isLoggedIn ? "/my-page" : "/login"}
+          aria-label={isLoggedIn ? "마이페이지로 이동" : "로그인 페이지로 이동"}
         >
           <span
             className={`material-icons ${styles.userIcon}`}
@@ -156,9 +193,38 @@ export default function Header() {
             account_circle
           </span>
 
-          <span>{isLoggedIn ? `${userName || "모아"}님` : "시작하기"}</span>
+          <span className={styles.userText}>
+            {isLoggedIn ? `${userName || "모아"}님` : "시작하기"}
+          </span>
         </Link>
       </div>
+
+      <nav
+        id="mobile-navigation"
+        className={`${styles.mobileNavigation} ${
+          isMobileMenuOpen ? styles.mobileNavigationOpen : ""
+        }`}
+        aria-label="모바일 주요 메뉴"
+      >
+        <ul className={styles.mobileMenuList}>
+          {menus.map(menu => (
+            <li key={menu.id}>
+              <Link
+                href={menu.href}
+                prefetch={false}
+                onClick={handleMobileMenuClick}
+                className={`${styles.mobileMenuLink} ${
+                  isIntroducePage && activeSection === menu.id
+                    ? styles.mobileActive
+                    : ""
+                }`}
+              >
+                {menu.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
     </header>
   );
 }

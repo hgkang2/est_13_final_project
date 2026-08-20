@@ -44,8 +44,12 @@
 
 /* 페이지 헤더 */
 .pageHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
   margin-bottom: 24px;
-
+  
   .title {
     @include typo-heading-s-plus;
     color: var(--color-text);
@@ -55,6 +59,20 @@
   .subtitle {
     @include typo-heading-xs;
     color: var(--color-gray);
+  }
+}
+
+@media (max-width: 1272px) {
+  .pageHeader {
+    .title {
+      font-size: 24px;
+      line-height: 36px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      line-height: 24px;
+    }
   }
 }
 

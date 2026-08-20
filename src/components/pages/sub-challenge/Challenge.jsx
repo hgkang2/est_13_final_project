@@ -702,12 +702,18 @@ export default function Challenge() {
                     >
                       <h3 id="journal-card-title">나의 소비 기록</h3>
                       {hasJournal && (
-                        <span
-                          className={styles.moreText}
-                          style={{ cursor: "pointer" }}
-                        >
-                          기록 더보기 &gt;
-                        </span>
+                        <div className={styles.preparingButton}>
+                          <span className={styles.moreText} tabIndex={0}>
+                            기록 더보기 &gt;
+                          </span>
+
+                          <span
+                            className={styles.preparingTooltip}
+                            role="tooltip"
+                          >
+                            서비스 준비 중이에요.
+                          </span>
+                        </div>
                       )}
                     </div>
 

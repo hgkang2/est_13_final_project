@@ -455,7 +455,16 @@ export default function TransactionEdit({
               <button
                 type="button"
                 className={styles.timeButton}
-                onClick={() => timeInputRef.current?.showPicker()}
+                onClick={() => {
+                  const isFirefox = navigator.userAgent.includes("Firefox");
+
+                  if (isFirefox) {
+                    timeInputRef.current?.focus();
+                    return;
+                  }
+
+                  timeInputRef.current?.showPicker();
+                }}
               >
                 <span className="material-icons" aria-hidden="true">
                   schedule
