@@ -20,25 +20,15 @@
   background-color: var(--color-white); /* 흰색으로 통일 */
 }
 
-// .container {
-//   padding: 32px 40px;
-//   max-width: var(--container-max-width);
-//   width: 100%;
-//   margin: 0 auto;
-//   box-sizing: border-box;
-
-//   @media (max-width: 768px) {
-//     padding: 20px 16px;
-//   }
-// }
-
-.main {
-  flex: 1;
-  min-width: 0;
-  padding: 32px 0;
+.container {
+  padding: 32px 40px;
+  max-width: var(--container-max-width);
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
 
   @media (max-width: 768px) {
-    padding: 20px 0;
+    padding: 20px 16px;
   }
 }
 
@@ -49,7 +39,7 @@
   align-items: flex-start;
   gap: 16px;
   margin-bottom: 24px;
-  
+
   .title {
     @include typo-heading-s-plus;
     color: var(--color-text);
