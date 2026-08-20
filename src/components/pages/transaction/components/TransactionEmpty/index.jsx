@@ -8,8 +8,8 @@ const emptyContents = {
   },
   filter: {
     icon: "filter_alt_off",
-    title: "조건에 맞는 소비 기록이 없어요.",
-    description: "다른 조건을 선택해서 거래 내역을 확인해보세요.",
+    title: "검색 결과가 없어요.",
+    description: "다른 검색어나 필터 조건으로 다시 확인해보세요.",
   },
 };
 

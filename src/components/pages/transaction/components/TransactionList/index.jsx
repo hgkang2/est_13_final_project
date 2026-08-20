@@ -10,8 +10,10 @@ function formatAmount(amount) {
 
 export default function TransactionList({
   isLoading,
+  isLoadingMore = false,
   hasTransactionData,
   visibleTransactions,
+  hasActiveFilters,
   selectedIds,
   onToggleAll,
   onToggleTransaction,
@@ -96,6 +98,8 @@ export default function TransactionList({
   );
 
   const handleLoadMore = async () => {
+    if (isLoadingMore) return;
+
     if (hasMoreTransactions) {
       setIsExpanded(true);
       await onLoadMore();
@@ -329,7 +333,7 @@ export default function TransactionList({
 
                   <time
                     className={styles.dateCell}
-                    dateTime={`${transaction.date}T${transaction.time}`}
+                    dateTime={`${transaction.dateValue}T${transaction.time}`}
                   >
                     <span className={styles.transactionDate}>
                       {transaction.date}
@@ -431,6 +435,7 @@ export default function TransactionList({
                 type="button"
                 className={styles.loadMoreButton}
                 onClick={handleLoadMore}
+                disabled={isLoadingMore}
               >
                 <span>
                   {isExpanded && !hasMoreTransactions
@@ -448,7 +453,7 @@ export default function TransactionList({
           )}
         </>
       ) : (
-        <TransactionEmpty />
+        <TransactionEmpty type={hasActiveFilters ? "filter" : "empty"} />
       )}
     </div>
   );

@@ -35,10 +35,10 @@ export default function CopyDateModal({ copyTarget, onClose, onSelectDate }) {
             className={styles.copyDateOption}
             onClick={() => onSelectDate("today")}
           >
-            <div>
+            <span className={styles.copyDateOptionText}>
               <strong>오늘 날짜로 복사</strong>
               <span>오늘의 거래로 새롭게 기록해요.</span>
-            </div>
+            </span>
 
             <span className="material-icons" aria-hidden="true">
               chevron_right
@@ -50,10 +50,10 @@ export default function CopyDateModal({ copyTarget, onClose, onSelectDate }) {
             className={styles.copyDateOption}
             onClick={() => onSelectDate("original")}
           >
-            <div>
+            <span className={styles.copyDateOptionText}>
               <strong>기존 작성일로 복사</strong>
               <span>{copyTarget?.date} 날짜를 그대로 사용해요.</span>
-            </div>
+            </span>
 
             <span className="material-icons" aria-hidden="true">
               chevron_right

@@ -27,7 +27,7 @@ export default function SummaryCards({
         aria-busy="true"
       >
         {Array.from({ length: 4 }, (_, index) => (
-          <article
+          <div
             className={`${styles.summaryCard} ${styles.summarySkeleton}`}
             key={index}
           >
@@ -42,7 +42,7 @@ export default function SummaryCards({
             <span
               className={`${styles.summarySkeletonBlock} ${styles.summarySkeletonMeta}`}
             />
-          </article>
+          </div>
         ))}
       </section>
     );
@@ -105,7 +105,7 @@ export default function SummaryCards({
     <section className={styles.summarySection} aria-label="이번 달 소비 요약">
       {summaryCards.map(card => (
         <article className={styles.summaryCard} key={card.id}>
-          <p className={styles.summaryTitle}>{card.title}</p>
+          <h2 className={styles.summaryTitle}>{card.title}</h2>
 
           <strong className={styles.summaryValue}>
             {hasTransactionData ? card.value : card.emptyValue}

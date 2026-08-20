@@ -53,13 +53,15 @@ export default function Header() {
     }
 
     const handleScroll = () => {
-      const sections = menus.map((menu) => document.getElementById(menu.id)).filter(Boolean);
+      const sections = menus
+        .map(menu => document.getElementById(menu.id))
+        .filter(Boolean);
 
       const headerOffset = 150;
 
       let currentSection = "service";
 
-      sections.forEach((section) => {
+      sections.forEach(section => {
         const sectionTop = section.offsetTop;
 
         if (window.scrollY >= sectionTop - headerOffset) {
@@ -117,7 +119,9 @@ export default function Header() {
   }, []);
 
   return (
-    <header className={`${styles.header} ${isIntroducePage ? styles.sticky : ""}`}>
+    <header
+      className={`${styles.header} ${isIntroducePage ? styles.sticky : ""}`}
+    >
       <div className={styles.inner}>
         <div className={styles.logoArea}>
           <Link href="/" aria-label="모음 홈으로 이동">
@@ -127,10 +131,11 @@ export default function Header() {
 
         <nav className={styles.navigation} aria-label="주요 메뉴">
           <ul className={styles.menuList}>
-            {menus.map((menu) => (
+            {menus.map(menu => (
               <li key={menu.id}>
                 <Link
                   href={menu.href}
+                  prefetch={false}
                   className={`${styles.menuLink} ${isIntroducePage && activeSection === menu.id ? styles.active : ""}`}
                 >
                   {menu.label}
@@ -140,8 +145,14 @@ export default function Header() {
           </ul>
         </nav>
 
-        <Link className={styles.userButton} href={isLoggedIn ? "/my-page" : "/login"}>
-          <span className={`material-icons ${styles.userIcon}`} aria-hidden="true">
+        <Link
+          className={styles.userButton}
+          href={isLoggedIn ? "/my-page" : "/login"}
+        >
+          <span
+            className={`material-icons ${styles.userIcon}`}
+            aria-hidden="true"
+          >
             account_circle
           </span>
 

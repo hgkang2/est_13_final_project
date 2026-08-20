@@ -12,12 +12,14 @@ export default function MultipleEntryForm({
   onRemoveMultipleRow,
   onCancelMultipleEntry,
   onMultipleSubmit,
+  isMutating = false,
 }) {
   return (
     <div className={styles.multipleEntryContent}>
       <section className={styles.multipleTable}>
+        <h3 className="sr-only">다건 거래 입력 목록</h3>
+
         <div className={styles.multipleTableHeader}>
-          <div className={styles.multipleNumberHeader} />
           <div>날짜</div>
           <div>구분</div>
           <div>카테고리</div>
@@ -301,6 +303,7 @@ export default function MultipleEntryForm({
             type="button"
             className={styles.saveMultipleButton}
             onClick={onMultipleSubmit}
+            disabled={isMutating}
           >
             {multipleRowStatus.available}건 저장하기
           </button>

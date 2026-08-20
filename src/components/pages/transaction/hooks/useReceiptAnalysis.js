@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { analyzeReceipt } from "../services/receiptService";
 import { validateReceiptFile } from "../utils/transactionValidator";
+import {
+  initialAiTransactionForm,
+  initialAiTypeValues,
+} from "./useTransactionForm";
 
 // AI 영수증 분석 상태와 처리
 export const useReceiptAnalysis = ({
@@ -26,10 +30,16 @@ export const useReceiptAnalysis = ({
       return;
     }
 
-    setAiTransactionForm(prevForm => ({
-      ...prevForm,
+    setAiTransactionForm({
+      ...initialAiTransactionForm,
       receipt: file,
-    }));
+    });
+
+    setAiTypeValues(initialAiTypeValues);
+    setAiTransactionErrors({});
+    setAiErrorMessage("");
+    setAiPreview("");
+    setAiStatus("analyzing");
 
     const reader = new FileReader();
 
@@ -37,8 +47,6 @@ export const useReceiptAnalysis = ({
       const imageDataUrl = reader.result;
 
       setAiPreview(imageDataUrl);
-      setAiErrorMessage("");
-      setAiStatus("analyzing");
 
       const { data, error } = await analyzeReceipt(supabase, {
         imageDataUrl,
@@ -53,9 +61,6 @@ export const useReceiptAnalysis = ({
         })),
         paymentMethods: paymentMethods.map(method => method.name),
       });
-
-      console.log("AI 분석 data:", data);
-      console.log("AI 분석 error:", error);
 
       if (error) {
         setAiErrorMessage(

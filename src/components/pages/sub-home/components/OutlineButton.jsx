@@ -14,7 +14,7 @@ export default function OutlineButton({ children, onClick, href }) {
 
   if (href) {
     return (
-      <Link href={href} className={styles.outlineButton}>
+      <Link href={href} prefetch={false} className={styles.outlineButton}>
         {content}
       </Link>
     );

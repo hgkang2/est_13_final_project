@@ -124,6 +124,7 @@
 }
 
 .attachmentBox {
+  position: relative;
   display: flex;
   width: 100%;
   min-height: 88px;
@@ -144,6 +145,14 @@
   pointer-events: none;
 }
 
+.attachmentUploadLabel {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  cursor: pointer;
+}
+
 .attachmentIcon {
   display: flex;
   width: 56px;
@@ -156,6 +165,8 @@
 }
 
 .attachmentPreviewButton {
+  position: relative;
+  z-index: 2;
   display: block;
   width: 56px;
   height: 56px;
@@ -324,10 +335,6 @@
   color: var(--color-point);
   font-size: 12px;
   font-weight: var(--font-weight-bold);
-}
-
-.timeAction {
-  color: var(--color-point);
 }
 
 .timeButton:hover .timeAction {
