@@ -55,6 +55,7 @@ export default function Analysis() {
   const [totalExpense, setTotalExpense] = useState(0);
   const [monthlyAverage, setMonthlyAverage] = useState(0);
   const [currentMonthExpense, setCurrentMonthExpense] = useState(0);
+  const [maxMonthlyExpense, setMaxMonthlyExpense] = useState(0); // 요약 카드용 실제 지표
   const [showAllRanking, setShowAllRanking] = useState(false);
 
   const [categoryData, setCategoryData] = useState([]);
@@ -117,7 +118,6 @@ export default function Analysis() {
         ]);
 
         if (txRes.error) {
-          console.error("거래 내역 조회 에러:", txRes.error.message);
           return;
         }
 
@@ -131,15 +131,13 @@ export default function Analysis() {
         if (txRes.data) {
           processAnalysisData(txRes.data, categoryMap);
         }
-      } catch (err) {
-        console.error("Supabase 연동 오류:", err);
-      }
+      } catch (err) {}
     }
 
     fetchAnalysisData();
   }, [supabase]);
 
-  // ── AI 분석 리포트 별도 fetch (subHomeService와 동일한 구조 연동) ──
+  // ── AI 분석 리포트 별도 fetch ──
   useEffect(() => {
     let isMounted = true;
 
@@ -147,7 +145,6 @@ export default function Analysis() {
       setIsAiLoading(true);
       setAiError(null);
       try {
-        // 1. 유저 정보를 먼저 조회하여 user.id 확보
         const {
           data: { user },
           error: userError,
@@ -157,14 +154,8 @@ export default function Analysis() {
           throw new Error("로그인 유저 정보를 찾을 수 없습니다.");
         }
 
-        // 2. getAiAnalysis에 supabase와 user.id를 모두 전달
         let data = await getAiAnalysis(supabase, user.id);
 
-        // 3. 이번 달 리포트가 아직 생성되지 않은 경우(서브홈을 거치지 않은 경우 등)
-        //    analyze-spending 함수를 직접 호출해 생성을 요청한다.
-        //    이 함수는 auth 세션에서 user를 자동으로 인식하므로 user_id는 보내지 않고,
-        //    analysisType / periodStart / periodEnd(camelCase, 문자열)를 반드시 보내야 한다.
-        //    이미 동일 기간의 완료된 리포트가 있으면 AI를 다시 호출하지 않고 재사용해서 반환한다.
         if (!data?.analysis) {
           const todayKST = new Date().toLocaleDateString("sv-SE", {
             timeZone: "Asia/Seoul",
@@ -182,63 +173,20 @@ export default function Analysis() {
                 },
               });
 
-            if (fnError) {
-              if (fnError.context) {
-                try {
-                  const detail = await fnError.context.json();
-                  console.error(
-                    "AI 분석 리포트 생성 요청 실패 (서버 응답):",
-                    detail,
-                  );
-                } catch {
-                  const text = await fnError.context.text?.();
-                  console.error(
-                    "AI 분석 리포트 생성 요청 실패 (서버 응답 텍스트):",
-                    text,
-                  );
-                }
-              } else {
-                console.error("AI 분석 리포트 생성 요청 실패:", fnError);
-              }
-            } else if (fnData?.success && fnData?.analysis) {
-              // 함수가 바로 최신 분석 결과를 반환하므로 재조회 없이 그대로 사용
+            if (!fnError && fnData?.success && fnData?.analysis) {
               data = {
                 analysis: fnData.analysis,
                 recommendedMission: fnData.recommendedMission ?? null,
               };
-            } else if (fnData?.success && fnData?.analysisAvailable === false) {
-              // 소비 데이터 자체가 없는 경우(NO_DATA) — 빈 상태로 둔다
-              data = { analysis: null, recommendedMission: null };
             }
-          } catch (fnErr) {
-            if (fnErr?.context) {
-              try {
-                const detail = await fnErr.context.json();
-                console.error(
-                  "analyze-spending 함수 호출 오류 (서버 응답):",
-                  detail,
-                );
-              } catch {
-                const text = await fnErr.context.text?.();
-                console.error(
-                  "analyze-spending 함수 호출 오류 (서버 응답 텍스트):",
-                  text,
-                );
-              }
-            } else {
-              console.error("analyze-spending 함수 호출 오류:", fnErr);
-            }
-          }
+          } catch (fnErr) {}
         }
 
         if (!isMounted) return;
 
-        // getAiAnalysis는 { analysis, recommendedMission } 형태로 반환되므로
-        // 실제 리포트 내용은 data.analysis에서 꺼내야 함
         setAiAnalysis(data?.analysis ?? null);
         setRecommendedMission(data?.recommendedMission ?? null);
       } catch (err) {
-        console.error("AI 분석 리포트 조회 실패:", err);
         if (isMounted) setAiError("AI 분석 데이터를 불러오지 못했습니다.");
       } finally {
         if (isMounted) setIsAiLoading(false);
@@ -252,84 +200,100 @@ export default function Analysis() {
   }, [supabase]);
 
   const processAnalysisData = (txData, categoryMap) => {
+    // 1. 피드백 반영: 'expense' 타입인 항목만 정확히 지출로 필터링
     const allExpenses = txData.filter(tx => {
       const txType = String(tx.transaction_type || tx.type || "").toLowerCase();
-      const txLabel = String(tx.typeLabel || "").toLowerCase();
-
-      if (
-        txType.includes("income") ||
-        txType.includes("수입") ||
-        txLabel.includes("수입")
-      ) {
-        return false;
-      }
-
-      const isExpenseType =
-        txType.includes("expense") ||
-        txType.includes("지출") ||
-        txType.includes("out");
-
-      const rawAmount = Number(tx.amount || 0);
-
-      return (
-        isExpenseType ||
-        rawAmount < 0 ||
-        txLabel.includes("지출") ||
-        rawAmount > 0
-      );
+      return txType === "expense";
     });
 
-    const today = new Date();
-    const targetMonthKeys = [];
-    for (let i = 2; i >= 0; i--) {
-      const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth() + 1).padStart(2, "0");
-      targetMonthKeys.push(`${yyyy}-${mm}`);
-    }
+    // 2. 실제 데이터가 존재하는 월(YYYY-MM) 목록 동적 추출 및 정렬
+    const monthSet = new Set();
+    allExpenses.forEach(tx => {
+      const rawDate =
+        tx.transaction_at ||
+        tx.date ||
+        tx.dateValue ||
+        tx.created_at ||
+        tx.createdAt ||
+        "";
+      const dateString = String(rawDate).trim();
+      const yearMatch = dateString.match(/20\d{2}/);
+      const monthMatch =
+        dateString.match(/[-./](\d{1,2})[-./]/) ||
+        dateString.match(/20\d{2}[-./](\d{1,2})/);
 
-    const recent3MonthsExpenses = allExpenses
-      .map(tx => {
-        const rawDate =
-          tx.transaction_at ||
-          tx.date ||
-          tx.dateValue ||
-          tx.created_at ||
-          tx.createdAt ||
-          "";
-        const dateString = String(rawDate).trim();
+      if (yearMatch && monthMatch) {
+        const yyyy = yearMatch[0];
+        const mm = String(parseInt(monthMatch[1], 10)).padStart(2, "0");
+        monthSet.add(`${yyyy}-${mm}`);
+      }
+    });
 
-        const yearMatch = dateString.match(/20\d{2}/);
-        const monthMatch =
-          dateString.match(/[-./](\d{1,2})[-./]/) ||
-          dateString.match(/20\d{2}[-./](\d{1,2})/);
+    const activeMonths = Array.from(monthSet).sort();
+    const totalMonthsCount = activeMonths.length;
 
-        let monthKey = "";
-        if (yearMatch && monthMatch) {
-          const yyyy = yearMatch[0];
-          const mm = String(parseInt(monthMatch[1], 10)).padStart(2, "0");
-          monthKey = `${yyyy}-${mm}`;
-        }
+    // 전체 지출 및 활성 월 기준 필터링
+    const validExpenses = allExpenses.filter(tx => {
+      const rawDate =
+        tx.transaction_at ||
+        tx.date ||
+        tx.dateValue ||
+        tx.created_at ||
+        tx.createdAt ||
+        "";
+      const yearMatch = String(rawDate).match(/20\d{2}/);
+      const monthMatch =
+        String(rawDate).match(/[-./](\d{1,2})[-./]/) ||
+        String(rawDate).match(/20\d{2}[-./](\d{1,2})/);
+      if (!yearMatch || !monthMatch) return false;
+      const key = `${yearMatch[0]}-${String(parseInt(monthMatch[1], 10)).padStart(2, "0")}`;
+      return activeMonths.includes(key);
+    });
 
-        return {
-          ...tx,
-          _monthKey: monthKey,
-        };
-      })
-      .filter(tx => targetMonthKeys.includes(tx._monthKey));
-
-    const total = recent3MonthsExpenses.reduce(
+    const total = validExpenses.reduce(
       (acc, cur) => acc + Math.abs(Number(cur.amount || 0)),
       0,
     );
     setTotalExpense(total);
 
+    // 3. 피드백 반영: 무조건 /3이 아닌 실제 데이터가 있는 월 개수로 평균 계산
+    const average =
+      totalMonthsCount > 0 ? Math.round(total / totalMonthsCount) : 0;
+    setMonthlyAverage(average);
+
+    // 월별 집계 맵 생성
+    const monthlyMap = {};
+    activeMonths.forEach(m => {
+      monthlyMap[m] = 0;
+    });
+
+    validExpenses.forEach(tx => {
+      const yearMatch = String(tx.transaction_at || tx.date || "").match(
+        /20\d{2}/,
+      );
+      const monthMatch = String(tx.transaction_at || tx.date || "").match(
+        /[-./](\d{1,2})/,
+      );
+      if (yearMatch && monthMatch) {
+        const key = `${yearMatch[0]}-${String(parseInt(monthMatch[1], 10)).padStart(2, "0")}`;
+        if (monthlyMap[key] !== undefined) {
+          monthlyMap[key] += Math.abs(Number(tx.amount || 0));
+        }
+      }
+    });
+
+    // 최고 월 지출 계산 (실제 지표용)
+    const monthlyValues = Object.values(monthlyMap);
+    setMaxMonthlyExpense(
+      monthlyValues.length > 0 ? Math.max(...monthlyValues) : 0,
+    );
+
+    // 전체 카테고리 통계 (도넛 차트용)
     const categoryStatsMap = {};
-    recent3MonthsExpenses.forEach(tx => {
+    validExpenses.forEach(tx => {
       const catName =
         categoryMap[tx.category_id] || tx.category || tx.categoryName || "기타";
       const amt = Math.abs(Number(tx.amount || 0));
-
       if (!categoryStatsMap[catName]) categoryStatsMap[catName] = 0;
       categoryStatsMap[catName] += amt;
     });
@@ -346,34 +310,34 @@ export default function Analysis() {
         };
       },
     );
-
     formattedCategoryData.sort((a, b) => b.amount - a.amount);
     setCategoryData(formattedCategoryData);
 
-    const monthlyMap = {};
-    targetMonthKeys.forEach(key => {
-      monthlyMap[key] = 0;
+    // 이번 달(가장 최근 활성 월) 데이터 추출
+    const currentKey = activeMonths[activeMonths.length - 1] || "";
+    const currentMonthExpenses = validExpenses.filter(tx => {
+      const yearMatch = String(tx.transaction_at || tx.date || "").match(
+        /20\d{2}/,
+      );
+      const monthMatch = String(tx.transaction_at || tx.date || "").match(
+        /[-./](\d{1,2})/,
+      );
+      if (!yearMatch || !monthMatch) return false;
+      const key = `${yearMatch[0]}-${String(parseInt(monthMatch[1], 10)).padStart(2, "0")}`;
+      return key === currentKey;
     });
 
-    recent3MonthsExpenses.forEach(tx => {
-      if (monthlyMap[tx._monthKey] !== undefined) {
-        monthlyMap[tx._monthKey] += Math.abs(Number(tx.amount || 0));
-      }
-    });
-
-    const currentKey = targetMonthKeys[targetMonthKeys.length - 1];
-    setCurrentMonthExpense(monthlyMap[currentKey] || 0);
+    const currentMonthTotal = currentMonthExpenses.reduce(
+      (acc, cur) => acc + Math.abs(Number(cur.amount || 0)),
+      0,
+    );
+    setCurrentMonthExpense(currentMonthTotal);
 
     const currentMonthStatsMap = {};
-    const currentMonthExpenses = recent3MonthsExpenses.filter(
-      tx => tx._monthKey === currentKey,
-    );
-
     currentMonthExpenses.forEach(tx => {
       const catName =
         categoryMap[tx.category_id] || tx.category || tx.categoryName || "기타";
       const amt = Math.abs(Number(tx.amount || 0));
-
       if (!currentMonthStatsMap[catName]) currentMonthStatsMap[catName] = 0;
       currentMonthStatsMap[catName] += amt;
     });
@@ -391,11 +355,12 @@ export default function Analysis() {
     formattedCurrentMonthData.sort((a, b) => b.amount - a.amount);
     setCurrentMonthCategoryData(formattedCurrentMonthData);
 
-    const lineLabels = targetMonthKeys.map(key => {
+    // 라인 차트 데이터 세팅
+    const lineLabels = activeMonths.map(key => {
       const parts = key.split("-");
       return `${parseInt(parts[1], 10)}월`;
     });
-    const lineValues = targetMonthKeys.map(key => monthlyMap[key]);
+    const lineValues = activeMonths.map(key => monthlyMap[key]);
 
     setLineChartData({
       labels: lineLabels,
@@ -409,27 +374,30 @@ export default function Analysis() {
         },
       ],
     });
-
-    setMonthlyAverage(Math.round(total / 3));
   };
 
   const hasExpense = categoryData.length > 0 && totalExpense > 0;
   const hasCurrentMonthExpense =
     currentMonthCategoryData.length > 0 && currentMonthExpense > 0;
-  const hasLineData = totalExpense > 0;
-  const hasSpendingData = totalExpense > 0;
+  const hasLineData = lineChartData.labels.length > 0 && totalExpense > 0;
 
-  const comparison = aiAnalysis?.calculatedData?.comparison;
-  const isOverspending =
-    comparison?.available === true && comparison?.expenseChangePercent >= 10;
+  // 피드백 반영: 현재 연월 동적 표시 (YYYY.MM)
+  const currentDateObj = new Date();
+  const currentYearMonthLabel = `${currentDateObj.getFullYear()}.${String(
+    currentDateObj.getMonth() + 1,
+  ).padStart(2, "0")}`;
 
-  const todayLabel = new Date().toLocaleDateString("ko-KR", {
+  const todayLabel = currentDateObj.toLocaleDateString("ko-KR", {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
   });
 
-  const aiImageSrc = !hasSpendingData
+  const comparison = aiAnalysis?.calculatedData?.comparison;
+  const isOverspending =
+    comparison?.available === true && comparison?.expenseChangePercent >= 10;
+
+  const aiImageSrc = !hasExpense
     ? "/images/character/ai_empty_moa.png"
     : isOverspending
       ? "/images/character/poor_moa.png"
@@ -631,6 +599,7 @@ export default function Analysis() {
             )}
           </section>
 
+          {/* 요약 카드 영역: 200만원 가상 예산 카드 제거 및 실제 집계 지표로 대체 */}
           <div className={styles.summaryGrid}>
             <div className={styles.card}>
               <span className={styles.summaryLabel}>총 지출</span>
@@ -640,7 +609,7 @@ export default function Analysis() {
                 </strong>
                 <span className={styles.unit}>원</span>
               </div>
-              <span className={styles.summarySubText}>최근 3개월 누적</span>
+              <span className={styles.summarySubText}>전체 누적 지출</span>
             </div>
 
             <div className={styles.card}>
@@ -651,7 +620,9 @@ export default function Analysis() {
                 </strong>
                 <span className={styles.unit}>원</span>
               </div>
-              <span className={styles.summarySubText}>최근 3개월 평균</span>
+              <span className={styles.summarySubText}>
+                실제 집계 월 기준 평균
+              </span>
             </div>
 
             <div className={styles.card}>
@@ -663,21 +634,19 @@ export default function Analysis() {
                 <span className={styles.unit}>개</span>
               </div>
               <span className={styles.summarySubText}>
-                현재까지 지출 카테고리
+                사용한 지출 카테고리
               </span>
             </div>
 
             <div className={styles.card}>
-              <span className={styles.summaryLabel}>이번 달 남은 예산</span>
+              <span className={styles.summaryLabel}>최고 월 지출</span>
               <div className={styles.summaryValueGroup}>
                 <strong className={styles.summaryAmount}>
-                  {(2000000 - currentMonthExpense).toLocaleString()}
+                  {maxMonthlyExpense.toLocaleString()}
                 </strong>
                 <span className={styles.unit}>원</span>
               </div>
-              <span className={styles.summarySubText}>
-                예산/2,000,000원 기준
-              </span>
+              <span className={styles.summarySubText}>월별 최대 지출 금액</span>
             </div>
           </div>
 
@@ -685,7 +654,7 @@ export default function Analysis() {
             <section className={styles.card}>
               <div className={styles.cardHeader}>
                 <h3>지출 추이</h3>
-                <div className={styles.selectBox}>최근 3개월</div>
+                <div className={styles.selectBox}>활성 데이터 기준</div>
               </div>
               {hasLineData ? (
                 <div className={styles.lineChartArea}>
@@ -755,8 +724,10 @@ export default function Analysis() {
 
           <section className={styles.card}>
             <div className={styles.cardHeader}>
-              <h3>예산 대비 지출 랭킹</h3>
-              <span className={styles.rankingDate}>2026.08</span>
+              <h3>이번 달 카테고리별 지출 비중</h3>
+              <span className={styles.rankingDate}>
+                {currentYearMonthLabel}
+              </span>
             </div>
             {hasCurrentMonthExpense ? (
               <div className={styles.rankingList}>
@@ -766,11 +737,15 @@ export default function Analysis() {
                     showAllRanking ? currentMonthCategoryData.length : 3,
                   )
                   .map((item, index) => {
-                    const budget = 300000;
-                    const percent = Math.min(
-                      Math.round((item.amount / budget) * 100),
-                      100,
-                    );
+                    const percent =
+                      currentMonthExpense > 0
+                        ? Math.min(
+                            Math.round(
+                              (item.amount / currentMonthExpense) * 100,
+                            ),
+                            100,
+                          )
+                        : 0;
 
                     return (
                       <div className={styles.rankingItem} key={item.name}>
@@ -802,7 +777,7 @@ export default function Analysis() {
                 </div>
                 <p className={styles.emptyTitle}>비교 할 소비 내역이 없어요.</p>
                 <p className={styles.emptyDesc}>
-                  매달 예산과 지출을 비교해 그래프로 보여드려요.
+                  이번 달 지출 내역을 기록하면 비중을 확인할 수 있어요.
                 </p>
               </div>
             )}
