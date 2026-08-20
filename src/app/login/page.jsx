@@ -8,6 +8,7 @@ import Toast from "../../components/common/Toast";
 export default function LoginPage() {
   const router = useRouter();
   const supabase = createClient();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [toast, setToast] = useState({
   isOpen: false,
@@ -30,6 +31,7 @@ const showToast = (message, type = "success") => {
 
   const handleLogin = async (e) => {
   e.preventDefault();
+  if (isSubmitting) return;
 
   const formData = new FormData(e.currentTarget);
   const email = formData.get("email")?.toString().trim();
@@ -70,6 +72,9 @@ if (firstErrorKey) {
     email: "",
     password: "",
   });
+  setIsSubmitting(true);
+
+try {
 
   const { error } = await supabase.auth.signInWithPassword({
     email,
@@ -77,9 +82,7 @@ if (firstErrorKey) {
   });
 
   if (error) {
-    console.error(error);
-
-    setFieldErrors({
+     setFieldErrors({
       email: "",
       password: "이메일 또는 비밀번호가 올바르지 않습니다.",
   });
@@ -87,6 +90,9 @@ if (firstErrorKey) {
   }
 
   router.push("/sub-home");
+} finally {
+  setIsSubmitting(false);
+}
 };
 
   const handleGoogleLogin = async () => {
@@ -149,6 +155,7 @@ if (firstErrorKey) {
                 id="email"
                 name="email"
                 type="email"
+                autoComplete="email"
                 placeholder="이메일을 입력하세요"
                 aria-invalid={Boolean(fieldErrors.email)}
                 aria-describedby={fieldErrors.email ? "login-email-error" : undefined}
@@ -174,6 +181,7 @@ if (firstErrorKey) {
                 id="password"
                 name="password"
                 type="password"
+                autoComplete="current-password"
                 placeholder="비밀번호를 입력하세요"
                 aria-invalid={Boolean(fieldErrors.password)}
     aria-describedby={
@@ -195,8 +203,13 @@ if (firstErrorKey) {
     </div>
   )}
             </div>
-            <button className="button" type="submit">
-              로그인
+            <button 
+            className="button" 
+            type="submit"
+            disabled={isSubmitting}
+            >
+              {isSubmitting ? "처리 중..." :
+              "로그인"}
             </button>
           </form>
           <div className="sns">

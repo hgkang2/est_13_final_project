@@ -12,6 +12,7 @@ export default function Modal({
   cancelText,
   onConfirm,
   onCancel,
+  isProcessing = false,
 }) {
   if (!isOpen) return null;
 
@@ -71,6 +72,7 @@ export default function Modal({
                   : styles.successButton
             }
             onClick={onConfirm}
+            disabled={isProcessing}
           >
             {confirmText}
           </button>

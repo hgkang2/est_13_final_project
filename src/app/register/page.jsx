@@ -9,6 +9,7 @@ import Toast from "../../components/common/Toast";
 export default function RegisterPage() {
   const router = useRouter();
   const supabase = createClient();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [toast, setToast] = useState({
   isOpen: false,
@@ -55,7 +56,7 @@ const showToast = (message, type = "success") => {
 
  const handleRegister = async (e) => {
   e.preventDefault();
-
+   if (isSubmitting) return;
   const formData = new FormData(e.currentTarget);
 
   const name = formData.get("name")?.toString().trim();
@@ -133,6 +134,9 @@ if (firstErrorKey) {
     passwordConfirm: "",
     agreements: "",
   });
+  setIsSubmitting(true);
+
+try {
 
   const { error } = await supabase.auth.signUp({
     email,
@@ -183,6 +187,9 @@ if (firstErrorKey) {
   setTimeout(() => {
     router.push("/login");
   }, 2000);
+} finally {
+  setIsSubmitting(false);
+}
 };
    
   const handleGoogleLogin = async () => {
@@ -245,6 +252,7 @@ if (firstErrorKey) {
                 id="name"
                 name="name"
                 type="text"
+                autoComplete="name"
                 placeholder="이름을 입력하세요"
                 aria-invalid={Boolean(fieldErrors.name)}
                 aria-describedby={fieldErrors.name ? "register-name-error" : undefined}
@@ -270,6 +278,7 @@ if (firstErrorKey) {
                 id="email"
                 name="email"
                 type="email"
+                autoComplete="email"
                 placeholder="이메일을 입력하세요"
                 aria-invalid={Boolean(fieldErrors.email)}
                 aria-describedby={fieldErrors.email ? "register-email-error" : undefined}
@@ -297,6 +306,7 @@ if (firstErrorKey) {
                 id="password"
                 name="password"
                 type="password"
+                autoComplete="new-password"
                 placeholder="비밀번호를 입력하세요"
                 aria-invalid={Boolean(fieldErrors.password)}
                 aria-describedby={fieldErrors.password ? "register-password-error" : undefined}
@@ -324,6 +334,7 @@ if (firstErrorKey) {
                 id="passwordConfirm"
                 name="passwordConfirm"
                 type="password"
+                autoComplete="new-password"
                 placeholder="비밀번호를 다시 입력하세요"
                 aria-invalid={Boolean(fieldErrors.passwordConfirm)}
                 aria-describedby={fieldErrors.passwordConfirm ? "register-passwordConfirm-error" : undefined}
@@ -398,8 +409,13 @@ if (firstErrorKey) {
              )}
             </div>
 
-            <button className="button" type="submit">
-              회원가입
+            <button 
+            className="button" 
+            type="submit"
+            disabled={isSubmitting}
+            >
+              {isSubmitting ? "처리 중..." :
+              "회원가입"}
             </button>
           </form>
           <div className="sns">

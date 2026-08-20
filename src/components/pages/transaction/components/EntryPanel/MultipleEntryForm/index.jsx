@@ -6,17 +6,20 @@ export default function MultipleEntryForm({
   categories,
   paymentMethods,
   transferAccounts,
+  focusGoals,
   onMultipleRowChange,
   onAddMultipleRow,
   onRemoveMultipleRow,
   onCancelMultipleEntry,
   onMultipleSubmit,
+  isMutating = false,
 }) {
   return (
     <div className={styles.multipleEntryContent}>
       <section className={styles.multipleTable}>
+        <h3 className="sr-only">다건 거래 입력 목록</h3>
+
         <div className={styles.multipleTableHeader}>
-          <div className={styles.multipleNumberHeader} />
           <div>날짜</div>
           <div>구분</div>
           <div>카테고리</div>
@@ -26,9 +29,26 @@ export default function MultipleEntryForm({
           <div>메모</div>
 
           <div className={styles.multipleHelp}>
-            <span className="material-icons" aria-hidden="true">
-              help_outline
-            </span>
+            <button
+              type="button"
+              className={styles.multipleHelpButton}
+              aria-label="다건 입력 이용 안내"
+              aria-describedby="multiple-entry-help"
+            >
+              <span className="material-icons" aria-hidden="true">
+                help_outline
+              </span>
+            </button>
+
+            <div
+              id="multiple-entry-help"
+              className={styles.multipleHelpTooltip}
+              role="tooltip"
+            >
+              <span>• 시간을 설정하지 않으면 현재 시간으로 저장돼요.</span>
+              <span>• 다건 입력은 PC 환경에서 사용할 수 있어요.</span>
+              <span>• 입력이 완료된 행만 저장돼요.</span>
+            </div>
           </div>
         </div>
 
@@ -145,29 +165,52 @@ export default function MultipleEntryForm({
                   <select
                     name="transferRoute"
                     value={
-                      row.withdrawAccount && row.depositAccount
-                        ? `${row.withdrawAccount}|${row.depositAccount}`
-                        : ""
+                      row.withdrawAccount && row.savingGoal
+                        ? `${row.withdrawAccount}|goal:${row.savingGoal}`
+                        : row.withdrawAccount && row.depositAccount
+                          ? `${row.withdrawAccount}|account:${row.depositAccount}`
+                          : ""
                     }
                     onChange={event => onMultipleRowChange(row.id, event)}
                     aria-label={`${index + 1}번 거래 계좌 이동`}
                   >
-                    <option value="">계좌 선택</option>
+                    <option value="">이체 경로 선택</option>
 
-                    {transferAccounts.flatMap(withdrawAccount =>
-                      transferAccounts
-                        .filter(
-                          depositAccount =>
-                            depositAccount.id !== withdrawAccount.id,
-                        )
-                        .map(depositAccount => (
-                          <option
-                            key={`${withdrawAccount.id}-${depositAccount.id}`}
-                            value={`${withdrawAccount.id}|${depositAccount.id}`}
-                          >
-                            {withdrawAccount.name} → {depositAccount.name}
-                          </option>
-                        )),
+                    <optgroup label="계좌 이체">
+                      {transferAccounts.flatMap(withdrawAccount =>
+                        transferAccounts
+                          .filter(
+                            depositAccount =>
+                              depositAccount.id !== withdrawAccount.id,
+                          )
+                          .map(depositAccount => (
+                            <option
+                              key={`${withdrawAccount.id}-${depositAccount.id}`}
+                              value={`${withdrawAccount.id}|account:${depositAccount.id}`}
+                            >
+                              {withdrawAccount.name} → {depositAccount.name}
+                            </option>
+                          )),
+                      )}
+                    </optgroup>
+
+                    {focusGoals.length > 0 && (
+                      <optgroup label="집중목표 적립">
+                        {transferAccounts.flatMap(withdrawAccount =>
+                          focusGoals.map(goal => (
+                            <option
+                              key={`${withdrawAccount.id}-goal-${goal.id}`}
+                              value={`${withdrawAccount.id}|goal:${goal.id}`}
+                            >
+                              {withdrawAccount.name} → 집중목표{" "}
+                              {goal.focus_order} ·{" "}
+                              {goal.title.length > 10
+                                ? `${goal.title.slice(0, 10)}…`
+                                : goal.title}
+                            </option>
+                          )),
+                        )}
+                      </optgroup>
                     )}
                   </select>
 
@@ -260,6 +303,7 @@ export default function MultipleEntryForm({
             type="button"
             className={styles.saveMultipleButton}
             onClick={onMultipleSubmit}
+            disabled={isMutating}
           >
             {multipleRowStatus.available}건 저장하기
           </button>

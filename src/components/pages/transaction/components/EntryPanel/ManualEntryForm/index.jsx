@@ -1,28 +1,54 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./ManualEntryForm.module.scss";
 
+const truncateGoalTitle = title => {
+  const maxLength = 10;
+
+  return title.length > maxLength ? `${title.slice(0, maxLength)}…` : title;
+};
 export default function ManualEntryForm({
   transactionForm,
   transactionErrors,
   categories,
   paymentMethods,
   transferAccounts,
+  focusGoals,
   isTransfer,
   onTransactionFormChange,
   onToggleRecurring,
   onResetTransactionForm,
 }) {
   const timeInputRef = useRef(null);
+  const receiptPreviewDialogRef = useRef(null);
+  const [attachmentPreview, setAttachmentPreview] = useState("");
+
   const filteredCategories = categories.filter(
     category => category.transaction_type === transactionForm.type,
   );
+
+  useEffect(() => {
+    if (!transactionForm.attachment) {
+      setAttachmentPreview("");
+      return;
+    }
+
+    const previewUrl = URL.createObjectURL(transactionForm.attachment);
+
+    setAttachmentPreview(previewUrl);
+
+    return () => {
+      URL.revokeObjectURL(previewUrl);
+    };
+  }, [transactionForm.attachment]);
 
   return (
     <>
       <div className={styles.formFields}>
         <fieldset className={styles.formField}>
+          <legend className="sr-only">거래구분</legend>
+
           <div className={styles.formLabelRow}>
-            <legend className={styles.formLabel}>거래구분</legend>
+            <span className={styles.formLabel}>거래구분</span>
 
             <button
               type="button"
@@ -35,6 +61,7 @@ export default function ManualEntryForm({
               <span>초기화</span>
             </button>
           </div>
+
           <div className={styles.transactionTypeOptions}>
             <label
               className={`${styles.transactionTypeButton} ${
@@ -181,27 +208,55 @@ export default function ManualEntryForm({
 
               <label className={styles.formField}>
                 <span className={styles.formLabel}>
-                  입금 <span className={styles.requiredMark}>*</span>
+                  입금 대상 <span className={styles.requiredMark}>*</span>
                 </span>
 
                 <span
                   className={`${styles.selectBox} ${
-                    transactionErrors.depositAccount ? styles.errorField : ""
+                    transactionErrors.depositAccount ||
+                    transactionErrors.savingGoal
+                      ? styles.errorField
+                      : ""
                   }`}
                 >
                   <select
-                    name="depositAccount"
-                    value={transactionForm.depositAccount}
+                    name="transferDestination"
+                    value={
+                      transactionForm.savingGoal
+                        ? `goal:${transactionForm.savingGoal}`
+                        : transactionForm.depositAccount
+                          ? `account:${transactionForm.depositAccount}`
+                          : ""
+                    }
                     onChange={onTransactionFormChange}
-                    aria-invalid={Boolean(transactionErrors.depositAccount)}
+                    aria-invalid={Boolean(
+                      transactionErrors.depositAccount ||
+                      transactionErrors.savingGoal,
+                    )}
                   >
-                    <option value="">입금 계좌 선택</option>
+                    <option value="">입금 대상 선택</option>
 
-                    {transferAccounts.map(account => (
-                      <option value={account.id} key={account.id}>
-                        {account.name}
-                      </option>
-                    ))}
+                    <optgroup label="계좌">
+                      {transferAccounts.map(account => (
+                        <option
+                          value={`account:${account.id}`}
+                          key={account.id}
+                        >
+                          {account.name}
+                        </option>
+                      ))}
+                    </optgroup>
+
+                    {focusGoals.length > 0 && (
+                      <optgroup label="집중목표">
+                        {focusGoals.map(goal => (
+                          <option value={`goal:${goal.id}`} key={goal.id}>
+                            집중목표 {goal.focus_order} ·{" "}
+                            {truncateGoalTitle(goal.title)}
+                          </option>
+                        ))}
+                      </optgroup>
+                    )}
                   </select>
 
                   <span className="material-icons" aria-hidden="true">
@@ -209,22 +264,27 @@ export default function ManualEntryForm({
                   </span>
                 </span>
 
-                {transactionErrors.depositAccount && (
+                {(transactionErrors.depositAccount ||
+                  transactionErrors.savingGoal) && (
                   <span className={styles.errorMessage}>
-                    {transactionErrors.depositAccount}
+                    {transactionErrors.depositAccount ||
+                      transactionErrors.savingGoal}
                   </span>
                 )}
               </label>
             </div>
 
             <div className={styles.formFieldRow}>
-              <label className={styles.formField}>
+              <div className={styles.formField}>
                 <div className={styles.formLabelRow}>
-                  <span className={styles.formLabel}>
+                  <label
+                    htmlFor="transfer-category"
+                    className={styles.formLabel}
+                  >
                     카테고리 <span className={styles.requiredMark}>*</span>
-                  </span>
+                  </label>
 
-                  {isTransfer && (
+                  {isTransfer && !transactionForm.savingGoal && (
                     <div className={styles.recurringControl}>
                       <span>반복</span>
 
@@ -252,6 +312,7 @@ export default function ManualEntryForm({
                   }`}
                 >
                   <select
+                    id="transfer-category"
                     name="category"
                     value={transactionForm.category}
                     onChange={onTransactionFormChange}
@@ -276,13 +337,19 @@ export default function ManualEntryForm({
                     {transactionErrors.category}
                   </span>
                 )}
-              </label>
+              </div>
               {transactionForm.isRecurring ? (
-                <label className={styles.formField}>
-                  <span className={styles.formLabel}>반복일</span>
+                <div className={styles.formField}>
+                  <label
+                    htmlFor="transfer-recurring-day"
+                    className={styles.formLabel}
+                  >
+                    반복일
+                  </label>
 
                   <span className={styles.recurringDateBox}>
                     <select
+                      id="transfer-recurring-day"
                       name="recurringDay"
                       value={transactionForm.recurringDay}
                       onChange={onTransactionFormChange}
@@ -302,8 +369,17 @@ export default function ManualEntryForm({
                       calendar_month
                     </span>
                   </span>
+
                   <div className={styles.timePicker}>
+                    <label
+                      htmlFor="transfer-recurring-time"
+                      className="sr-only"
+                    >
+                      거래 시간
+                    </label>
+
                     <input
+                      id="transfer-recurring-time"
                       ref={timeInputRef}
                       type="time"
                       name="time"
@@ -317,23 +393,40 @@ export default function ManualEntryForm({
                       className={styles.timeButton}
                       onClick={() => timeInputRef.current?.showPicker()}
                     >
-                      <span className="material-icons" aria-hidden="true">
-                        schedule
-                      </span>
-
                       <span>{transactionForm.time || "시간 설정"}</span>
 
                       {transactionForm.time && (
                         <span className={styles.timeAction}>변경</span>
                       )}
                     </button>
+
+                    {!transactionForm.time && (
+                      <span className={styles.timeHelp}>
+                        <button
+                          type="button"
+                          className={styles.timeHelpButton}
+                          aria-label="시간 미설정 안내"
+                        >
+                          <span
+                            className="material-icons-outlined"
+                            aria-hidden="true"
+                          >
+                            info
+                          </span>
+                        </button>
+
+                        <span className={styles.timeTooltip} role="tooltip">
+                          시간을 설정하지 않으면 현재 시간으로 저장돼요.
+                        </span>
+                      </span>
+                    )}
                   </div>
-                </label>
+                </div>
               ) : (
-                <label className={styles.formField}>
-                  <span className={styles.formLabel}>
+                <div className={styles.formField}>
+                  <label htmlFor="transfer-date" className={styles.formLabel}>
                     날짜 <span className={styles.requiredMark}>*</span>
-                  </span>
+                  </label>
 
                   <span
                     className={`${styles.dateInputBox} ${
@@ -341,6 +434,7 @@ export default function ManualEntryForm({
                     }`}
                   >
                     <input
+                      id="transfer-date"
                       type="date"
                       name="date"
                       value={transactionForm.date ?? ""}
@@ -349,8 +443,19 @@ export default function ManualEntryForm({
                     />
                   </span>
 
+                  {transactionErrors.date && (
+                    <span className={styles.errorMessage}>
+                      {transactionErrors.date}
+                    </span>
+                  )}
+
                   <div className={styles.timePicker}>
+                    <label htmlFor="transfer-time" className="sr-only">
+                      거래 시간
+                    </label>
+
                     <input
+                      id="transfer-time"
                       ref={timeInputRef}
                       type="time"
                       name="time"
@@ -364,24 +469,35 @@ export default function ManualEntryForm({
                       className={styles.timeButton}
                       onClick={() => timeInputRef.current?.showPicker()}
                     >
-                      <span className="material-icons" aria-hidden="true">
-                        schedule
-                      </span>
-
                       <span>{transactionForm.time || "시간 설정"}</span>
 
                       {transactionForm.time && (
                         <span className={styles.timeAction}>변경</span>
                       )}
                     </button>
-                  </div>
 
-                  {transactionErrors.date && (
-                    <span className={styles.errorMessage}>
-                      {transactionErrors.date}
-                    </span>
-                  )}
-                </label>
+                    {!transactionForm.time && (
+                      <span className={styles.timeHelp}>
+                        <button
+                          type="button"
+                          className={styles.timeHelpButton}
+                          aria-label="시간 미설정 안내"
+                        >
+                          <span
+                            className="material-icons-outlined"
+                            aria-hidden="true"
+                          >
+                            info
+                          </span>
+                        </button>
+
+                        <span className={styles.timeTooltip} role="tooltip">
+                          시간을 설정하지 않으면 현재 시간으로 저장돼요.
+                        </span>
+                      </span>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
           </>
@@ -425,16 +541,18 @@ export default function ManualEntryForm({
                 )}
               </label>
 
-              <label className={styles.formField}>
-                <span className={styles.formLabel}>
+              <div className={styles.formField}>
+                <label htmlFor="transaction-date" className={styles.formLabel}>
                   날짜 <span className={styles.requiredMark}>*</span>
-                </span>
+                </label>
+
                 <span
                   className={`${styles.dateInputBox} ${
                     transactionErrors.date ? styles.errorField : ""
                   }`}
                 >
                   <input
+                    id="transaction-date"
                     type="date"
                     name="date"
                     value={transactionForm.date ?? ""}
@@ -443,8 +561,19 @@ export default function ManualEntryForm({
                   />
                 </span>
 
+                {transactionErrors.date && (
+                  <span className={styles.errorMessage}>
+                    {transactionErrors.date}
+                  </span>
+                )}
+
                 <div className={styles.timePicker}>
+                  <label htmlFor="transaction-time" className="sr-only">
+                    거래 시간
+                  </label>
+
                   <input
+                    id="transaction-time"
                     ref={timeInputRef}
                     type="time"
                     name="time"
@@ -458,24 +587,35 @@ export default function ManualEntryForm({
                     className={styles.timeButton}
                     onClick={() => timeInputRef.current?.showPicker()}
                   >
-                    <span className="material-icons" aria-hidden="true">
-                      schedule
-                    </span>
-
                     <span>{transactionForm.time || "시간 설정"}</span>
 
                     {transactionForm.time && (
                       <span className={styles.timeAction}>변경</span>
                     )}
                   </button>
-                </div>
 
-                {transactionErrors.date && (
-                  <span className={styles.errorMessage}>
-                    {transactionErrors.date}
-                  </span>
-                )}
-              </label>
+                  {!transactionForm.time && (
+                    <span className={styles.timeHelp}>
+                      <button
+                        type="button"
+                        className={styles.timeHelpButton}
+                        aria-label="시간 미설정 안내"
+                      >
+                        <span
+                          className="material-icons-outlined"
+                          aria-hidden="true"
+                        >
+                          info
+                        </span>
+                      </button>
+
+                      <span className={styles.timeTooltip} role="tooltip">
+                        시간을 설정하지 않으면 현재 시간으로 저장돼요.
+                      </span>
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
 
             <label className={styles.formField}>
@@ -561,20 +701,38 @@ export default function ManualEntryForm({
           <p>영수증, 거래내역 등을 거래 기록과 함께 보관하세요.</p>
         </div>
 
-        <label className={styles.attachmentBox}>
+        <div className={styles.attachmentBox}>
           <input
+            id="manual-transaction-attachment"
             type="file"
             name="attachment"
             accept="image/*"
             onChange={onTransactionFormChange}
           />
 
-          <span
-            className={`material-icons ${styles.attachmentIcon}`}
-            aria-hidden="true"
-          >
-            add_photo_alternate
-          </span>
+          {attachmentPreview ? (
+            <button
+              type="button"
+              className={styles.attachmentPreviewButton}
+              onClick={() => {
+                receiptPreviewDialogRef.current?.showModal();
+              }}
+              aria-label="선택한 영수증 크게 보기"
+            >
+              <img
+                src={attachmentPreview}
+                alt="선택한 영수증 미리보기"
+                className={styles.attachmentPreviewImage}
+              />
+            </button>
+          ) : (
+            <span
+              className={`material-icons ${styles.attachmentIcon}`}
+              aria-hidden="true"
+            >
+              add_photo_alternate
+            </span>
+          )}
 
           <span className={styles.attachmentText}>
             <strong>
@@ -583,10 +741,58 @@ export default function ManualEntryForm({
                 : "이미지 등록"}
             </strong>
 
-            <small>이 영역을 클릭하거나 이미지를 드래그 하세요.</small>
+            <small>
+              {transactionForm.attachment
+                ? "이미지를 클릭하면 크게 볼 수 있어요."
+                : "이 영역을 클릭하거나 이미지를 드래그 하세요."}
+            </small>
           </span>
-        </label>
+
+          <label
+            htmlFor="manual-transaction-attachment"
+            className={styles.attachmentUploadLabel}
+          >
+            <span className="sr-only">
+              {transactionForm.attachment
+                ? "거래 자료 이미지 교체"
+                : "거래 자료 이미지 등록"}
+            </span>
+          </label>
+        </div>
       </section>
+      {attachmentPreview && (
+        <dialog
+          ref={receiptPreviewDialogRef}
+          className={styles.receiptPreviewDialog}
+          aria-label="선택한 영수증 확대 보기"
+        >
+          <div
+            className={styles.receiptPreviewContent}
+            onClick={event => {
+              if (event.target === event.currentTarget) {
+                receiptPreviewDialogRef.current?.close();
+              }
+            }}
+          >
+            <button
+              type="button"
+              className={styles.receiptPreviewClose}
+              onClick={() => receiptPreviewDialogRef.current?.close()}
+              aria-label="영수증 확대 보기 닫기"
+            >
+              <span className="material-icons" aria-hidden="true">
+                close
+              </span>
+            </button>
+
+            <img
+              src={attachmentPreview}
+              alt="선택한 영수증 확대 이미지"
+              className={styles.receiptPreviewLargeImage}
+            />
+          </div>
+        </dialog>
+      )}
     </>
   );
 }

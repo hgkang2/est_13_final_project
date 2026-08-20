@@ -178,7 +178,7 @@ export default function GoalCard({ goal, focusRank, onEdit, onDelete }) {
   };
 
   const handleGoalCardPointerUp = (event) => {
-    if (!window.matchMedia("(max-width: 390px)").matches) {
+    if (!window.matchMedia("(max-width: 600px)").matches) {
       return;
     }
 

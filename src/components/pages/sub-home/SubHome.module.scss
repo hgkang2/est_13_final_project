@@ -18,7 +18,7 @@
   flex-direction: column;
   gap: 32px;
 }
-@media (max-width: 1280px) {
+@media (max-width: 1385px) {
   .content {
     gap: 16px;
   }
@@ -76,7 +76,7 @@
   word-break: keep-all;
 }
 
-@media (max-width: 1280px) {
+@media (max-width: 1385px) {
   .topRow {
     flex-direction: column;
     align-items: stretch;
@@ -267,6 +267,16 @@
   background-color: var(--color-success-dot);
 }
 
+.warningBadge_notStarted {
+  border: 1px solid var(--color-border-gray);
+  color: var(--color-light-gray);
+  background-color: var(--color-white);
+}
+
+.warningDot_notStarted {
+  background-color: var(--color-gray);
+}
+
 .warningBadge_slow {
   color: var(--color-warning-text);
   background-color: var(--color-warning-background);
@@ -331,9 +341,12 @@
 
 .goalCaption p {
   @include typo-body-m-plus;
+  @include multi-ellipsis(2);
 
+  width: 100%;
   margin: 0;
   color: var(--color-text);
+  word-break: keep-all;
 }
 
 .goalCaption span {
@@ -485,7 +498,7 @@
   gap: 24px;
 }
 
-@media (max-width: 1280px) {
+@media (max-width: 1385px) {
   .summaryRow {
     flex-direction: column;
     gap: 16px;
@@ -790,7 +803,7 @@
     color: var(--color-warning-text);
   }
 }
-@media (min-width: 769px) and (max-width: 1280px) {
+@media (min-width: 769px) and (max-width: 1385px) {
   .spendingSummaryCard,
   .aiCard {
     min-height: 284px;
@@ -1155,7 +1168,7 @@
   color: var(--color-expense-savings);
 }
 
-@media (max-width: 1280px) {
+@media (max-width: 1385px) {
   .missionRow {
     flex-direction: column;
     gap: 16px;
@@ -1544,7 +1557,7 @@
   color: var(--color-green-gray);
 }
 
-@media (max-width: 1280px) {
+@media (max-width: 1385px) {
   .statusRow {
     flex-direction: column;
     gap: 16px;
@@ -2034,6 +2047,143 @@
   }
 }
 
+.skeletonCard {
+  pointer-events: none;
+
+  &:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+.skeletonTextGroup {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 16px;
+}
+
+.skeletonBlock {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: var(--color-dark-white);
+}
+
+.skeletonBlock::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgb(255 255 255 / 70%) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: skeleton-shimmer 1.2s ease-in-out infinite;
+}
+
+.skeletonTitle {
+  width: 36%;
+  height: 24px;
+}
+
+.skeletonLineLong {
+  width: 82%;
+  height: 18px;
+}
+
+.skeletonLineMedium {
+  width: 58%;
+  height: 18px;
+}
+
+.skeletonButton {
+  width: 120px;
+  height: 40px;
+  margin-top: 8px;
+  border-radius: 999px;
+}
+
+.skeletonCharacter {
+  width: 180px;
+  height: 180px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.skeletonProgress {
+  width: 82%;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.skeletonChart {
+  width: 100%;
+  height: 96px;
+  margin-top: 8px;
+}
+
+.skeletonCalendar {
+  width: 100%;
+  height: 84px;
+  margin-top: 8px;
+  border-radius: 16px;
+}
+
+.skeletonJournalRow {
+  display: flex;
+  width: 100%;
+  gap: 16px;
+}
+
+.skeletonJournal {
+  height: 160px;
+  flex: 1;
+  border-radius: 16px;
+}
+
+@keyframes skeleton-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@media (max-width: 560px) {
+  .skeletonCharacter {
+    width: 160px;
+    height: 160px;
+    align-self: flex-end;
+  }
+
+  .skeletonTitle {
+    width: 48%;
+  }
+
+  .skeletonLineLong {
+    width: 92%;
+  }
+
+  .skeletonLineMedium {
+    width: 70%;
+  }
+
+  .skeletonJournalRow {
+    overflow: hidden;
+  }
+
+  .skeletonJournal {
+    min-width: 120px;
+  }
+
+  .skeletonChart {
+    height: 120px;
+  }
+}
 @media (max-width: 560px) {
   .goalInfo h2,
   .spendingSummaryContent h2,

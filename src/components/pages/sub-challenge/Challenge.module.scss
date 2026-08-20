@@ -10,6 +10,7 @@ $mission-grid-mobile-breakpoint: 480px;
   margin: 0 auto;
   min-height: calc(100vh - 86px);
   position: relative;
+  background-color: var(--color-white);
 }
 
 /* 사이드바 우측의 메인 영역과 푸터를 감싸는 컨테이너 */
@@ -32,14 +33,13 @@ $mission-grid-mobile-breakpoint: 480px;
   margin-bottom: 24px;
 
   .title {
-    font-size: 24px;
-    font-weight: var(--font-weight-bold);
+    @include typo-heading-s-plus;
     color: var(--color-text);
   }
 
   .subtitle {
-    @include typo-caption;
-    color: var(--color-light-gray);
+    @include typo-heading-xs;
+    color: var(--color-gray);
     margin-top: 4px;
   }
 }
@@ -62,9 +62,9 @@ $mission-grid-mobile-breakpoint: 480px;
 /* 공통 카드 스타일 */
 .card {
   background: var(--color-white);
-  border-radius: 16px;
+  border-radius: 24px;
   padding: 24px;
-  border: 1px solid var(--color-point);
+  border: 1px solid var(--color-border-gray);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
   min-width: 0;
 
@@ -73,13 +73,15 @@ $mission-grid-mobile-breakpoint: 480px;
     margin-bottom: 16px;
 
     h3 {
-      @include typo-card-head;
+      font-size: var(--card-head-size);
+      line-height: var(--card-head-line-height);
       font-weight: var(--font-weight-semibold);
       color: var(--color-text);
     }
 
     .moreText {
-      @include typo-body-s;
+      font-size: var(--body-s-size);
+      line-height: var(--body-s-line-height);
       color: var(--color-light-gray);
       cursor: pointer;
     }
@@ -91,7 +93,8 @@ $mission-grid-mobile-breakpoint: 480px;
   display: inline-block;
   background-color: var(--color-warning-background);
   color: var(--color-warning-text);
-  @include typo-table-category-nonpc;
+  font-size: var(--table-category-nonpc-size);
+  line-height: var(--table-category-nonpc-line-height);
   font-weight: var(--font-weight-semibold);
   padding: 4px 8px;
   border-radius: 4px;
@@ -118,19 +121,20 @@ $mission-grid-mobile-breakpoint: 480px;
     }
 
     span {
-      @include icon-l;
+      font-size: var(--icon-l-size);
       color: var(--color-text);
     }
   }
 
   h3 {
-    @include typo-card-label;
+    font-size: var(--card-label-size);
+    line-height: var(--card-label-line-height);
     color: var(--color-text);
     margin-bottom: 6px;
   }
 
   p {
-    font-size: 13px;
+    font-size: var(--body-s-size);
     color: var(--color-gray);
     line-height: 1.4;
   }
@@ -139,7 +143,7 @@ $mission-grid-mobile-breakpoint: 480px;
 /* 목표 달성 텍스트 행 스타일 */
 .missionGoalRow {
   @include flex-between;
-  font-size: 13px;
+  font-size: var(--body-s-size);
   margin: 16px 0;
   padding: 0 4px;
 
@@ -160,6 +164,7 @@ $mission-grid-mobile-breakpoint: 480px;
   border: 1px solid var(--color-border-gray);
   padding: 12px;
   border-radius: 8px;
+  font-size: var(--body-s-size);
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
   margin-top: 8px;
@@ -169,9 +174,9 @@ $mission-grid-mobile-breakpoint: 480px;
     border-color 0.2s;
 
   &:hover {
-    background-color: #77b985;
+    background-color: var(--color-point);
     color: var(--color-white);
-    border-color: #77b985;
+    border-color: var(--color-point);
   }
 
   &.actionBtnDisabled {
@@ -204,19 +209,19 @@ $mission-grid-mobile-breakpoint: 480px;
 
       span:first-child {
         font-weight: bold;
-        color: #333;
-        font-size: 14px;
+        color: var(--color-text);
+        font-size: var(--body-m-minus-size);
       }
 
       .challengeIcon {
         width: 36px;
         height: 36px;
         border-radius: 50%;
-        background-color: #f7f9f8;
+        background-color: var(--color-dark-white);
         display: flex;
         align-items: center;
         justify-content: center;
-        border: 1px solid #eee;
+        border: 1px solid var(--color-border-gray);
         opacity: 0.4;
         transition:
           background-color 0.2s,
@@ -226,7 +231,7 @@ $mission-grid-mobile-breakpoint: 480px;
           transform 0.2s;
 
         &.currentChallengeIcon {
-          border-color: #77b985;
+          border-color: var(--color-point);
           box-shadow: 0 0 0 2px rgba(119, 185, 133, 0.2);
         }
 
@@ -237,14 +242,14 @@ $mission-grid-mobile-breakpoint: 480px;
         /*완료된 날 스탬프*/
         &.completedChallengeIcon {
           opacity: 1;
-          background-color: #eaf5ec;
-          border: 2px solid #77b985;
+          background-color: var(--color-background-green);
+          border: 2px solid var(--color-point);
         }
       }
 
       span:last-child {
-        font-size: 12px;
-        color: #888;
+        font-size: var(--body-s-size);
+        color: var(--color-light-gray);
       }
     }
   }
@@ -274,7 +279,7 @@ $mission-grid-mobile-breakpoint: 480px;
       background-color: var(--color-dark-white);
       border-radius: 50%;
       overflow: hidden;
-      @include icon-l;
+      font-size: var(--icon-l-size);
       @include flex-center;
       margin-bottom: 12px;
       color: var(--color-text);
@@ -287,7 +292,8 @@ $mission-grid-mobile-breakpoint: 480px;
     }
 
     .missionCardTitle {
-      @include typo-body-m-minus;
+      font-size: var(--body-m-minus-size);
+      line-height: var(--body-m-minus-line-height);
       font-weight: var(--font-weight-semibold);
       color: var(--color-text);
       margin-bottom: 16px;
@@ -300,15 +306,15 @@ $mission-grid-mobile-breakpoint: 480px;
       border: 1px solid var(--color-border-gray);
       padding: 8px 0;
       border-radius: 8px;
-      @include typo-body-s;
+      font-size: var(--body-s-size);
       font-weight: var(--font-weight-medium);
       cursor: pointer;
       transition: background-color 0.2s;
 
       &:hover {
-        background-color: #77b985;
+        background-color: var(--color-point);
         color: var(--color-white);
-        border-color: #77b985;
+        border-color: var(--color-point);
       }
     }
   }
@@ -337,7 +343,6 @@ $mission-grid-mobile-breakpoint: 480px;
 
 /* ==========================
    나의 소비 기록 카드 스타일
-   (7일 전체 표시, 날짜 → 금액 → 이미지 → 문구 순서)
    ========================== */
 .historyList {
   display: flex;
@@ -358,15 +363,15 @@ $mission-grid-mobile-breakpoint: 480px;
     text-align: center;
 
     .historyDate {
-      @include typo-table-category-nonpc;
+      font-size: var(--table-category-nonpc-size);
       color: var(--color-light-gray);
       margin-bottom: 4px;
     }
 
     .historyAmount {
-      @include typo-body-m-minus;
+      font-size: var(--body-m-minus-size);
       font-weight: var(--font-weight-bold);
-      color: var(--color-point, #2f855a);
+      color: var(--color-point);
       margin-bottom: 12px;
     }
 
@@ -392,7 +397,7 @@ $mission-grid-mobile-breakpoint: 480px;
     }
 
     .historyMessage {
-      @include typo-table-category-nonpc;
+      font-size: var(--table-category-nonpc-size);
       color: var(--color-gray);
       line-height: 1.3;
       word-break: keep-all;
@@ -413,7 +418,6 @@ $mission-grid-mobile-breakpoint: 480px;
   z-index: 1000;
   display: flex;
   justify-content: flex-end;
-  animation: fadeIn 0.2s ease;
 }
 
 .modalContent {
@@ -434,7 +438,8 @@ $mission-grid-mobile-breakpoint: 480px;
   margin-bottom: 20px;
 
   h2 {
-    font-size: 18px;
+    font-size: var(--heading-xs-size);
+    line-height: var(--heading-xs-line-height);
     font-weight: var(--font-weight-bold);
     color: var(--color-text);
   }
@@ -454,31 +459,31 @@ $mission-grid-mobile-breakpoint: 480px;
   gap: 10px;
   margin-bottom: 24px;
   padding-bottom: 16px;
-  border-bottom: 1px solid var(--color-border-gray, #eee);
+  border-bottom: 1px solid var(--color-border-gray);
 
   .categoryFilterBtn {
     padding: 12px 6px;
     border-radius: 12px;
-    background-color: var(--color-dark-white, #f7f9f8);
-    border: 1px solid var(--color-border-gray, #e2e8f0);
+    background-color: var(--color-dark-white);
+    border: 1px solid var(--color-border-gray);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-    color: var(--color-gray, #4a5568);
-    font-size: 13px;
-    font-weight: var(--font-weight-medium, 500);
+    color: var(--color-gray);
+    font-size: var(--body-s-size);
+    font-weight: var(--font-weight-medium);
     cursor: pointer;
     text-align: center;
     transition: all 0.2s ease;
 
     &:hover {
-      background-color: #edf2f7;
+      background-color: var(--color-background-green);
     }
 
     &.active {
       background-color: var(--color-white);
-      border: 2px solid var(--color-point, #2f855a);
+      border: 2px solid var(--color-point);
       box-shadow: 0 4px 12px rgba(47, 133, 90, 0.15);
-      color: var(--color-point, #2f855a);
-      font-weight: var(--font-weight-bold, 700);
+      color: var(--color-point);
+      font-weight: var(--font-weight-bold);
     }
   }
 }
@@ -491,7 +496,7 @@ $mission-grid-mobile-breakpoint: 480px;
 
   .modalMissionItemCard {
     background: var(--color-white);
-    border: 1px solid var(--color-border-gray, #eee);
+    border: 1px solid var(--color-border-gray);
     border-radius: 12px;
     padding: 16px 12px;
     display: flex;
@@ -504,10 +509,10 @@ $mission-grid-mobile-breakpoint: 480px;
     .modalMissionCardIcon {
       width: 48px;
       height: 48px;
-      background-color: var(--color-dark-white, #f7f9f8);
+      background-color: var(--color-dark-white);
       border-radius: 50%;
       overflow: hidden;
-      @include icon-l;
+      font-size: var(--icon-l-size);
       @include flex-center;
       margin-bottom: 12px;
       color: var(--color-text);
@@ -520,7 +525,8 @@ $mission-grid-mobile-breakpoint: 480px;
     }
 
     .modalMissionCardTitle {
-      @include typo-body-m-minus;
+      font-size: var(--body-m-minus-size);
+      line-height: var(--body-m-minus-line-height);
       font-weight: var(--font-weight-semibold);
       color: var(--color-text);
       margin-bottom: 16px;
@@ -533,7 +539,7 @@ $mission-grid-mobile-breakpoint: 480px;
       border: 1px solid var(--color-border-gray);
       padding: 8px 0;
       border-radius: 8px;
-      @include typo-body-s;
+      font-size: var(--body-s-size);
       font-weight: var(--font-weight-medium);
       cursor: pointer;
       transition:
@@ -542,9 +548,9 @@ $mission-grid-mobile-breakpoint: 480px;
         border-color 0.2s;
 
       &:hover {
-        background-color: #77b985;
+        background-color: var(--color-point);
         color: var(--color-white);
-        border-color: #77b985;
+        border-color: var(--color-point);
       }
     }
   }
@@ -553,6 +559,6 @@ $mission-grid-mobile-breakpoint: 480px;
 .emptyMessage {
   grid-column: span 2;
   text-align: center;
-  color: var(--color-light-gray, #888);
+  color: var(--color-light-gray);
   margin-top: 40px;
 }

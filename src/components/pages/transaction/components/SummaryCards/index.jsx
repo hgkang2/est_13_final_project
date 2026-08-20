@@ -14,7 +14,39 @@ const formatChange = amount => {
   return "0원";
 };
 
-export default function SummaryCards({ hasTransactionData, summaryData }) {
+export default function SummaryCards({
+  isLoading,
+  hasTransactionData,
+  summaryData,
+}) {
+  if (isLoading) {
+    return (
+      <section
+        className={styles.summarySection}
+        aria-label="이번 달 소비 요약을 불러오는 중"
+        aria-busy="true"
+      >
+        {Array.from({ length: 4 }, (_, index) => (
+          <div
+            className={`${styles.summaryCard} ${styles.summarySkeleton}`}
+            key={index}
+          >
+            <span
+              className={`${styles.summarySkeletonBlock} ${styles.summarySkeletonTitle}`}
+            />
+
+            <span
+              className={`${styles.summarySkeletonBlock} ${styles.summarySkeletonValue}`}
+            />
+
+            <span
+              className={`${styles.summarySkeletonBlock} ${styles.summarySkeletonMeta}`}
+            />
+          </div>
+        ))}
+      </section>
+    );
+  }
   const summaryCards = [
     {
       id: "income",
@@ -73,7 +105,7 @@ export default function SummaryCards({ hasTransactionData, summaryData }) {
     <section className={styles.summarySection} aria-label="이번 달 소비 요약">
       {summaryCards.map(card => (
         <article className={styles.summaryCard} key={card.id}>
-          <p className={styles.summaryTitle}>{card.title}</p>
+          <h2 className={styles.summaryTitle}>{card.title}</h2>
 
           <strong className={styles.summaryValue}>
             {hasTransactionData ? card.value : card.emptyValue}

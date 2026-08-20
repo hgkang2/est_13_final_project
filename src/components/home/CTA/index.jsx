@@ -22,7 +22,7 @@ export default function CTA() {
               <strong>똑똑한 소비 습관</strong>을 시작하세요!
             </h2>
           </div>
-          <Link href="/" type="button" className={styles.ctaButton}>
+          <Link href="/login" className={styles.ctaButton}>
             <Image src="/images/home/cta_btn.png" width={403} height={103} alt="무료로 시작하기" />
           </Link>
         </div>

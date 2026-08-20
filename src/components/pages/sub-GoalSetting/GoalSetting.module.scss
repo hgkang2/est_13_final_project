@@ -19,6 +19,8 @@
   align-items: stretch;
   flex: 1 0 auto;
   width: 100%;
+  max-width: 1920px; /*추가*/
+  margin: 0 auto; /*추가*/
   height: auto;
   overflow: visible;
 }
@@ -778,7 +780,7 @@
    모바일
 ======================================== */
 
-@include mobile {
+@media (max-width: 600px) {
   .goalSettingContainer {
     padding-top: 16px;
     padding-bottom: 16px;
@@ -1237,7 +1239,7 @@
    모바일
 ======================================== */
 
-@include mobile {
+@media (max-width: 600px) {
   .goalSettingGoalListSection {
     padding-bottom: 0;
   }

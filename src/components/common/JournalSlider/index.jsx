@@ -59,11 +59,12 @@ export default function JournalSlider({
         {journals.map(journal => (
           <SwiperSlide key={journal.id}>
             <article className={styles.journalItem}>
+              <h3 className="sr-only">{journal.date} 소비 그림일기</h3>
+
               <div className={styles.journalMeta}>
-                <time>{journal.date}</time>
+                <time dateTime={journal.dateTime}>{journal.date}</time>
                 <strong>{journal.amount}</strong>
               </div>
-
               <div
                 className={`${styles.journalImage} ${
                   journal.pending ? styles.pendingJournalImage : ""

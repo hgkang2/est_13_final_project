@@ -199,7 +199,15 @@
   @include typo-caption-plus;
 }
 
-.multipleHelp,
+.multipleHelp {
+  position: relative;
+  display: flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+}
+
 .removeMultipleRowButton {
   display: flex;
   width: 40px;
@@ -211,9 +219,76 @@
   background-color: transparent;
 }
 
-.multipleHelp :global(.material-icons),
+.multipleHelpButton :global(.material-icons),
 .removeMultipleRowButton :global(.material-icons) {
   font-size: var(--icon-m-size);
+}
+
+.multipleHelpButton {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--color-gray);
+  background-color: transparent;
+  cursor: help;
+}
+
+.multipleHelpTooltip {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 8px);
+  z-index: 30;
+
+  display: flex;
+  width: 300px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 8px;
+  flex-direction: column;
+
+  color: var(--color-gray);
+  background-color: var(--color-white);
+  box-shadow: 0 4px 12px rgb(6 7 14 / 10%);
+
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-50%) translateX(2px);
+  pointer-events: none;
+
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+
+  @include typo-body-s;
+}
+
+.multipleHelpTooltip::after {
+  position: absolute;
+  top: 50%;
+  right: -5px;
+
+  width: 8px;
+  height: 8px;
+
+  border-top: 1px solid var(--color-border-gray);
+  border-right: 1px solid var(--color-border-gray);
+
+  background-color: var(--color-white);
+  content: "";
+
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.multipleHelp:hover .multipleHelpTooltip,
+.multipleHelp:focus-within .multipleHelpTooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-50%) translateX(0);
 }
 
 .removeMultipleRowButton {

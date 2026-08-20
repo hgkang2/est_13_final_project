@@ -11,6 +11,7 @@ const createMultipleTransactionRow = id => ({
   paymentMethod: "",
   withdrawAccount: "",
   depositAccount: "",
+  savingGoal: "",
   memo: "",
 });
 
@@ -31,7 +32,7 @@ export const useMultipleTransactionForm = () => {
     row.category &&
     row.amount &&
     (row.type === "transfer"
-      ? row.withdrawAccount && row.depositAccount
+      ? row.withdrawAccount && (row.depositAccount || row.savingGoal)
       : row.paymentMethod);
 
   const multipleRowStatus = multipleRows.reduce(
@@ -65,22 +66,33 @@ export const useMultipleTransactionForm = () => {
           return row;
         }
 
-        // 이체 계좌 조합 선택
+        // 이체 경로 선택
         if (name === "transferRoute") {
           if (!value) {
             return {
               ...row,
               withdrawAccount: "",
               depositAccount: "",
+              savingGoal: "",
             };
           }
 
-          const [withdrawAccount, depositAccount] = value.split("|");
+          const [withdrawAccount, destination] = value.split("|");
+
+          if (destination.startsWith("goal:")) {
+            return {
+              ...row,
+              withdrawAccount,
+              depositAccount: "",
+              savingGoal: destination.replace("goal:", ""),
+            };
+          }
 
           return {
             ...row,
             withdrawAccount,
-            depositAccount,
+            depositAccount: destination.replace("account:", ""),
+            savingGoal: "",
           };
         }
 
@@ -93,6 +105,7 @@ export const useMultipleTransactionForm = () => {
             paymentMethod: "",
             withdrawAccount: "",
             depositAccount: "",
+            savingGoal: "",
           };
         }
 
@@ -119,6 +132,12 @@ export const useMultipleTransactionForm = () => {
     setMultipleRows(prevRows => prevRows.filter(row => row.id !== id));
   };
 
+  const removeMultipleRows = ids => {
+    const removeIds = new Set(ids);
+
+    setMultipleRows(prevRows => prevRows.filter(row => !removeIds.has(row.id)));
+  };
+
   const resetMultipleRows = () => {
     setMultipleRows(createInitialMultipleRows());
   };
@@ -126,6 +145,7 @@ export const useMultipleTransactionForm = () => {
   return {
     multipleRows,
     resetMultipleRows,
+    removeMultipleRows,
     isValidMultipleRow,
     multipleRowStatus,
     onMultipleRowChange,

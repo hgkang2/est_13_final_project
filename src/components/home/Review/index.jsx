@@ -97,9 +97,7 @@ export default function Review() {
             modules={[Navigation]}
             breakpointsBase="container"
             loop={false}
-            onBreakpoint={(swiper, breakpointParams) => {
-              console.log("현재 slidesPerView:", breakpointParams.slidesPerView);
-            }}
+            onBreakpoint={(swiper, breakpointParams) => {}}
             navigation={{
               prevEl: `.${styles.prev}`,
               nextEl: `.${styles.next}`,
@@ -129,7 +127,7 @@ export default function Review() {
                     <Image src={review.profile} alt={"작성자 프로필 사진"} width={45} height={45} />
                   </div>
 
-                  <h4 className={`body-m-plus`}>{review.title}</h4>
+                  <h3 className={`body-m-plus`}>{review.title}</h3>
 
                   <p className={`caption`}>{review.content}</p>
                 </article>

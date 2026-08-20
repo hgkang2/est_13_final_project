@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import styles from "./TransactionDetailEdit.module.scss";
 
 export default function TransactionReceiptSection({
@@ -9,6 +10,12 @@ export default function TransactionReceiptSection({
   onRemoveAttachment,
   onCancelNewAttachment,
 }) {
+  const receiptPreviewDialogRef = useRef(null);
+
+  const receiptPreviewSrc =
+    attachmentPreview ||
+    (!editForm.removeAttachment ? transaction.receiptImage : "");
+
   return (
     <>
       {transaction.receiptImage && !editForm.removeAttachment && (
@@ -23,14 +30,19 @@ export default function TransactionReceiptSection({
 
             <div className={styles.detailReceiptNoticeText}>
               <strong>영수증으로 등록된 내역이에요</strong>
-              <span>기존 영수증을 교체하거나 삭제할 수 있습니다.</span>
+              <span>기존 영수증을 교체하거나 삭제할 수 있어요.</span>
             </div>
           </div>
 
           <section className={styles.detailReceiptSection}>
             <h3>영수증 / 거래내역 첨부</h3>
 
-            <div className={styles.detailReceiptImageBox}>
+            <button
+              type="button"
+              className={`${styles.detailReceiptImageBox} ${styles.receiptPreviewButton}`}
+              onClick={() => receiptPreviewDialogRef.current?.showModal()}
+              aria-label="영수증 이미지 크게 보기"
+            >
               <img
                 src={attachmentPreview || transaction.receiptImage}
                 alt={
@@ -39,7 +51,7 @@ export default function TransactionReceiptSection({
                     : "등록된 영수증"
                 }
               />
-            </div>
+            </button>
 
             <div className={styles.receiptEditActions}>
               <button
@@ -100,9 +112,14 @@ export default function TransactionReceiptSection({
           <h3>영수증 / 거래내역 첨부</h3>
 
           {attachmentPreview && (
-            <div className={styles.detailReceiptImageBox}>
+            <button
+              type="button"
+              className={`${styles.detailReceiptImageBox} ${styles.receiptPreviewButton}`}
+              onClick={() => receiptPreviewDialogRef.current?.showModal()}
+              aria-label="새로 선택한 영수증 크게 보기"
+            >
               <img src={attachmentPreview} alt="새로 선택한 영수증 미리보기" />
-            </div>
+            </button>
           )}
 
           <div className={styles.newAttachmentInfo}>
@@ -136,6 +153,39 @@ export default function TransactionReceiptSection({
 
           <span>기존 영수증이 삭제됩니다.</span>
         </div>
+      )}
+      {receiptPreviewSrc && (
+        <dialog
+          ref={receiptPreviewDialogRef}
+          className={styles.receiptPreviewDialog}
+          aria-label="영수증 이미지 확대 보기"
+        >
+          <div
+            className={styles.receiptPreviewContent}
+            onClick={event => {
+              if (event.target === event.currentTarget) {
+                receiptPreviewDialogRef.current?.close();
+              }
+            }}
+          >
+            <button
+              type="button"
+              className={styles.receiptPreviewClose}
+              onClick={() => receiptPreviewDialogRef.current?.close()}
+              aria-label="영수증 확대 보기 닫기"
+            >
+              <span className="material-icons" aria-hidden="true">
+                close
+              </span>
+            </button>
+
+            <img
+              src={receiptPreviewSrc}
+              alt="영수증 확대 이미지"
+              className={styles.receiptPreviewImage}
+            />
+          </div>
+        </dialog>
       )}
     </>
   );

@@ -14,7 +14,7 @@ export default function MoreButton({ children, onClick, href }) {
 
   if (href) {
     return (
-      <Link href={href} className={styles.moreButton}>
+      <Link href={href} prefetch={false} className={styles.moreButton}>
         {content}
       </Link>
     );

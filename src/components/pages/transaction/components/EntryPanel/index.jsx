@@ -11,8 +11,8 @@ export default function EntryPanel({
   aiEntry,
   panelActions,
 }) {
-  const { entryTab, entryMode } = entryState;
-  const { categories, paymentMethods, transferAccounts } = options;
+  const { entryTab, entryMode, isMutating = false } = entryState;
+  const { categories, paymentMethods, transferAccounts, focusGoals } = options;
 
   const {
     transactionForm,
@@ -20,7 +20,6 @@ export default function EntryPanel({
     onTransactionFormChange,
     onToggleRecurring,
     onTransactionSubmit,
-    onContinueEntry,
     onResetTransactionForm,
   } = manualEntry;
 
@@ -41,6 +40,7 @@ export default function EntryPanel({
     aiTransactionErrors,
     aiPreview,
     onAiFormChange,
+    onToggleAiRecurring,
     onAiReceiptChange,
     onAiDragOver,
     onAiDrop,
@@ -105,12 +105,12 @@ export default function EntryPanel({
         className={`${styles.entryTabs} ${
           entryMode === "multiple" ? styles.multipleEntryTabs : ""
         }`}
-        role="tablist"
+        role="group"
+        aria-label="입력 방식"
       >
         <button
           type="button"
-          role="tab"
-          aria-selected={entryTab === "manual"}
+          aria-pressed={entryTab === "manual"}
           className={`${styles.entryTab} ${
             entryTab === "manual" ? styles.activeEntryTab : ""
           }`}
@@ -121,8 +121,7 @@ export default function EntryPanel({
 
         <button
           type="button"
-          role="tab"
-          aria-selected={entryTab === "ai"}
+          aria-pressed={entryTab === "ai"}
           className={`${styles.entryTab} ${
             entryTab === "ai" ? styles.activeEntryTab : ""
           }`}
@@ -206,6 +205,7 @@ export default function EntryPanel({
               categories={categories}
               paymentMethods={paymentMethods}
               transferAccounts={transferAccounts}
+              focusGoals={focusGoals}
               isTransfer={isTransfer}
               onTransactionFormChange={onTransactionFormChange}
               onToggleRecurring={onToggleRecurring}
@@ -218,23 +218,30 @@ export default function EntryPanel({
               categories={categories}
               paymentMethods={paymentMethods}
               transferAccounts={transferAccounts}
+              focusGoals={focusGoals}
               onMultipleRowChange={onMultipleRowChange}
               onAddMultipleRow={onAddMultipleRow}
               onRemoveMultipleRow={onRemoveMultipleRow}
               onCancelMultipleEntry={onCancelMultipleEntry}
               onMultipleSubmit={onMultipleSubmit}
+              isMutating={isMutating}
             />
           )}
           {entryMode === "single" && (
             <div className={styles.formActions}>
-              <button type="submit" className={styles.saveButton}>
+              <button
+                type="submit"
+                className={styles.saveButton}
+                disabled={isMutating}
+              >
                 저장하기
               </button>
 
               <button
                 type="button"
                 className={styles.continueButton}
-                onClick={onContinueEntry}
+                onClick={onTransactionSubmit}
+                disabled={isMutating}
               >
                 계속 입력
               </button>
@@ -251,11 +258,14 @@ export default function EntryPanel({
           categories={categories}
           paymentMethods={paymentMethods}
           transferAccounts={transferAccounts}
+          focusGoals={focusGoals}
           onAiFormChange={onAiFormChange}
+          onToggleAiRecurring={onToggleAiRecurring}
           onAiReceiptChange={onAiReceiptChange}
           onAiDragOver={onAiDragOver}
           onAiDrop={onAiDrop}
           onAiTransactionSubmit={onAiTransactionSubmit}
+          isMutating={isMutating}
         />
       )}
     </aside>
