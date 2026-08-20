@@ -600,9 +600,7 @@ export default function GoalSetting() {
         <SubFooter />
       </div>
 
-      <div className={styles.goalSettingBottomTab}>
-        <BottomTab />
-      </div>
+      <BottomTab />
     </>
   );
 }

@@ -97,9 +97,7 @@ export default function Review() {
             modules={[Navigation]}
             breakpointsBase="container"
             loop={false}
-            onBreakpoint={(swiper, breakpointParams) => {
-              console.log("현재 slidesPerView:", breakpointParams.slidesPerView);
-            }}
+            onBreakpoint={(swiper, breakpointParams) => {}}
             navigation={{
               prevEl: `.${styles.prev}`,
               nextEl: `.${styles.next}`,

@@ -93,8 +93,8 @@ $mission-grid-mobile-breakpoint: 480px;
   display: inline-block;
   background-color: var(--color-warning-background);
   color: var(--color-warning-text);
-  font-size: var(--table-category-nonpc-size);
-  line-height: var(--table-category-nonpc-line-height);
+  font-size: var(--body-s-size);
+  line-height: var(--body-s-line-height);
   font-weight: var(--font-weight-semibold);
   padding: 4px 8px;
   border-radius: 4px;
@@ -363,7 +363,7 @@ $mission-grid-mobile-breakpoint: 480px;
     text-align: center;
 
     .historyDate {
-      font-size: var(--table-category-nonpc-size);
+      font-size: var(--body-xs-size);
       color: var(--color-light-gray);
       margin-bottom: 4px;
     }
@@ -397,7 +397,7 @@ $mission-grid-mobile-breakpoint: 480px;
     }
 
     .historyMessage {
-      font-size: var(--table-category-nonpc-size);
+      font-size: var(--body-xs-size);
       color: var(--color-gray);
       line-height: 1.3;
       word-break: keep-all;
