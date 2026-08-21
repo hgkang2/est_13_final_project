@@ -5,33 +5,46 @@
   align-items: flex-start;
   width: 100%;
   max-width: 1920px;
+  min-width: 0;
   margin: 0 auto;
+  overflow-x: clip;
 }
 
 .main {
   flex: 1;
+  width: 100%;
   min-width: 0;
+  max-width: 100%;
 }
 
 .workspace {
   position: relative;
   display: flex;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   align-items: flex-start;
 }
 
 .content {
   display: flex;
+  width: 100%;
+  max-width: 100%;
   min-width: 0;
-  flex: 1;
+  flex: 1 1 auto;
   padding: 24px;
+  box-sizing: border-box;
   flex-direction: column;
   gap: 24px;
 }
 
 .content:global(.container) {
+  width: 100%;
+  max-width: var(--container-max-width);
+  min-width: 0;
   margin-left: 0;
   margin-right: auto;
+  box-sizing: border-box;
 }
 
 .contentCentered:global(.container) {
@@ -74,6 +87,9 @@
 
 .transactionSection {
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
+
   overflow: visible;
   border: 1px solid var(--color-border-gray);
   border-radius: 16px;
@@ -187,6 +203,9 @@
 
 @media (max-width: 1024px) {
   .content:global(.container) {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     margin-left: auto;
     margin-right: auto;
   }
