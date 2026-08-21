@@ -115,6 +115,12 @@ export default function Transaction() {
     showToast(successMessage, "success", {
       label: `${Number(month)}월 ${Number(day)}일 기록 보기`,
       onClick: () => {
+        const isMobile = window.matchMedia("(max-width: 1024px)").matches;
+
+        if (isMobile) {
+          setPanelView("closed");
+        }
+
         focusSavedTransaction(transaction.id);
         handleMoveToDate(transaction.dateValue);
 
